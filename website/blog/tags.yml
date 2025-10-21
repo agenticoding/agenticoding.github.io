@@ -1,0 +1,29 @@
+announcement:
+  label: Announcement
+  permalink: /announcement
+  description: Course announcements and updates
+
+ai-coding:
+  label: AI Coding
+  permalink: /ai-coding
+  description: AI-assisted software development
+
+getting-started:
+  label: Getting Started
+  permalink: /getting-started
+  description: Introductory content for new learners
+
+case-study:
+  label: Case Study
+  permalink: /case-study
+  description: Real-world examples and case studies
+
+best-practices:
+  label: Best Practices
+  permalink: /best-practices
+  description: Best practices and patterns
+
+tools:
+  label: Tools
+  permalink: /tools
+  description: AI coding tools and workflows
