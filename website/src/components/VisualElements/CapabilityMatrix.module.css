@@ -1,0 +1,156 @@
+.container {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: var(--visual-bg-capability);
+  border: 1px solid var(--visual-capability);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table thead {
+  background: var(--ifm-background-surface-color);
+  border-bottom: 2px solid var(--ifm-color-emphasis-300);
+}
+
+.table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--ifm-font-color-base);
+  white-space: nowrap;
+}
+
+.row {
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  transition: background-color 0.2s ease;
+}
+
+.row:hover {
+  background: var(--ifm-background-surface-color);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.cellName {
+  font-weight: 500;
+  color: var(--ifm-font-color-base);
+}
+
+.cellInput {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.85rem;
+}
+
+.cellTrust {
+  min-width: 120px;
+}
+
+.trustBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  border: 1.5px solid;
+  font-weight: 500;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  background: var(--ifm-background-surface-color);
+}
+
+.trustIcon {
+  font-size: 1rem;
+}
+
+.cellUseCases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  background: var(--ifm-color-emphasis-200);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--ifm-color-emphasis-800);
+  white-space: nowrap;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--ifm-background-surface-color);
+  border-radius: 6px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.legendItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.legendIcon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.legendText {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.legendText strong {
+  color: var(--ifm-font-color-base);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .table {
+    font-size: 0.8rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem;
+  }
+
+  .cellUseCases {
+    flex-direction: column;
+  }
+
+  .legend {
+    font-size: 0.8rem;
+  }
+
+  .trustBadge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}

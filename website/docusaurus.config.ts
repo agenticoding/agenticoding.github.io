@@ -37,6 +37,10 @@ const config: Config = {
     locales: ['en'],
   },
 
+  markdown: {
+    mermaid: true,
+  },
+
   presets: [
     [
       'classic',
@@ -73,7 +77,7 @@ const config: Config = {
     ],
   ],
 
-  themes: ['@docusaurus/theme-live-codeblock'],
+  themes: ['@docusaurus/theme-live-codeblock', '@docusaurus/theme-mermaid'],
 
   plugins: [
     [
@@ -170,7 +174,14 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-      additionalLanguages: ['bash', 'python', 'yaml', 'json', 'markdown'],
+      additionalLanguages: ['bash', 'python', 'yaml', 'json', 'markdown', 'mermaid'],
+    },
+    mermaid: {
+      theme: { light: 'base', dark: 'dark' },
+      options: {
+        maxTextSize: 50000,
+        fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
+      },
     },
   } satisfies Preset.ThemeConfig,
 };

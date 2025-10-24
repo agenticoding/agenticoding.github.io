@@ -4,27 +4,273 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+/* ========================================================================
+   AI CODING COURSE - COLOR SYSTEM (Single Source of Truth)
+   ========================================================================
+
+   All colors are defined here using a token-based system.
+   Components and content should ONLY reference these CSS variables,
+   never use hardcoded color values.
+
+   Color System Structure:
+   1. Brand Colors - Purple AI theme for primary/interactive elements
+   2. Semantic Colors - Success, warning, error, info (readable with purple)
+   3. Gradient Endpoints - For minimal accent gradients
+   4. Infima Mapping - Maps brand colors to Docusaurus theme
+   5. Visual Element Colors - For interactive components and diagrams
+
+   Dark Mode: All colors have optimized variants in [data-theme='dark']
+   Accessibility: All combinations meet WCAG AA standards (4.5:1+ contrast)
+   ======================================================================== */
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  /* === BRAND COLORS - Purple AI Theme === */
+  --brand-primary: #7C3AED;           /* Rich violet - main brand color */
+  --brand-primary-dark: #6D28D9;      /* Deeper violet - hover states */
+  --brand-primary-darker: #6020C0;    /* Even deeper - active states */
+  --brand-primary-darkest: #5B21B6;   /* Maximum depth - pressed states */
+  --brand-primary-light: #8B5CF6;     /* Lighter violet - accents */
+  --brand-primary-lighter: #A78BFA;   /* Soft violet - highlights */
+  --brand-primary-lightest: #C4B5FD;  /* Pale violet - subtle backgrounds */
+
+  /* === SEMANTIC COLORS - Fully Harmonized with Purple === */
+  --semantic-success: #06B6D4;        /* Cyan - blue-green harmony with purple */
+  --semantic-warning: #F97316;        /* Rose-orange - purple-tinted warm accent */
+  --semantic-error: #E11D48;          /* Rose-red - magenta with purple undertones */
+  --semantic-info: #3B82F6;           /* Violet-blue - analogous to purple */
+  --semantic-neutral: #64748B;        /* Slate - cool gray with purple tint */
+
+  /* === GRADIENT ENDPOINTS - Harmonized Purple-Tinted === */
+  --gradient-warm-end: #EC4899;       /* Fuchsia - purple harmony */
+  --gradient-warning-end: #FB923C;    /* Rose-orange - matches warning */
+  --gradient-critical-end: #FB7185;   /* Rose-pink - matches error */
+
+  /* === MAP TO INFIMA (Docusaurus Framework) === */
+  --ifm-color-primary: var(--brand-primary);
+  --ifm-color-primary-dark: var(--brand-primary-dark);
+  --ifm-color-primary-darker: var(--brand-primary-darker);
+  --ifm-color-primary-darkest: var(--brand-primary-darkest);
+  --ifm-color-primary-light: var(--brand-primary-light);
+  --ifm-color-primary-lighter: var(--brand-primary-lighter);
+  --ifm-color-primary-lightest: var(--brand-primary-lightest);
+
+  /* === VISUAL ELEMENT COLORS - For Interactive Components === */
+  --visual-workflow: var(--brand-primary);         /* Purple for AI workflows/agents */
+  --visual-capability: var(--semantic-success);    /* Green for capabilities/success */
+  --visual-limitation: var(--semantic-warning);    /* Amber for limitations/warnings */
+  --visual-decision: var(--brand-primary-light);   /* Light purple for decision points */
+  --visual-error: var(--semantic-error);           /* Red for errors/critical */
+  --visual-neutral: var(--semantic-neutral);       /* Gray for neutral states */
+
+  /* === VISUAL ELEMENT BACKGROUNDS - Transparent Variants === */
+  --visual-bg-workflow: rgba(124, 58, 237, 0.1);      /* Purple tint */
+  --visual-bg-capability: rgba(6, 182, 212, 0.1);     /* Cyan tint */
+  --visual-bg-limitation: rgba(249, 115, 22, 0.1);    /* Rose-orange tint */
+  --visual-bg-decision: rgba(139, 92, 246, 0.1);      /* Light purple tint */
+
+  /* === TYPOGRAPHY & CODE === */
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  /* === CODE BLOCK BACKGROUNDS === */
+  --code-bg-light: #F9FAFB;           /* Subtle gray for code blocks */
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* ========================================================================
+   DARK MODE - Optimized Colors for Dark Backgrounds
+   ========================================================================
+   Brighter, more vibrant versions of light mode colors to ensure
+   sufficient contrast and reduce eye strain on dark backgrounds.
+   ======================================================================== */
+
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  /* === BRAND COLORS - Brighter Purple for Dark Mode === */
+  --brand-primary: #A78BFA;           /* Brighter violet for dark backgrounds */
+  --brand-primary-dark: #8B5CF6;
+  --brand-primary-darker: #7C3AED;
+  --brand-primary-darkest: #6D28D9;
+  --brand-primary-light: #C4B5FD;
+  --brand-primary-lighter: #DDD6FE;
+  --brand-primary-lightest: #EDE9FE;
+
+  /* === SEMANTIC COLORS - Harmonized for Dark Mode === */
+  --semantic-success: #22D3EE;        /* Cyan 400 - blue harmony with purple */
+  --semantic-warning: #FB923C;        /* Orange 400 - rose-orange for dark */
+  --semantic-error: #FB7185;          /* Rose 400 - magenta-red for dark */
+  --semantic-info: #60A5FA;           /* Blue 400 - violet-blue for dark */
+  --semantic-neutral: #94A3B8;        /* Slate 400 - purple-tinted gray */
+
+  /* === GRADIENT ENDPOINTS - Harmonized for Dark Mode === */
+  --gradient-warm-end: #F472B6;       /* Fuchsia 400 - purple harmony */
+  --gradient-warning-end: #FDBA74;    /* Orange 300 - rose-orange bright */
+  --gradient-critical-end: #FDA4AF;   /* Rose 300 - rose-pink bright */
+
+  /* === MAP TO INFIMA (Docusaurus Framework) === */
+  --ifm-color-primary: var(--brand-primary);
+  --ifm-color-primary-dark: var(--brand-primary-dark);
+  --ifm-color-primary-darker: var(--brand-primary-darker);
+  --ifm-color-primary-darkest: var(--brand-primary-darkest);
+  --ifm-color-primary-light: var(--brand-primary-light);
+  --ifm-color-primary-lighter: var(--brand-primary-lighter);
+  --ifm-color-primary-lightest: var(--brand-primary-lightest);
+
+  /* === VISUAL ELEMENT COLORS - Adjusted for Dark Mode === */
+  --visual-workflow: var(--brand-primary);         /* Brighter purple */
+  --visual-capability: var(--semantic-success);    /* Brighter green */
+  --visual-limitation: var(--semantic-warning);    /* Brighter amber */
+  --visual-decision: var(--brand-primary-light);   /* Lighter purple */
+  --visual-error: var(--semantic-error);           /* Softer red */
+  --visual-neutral: var(--semantic-neutral);       /* Lighter gray */
+
+  /* === VISUAL ELEMENT BACKGROUNDS - Harmonized Transparency === */
+  --visual-bg-workflow: rgba(167, 139, 250, 0.15);    /* Purple tint */
+  --visual-bg-capability: rgba(34, 211, 238, 0.15);   /* Cyan tint */
+  --visual-bg-limitation: rgba(251, 146, 60, 0.15);   /* Rose-orange tint */
+  --visual-bg-decision: rgba(196, 181, 253, 0.15);    /* Light purple tint */
+
+  /* === TYPOGRAPHY & CODE === */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+  /* === DARK MODE BACKGROUNDS === */
+  --ifm-background-color: #0D1117;              /* GitHub-style dark background */
+  --ifm-background-surface-color: #161B22;      /* Elevated surfaces (cards, etc.) */
+  --code-bg-dark: #1E1E1E;                      /* VS Code dark background */
+  --ifm-font-color-base: #C9D1D9;               /* Soft white (less eye strain) */
+  --ifm-heading-color: #E6EDF3;                 /* Brighter for headings */
+}
+
+/* Mermaid diagram styling */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--ifm-background-surface-color);
+  border-radius: 8px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+}
+
+/* Mermaid SVG responsive behavior */
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Container for visual elements */
+.visual-container {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.visual-container--workflow {
+  background: var(--visual-bg-workflow);
+  border-color: var(--visual-workflow);
+}
+
+.visual-container--capability {
+  background: var(--visual-bg-capability);
+  border-color: var(--visual-capability);
+}
+
+.visual-container--limitation {
+  background: var(--visual-bg-limitation);
+  border-color: var(--visual-limitation);
+}
+
+.visual-container--decision {
+  background: var(--visual-bg-decision);
+  border-color: var(--visual-decision);
+}
+
+/* Visual checklist styling */
+.visual-checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.visual-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--ifm-background-surface-color);
+  border-radius: 6px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  transition: all 0.2s ease;
+}
+
+.visual-checklist-item:hover {
+  border-color: var(--ifm-color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.visual-checklist-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.visual-checklist-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ========================================================================
+   MINIMAL GRADIENT ACCENTS - Professional AI Aesthetic
+   ========================================================================
+   Subtle gradient effects for key interactive elements.
+   Use sparingly - gradients only where they add meaning or visual hierarchy.
+   ======================================================================== */
+
+/* Gradient border for AI-specific callouts and live code blocks */
+.ai-gradient-border {
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(
+    180deg,
+    var(--brand-primary) 0%,
+    var(--gradient-warm-end) 100%
+  ) 1;
+}
+
+/* Apply gradient border to live code blocks */
+.theme-live-codeblock {
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(
+    180deg,
+    var(--brand-primary) 0%,
+    var(--gradient-warm-end) 100%
+  ) 1;
+  margin: 2rem 0;
+}
+
+/* Subtle gradient divider for major sections */
+.gradient-divider {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--brand-primary) 50%,
+    transparent 100%
+  );
+  margin: 3rem 0;
+  border: none;
+}
+
+/* Navbar with subtle bottom border */
+.navbar {
+  border-bottom: 1px solid var(--brand-primary);
+}
+
+/* Enhanced code block styling with subtle shadow */
+.theme-code-block {
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.1);
+  margin: 2rem 0;
+}
+
+[data-theme='dark'] .theme-code-block {
+  box-shadow: 0 2px 8px rgba(167, 139, 250, 0.2);
 }

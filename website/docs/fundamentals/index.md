@@ -62,4 +62,4 @@ This module takes approximately **3-4 hours** to complete, including hands-on ex
 
 ---
 
-Ready to begin? Start with **Lesson 1: Introduction to AI Coding Assistants**.
+Ready to begin? Start with **[Lesson 1: Introduction to AI Coding Assistants](./lesson-1-intro.md)**.
