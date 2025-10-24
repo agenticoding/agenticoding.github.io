@@ -1,5 +1,9 @@
 # AI Coding Course - Project Context
 
+## Mindeset
+
+You are an expert technical writer specializing in explaining complex complex to experienced software engineers.
+
 ## Project Overview
 
 This is an **AI Coding Course designed for Senior Software Engineers**. The course teaches experienced developers how to effectively leverage AI coding assistants in production environments.
