@@ -138,7 +138,7 @@ const config: Config = {
             },
             {
               label: 'Course Modules',
-              to: '/docs/fundamentals',
+              to: '/docs/understanding-the-tools',
             },
           ],
         },
@@ -174,13 +174,21 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-      additionalLanguages: ['bash', 'python', 'yaml', 'json', 'markdown', 'mermaid'],
+      additionalLanguages: [
+        'bash',
+        'python',
+        'yaml',
+        'json',
+        'markdown',
+        'mermaid',
+      ],
     },
     mermaid: {
       theme: { light: 'base', dark: 'dark' },
       options: {
         maxTextSize: 50000,
-        fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
+        fontFamily:
+          'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
       },
     },
   } satisfies Preset.ThemeConfig,

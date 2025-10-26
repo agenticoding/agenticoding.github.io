@@ -126,4 +126,4 @@ Now that you understand the machinery and mental model, the next lesson covers *
 
 ---
 
-**Next:** [Lesson 2: What Are AI Agents?](./lesson-2-what-are-ai-agents.md)
+**Next:** [Lesson 2: Understanding Agents](../understanding-the-tools/lesson-2-understanding-agents.md)
