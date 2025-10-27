@@ -3,21 +3,353 @@
  * and scoped locally.
  */
 
+/* ========================================================================
+   HERO SECTION
+   ======================================================================== */
+
 .heroBanner {
-  padding: 4rem 0;
+  padding: 4rem 0 3rem;
   text-align: center;
   position: relative;
   overflow: hidden;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.heroAudience {
+  font-size: 1.1rem;
+  margin: 1rem 0;
+  /* Accessibility: White text on purple background for sufficient contrast */
+  /* Hero section uses purple primary background, requires light text */
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.heroMeta {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 0.95rem;
+  /* Accessibility: Light text on purple hero background */
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.metaSeparator {
+  /* Accessibility: Light separator on purple hero background */
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem 1rem;
+  }
+
+  .heroMeta {
+    font-size: 0.85rem;
+  }
+}
+
+/* ========================================================================
+   SECTION LAYOUT
+   ======================================================================== */
+
+.modulesSection,
+.whySection,
+.prerequisitesSection,
+.ctaSection {
+  padding: 3rem 0;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+}
+
+/* ========================================================================
+   MODULE CARDS
+   ======================================================================== */
+
+.modulesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.moduleCard {
+  display: block;
+  padding: 2rem;
+  background: var(--ifm-background-surface-color);
+  border: 2px solid var(--ifm-color-emphasis-200);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  position: relative;
+  /* Accessibility: Subtle shadow provides depth cue for colorblind users */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.moduleCard:hover {
+  border-color: var(--ifm-color-primary);
+  /* Accessibility: Larger transform (6px) provides motion-based feedback */
+  /* This helps colorblind users who may not perceive border color change */
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+}
+
+/* Accessibility: High-contrast focus indicator for keyboard navigation */
+.moduleCard:focus {
+  outline: 3px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+.moduleNumber {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+  background: var(--visual-bg-workflow);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.moduleTitle {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.moduleDuration {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.moduleTopics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.moduleTopics li {
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  color: var(--ifm-color-emphasis-700);
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+.moduleTopics li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--ifm-color-primary);
+  font-weight: 700;
+}
+
+/* ========================================================================
+   WHY THIS COURSE - REASON CARDS
+   ======================================================================== */
+
+.reasonsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.reasonCard {
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.reasonIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+
+.reasonTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.reasonDescription {
+  font-size: 0.95rem;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ========================================================================
+   PREREQUISITES SECTION
+   ======================================================================== */
+
+.prerequisitesSection {
+  background: var(--ifm-background-surface-color);
+}
+
+.prerequisitesContent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.prerequisiteColumn {
+  padding: 0 1rem;
+}
+
+.prerequisiteSubtitle {
+  font-size: 1.25rem;
+  margin-bottom: 1.25rem;
+  font-weight: 700;
+}
+
+.prerequisiteList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.prerequisiteList li {
+  padding: 0.75rem 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-700);
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+.prerequisiteList li::before {
+  content: '•';
+  position: absolute;
+  left: 0.5rem;
+  color: var(--ifm-color-primary);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* ========================================================================
+   FINAL CTA SECTION
+   ======================================================================== */
+
+.ctaSection {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.ctaTitle {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.ctaDescription {
+  font-size: 1.1rem;
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ctaLinks {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 0.95rem;
+}
+
+.ctaLinks a {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.ctaLinks a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ======================================================================== */
+
+/* High-contrast focus indicators for all interactive elements */
+/* Ensures keyboard navigation is visible for all users */
+
+.buttons a:focus,
+.ctaLinks a:focus {
+  outline: 3px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* Enhanced link underlines for colorblind users */
+/* Color + underline ensures links are identifiable without color perception */
+.ctaLinks a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.ctaLinks a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* ========================================================================
+   RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media screen and (max-width: 768px) {
+  .modulesGrid,
+  .reasonsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .prerequisitesContent {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.75rem;
+  }
+
+  .moduleCard {
+    padding: 1.5rem;
+  }
+
+  .reasonCard {
+    padding: 1.5rem 1rem;
+  }
 }

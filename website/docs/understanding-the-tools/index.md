@@ -34,7 +34,7 @@ Before you can effectively operate AI coding agents, you need to understand the 
 
 - 3+ years of professional software engineering experience
 - Familiarity with command-line tools and development workflows
-- Access to a CLI coding agent (e.g., Claude Code, Aider, Cursor)
+- Access to a CLI coding agent (e.g., Claude Code, Codex, Copilot CLI)
 
 ## Time Commitment
 
