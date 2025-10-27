@@ -1,0 +1,181 @@
+.container {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: var(--visual-bg-workflow);
+  border: 1px solid var(--visual-workflow);
+  max-width: 600px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+/* Background circle - subtle guide ring */
+.backgroundCircle {
+  stroke: var(--ifm-color-emphasis-500);
+  stroke-width: 1;
+  stroke-dasharray: 5, 5;
+  opacity: 0.5;
+}
+
+/* Phase circle nodes */
+.phaseCircle {
+  fill: var(--ifm-background-surface-color);
+  stroke: var(--visual-workflow);
+  stroke-width: 3;
+  transition: all 0.3s ease;
+}
+
+.phaseGroup {
+  animation: phaseAppear 0.5s ease-in-out backwards;
+}
+
+.phaseGroup:nth-child(6) {
+  animation-delay: 0.1s;
+}
+
+.phaseGroup:nth-child(7) {
+  animation-delay: 0.2s;
+}
+
+.phaseGroup:nth-child(8) {
+  animation-delay: 0.3s;
+}
+
+.phaseGroup:nth-child(9) {
+  animation-delay: 0.4s;
+}
+
+@keyframes phaseAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Phase text labels */
+.phaseText {
+  fill: var(--ifm-font-color-base);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--ifm-font-family-base);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Arrow paths - solid for forward flow */
+.arrowPath {
+  stroke: var(--visual-workflow);
+  stroke-width: 2.5;
+  fill: none;
+  stroke-linecap: round;
+  animation: drawPath 1s ease-in-out forwards;
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+}
+
+/* Dashed arrow for iteration (Validate -> Research) */
+.arrowPathDashed {
+  stroke: var(--visual-workflow);
+  stroke-width: 2.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 8, 6;
+  opacity: 0.7;
+  animation: drawPath 1s ease-in-out forwards;
+}
+
+@keyframes drawPath {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Arrow markers */
+.arrowMarker polygon {
+  fill: var(--visual-workflow);
+}
+
+.arrowMarkerDashed polygon {
+  fill: var(--visual-workflow);
+  opacity: 0.7;
+}
+
+/* Description text */
+.description {
+  margin: 1.5rem 0 0 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-700);
+  text-align: center;
+  padding: 0 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .phaseText {
+    font-size: 14px;
+  }
+
+  .description {
+    font-size: 0.85rem;
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .phaseText {
+    font-size: 11px;
+    letter-spacing: 0.3px;
+  }
+
+  .arrowPath,
+  .arrowPathDashed {
+    stroke-width: 2;
+  }
+
+  .phaseCircle {
+    stroke-width: 2.5;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .phaseGroup,
+  .arrowPath,
+  .arrowPathDashed {
+    animation: none;
+  }
+
+  .phaseCircle {
+    transition: none;
+  }
+}
