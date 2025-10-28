@@ -225,7 +225,7 @@ Nothing beats actually running your implementation. Be the user. Test the happy 
 
 ### Use the Agent Itself
 
-The agent is better at finding issues in code than generating perfect code on the first try. Use it to review its own work—we'll cover this self-review technique in [Lesson 9](../advanced/lesson-9-agent-collaboration.md). Similarly, have the agent create tests as guardrails—covered in [Lesson 8](../advanced/lesson-8-testing-strategies.md).
+The agent is better at finding issues in code than generating perfect code on the first try. Use it to review its own work—we'll cover this self-review technique in [Lesson 9](../practical-techniques/lesson-9-reviewing-code.md). Similarly, have the agent create tests as guardrails—covered in [Lesson 8](../practical-techniques/lesson-8-tests-as-guardrails.md).
 
 **Automated checks still matter:** Run your build, tests, and linters. If these fail, you have clear signal that iteration or regeneration is needed. If they pass, manually verify behavior matches your plan and mental model.
 
