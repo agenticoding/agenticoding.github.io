@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './UShapeAttentionCurve.module.css';
 
 interface UShapeAttentionCurveProps {
@@ -9,11 +9,14 @@ export default function UShapeAttentionCurve({
   initialContextFill = 60,
 }: UShapeAttentionCurveProps): JSX.Element {
   const [contextFill, setContextFill] = useState(initialContextFill);
+  const [animatedPath, setAnimatedPath] = useState<string>('');
+  const previousPathRef = useRef<string>('');
+  const animationFrameRef = useRef<number | null>(null);
 
   // SVG dimensions
   const width = 800;
   const height = 300;
-  const padding = 60;
+  const padding = 70;
 
   // Calculate curve parameters based on context fill percentage
   // More context = deeper U (worse middle attention)
@@ -35,9 +38,105 @@ export default function UShapeAttentionCurve({
     C ${middleX + 100},${middleY} ${endX - 100},${startY} ${endX},${endY}
   `.trim();
 
+  // Animate path morphing for Safari compatibility
+  useEffect(() => {
+    // Initialize on first render
+    if (!previousPathRef.current) {
+      previousPathRef.current = curvePath;
+      setAnimatedPath(curvePath);
+      return;
+    }
+
+    // If path hasn't changed, skip animation
+    if (previousPathRef.current === curvePath) {
+      return;
+    }
+
+    // Parse path coordinates using regex
+    const parsePathCoords = (path: string): number[] => {
+      const matches = path.match(/[\d.]+/g);
+      return matches ? matches.map(Number) : [];
+    };
+
+    const startCoords = parsePathCoords(previousPathRef.current);
+    const endCoords = parsePathCoords(curvePath);
+
+    // Animation parameters
+    const duration = 600; // 600ms to match CSS timing
+    const startTime = performance.now();
+
+    // Cubic bezier easing function matching CSS cubic-bezier(0.4, 0, 0.2, 1)
+    const cubicBezier = (
+      p1x: number,
+      p1y: number,
+      p2x: number,
+      p2y: number
+    ) => {
+      // Binary search to find t for given x
+      const getTForX = (x: number): number => {
+        let t = x;
+        for (let i = 0; i < 8; i++) {
+          const slope =
+            3 * p1x * (1 - t) ** 2 +
+            6 * (p2x - p1x) * t * (1 - t) +
+            3 * (1 - p2x) * t ** 2;
+          if (slope === 0) break;
+          const currentX =
+            3 * (1 - t) ** 2 * t * p1x + 3 * (1 - t) * t ** 2 * p2x + t ** 3;
+          t -= (currentX - x) / slope;
+        }
+        return t;
+      };
+
+      return (x: number): number => {
+        if (x === 0 || x === 1) return x;
+        const t = getTForX(x);
+        return 3 * (1 - t) ** 2 * t * p1y + 3 * (1 - t) * t ** 2 * p2y + t ** 3;
+      };
+    };
+
+    const easing = cubicBezier(0.4, 0, 0.2, 1);
+
+    // Animation loop
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easing(progress);
+
+      // Interpolate coordinates
+      const interpolatedCoords = startCoords.map((start, i) => {
+        const end = endCoords[i];
+        return start + (end - start) * easedProgress;
+      });
+
+      // Reconstruct path string
+      const [m1, m2, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12] =
+        interpolatedCoords;
+      const interpolatedPath = `M ${m1},${m2} C ${c1},${c2} ${c3},${c4} ${c5},${c6} C ${c7},${c8} ${c9},${c10} ${c11},${c12}`;
+
+      setAnimatedPath(interpolatedPath);
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+      } else {
+        previousPathRef.current = curvePath;
+      }
+    };
+
+    // Start animation
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    // Cleanup on unmount or when curvePath changes
+    return () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [curvePath]);
+
   // Area fill path (curve + bottom edge for filled area)
   const areaPath = `
-    ${curvePath}
+    ${animatedPath || curvePath}
     L ${endX},${height - padding}
     L ${startX},${height - padding}
     Z
@@ -124,7 +223,7 @@ export default function UShapeAttentionCurve({
 
         {/* The U-shaped curve line */}
         <path
-          d={curvePath}
+          d={animatedPath || curvePath}
           fill="none"
           stroke={`url(#${gradientId})`}
           strokeWidth="4"
@@ -223,9 +322,10 @@ export default function UShapeAttentionCurve({
         </text>
         <text
           x={padding - 40}
-          y={middleY}
+          y={padding}
           textAnchor="middle"
           className={styles.axisLabel}
+          style={{ transform: `translateY(${middleY - padding}px)` }}
         >
           Low
         </text>
