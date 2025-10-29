@@ -113,12 +113,7 @@ interface PhaseCardProps {
   onToggle: () => void;
 }
 
-function PhaseCard({
-  phase,
-  side,
-  isExpanded,
-  onToggle,
-}: PhaseCardProps): JSX.Element {
+function PhaseCard({ phase, side, isExpanded, onToggle }: PhaseCardProps) {
   const data =
     side === 'without' ? phase.withoutGrounding : phase.withGrounding;
   const Icon = iconMap[data.icon];
@@ -158,7 +153,7 @@ function PhaseCard({
         className={`${styles.phaseDetails} ${isExpanded ? styles.phaseDetailsExpanded : ''}`}
       >
         <pre className={styles.phaseDetailsContent}>{data.details}</pre>
-        {isWithGrounding && data.tools && data.tools.length > 0 && (
+        {isWithGrounding && 'tools' in data && data.tools.length > 0 && (
           <div className={styles.toolBadges}>
             {data.tools.map((tool) => (
               <span key={tool} className={styles.toolBadge}>
@@ -172,7 +167,7 @@ function PhaseCard({
   );
 }
 
-export default function GroundingComparison(): JSX.Element {
+export default function GroundingComparison() {
   const [expandedPhases, setExpandedPhases] = useState<Set<string>>(new Set());
 
   const togglePhase = (phaseId: number, side: 'without' | 'with') => {

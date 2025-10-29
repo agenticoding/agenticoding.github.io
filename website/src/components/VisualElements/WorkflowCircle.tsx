@@ -15,7 +15,7 @@ interface Connection {
   endY: number;
 }
 
-export default function WorkflowCircle(): JSX.Element {
+export default function WorkflowCircle() {
   const centerX = 250;
   const centerY = 250;
   const radius = 140;

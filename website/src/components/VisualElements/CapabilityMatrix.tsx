@@ -60,7 +60,7 @@ function getTrustIndicator(level: 'high' | 'medium' | 'low'): {
   }
 }
 
-export default function CapabilityMatrix(): JSX.Element {
+export default function CapabilityMatrix() {
   return (
     <div className={styles.container}>
       <div className={styles.tableWrapper}>

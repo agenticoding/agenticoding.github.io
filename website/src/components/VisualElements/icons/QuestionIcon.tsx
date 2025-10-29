@@ -5,10 +5,7 @@ interface IconProps {
   size?: number;
 }
 
-export default function QuestionIcon({
-  className,
-  size = 24,
-}: IconProps): JSX.Element {
+export default function QuestionIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
       width={size}

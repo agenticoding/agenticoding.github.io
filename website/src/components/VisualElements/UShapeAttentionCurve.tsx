@@ -6,8 +6,8 @@ interface UShapeAttentionCurveProps {
 }
 
 export default function UShapeAttentionCurve({
-  initialContextFill = 60,
-}: UShapeAttentionCurveProps): JSX.Element {
+  initialContextFill = 30,
+}: UShapeAttentionCurveProps) {
   const [contextFill, setContextFill] = useState(initialContextFill);
   const [animatedPath, setAnimatedPath] = useState<string>('');
   const previousPathRef = useRef<string>('');

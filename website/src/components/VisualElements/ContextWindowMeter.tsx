@@ -9,7 +9,7 @@ interface ContextWindowMeterProps {
 export default function ContextWindowMeter({
   initialTokens = 2000,
   maxTokens = 200000,
-}: ContextWindowMeterProps): JSX.Element {
+}: ContextWindowMeterProps) {
   const [tokens, setTokens] = useState(initialTokens);
 
   const percentage = (tokens / maxTokens) * 100;
