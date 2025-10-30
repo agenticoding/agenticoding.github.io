@@ -108,6 +108,13 @@ async function generateDialogue(content, fileName) {
 
   const model = genAI.getGenerativeModel({ model: DIALOGUE_MODEL });
 
+  // Special handling for intro.md - add self-aware meta-commentary
+  const isIntro = fileName === 'intro';
+  const metaCommentary = isIntro ? `
+
+SPECIAL INSTRUCTIONS FOR THIS EPISODE:
+This is the course introduction. When discussing the section about how the course was developed using AI (including the podcast itself), have Alex and Sam briefly acknowledge in a natural, professional way that they themselves are AI-generated voices. This should feel like a thoughtful meta-moment, not gimmicky. Keep it concise - one or two exchanges where they note the self-referential nature of AI-generated hosts discussing AI-generated content. Make it feel authentic to how senior engineers would react to this realization.` : '';
+
   const prompt = `You are converting technical course content into a natural, engaging two-person podcast conversation.
 
 Speakers:
@@ -122,7 +129,7 @@ Guidelines:
 - Keep technical accuracy - don't dumb down the content
 - Make it engaging but professional
 - Break down complex concepts through dialogue
-- Reference real-world scenarios and examples
+- Reference real-world scenarios and examples${metaCommentary}
 
 Technical Content Title: ${fileName}
 

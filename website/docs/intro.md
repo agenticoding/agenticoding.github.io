@@ -64,8 +64,18 @@ Most importantly: you'll know **when to use agents** and **when to write code yo
 ## Prerequisites
 
 - **Experience:** 3+ years professional software engineering
-- **Tools:** Access to a CLI coding agent (Claude Code, Aider, Cursor, or similar)
+- **Tools:** Access to a CLI coding agent (Claude Code, OpenAI Codex, Copilot CLI, etc)
 - **Mindset:** Willingness to unlearn "AI as teammate" and adopt "AI as tool"
+
+## About This Course's Development
+
+**This course practices what it teaches.** The entire curriculum—content structure, lesson progression, code examples, and documentation—was developed using the same AI-assisted techniques and workflows you'll learn here.
+
+Every module was planned, researched, drafted, and refined through systematic prompting, agentic research, and iterative validation. The process followed the exact methodology outlined in the course: breaking work into agent-appropriate tasks, grounding in architectural context, and validating output critically.
+
+**The podcast version of each lesson** was generated using Claude Code and Google's Gemini API—converting technical content into conversational dialogue, then synthesizing multi-speaker audio. The voices you hear (Alex and Sam) are AI-generated, as is their script. Even this acknowledgment exists because we applied the principle of transparency in AI-assisted work.
+
+This isn't marketing. It's validation. If these techniques can produce production-grade training material on their own application, they're robust enough for your codebase.
 
 ---
 
