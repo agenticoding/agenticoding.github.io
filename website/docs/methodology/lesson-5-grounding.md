@@ -4,10 +4,8 @@ sidebar_label: 'Lesson 5: Grounding'
 title: 'Grounding: Anchoring Agents in Reality'
 ---
 
-{/_ TODO: Create these visual components
 import UShapeAttentionCurve from '@site/src/components/VisualElements/UShapeAttentionCurve';
 import GroundingComparison from '@site/src/components/VisualElements/GroundingComparison';
-_/}
 
 LLMs have a fundamental limitation: they only "know" what's in their training data (frozen at a point in time) and what's in their current context window (~200K/400K tokens for Claude Sonnet 4.5 / GPT-5 respectively). Everything else is educated guessing.
 
@@ -19,11 +17,7 @@ This lesson covers the engineering techniques that turn agents from creative fic
 
 **Scenario:** You're debugging an authentication bug in your API.
 
-{/_ TODO: Add GroundingComparison visual component here showing side-by-side comparison _/}
-**Without grounding:** Generic advice like "Check your JWT validation logic"
-**With grounding:** Specific fix referencing your actual code: "In src/auth/jwt.ts:45, the validateJWT() function isn't checking token expiration"
-
-The difference is clear: ungrounded responses are generic and potentially wrong. Grounded responses reference your actual code and current best practices.
+<GroundingComparison />
 
 ## RAG: Retrieval-Augmented Generation
 
@@ -84,7 +78,8 @@ Claude Sonnet 4.5 has a 200K token context window. In practice, you'll get relia
 
 ### The Problem
 
-{/_ TODO: Add UShapeAttentionCurve visual component here showing attention dropoff _/}
+<UShapeAttentionCurve />
+
 **The U-shaped attention curve:** Information at the **beginning** and **end** of your context gets strong attention. Information in the **middle** gets skimmed or missed entirely. It's not a bug—it's how transformer attention mechanisms work under realistic constraints.
 
 When you retrieve documentation and code chunks directly in your orchestrator context, they rapidly fill the window with search results, pushing critical constraints into that ignored middle. A few semantic searches return 10+ code chunks each (30K tokens), web docs add more (15K tokens)—your context fills with search mechanics before research completes, and the orchestrator forgets initial constraints.
