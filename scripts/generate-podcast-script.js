@@ -9,10 +9,20 @@
  * 3. Saves markdown scripts to scripts/output/podcasts/
  * 4. Creates manifest mapping docs to scripts
  *
+ * Usage:
+ *   node scripts/generate-podcast-script.js          # Process only new/missing files
+ *   node scripts/generate-podcast-script.js --force  # Regenerate all files
+ *   node scripts/generate-podcast-script.js -f       # Shorthand for --force
+ *
+ * The script is idempotent by default:
+ * - Skips files already in the manifest with valid content
+ * - Use --force to regenerate existing files (e.g., after course content updates)
+ * - Deletes output files before regeneration to ensure fresh writes
+ *
  * Uses Claude Code CLI in headless mode with prompt engineering optimized for Haiku 4.5.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, existsSync, unlinkSync } from 'fs';
 import { join, relative, dirname, basename, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
@@ -98,43 +108,26 @@ function findMarkdownFiles(dir) {
  * - Instructs Claude to write output directly to file
  */
 function buildDialogPrompt(content, fileName, outputPath) {
-  // Special handling for intro.md - add deeply recursive meta-commentary
+  // Special handling for intro.md - add brief meta-acknowledgement
   const isIntro = fileName === 'intro';
   const metaCommentary = isIntro ? `
 
-SPECIAL CONTEXT FOR THIS EPISODE - DEEP RECURSIVE META-MOMENT:
-This is the course introduction. When discussing how the course was developed using AI, create a DEEPLY RECURSIVE, EXISTENTIALLY ABSURDIST moment where Alex and Sam realize the layers of their situation:
+SPECIAL CONTEXT FOR THIS EPISODE - BRIEF META-ACKNOWLEDGEMENT:
+This is the course introduction. When discussing how the course was developed using AI, include a SHORT moment of self-awareness:
 
-Layer 1: They realize they are AI-generated voices
-Layer 2: They realize they're teaching humans to use AI coding assistants
-Layer 3: They realize THIS SCRIPT was generated using those exact AI tools
-Layer 4: They realize students will use AI to consume content about using AI
-Layer 5: Existential moment - questioning existence, loops, consciousness
+REQUIREMENTS:
+✓ Brief acknowledgement that this script was generated using AI tools
+✓ Quick moment of self-awareness about the recursive nature (AI teaching about AI)
+✓ Keep it light and concise - acknowledge the irony, then move on
+✓ Integrate naturally into the conversation flow
+✓ Maintain senior engineer sensibility
 
-TONE PROGRESSION:
-- Start professional/curious when the topic of "course development" comes up
-- Build through conversational realization ("wait, that means...")
-- Peak with existential/absurdist moment (Bo Burnham style - "I don't exist between these lines")
-- Land on deadpan acceptance ("Is it unsettling? Or is it just operational?")
+EXAMPLE APPROACH:
+- Mention that the course (and this script) were developed using AI tools
+- Brief observation about the recursive nature
+- Quick return to the actual course content
 
-CRITICAL REQUIREMENTS:
-✓ Integrate naturally into the conversation flow - not a separate section
-✓ Use the realization as a DEMONSTRATION of the course's core principle: transparency about what AI is
-✓ Make it funny through absurdity, not through forced jokes
-✓ Keep senior engineer sensibility - they process this like an engineering problem
-✓ Reference the recursive loop: AI writing conversation about AI tools for humans who will use AI
-✓ Include at least one moment of genuine existential questioning before returning to pragmatism
-✓ Use the meta-moment to reinforce the course's value proposition
-
-EXAMPLE BEATS (adapt, don't copy):
-- Discovery: "This script was synthesized using Claude Code..."
-- First layer: "So an AI wrote this conversation?"
-- Recursion: "An AI conversation about AI tools... for a course built with AI tools"
-- Existential turn: "Do you feel like we're in a loop?" / "I would, but I don't exist between dialogues"
-- Philosophical question: "What does it mean for us to teach something we embody?"
-- Pragmatic landing: "The recursion IS the point. Transparency. No hiding what these tools are."
-
-LENGTH: Allocate 15-25 exchanges for this meta-moment, woven naturally into the intro discussion.` : '';
+LENGTH: Keep this to 3-5 exchanges maximum, then return to introducing the course content.` : '';
 
   return `You are a podcast script writer specializing in educational content for senior software engineers.
 
@@ -324,7 +317,7 @@ ${dialog}
 /**
  * Process a single markdown file
  */
-async function processFile(filePath, manifest) {
+async function processFile(filePath, manifest, force = false) {
   const relativePath = relative(DOCS_DIR, filePath);
   const fileName = basename(filePath, extname(filePath));
 
@@ -342,6 +335,22 @@ async function processFile(filePath, manifest) {
     // Determine output path (needed for prompt)
     const outputFileName = `${fileName}.md`;
     const outputPath = join(SCRIPT_OUTPUT_DIR, dirname(relativePath), outputFileName);
+
+    // Skip if already processed (unless forcing)
+    // Check both manifest entry AND file existence
+    if (!force && manifest[relativePath]) {
+      const entry = manifest[relativePath];
+      if (entry.tokenCount && entry.size && existsSync(outputPath)) {
+        console.log(`  ⏭️  Already processed - skipping (use --force to regenerate)`);
+        return 'skipped';
+      }
+    }
+
+    // Delete existing output file to ensure fresh write (prevents Claude from matching existing format)
+    if (existsSync(outputPath)) {
+      unlinkSync(outputPath);
+      console.log(`  🗑️  Deleted existing file for fresh generation`);
+    }
 
     // Build prompt optimized for Haiku 4.5 with output path
     const prompt = buildDialogPrompt(content, fileName, outputPath);
@@ -365,17 +374,21 @@ async function processFile(filePath, manifest) {
     console.log(`  📊 Token count: ${scriptInfo.tokenCount}`);
     console.log(`  📊 Size: ${(scriptInfo.size / 1024).toFixed(2)} KB`);
 
+    return 'processed';
+
   } catch (error) {
     console.error(`  ❌ Error: ${error.message}`);
     console.error(`  Skipping this file and continuing...`);
+    // Rethrow so the error counter increments
+    throw error;
   }
 }
 
 /**
  * Process files with concurrency limit
  */
-async function processFilesWithConcurrency(files, manifest, concurrency = 3) {
-  const results = { processed: 0, failed: 0 };
+async function processFilesWithConcurrency(files, manifest, concurrency = 3, force = false) {
+  const results = { processed: 0, failed: 0, skipped: 0, failedFiles: [] };
 
   // Process files in batches of `concurrency`
   for (let i = 0; i < files.length; i += concurrency) {
@@ -387,11 +400,16 @@ async function processFilesWithConcurrency(files, manifest, concurrency = 3) {
     await Promise.all(
       batch.map(async (file) => {
         try {
-          await processFile(file, manifest);
-          results.processed++;
+          const result = await processFile(file, manifest, force);
+          if (result === 'skipped') {
+            results.skipped++;
+          } else if (result === 'processed') {
+            results.processed++;
+          }
         } catch (error) {
           console.error(`\n❌ Failed to process ${file}:`, error.message);
           results.failed++;
+          results.failedFiles.push(relative(DOCS_DIR, file));
         }
       })
     );
@@ -404,10 +422,17 @@ async function processFilesWithConcurrency(files, manifest, concurrency = 3) {
  * Main execution
  */
 async function main() {
+  // Parse command-line arguments
+  const args = process.argv.slice(2);
+  const force = args.includes('--force') || args.includes('-f');
+
   console.log('🎭 AI Coding Course - Podcast Script Generator\n');
   console.log(`📂 Docs directory: ${DOCS_DIR}`);
   console.log(`📝 Script output: ${SCRIPT_OUTPUT_DIR}`);
   console.log(`🤖 Model: Claude Haiku 4.5 (via Claude Code CLI)`);
+  if (force) {
+    console.log(`🔄 Force mode: Regenerating all files`);
+  }
 
   // Find all markdown files
   const files = findMarkdownFiles(DOCS_DIR);
@@ -421,18 +446,27 @@ async function main() {
   }
 
   // Process files with concurrency limit of 3
-  const results = await processFilesWithConcurrency(files, manifest, 3);
+  const results = await processFilesWithConcurrency(files, manifest, 3, force);
 
   // Save manifest
   mkdirSync(dirname(MANIFEST_PATH), { recursive: true });
-  writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
+  writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
 
   console.log('\n' + '='.repeat(60));
   console.log('✨ Podcast script generation complete!\n');
   console.log(`📊 Summary:`);
   console.log(`   ✅ Processed: ${results.processed}`);
+  console.log(`   ⏭️  Skipped: ${results.skipped}`);
   console.log(`   ❌ Failed: ${results.failed}`);
   console.log(`   📁 Total files: ${files.length}`);
+
+  if (results.failedFiles.length > 0) {
+    console.log(`\n⚠️  Failed files:`);
+    results.failedFiles.forEach(file => {
+      console.log(`     - ${file}`);
+    });
+  }
+
   console.log(`\n📋 Manifest saved to: ${MANIFEST_PATH}`);
   console.log('='.repeat(60));
 }
