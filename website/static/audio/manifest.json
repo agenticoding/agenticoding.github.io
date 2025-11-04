@@ -1,10 +1,12 @@
 {
   "intro.md": {
     "audioUrl": "/audio/intro.wav",
-    "size": 25340730,
+    "size": 21067336,
     "format": "audio/wav",
-    "tokenCount": 1870,
-    "generatedAt": "2025-10-31T14:28:28.671Z"
+    "tokenCount": 1557,
+    "chunks": 2,
+    "generatedAt": "2025-11-04T07:30:45.039Z",
+    "scriptSource": "intro.md"
   },
   "practical-techniques/lesson-10-debugging.md": {
     "audioUrl": "/audio/practical-techniques/lesson-10-debugging.wav",
@@ -43,24 +45,30 @@
   },
   "understanding-the-tools/lesson-1-intro.md": {
     "audioUrl": "/audio/understanding-the-tools/lesson-1-intro.wav",
-    "size": 24920250,
+    "size": 28640342,
     "format": "audio/wav",
-    "tokenCount": 1946,
-    "generatedAt": "2025-10-31T14:47:21.736Z"
+    "tokenCount": 2160,
+    "chunks": 3,
+    "generatedAt": "2025-11-04T08:12:38.915Z",
+    "scriptSource": "understanding-the-tools/lesson-1-intro.md"
   },
   "understanding-the-tools/lesson-2-understanding-agents.md": {
     "audioUrl": "/audio/understanding-the-tools/lesson-2-understanding-agents.wav",
-    "size": 31446330,
+    "size": 32850902,
     "format": "audio/wav",
-    "tokenCount": 2541,
-    "generatedAt": "2025-10-31T14:49:21.820Z"
+    "tokenCount": 2314,
+    "chunks": 3,
+    "generatedAt": "2025-11-04T08:23:14.760Z",
+    "scriptSource": "understanding-the-tools/lesson-2-understanding-agents.md"
   },
   "methodology/lesson-3-high-level-methodology.md": {
     "audioUrl": "/audio/methodology/lesson-3-high-level-methodology.wav",
-    "size": 31446330,
+    "size": 36654422,
     "format": "audio/wav",
-    "tokenCount": 2799,
-    "generatedAt": "2025-10-31T14:29:54.289Z"
+    "tokenCount": 2338,
+    "chunks": 3,
+    "generatedAt": "2025-11-04T09:37:11.759Z",
+    "scriptSource": "methodology/lesson-3-high-level-methodology.md"
   },
   "methodology/lesson-4-prompting-101.md": {
     "audioUrl": "/audio/methodology/lesson-4-prompting-101.wav",
