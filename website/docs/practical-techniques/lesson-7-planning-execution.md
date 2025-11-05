@@ -259,7 +259,7 @@ Pragmatism beats purism. These are all just tools—choose based on efficiency, 
 
 - **Git worktrees enable true parallel agent workflows** - Multiple working directories, separate branches, isolated agent contexts. Run 3 agent instances on different features simultaneously with zero interference.
 
-- **Mix CLI and UI tools pragmatically** - IDEs for navigation and complex refactoring, CLI for quick edits and parallel session management. Use the best tool for each task, not ideology.
+- **Mix CLI and UI tools pragmatically** - IDEs for navigation, viewing and quick edits, CLI for refactors and parallel session management. Use the best tool for each task, not ideology.
 
 ---
 
