@@ -7,185 +7,217 @@ speakers:
   - name: Sam
     role: Senior Engineer
     voice: Charon
-generatedAt: 2025-11-02T09:12:56.688Z
+generatedAt: 2025-11-04T07:19:44.171Z
 model: claude-haiku-4.5
-tokenCount: 5332
+tokenCount: 5710
 ---
 
-Alex: Code review is fascinating because it's simultaneously one of the highest-leverage activities a team can do and one of the most often done poorly. When it works, it's catching bugs before they hit production, maintaining architectural consistency, and spreading knowledge across the team. When it doesn't work, it becomes this tedious process where reviewers nitpick style issues while missing actual security flaws.
+Alex: Let's talk about code review. Most engineers treat it as a formality - you push code, someone glances at it, they approve. But code review is actually one of the highest-leverage activities you can do. When it works well, it catches bugs, maintains architecture, spreads knowledge. When it's broken, it's pure busywork on trivial things while real problems slip through.
 
-Sam: Yeah, I've been on both sides of that. The worst reviews I've done are when I'm drowning in trivial formatting comments someone could have caught with a linter, and meanwhile there's a real problem nobody's catching. So where's the leverage point here with AI?
+Sam: I've definitely experienced both. I've spent hours in reviews discussing brace placement while missing a complete misunderstanding of the business logic. But here's what I'm curious about - how does AI actually fit into this? Isn't code review fundamentally about understanding intent?
 
-Alex: The insight is pretty straightforward: AI is exceptionally good at the mechanical aspects of code review. It can spot SQL injection vulnerabilities, flag missing error handling, find duplicate code, catch performance anti-patterns like N+1 queries. All the things that are tedious to check manually but mostly objective. And if you automate those checks, you free up human reviewers to focus on the stuff that actually requires judgment.
+Alex: That's the right instinct, but there's a critical distinction. Code review has two very different jobs happening simultaneously, and we conflate them. One job is mechanical - does this code have SQL injection vulnerabilities? Is there an N+1 query? Are there unchecked errors? The other job is contextual - does this actually solve the problem? Does it fit our architecture?
 
-Sam: The stuff AI can't do as well.
+Sam: Ah, so you're saying AI should handle the first one so humans can focus on the second?
 
-Alex: Exactly. Whether the code actually solves the business problem. Whether it fits the architecture. Whether there are UX implications the engineer didn't consider. Whether it creates unnecessary coupling or over-engineering. That's where human judgment matters.
+Alex: Exactly. And this changes the entire workflow. Most teams do code review wrong because they start with the assumption that the code is ready for review. They submit to CI, run tests, then a human reads it. By then, you've already wasted time on problems that should have been caught earlier.
 
-Sam: So the workflow is basically: run AI first, then humans focus on architecture and context?
+Sam: Earlier like when? During development?
 
-Alex: Not quite, and this is important. The most effective code review actually happens before the PR even exists. Before you commit. You do a pre-commit review with your AI agent, catch the low-hanging fruit yourself, iterate locally, and then when you submit, you're already confident about the basics. The reviewer can focus on the hard parts.
+Alex: Before you even commit. This is the self-review phase, and it's where AI has the biggest impact. You've finished writing code, you've tested it locally - now before you commit, you run it past an AI agent for a critical review.
 
-Sam: That sounds efficient, but doesn't that mean you're doing the review work twice? Once locally with AI, once when someone reviews the PR?
+Sam: How thorough can it actually be? I mean, we're talking about spotting security issues, not just formatting.
 
-Alex: You're not doing it twice. You're doing different things. Your pre-commit review catches syntax errors, security anti-patterns, performance issues, error handling gaps. All the things that slow down a reviewer. Then when a human reviewer looks at it, they're not distracted by those problems. They can actually think about whether this belongs in this module, whether it's going to create problems under load, whether the UX makes sense.
+Alex: Pretty thorough, actually. An AI agent can identify SQL injection risks, XSS vulnerabilities, auth bypasses, sensitive data exposure. It spots performance patterns like N+1 queries or inefficient loops. It catches missing try-catch blocks, unchecked return values, silent failures. It flags code smells - duplicated logic, god objects, tight coupling. All in seconds.
 
-Sam: OK, so let's talk about what AI actually catches in a pre-commit review. Because I want to understand the boundary. What can it reliably find?
+Sam: But that still feels surface-level compared to a human reading the code carefully.
 
-Alex: Security issues are pretty clear cut. SQL injection, XSS, auth bypasses, hardcoded credentials, sensitive data being logged. Anything that matches a known vulnerability pattern. Performance patterns are similar - the AI can spot the classic mistakes. N+1 queries, unnecessary loops, algorithms with bad complexity.
+Alex: The key word is "surface." An AI reads the code carefully in the mechanical sense. It compares against known patterns. What it can't do is understand business context. Like, is this actually implementing the requirement? Does it belong in this module? Will it confuse users? Does it behave correctly during deployments? Those are judgment calls that require human experience.
 
-Sam: Because those are pattern matches.
+Sam: So the workflow is basically: write code, self-review with AI, fix the issues it finds, then submit to a human reviewer?
 
-Alex: Right. Error handling too. Missing try-catch blocks, unchecked return values, silent failures. Code smells like duplicated logic, god objects, tight coupling. Style inconsistencies. All of that is pattern-matchable and fixable before a human even sees it.
+Alex: Yes, but with a specific structure. You generate what we call "atomic commits" - the smallest complete unit of change. One logical change per commit. Tests pass. Can be reverted cleanly. This is important because your commit message becomes part of your codebase's documentation.
 
-Sam: And the business logic stuff - "does this actually solve the problem" - that requires context a general AI doesn't have?
+Sam: Documentation through git history? I've worked with teams that just have one giant commit message per PR.
 
-Alex: Exactly. That's the thing. The AI can tell you "this function has a 5-argument parameter list and uses global state," but it can't tell you whether that's actually wrong for your system. It can't tell you if the requirement was actually about limiting requests or if this is solving a different problem. It can't tell you if this change is going to confuse your users or cause operational issues in production.
+Alex: Which is throwing away an incredibly useful tool. Good commits tell the story of why changes happened. Bad commits are noise. Think about six months from now when you're using git bisect to track down when a bug appeared. Wouldn't you want each commit to explain clearly what changed and why?
 
-Sam: So in practice, what does the pre-commit review workflow look like? Do you literally prompt the AI to review your code before you commit?
+Sam: Absolutely. So how do you keep commits atomic without ending up with a hundred commits per PR?
 
-Alex: Yes. And it's faster than waiting for CI to fail. You write some code, you get to a point where you think it's done, you run your AI agent through a structured review. You ask it to look for security issues, performance problems, error handling. The AI runs in seconds and gives you a report. Most of the time you'll find two or three things to fix before commit. Every once in a while it'll find something critical that would have made it to production.
+Alex: You need a clear structure. The industry standard is Conventional Commits - simple format that semantically versioning integrates with. Each commit type maps to a version bump. feat is a minor version, fix is a patch version, refactor doesn't bump anything because behavior doesn't change.
 
-Sam: What does "structured review" mean here? Are you using some kind of standardized prompt?
+Sam: And the AI helps you generate these commit messages?
 
-Alex: That's the key point. You can't just say "review my code." You get boilerplate nonsense. You need to be specific. Check for SQL injection. Check for unhandled promise rejections. Check for race conditions in concurrent access. Make it architectural if you can - "does this layer know too much about that layer?" That kind of specificity gets better results.
+Alex: It should, but most AI default outputs are useless without guidance. A typical bad commit message is "update code" or "fixes issues." Completely unhelpful. A good one says something like "fix: prevent password reset from invalidating existing sessions - adds session invalidation before token generation, closes security-1543."
 
-Sam: And you're iterating based on what the AI finds?
+Sam: That's worlds different. You know exactly what the problem was and what it fixed.
 
-Alex: Absolutely. The AI finds an issue, you fix it, you re-run the AI to make sure you didn't introduce anything else. You might do that cycle two or three times before you commit. It's cheap - a few seconds per cycle - and it beats the cost of shipping broken code or waiting for a human reviewer to catch it.
+Alex: Right. And you can trace it to the ticket. More importantly, when someone's debugging in three years and they git log through this area, they understand the intent. The AI can generate this, but you need to prompt it correctly. You have to give it context - what ticket is this addressing? What's the security or performance implication? Without that, it just makes up generic messages.
 
-Sam: That makes sense for things the AI is good at. Let me shift to the commit message side. You mentioned earlier that git history is documentation. That's something I definitely see teams mess up. How does AI fit there?
+Sam: Let me ask about PRs though. That's where I spend most of my review time. Someone submits a PR with four or five commits. How do you review that efficiently with AI?
 
-Alex: Commit messages are this weird thing where everyone knows they're important, but most teams are terrible at them. You see commits like "fix stuff" or "update code" that are completely useless. Or the opposite - these giant walls of text that nobody actually reads. The Conventional Commits format exists specifically to solve this: a structured format that enables automation and clarity.
+Alex: Same principle - separate the mechanical checks from the judgment calls. You ask the AI to analyze the PR for security issues, performance patterns, error handling, test coverage, style consistency. That's step one and it takes seconds. The AI outputs a checklist of findings.
 
-Sam: Yeah, I've seen that. `feat:` for features, `fix:` for bug fixes, `docs:` for documentation. That kind of thing.
+Sam: And step two is the human review?
 
-Alex: Right. And the key is that the commit message isn't just for humans. It's for automation. Your version bumping can be automated if your commits follow the format. Your changelog can be auto-generated. Your release notes can be built from commit messages. But more importantly, when you're looking at git history six months later trying to understand why a particular line of code exists, the commit message is your only resource. If it says "fix bug," that's useless. If it says "fix SQL injection in user export endpoint where untrusted input was passed directly to query builder," that's actually useful.
+Alex: Step two is you focusing on what actually matters. Did this solve the problem? Does the architecture make sense? Are there UX edge cases we're missing? Could this cause issues in production? What's the operational impact? Those questions require context that code itself doesn't tell you.
 
-Sam: So the structure matters because it carries information.
+Sam: That feels cleanly separated. But I'm wondering about the false positive rate. How often does AI flag something as a security issue when it's actually fine?
 
-Alex: Exactly. And this is where AI comes in. You can ask your AI agent to generate a commit message, but by default you'll get something mediocre. You need to be specific. Tell the AI what problem this solves, what the security implication is, what the business context is. If you've got a ticket number, reference it. Then the AI can generate something actually useful.
+Alex: Depends on how you prompt it. If you say "check for security issues," you'll get a lot of noise - every use of a string flagged as potential injection. If you give it context - "this is a TypeScript GraphQL resolver using an ORM" - it's much smarter. Context matters enormously.
 
-Sam: Let me push back on that though. If you're spending time crafting a detailed prompt to get the AI to generate a good commit message, aren't you just doing the work yourself anyway? Why not just write it?
+Sam: So it's almost like you need to train it on your specific tech stack and patterns?
 
-Alex: Fair point. But here's the thing - you do the thinking anyway. You're already mentally modeling what the change is and why you made it. The AI prompt forces you to externalize that thinking. And then the AI formats it correctly, makes sure it follows the convention, keeps it concise. It's not about the AI thinking - it's about the AI being a structured wrapper around thinking you're already doing.
+Alex: Not train in the machine learning sense, but yes - you're narrowing the scope and giving it constraints. "Check this Python Flask endpoint for SQL injection, remember we use SQLAlchemy" is way better than just "check for security issues." The AI is smarter when it's not trying to be universal.
 
-Sam: So it's more about consistency and format than about the AI's creativity.
+Sam: Let's go back to something you mentioned earlier - the pre-commit workflow. Walk me through that practically. I've written some code, it's tested locally. What's the AI interaction look like?
 
-Alex: Totally. And once you've done a few of these, you build templates. "Here's what a good security fix commit message looks like. Here's what a good refactor looks like." The AI fills in the specifics based on your code diff.
+Alex: You prompt it to perform a critical review. You give it the changed code and context about what it does. The AI reads it like a security auditor would - what could go wrong here? What patterns might cause problems? Then it outputs findings. You read those findings, and most of them should be trivial to fix or dismiss based on context.
 
-Sam: OK, so let's talk about atomic commits. That seems like a separate concern from commit messages. What's the principle there?
+Sam: And you're doing this before you even stage the commit?
 
-Alex: Atomic commit is the smallest complete unit of change. One logical thing. Tests pass. Can be reverted cleanly. The reason it matters is purely practical. If you have a PR that's a hundred commits but they're all atomic, a reviewer can understand each commit in context. If it's a hundred files changed in one commit, nobody can review that effectively. It's also about future archaeology. Six months from now when you're trying to understand why something is the way it is, git bisect will point you to the exact commit. If that commit is atomic, you understand immediately. If it's a giant monolith, you're stuck.
+Alex: Before you even think about pushing. This is your quality gate. You catch issues that would otherwise go to CI, waste reviewer time, or worse - ship to production. It's much cheaper to fix them here.
 
-Sam: But doesn't that argue for really small commits? Like, commit every time you compile something?
+Sam: That makes sense from an efficiency standpoint. But I'm curious about the judgment calls again. When you're reading the AI's findings, how do you know if it's actually right? Like, it flags something as a security issue - how do you validate that?
 
-Alex: There's a balance. The goal is logical completeness. A feature might require a database migration, a backend API change, and a frontend UI change. That's three commits if it makes sense to do them independently. But within each commit, everything is self-contained and the tests pass. You're not committing half a feature.
+Alex: Good question, and honestly, this is where your experience matters. You have to think critically about what the AI suggests. It might flag a regex as vulnerable to ReDoS - is that actually a problem given your input constraints? It might suggest an N+1 query - but maybe that query runs once per request and isn't the bottleneck. The AI gives you information, but you have to interpret it.
 
-Sam: What's the practical workflow for that? How do you actually manage that when you're developing?
+Sam: So it's not blindly accepting what the AI says?
 
-Alex: This is where understanding git staging is helpful. You're working on multiple things. You git add the database migration, commit that with a clear message. Then you git add the backend changes, commit those. The frontend separately. Each commit builds on the previous one. And the workflow here is that AI can help you reason about what's atomic and what isn't. You can ask the AI, "Are these changes logically separate?" It can help you figure out how to break them up.
+Alex: Never. The AI is like a thorough but sometimes paranoid reviewer who doesn't know your codebase. It catches things you'd miss, but it also might raise concerns that aren't real problems. You're the filter. You apply judgment.
 
-Sam: What about when things are actually intertwined? Like, you genuinely can't test the frontend change without the backend change?
+Sam: What about the iterative part? You get feedback from the AI, you fix things, do you ask it to re-review?
 
-Alex: Then they go in the same commit. The atomic principle isn't about being artificially small. It's about logical coherence. And honestly, if you're finding that things are deeply intertwined, that might be a sign about your architecture. If a UI change can't be tested without a backend change, maybe there's coupling there that shouldn't exist.
+Alex: Depends on the changes. If you made targeted fixes to the issues it flagged, probably not necessary - you can reason through it yourself. If you made significant changes to the code structure, it's worth asking the AI to review again. The cost is minimal and the value might be high.
 
-Sam: Fair point. So the workflow is basically: develop, stage changes logically, commit with meaningful messages. And AI helps at the staging and commit message steps?
+Sam: Let me shift to reviewing other people's code. I suspect this is where a lot of teams might get value because reviews are so expensive - everyone waiting on someone to carefully read code.
 
-Alex: Yes. AI can help you think through what's atomic. AI can help you generate messages. What AI doesn't do is think about whether this is actually a good idea architecturally. That's still you.
+Alex: Yeah, this is huge. Most code reviews are bottlenecks because the reviewer is doing too much mechanical work. They're checking whether variables are named consistently, whether error handling is complete, whether there are obvious security flaws. That work could be automated.
 
-Sam: Let's move to pull request review then, because that's where the bigger picture stuff matters. You've got a teammate's code. You're reviewing it. How does AI fit into that process?
+Sam: But you still have to have a human review because of architectural concerns, right?
 
-Alex: AI handles the mechanical checks. You do the thinking. The PR comes in, you ask your AI to do a security audit, a performance analysis, check error handling, make sure tests pass. All the stuff that takes a lot of careful reading. The AI generates a report. Meanwhile, you're reading the actual code and thinking about whether this makes sense for the system. Does it belong in this module? Does it create unnecessary coupling? What happens if this crashes under load? What's the UX experience if this fails?
+Alex: Absolutely. But imagine this workflow: a teammate submits a PR. Before you even look at it, the AI does a pass. It flags any security issues, performance patterns, test coverage gaps, style inconsistencies. It generates a checklist. Now when you review, you already have that information. You can skip the mechanical checks and focus on whether this actually makes sense architecturally.
 
-Sam: So you're not replacing the human review, you're just paralleling the mechanical parts?
+Sam: That would save so much time. But there's a trust question - if the AI flags something as secure, can you trust it?
 
-Alex: Exactly. The human and AI are doing different things simultaneously. By the time you're done thinking about architecture, the AI's done flagging syntax errors and security issues. Then you synthesize. The AI finds five things, you find three things, you have eight things to address. Some of them might be style fixes the AI caught, some might be serious architectural issues you caught.
+Alex: No. You still need human judgment. AI is good at identifying common vulnerability patterns - SQL injection, hardcoded secrets, missing validation. It's bad at context-dependent security like authentication flow or authorization logic. You should still carefully review the actual security-critical paths.
 
-Sam: And then you're giving feedback. Does AI help there too?
+Sam: So it's like... the AI is a really good junior developer doing the first pass of code review, and you're the experienced reviewer doing the critical thinking?
 
-Alex: Yeah, if you're drafting review comments. You can ask the AI to help you write feedback that's constructive and specific. Not "this is bad," but "this pattern tends to create coupling because... here's a better approach... here's a link to the docs on this." That takes time to write well. The AI can help.
+Alex: That's a good mental model. The junior developer catches the obvious stuff. You catch the subtle mistakes and the architectural problems that require understanding what the system is supposed to do.
 
-Sam: But you still need to approve the approach before you write it?
+Sam: Let me ask about a concrete scenario. Someone submits a PR adding a password reset feature. There's probably a lot of security-sensitive stuff in there. How would you use AI in reviewing that?
 
-Alex: Absolutely. The AI's suggestion might be technically correct but not fit your team's conventions. Or it might be over-engineered. You read it, think about whether it's actually the feedback you want to give, potentially revise it. Then you post it.
+Alex: Perfect example because it's loaded with both mechanical issues and judgment calls. You'd ask the AI to perform a security audit specifically on authentication and password handling. That's a narrow scope so it's focused. The AI would probably find several critical issues - maybe no password hashing, maybe the reset token doesn't expire, maybe no rate limiting on the endpoint.
 
-Sam: OK, so let me test my understanding. The checklist the AI handles - code compiles, no obvious security holes, error handling exists, no hardcoded secrets, performance patterns are sound, style is consistent, tests exist. That's the AI part?
+Sam: That's the mechanical layer.
 
-Alex: Right. Those are mostly objective. Either there's error handling or there isn't. Either the SQL looks safe or it doesn't. Style either matches or it doesn't.
+Alex: Right. Then you, as the human reviewer, ask different questions. Is the product spec actually being met? What happens if the email address doesn't exist - does the endpoint leak information that users exist? Are we sending a notification to the old email address so users know their password changed? Is there session invalidation or do existing sessions stay active? Those are product and operational questions.
 
-Sam: And the human part is whether the business requirements are met, whether it fits the architecture, whether the UX is sensible, whether there's over-engineering, whether the scope is appropriate, whether the rollback strategy is clear?
+Sam: Those are great questions that I wouldn't necessarily think to ask if I was just reviewing code mechanically.
 
-Alex: Exactly. Those require context. You need to know what the requirement was. You need to understand the system design. You need to think about operational concerns. That's not something you can pattern-match.
+Alex: Exactly. Because you spent your attention on security mechanics, you didn't have bandwidth for those. The AI doing the first pass actually frees you to think about the system holistically. You become a better reviewer.
 
-Sam: So where's the boundary getting fuzzy? Like, what's something AI might catch but isn't always right about?
+Sam: What about the case where the AI actually gets something wrong? Like, flags something as insecure that isn't? Does that create bad habits in teams?
 
-Alex: Architectural decisions, actually. The AI might see a pattern and flag it as "this looks coupled" or "this is a code smell." But the AI doesn't know whether that coupling is necessary, whether this is a boundary condition where the pattern makes sense. It can surface questions, but it can't answer them.
+Alex: It can. Which is why you have to be critical. The AI might flag every database query as potential SQL injection if it doesn't understand your ORM. Teams that blindly trust that will start making bad decisions - avoiding ORMs, adding unnecessary escaping, making code harder to read. That's when AI makes you worse.
 
-Sam: That's interesting. So the AI is good at identifying candidates for further review, not at making the judgment call itself?
+Sam: So it really comes down to how you use it.
 
-Alex: That's a really good way to put it. The AI can say "this class has twenty methods and references five different modules - that might be a god object." A human then evaluates: "Is it actually a problem? Or is this the right abstraction for this particular domain?" The AI can point out the pattern faster than a human might notice it, but it can't make the judgment.
+Alex: How you use it and how well you prompt it. Give the AI good context, narrow the scope to what matters, review its output critically. Then it's genuinely useful. Generic "check this for security" prompts on unfamiliar code - that's where AI reviews cause problems.
 
-Sam: What about a scenario where you're under time pressure and you just want to ship code? Do you still do the full pre-commit AI review?
+Sam: Let's talk about something else - commit atomicity. You mentioned that commits should be atomic, but in practice, how do you know where to split? Like, if you're implementing a feature that needs database changes, API endpoints, and frontend updates, is that one commit or three?
 
-Alex: Yes. Actually, especially then. When you're under time pressure, you're more likely to make mistakes. Running a quick AI security audit takes thirty seconds. It's insurance. If you skip it and ship something broken, you've lost days. The time investment is zero compared to the cost of fixing it later.
+Alex: It's three, ideally. Database schema migration, API implementation, frontend integration. Each one can be reviewed independently. Each one should have tests that pass. Each one should be revertible.
 
-Sam: But someone could just skip the review and ship code. That happens constantly.
+Sam: But doesn't that make git history more complex?
 
-Alex: It does. And those teams experience the cost. Bugs make it to production. Security issues get discovered by bad actors. The teams that are mature about this treat pre-commit review as non-negotiable. It's as automatic as saving your file. You don't think about it - you just do it.
+Alex: It makes it more detailed, but not more complex. The trade-off is that someone looking at your changes three months later can understand the progression. They can see "database was changed to support this," then "API endpoint was added," then "UI was updated to call it." If it was one commit, you just see all three things at once with no story.
 
-Sam: Fair. Let me ask about a specific scenario. I'm reviewing a PR for a password reset feature. The engineer has implemented it, tests pass, everything looks reasonable. But there are actually several security issues. What does the AI-assisted process look like?
+Sam: And if you need to revert one part?
 
-Alex: Good example. You ask your AI agent to do a security audit specifically on password reset code. The AI will probably find several things: no password hashing, no token-based reset flow, no rate limiting, insufficient input validation, missing error handling. Basically, the AI can identify the patterns of a broken password reset.
+Alex: You can cherry-pick or revert individual commits. If your frontend integration introduced a bug, you can revert just that commit while keeping the database and API changes. With one monolithic commit, you have to revert everything or manually fix things.
 
-Sam: And then you feed that back to the engineer?
+Sam: That's a compelling argument. But doesn't that require more care when you're writing code? You can't just build everything and then decide how to split it up.
 
-Alex: Right. You draft feedback. "The current implementation allows anyone with an email address to reset anyone else's password. Here's why that's a problem. Here's the correct approach: generate a time-limited token, send it to the email address, verify the token before allowing reset, invalidate existing sessions." You might even ask the AI to draft that explanation, then review it to make sure it's accurate.
+Alex: It requires different discipline, yeah. But here's where AI helps - it helps you stage commits intelligently. After you've written code, you ask the AI to help you identify which changes logically belong together. You might have touched ten files, but those ten files actually represent four distinct logical changes. The AI can help you see that structure.
 
-Sam: But there are things the AI won't catch about that scenario, right?
+Sam: And then you're manually splitting them out in git?
 
-Alex: Definitely. The AI might not realize that the password reset email is never actually sent. The engineer forgot that part. The AI might not flag that existing sessions aren't invalidated. Or that there's no notification sent to the user's previous email address to alert them that something changed. Those are more subtle - they require understanding the full user flow and operational best practices.
+Alex: Or using interactive staging, or git reset and re-staging. It's a bit more work upfront, but the payoff is a much cleaner history. And the work is only slightly more complex than committing everything at once.
 
-Sam: So the AI catches the mechanisms - the cryptography, the security patterns - but misses the process flow?
+Sam: I'm thinking about teams I've worked with where people just use squash merges and commit everything to main as one commit. They completely lose all that detail.
 
-Alex: Exactly. Because process flow requires understanding the entire system, not just code patterns. The AI sees "this function changes a password" but doesn't see "and this should invalidate sessions and notify the user."
+Alex: Yeah, that's throwing away your documentation. The only reason to squash is if you have a ton of fixup commits - like, you typo something, fix the typo, commit again. That's noise. Squash those fixups into their parent commit. But actual logical changes should be preserved. You're sacrificing future debugging ability for convenience now.
 
-Sam: That's a really useful boundary to understand. So the combination is: AI is comprehensive about mechanisms, humans are comprehensive about context and flow.
+Sam: What if your team is already doing squash merges? Is it worth trying to change that pattern?
 
-Alex: That's right. And together, you catch more than either would alone. The engineer ships code, you catch the serious issues with AI and human judgment, the code is better. Everyone wins.
+Alex: Depends on your team's values. If you're optimizing for short-term velocity and don't care about understanding history, squash merges are fine. If you value being able to debug issues, understand decisions, and do careful reviews, atomic commits are worth the investment. It's a team choice, but I lean toward valuing history.
 
-Sam: One more question. You said earlier that you shouldn't squash commits by default. That seems to go against what a lot of teams do. Why preserve atomic commits?
+Sam: Let me ask about something practical - how do you actually review whether someone's commits are atomic and well-written? Like, that's not something you can easily automate.
 
-Alex: Future archaeology. Code exists for years. At some point, someone - maybe you, probably not - is trying to understand why something is the way it is. They're going to use git blame and git log to figure it out. If you squashed everything into one commit that says "implement feature X," they've got no granular history. If the feature is split into atomic commits, they can understand the progression of how it was built and why each part matters.
+Alex: You can automate the format - linters can check that commit messages follow Conventional Commits. You can write hooks that ensure commits have the right structure. But the atomicity part, whether it actually makes logical sense - that's human judgment. You read the commit message and the diff and ask: does this make sense as a standalone change? Could I understand this months from now?
 
-Sam: But if they can read the code, don't they understand what it does?
+Sam: And if it doesn't meet that bar?
 
-Alex: No. Understanding what code does is different from understanding why it was written that way. Why did we choose this approach instead of that approach? What was the problem we were solving? Those are questions git history should answer. If all of that is squashed into a single commit with a generic message, it's lost.
+Alex: You ask the developer to re-organize their commits before merging. It's a learning moment. Once people understand why atomic commits matter, they usually embrace it. It feels good to have a clean history.
 
-Sam: So squashing is only appropriate if the individual commits are junk. Like, fixup commits.
+Sam: Let's circle back to the overall workflow because I want to make sure I have the full picture. You pre-commit with AI, you create atomic commits with meaningful messages, then someone reviews your PR. What does that PR review look like with AI assistance?
 
-Alex: Right. If you have a commit that says "fix typo in function name" or "run linter," those are fixup commits. Those should be squashed into their parent. But if each commit represents a logical step - database schema, API, UI - those should stay separate.
+Alex: The reviewer receives a PR with multiple atomic commits and good messages. They ask the AI to do an initial analysis. AI outputs findings on security, performance, tests, style. Then the reviewer reads through the code focusing on architecture and business logic. They might ask the AI to explain specific decisions or draft review comments. Then they either approve or leave feedback.
 
-Sam: OK, this makes sense. So to step back, the whole workflow is: write code, pre-commit AI review, iterate, commit atomically with meaningful messages, someone does the full review, AI flags mechanical issues, human focuses on architecture and context, combine feedback, iterate, merge when everything checks out.
+Sam: And if there's feedback, does the original author use AI again?
 
-Alex: That's the systematic version. In practice, teams vary. But the core principles are: automate the mechanical parts with AI, focus human judgment on what matters, preserve history for future understanding. And do the cheap review work early - pre-commit - rather than late - after you've pushed.
+Alex: Usually. You get feedback like "this password hashing doesn't match our standards," you ask the AI to fix it, then you review the change and commit it with an appropriate message. Maybe "fix: use bcrypt for password hashing instead of PBKDF2" if there's a technical reason. The AI helps you implement the feedback, but you're still deciding what to commit.
 
-Sam: Does the AI-assisted approach change how you think about code review as a cultural practice?
+Sam: This feels like it actually increases the number of interactions around code, but in a more structured way?
 
-Alex: It changes the emphasis. Code review is still about quality and knowledge sharing. But now it's more about judgment than about catching typos. If your code reviewers are spending time on style and formatting, they're not thinking about whether this is architecturally sound. The AI review surfaces the style issues. The human review is about the hard parts.
+Alex: Yes, but the interactions are cheaper. Instead of back-and-forth conversations about issues, you have explicit findings and fixes. The AI is a tool in those conversations but not the decision maker. You and the reviewer are still making the calls.
 
-Sam: Which makes sense. Humans are expensive. AI is cheap. Use the cheap thing on cheap problems.
+Sam: What about when AI gets things wrong in a PR review? Like, it flags something that's fine?
 
-Alex: Exactly. And use the expensive thing on expensive problems. If your team's reviewers are constantly distracted by trivial issues, they burn out and they miss the important stuff. If you automate the trivial, they have space to think about the important.
+Alex: The reviewer ignores it. They're reading the AI output and applying judgment. Most good AI findings will jump out. If it's questionable, you either ask the AI to explain its reasoning, or you just dismiss it as a false positive and move on. It's advisory.
 
-Sam: Last question. How do you know if you're doing this right? What's the indicator that the system is working?
+Sam: That makes sense. One thing I'm curious about though - do different teams need different review criteria? Like, a financial services company might care more about security than a startup?
 
-Alex: Several things. One: Are bugs getting caught pre-commit or before merge? You should be catching most mechanical issues with AI before a human even sees it. Two: Are your commit messages actually useful? Can you blame a line and understand why it's there? Three: Are your reviewers able to focus on high-value feedback instead of nitpicking? And four: When problems do happen, can you use git history to understand how you got there?
+Alex: Absolutely. The AI-mechanical part is mostly universal - the code should have error handling, tests should exist, obvious security patterns should be followed. But what you focus on as the human reviewer varies wildly. A financial company is much more concerned with correctness and security. A startup might prioritize shipping fast. Those priorities should shape your review process.
 
-Sam: And if you're not seeing those things?
+Sam: So you customize the AI review prompts to your context?
 
-Alex: Then something's wrong with the system. Maybe the AI prompts aren't good. Maybe reviewers aren't actually focusing on the hard stuff. Maybe commits aren't atomic. Those are the knobs to adjust.
+Alex: Exactly. "Review this for correctness and test coverage" is different from "review this for performance and scalability concerns." The AI is more useful when you narrow its focus to what actually matters for your team.
 
-Sam: This has been useful. So the summary is: automate the mechanical with AI, focus humans on context, keep history atomic and meaningful. And the benefit is faster reviews, better quality, and better future understanding.
+Sam: This is making me think about team dynamics too. If you have a senior engineer reviewing junior engineer code, vs. peers reviewing each other, do you use AI differently?
 
-Alex: Nailed it. Code review is one of your highest-leverage activities. AI makes you faster at the tedious parts so you can be better at the parts that matter.
+Alex: That's an interesting question. With junior developers, you might use AI to catch basic patterns, then focus your human review on teaching and mentoring. With peers, you're looking for subtle architectural decisions and trade-offs. The AI serves a similar role - mechanical checking - but your human focus is different.
+
+Sam: It almost sounds like AI makes reviews more efficient but doesn't really change what you're looking for, just reorganizes who looks for what?
+
+Alex: That's exactly right. The human values in code review remain unchanged. You still care about correctness, maintainability, security, performance. AI just handles the checklist-oriented parts so humans can focus on judgment.
+
+Sam: Last thing I want to understand - when would you not use AI in code review?
+
+Alex: When the issues are fundamentally non-mechanical. If you're discussing architecture - should this be microservices or monolith - that's a human conversation. If it's about product - is this the right user flow - that's a product decision. If it's team dynamics - is this person overloaded with work - that's human awareness. AI brings no value there.
+
+Sam: So it's not a silver bullet, it's a tool for a specific job?
+
+Alex: Exactly. The job is mechanical code quality. AI is excellent there. Outside that scope, it might even slow you down by generating plausible-sounding but unhelpful analysis. Know what you're using it for.
+
+Sam: I think that's a really important distinction. All right, so let me summarize how I'm thinking about this: before committing, run your code through AI for a self-review. Create atomic commits with clear messages. When submitting a PR, those commits have already been vetted. Then a human reviewer gets AI-generated findings on mechanical issues and focuses their energy on architecture and business logic. And throughout, you're being critical of what AI says, not blindly trusting it.
+
+Alex: That's exactly it. And the key insight is that this makes everyone faster and code better. The person who wrote the code catches issues before they go to review. The reviewer isn't bogged down in style discussions. Issues get found earlier, context is clearer, reviews are faster. But you've only achieved that by being intentional about separating mechanical work from judgment work.
+
+Sam: One thing though - doesn't this require more discipline than just "I'll commit whenever"?
+
+Alex: Absolutely. You have to invest in the workflow upfront. But the payoff compounds. After a few weeks, your git history is clean, reviews are fast, fewer bugs slip through. That's worth the initial investment.
+
+Sam: I think this would be transformative for a lot of teams. The review process feels like such a bottleneck in practice.
+
+Alex: It is, but most teams don't realize how much of the bottleneck is mechanical busywork. Once you automate that, you unblock everything else. Your code is better, people learn faster from reviews, and it's actually more enjoyable because you're talking about the interesting parts, not arguing about commas.
+
+Sam: I appreciate that perspective. So the practical takeaway is: get disciplined about pre-commit reviews, atomic commits, and using AI strategically in PR reviews - and suddenly code review becomes a high-leverage activity instead of a bottleneck?
+
+Alex: That's the idea. Code review is already high-leverage if you do it well. AI just makes it possible to actually do it well consistently instead of getting buried in mechanical issues.
+
+Sam: Makes sense. Thanks for walking through that.
+
+Alex: Thanks for the questions. They forced me to be specific about when and how AI actually helps, which is the hard part.

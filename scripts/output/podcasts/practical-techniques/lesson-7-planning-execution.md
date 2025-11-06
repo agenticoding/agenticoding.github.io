@@ -7,187 +7,141 @@ speakers:
   - name: Sam
     role: Senior Engineer
     voice: Charon
-generatedAt: 2025-11-02T09:12:41.791Z
+generatedAt: 2025-11-04T07:19:22.618Z
 model: claude-haiku-4.5
-tokenCount: 3946
+tokenCount: 3597
 ---
 
-Alex: Let's talk about what happens the moment you shift from implementing features yourself to orchestrating AI agents to do the work. It changes everything about how you think about your role.
+Alex: Welcome back. In this lesson, we're shifting from understanding how agents work to actually orchestrating them on real feature development. And the key insight here is that your role fundamentally changes. You're no longer writing code line by line - you're planning and orchestrating tasks.
 
-Sam: How so? You're still building the same features, right?
+Sam: That's a significant shift. I think a lot of engineers struggle with that transition because we're trained to just dive in and start coding. What does this planning phase actually look like in practice?
 
-Alex: You're building the same features, but your job has fundamentally changed from execution to orchestration. And the biggest mistake I see is people jumping straight to "implement this feature" without doing the groundwork first.
+Alex: Good question. Let me start with the core principle: you spend time grounding the agent before it executes anything. Think of it like this - junior developers jump straight into implementation. Senior engineers spend the first hours understanding the problem space, the constraints, the existing patterns. AI agents amplify this pattern dramatically.
 
-Sam: Grounding. That's the thing you mentioned in the outline.
+Sam: So grounding is about context loading, essentially?
 
-Alex: Exactly. Grounding is loading the agent's context with everything it needs to make good decisions. Think about it this way - an agent has zero memory of your previous conversations. Every task starts from a completely blank context window. So if you ask it to add rate limiting without telling it how your middleware is structured, where your Redis configuration lives, or what your error handling patterns are, it's just going to make probabilistic guesses based on training data.
+Alex: Exactly. Grounding means giving the agent everything it needs to make good decisions without guessing. That's codebase patterns - existing validation approaches, middleware patterns, error handling conventions. Technical context - library docs, API references, how your framework is actually configured. And business context - requirements, constraints, edge cases that matter.
 
-Sam: And those guesses will be... wrong?
+Sam: Why does this matter so much? Can't the agent just figure it out as it goes?
 
-Alex: Not always wrong. Sometimes generic. Usually a mismatch with your architecture. I've seen agents generate middleware that doesn't integrate with the existing error handling, or propose Redis configurations that don't match your setup. It all works, technically. But it doesn't fit.
+Alex: Let me show you the difference. Without grounding, your agent operates on probabilistic guesses from its training data. It might suggest a validation library you don't have. It might propose middleware that doesn't match your project's style. It might miss security requirements because they weren't obvious in the prompt.
 
-Sam: So you're saying you need to load the agent with your codebase context before you ask it to code.
+Sam: But with grounding?
 
-Alex: Before, during, and honestly throughout the conversation. There are three types of context that matter. First, codebase context - the patterns, naming conventions, architectural boundaries. Second, technical context - library documentation, API references, framework idioms. Third, business context - the actual requirements, constraints, edge cases.
+Alex: With grounding, the agent sees actual code. "I see you use Zod for validation in src/validation/. Here's how you follow that pattern." It reads your Redis configuration, checks your existing middleware implementations, understands your error handling conventions. The output is radically different - and actually usable.
 
-Sam: That sounds like a lot of work upfront.
+Sam: How much time are we talking about for grounding? Is this a 30-minute research phase?
 
-Alex: It is. Maybe 10 minutes of work upfront. Versus hours of rework when the agent's output doesn't fit your architecture. And here's the thing - this isn't really different from what you do as a senior engineer when you're inheriting a codebase. You don't jump into implementing a feature. You read the existing code, understand the patterns, understand why decisions were made the way they were.
+Alex: More like 10 to 15 minutes for most features. The idea is that this investment prevents hours of rework later. Let me walk through a practical workflow. Say you're adding rate limiting to an API. You'd have the agent grep for where middleware files live in your project. Read your Redis configuration - because rate limiting needs to store state somewhere. Fetch the documentation for the specific library you're using. Check your existing error handling patterns so the rate limit response matches your style.
 
-Sam: Right. So you're applying that same discipline to directing an AI agent.
+Sam: That's specific enough that the agent can actually operate with real constraints rather than inventing them.
 
-Alex: Exactly. And when you do it right, the agent operates at a much higher level. Instead of generating generic middleware, it can say "I see you're using Zod for validation in src/validation/, following the pattern in userSchema.ts. I'll match that approach."
+Alex: Right. Without that context, the agent generates generic middleware that doesn't match your project's conventions at all. It assumes a Redis config that might not exist. It misses security requirements. It ignores how you handle errors everywhere else in the codebase.
 
-Sam: That's the difference between generic code and code that fits.
+Sam: I can see how that compounds - you get output, you try to integrate it, realize it doesn't fit your patterns, and now you're fixing things instead of building.
 
-Alex: That's the difference between work that compounds versus work that creates technical debt. Once you ground an agent, it makes reasonable decisions. It follows your patterns. It respects your constraints.
+Alex: Exactly. And remember - the agent has zero memory of your last conversation. Every task starts from a blank context window. Grounding isn't optional, it's fundamental.
 
-Sam: Okay, but that's about giving the agent good information. What about the questions you ask it? You mentioned that separately - knowing when to ask clarifying questions versus making informed assumptions.
+Sam: So we've grounded the agent. Now what? I imagine there's still ambiguity in requirements, right?
 
-Alex: Right. So you've grounded the agent with context. Now you're asking it to implement something. There's ambiguity in almost every feature request. The art is knowing what ambiguity to resolve before execution and what to let the agent figure out.
+Alex: There is, and this is where the art comes in - knowing when to ask clarifying questions versus making informed assumptions based on evidence. Not all ambiguity is equal.
 
-Sam: When do you ask for clarification?
+Sam: Walk me through when you'd ask versus when you'd just decide.
 
-Alex: Ask when the decision has real implications. Ask when there's genuine business logic ambiguity - "should expired premium users retain read access?" - that depends on your product strategy, not technical conventions. Ask when there are security or compliance implications - "can we log PII for debugging?" - because that's not the agent's call to make. Ask when there are multiple valid technical approaches with different trade-offs - "optimize for write throughput or read latency?" - because you're the one living with the consequences.
+Alex: Ask clarifying questions when the answer significantly changes the implementation and you can't infer it from context. Business logic ambiguity - like, should expired premium users retain read access? That changes your whole auth strategy. Security and compliance implications - can you log personally identifiable information for debugging? That's not a small detail, that's a policy decision. Multiple valid approaches with different trade-offs - optimize for write throughput or read latency? Those are architectural choices. Breaking changes to public APIs - if your change breaks existing clients, that's intentional or not?
 
-Sam: And when don't you ask?
+Sam: And don't ask when?
 
-Alex: Don't ask when the patterns are already established in your codebase. Don't ask for standard engineering practices like proper error handling or validation. Don't ask questions you can answer by reading documentation. And this is important - don't ask open-ended questions you could answer cheaply by having the agent investigate first.
+Alex: Don't ask when technical patterns are already established in your codebase. Follow existing conventions. When standard engineering practices apply - proper error handling, logging, validation. That's not a question. If documentation exists - your README or CLAUDE.md - check there first. And if you can verify something cheaply - run tests, check logs, experiment locally - do that before asking.
 
-Sam: So you gather evidence before you ask.
+Sam: So it's really about gathering evidence before asking the question. Instead of "how should I do X," you ask "I found pattern Y in the codebase, but this scenario seems different because Z - which approach do you prefer?"
 
-Alex: That's the key move. If you need to ask a clarifying question, include the evidence in that question. "I see we're using JWTs for auth in existing middleware, and I found pagination patterns in three endpoints already, but this new scenario is different because X - which approach do you prefer?" That's a question that gets you a good answer.
+Alex: You've got it exactly. Make informed recommendations backed by evidence, not open-ended questions. Here's the principle senior engineers operate on - make reasonable assumptions based on existing patterns. If your auth middleware uses JWTs, a new protected route should too. If your API returns 400 for validation errors and 500 for server errors, follow that. And common sense applies - don't store passwords in plaintext even if requirements don't explicitly forbid it.
 
-Sam: Versus "how should I implement pagination?"
+Sam: Your agent should operate that same way once it's grounded.
 
-Alex: Versus just... uncertainty. And that uncertainty compounds through the entire task.
+Alex: Correct. Once you've loaded the context with codebase patterns, it will make reasonable inferences that align with your architecture.
 
-Sam: Okay, so you've grounded the agent, you've asked good clarifying questions. Now what? That's where the decomposition comes in, right?
+Sam: Okay, so we've grounded the agent and we've decided what questions need asking and which don't. Now the feature itself might be too big to implement in one go, right?
 
-Alex: This is where you start thinking like a shipping engineer again. Most complex features can't be done in one pass. You need to break them down into independent, parallelizable units of work.
+Alex: Right. This is where decomposition comes in - breaking complex features into independent, parallelizable units of work. And there's a systematic method for this called SPIDR.
 
-Sam: What does parallelizable actually mean in this context?
+Sam: I like that it has a catchy acronym. What do the letters stand for?
 
-Alex: It means no data dependencies, no control flow dependencies. If Task B doesn't read data written by Task A, if it doesn't call functions defined in Task A, if it doesn't import modules created by Task A - then it's parallelizable. You can execute them independently, even across different agent instances.
+Alex: S for Spike, P for Path, I for Interfaces, D for Data, R for Rules. Let me give you concrete examples of each.
 
-Sam: And the method you use for breaking things down is SPIDR.
+Spike is research separated from implementation. Say you need to pick a payment processor - Stripe versus Braintree. That's one task. Then implementing the chosen processor is a separate task, later. You don't code both in parallel hoping you pick the right one.
 
-Alex: SPIDR is one method. It's good for most scenarios. The idea is you look at a feature and ask yourself - what are the dimensions of complexity here? Because complexity usually lives in several places at once.
+Path is different user workflows. Login with email and password - that's one story. Login with OAuth - that's separate. Magic links - another story. Same feature, different workflows, parallelizable.
 
-Sam: Walk me through it.
+Interfaces is platform variations. Support Chrome and Firefox first. Safari support is a follow-up. A basic share button that copies URLs. A rich share modal with social previews - that's an enhancement. Different interfaces, different timelines.
 
-Alex: **S is Spike** - you separate exploration from implementation. "Evaluate Stripe versus Braintree for payment processing" is one task. "Implement the chosen payment provider" is a completely separate task that happens after. You do the research upfront, then implementation. That's how you avoid thrashing.
+Sam: So you're not trying to solve everything at once.
 
-Sam: **P is Path** - different user workflows. "Login with email and password" is one story. "Login with OAuth" is a separate story. "Login with magic link" is its own thing. You're not trying to solve every way to log in at once.
+Alex: Exactly. Data means starting with simple data types, adding complexity. Upload MP4 videos initially. Support for WebM and AVI formats later. Employees with one manager first. Matrix reporting with multiple managers as an enhancement.
 
-Alex: Right. Each path can be developed, tested, and shipped independently. The second one doesn't unblock the third one.
+Rules is business logic layering. Handle the happy path first. Add validation rules incrementally. Enforce copyright detection, block offensive content - those are follow-ups that don't block core functionality.
 
-Sam: **I is Interfaces** - platform variations?
+Sam: This is elegant because you're identifying what has to happen in sequence versus what can truly happen in parallel.
 
-Alex: Or UI complexity. "Support Chrome and Firefox" is different from "add Safari support." "Basic share button that just copies the URL" is different from "rich share modal with social preview cards." You can ship the simple version first, prove the concept, then enhance it.
+Alex: Right. Let me make this concrete. Imagine you're adding multi-factor authentication to your system. Without decomposition, you've got a huge, vague task that the agent will struggle with. With SPIDR, you might break it into - spike research on 2FA approaches, design the database schema, implement the TOTP generation and verification, create the enrollment UI, add recovery codes, handle edge cases like lost authenticators. Each of those is independently implementable, most can happen in parallel once the schema is done.
 
-Sam: **D is Data** - data type variations?
+Sam: How do you identify which tasks actually have dependencies and which ones you think do but don't?
 
-Alex: Start simple, add complexity. "Upload MP4 videos" is task one. "Support WebM and AVI formats" is task two. "Handle employees with one manager" is the initial story. "Support matrix reporting with multiple managers" is a follow-up. You're not trying to handle every edge case in data modeling upfront.
+Alex: Great question because that's where a lot of parallelization opportunities get missed. The checklist is straightforward. Does task B read data written by task A? Does it call functions task A defined? Does it import modules task A created? Does task B's tests depend on task A passing first?
 
-Alex: And **R is Rules** - business logic, incrementally.
+Sam: So you're looking at actual data flow and control flow dependencies.
 
-Sam: "Upload videos with basic validation" versus "enforce copyright detection" versus "block offensive content in comments."
+Alex: Yes. If the answer to all those is no, the tasks are parallelizable. If task A is writing database schema and task B is writing business logic that uses that schema, there's a dependency. But if task A is writing the validation logic and task B is writing the API routes, those can happen in parallel - they both use the same schema, but they're not calling each other's code.
 
-Alex: Exactly. You deliver the core functionality, then add business rules as separate tasks.
+Sam: Okay so you've decomposed the work. Now you're executing it. Do you always parallelize, or are there times you want sequential execution?
 
-Sam: This feels like it's about shipping velocity, not just parallelization.
+Alex: Depends on the situation. Sequential is best when tasks have tight dependencies, you're learning a new codebase and want to observe patterns before parallelizing, or it's a single-agent workflow. You give the agent a priority-ordered task list and it works through them.
 
-Alex: That's the real win. You're shipping a working feature every few days instead of waiting for everything to be perfect in two weeks. And from the agent's perspective, it's working with smaller, more focused scope. Smaller scope means fewer variables, better focus, better quality.
+Parallel is best when tasks are clearly independent, you have time pressure, or you deeply understand the architecture. You launch multiple agent instances - one per workstream - and they work concurrently.
 
-Sam: Let me ask a tactical question. How do you know if something is a true dependency versus a false dependency? Because I imagine the temptation is to say "oh, I need the schema first" or "I need the auth layer first" when maybe you don't.
+Sam: What's the downside of paralleling?
 
-Alex: That's a great instinct to be skeptical about. The dependency analysis is concrete. Does Task B read data written by Task A? Does it call functions defined in Task A? Does it import modules created by Task A? Does it require Task A's tests to pass first?
+Alex: There's an integration tax. When you parallelize across multiple branches, you get merge conflicts. Multiple agents might build slightly different interfaces when they should be the same. Unit tests pass independently but integration tests fail. Timing dependencies in async code cause issues.
 
-Sam: Four questions.
+Sam: So you can't just spin up three agents and hope they merge cleanly.
 
-Alex: If all four are "no," the tasks are parallelizable. If any is "yes," there's a true dependency. And what I notice is - a lot of things that feel like dependencies aren't, because people conflate "task B will be easier after task A is done" with "task B requires task A to be done."
+Alex: Not at all. You need clear interface contracts upfront. Agent A is building the authentication service - here's what its API looks like. Agent B is building the admin dashboard - it will call these methods with these parameters. You define that before parallel work starts.
 
-Sam: So you could implement the OAuth flow and the email/password flow completely independently.
+Sam: How explicit does this need to be?
 
-Alex: You could. They share some common infrastructure maybe - the user model, the session layer. But if you've defined that infrastructure first, then both flows can be built in parallel. The common stuff doesn't block them.
+Alex: Quite explicit. TypeScript interfaces or OpenAPI specs. Don't leave it to interpretation. Here's the interface, here's what each method returns, here's what exceptions it can throw. Agent B is building the database schema. Here's the table structure, here's the indexes, here's what the migrations look like. Clear enough that agent C can write business logic against it without surprises.
 
-Sam: So you do need to do infrastructure first.
+Sam: And then you actually have an integration step after everything completes?
 
-Alex: Infrastructure and interfaces. Define the shape of the user object, the shape of the auth token, the shape of the API response. Define those upfront as contracts. Then teams can implement in parallel against those contracts.
+Alex: Yes, that's critical. Don't assume parallel work will merge cleanly. Budget 20 to 30 percent of parallel execution time for merging, conflict resolution, integration testing. Have explicit tasks for that. Merge in dependency order - database schema first, then business logic that depends on it, then API layer, then UI. Identify potential conflict points beforehand.
 
-Sam: Okay, so once you've decomposed the work, how do you actually execute it? Is it all parallel?
+Sam: This is really about treating integration as a first-class engineering concern, not an afterthought.
 
-Alex: No, you need to be smart about it. If you have tight dependencies, you go sequential - one agent instance works through the tasks in order. That's especially useful when you're learning a new codebase. You observe, you understand, then you parallelize.
+Alex: Exactly. And artifacts make this verifiable. A task list, ADRs, interface contracts - these turn invisible planning into tangible deliverables. They let you track progress, communicate with stakeholders, and recover context if you get interrupted.
 
-Sam: But parallel is better for velocity.
+Sam: So if I'm starting a feature, the workflow is - ground the agent, use SPIDR to decompose, clarify ambiguities with evidence, define interface contracts, and then decide sequential or parallel execution based on dependencies and complexity.
 
-Alex: Parallel is better for velocity if you manage the integration costs. And this is the part people underestimate. Parallelization adds integration overhead. Budget for it.
+Alex: That's the complete loop, yes. And most of that planning happens before the agent writes a single line of code. You invest 30 to 45 minutes upfront to prevent days of rework.
 
-Sam: What kind of overhead are we talking about?
+Sam: Does the planing change if it's one agent versus multiple?
 
-Alex: Merge conflicts - multiple branches touching the same files. API mismatches - agent A expects interface X, but agent B built interface Y. Test interactions - unit tests pass independently, but integration tests fail because the agents made different assumptions about timing or error handling.
+Alex: Somewhat. With one agent, you still decompose but more to manage scope and maintain context between tasks. Sequential execution is easier - the agent sees what it built in earlier tasks. With multiple agents, decomposition is critical because they can't see each other's work unless it's committed. You need clear boundaries, interface contracts, and explicit integration tasks.
 
-Sam: So parallel development isn't free.
+Sam: One more question - you mentioned dependencies are tricky. How do you actually determine dependency order in a complex feature?
 
-Alex: It's not free. I usually budget 20 to 30 percent of parallel execution time for merging, conflict resolution, and integration testing. If your tasks are truly independent and well-scoped, that overhead stays low. If they're not, it explodes.
+Alex: Start with what has to exist before anything else. Database schemas usually come first - other tasks depend on reading the schema. Then the core business logic layer - the validation, the state machines, whatever drives the feature. Then the API or service layer that exposes that logic. Then UI if applicable. Then integrations - Slack notifications, webhooks, audit logs, whatever else touches this feature.
 
-Sam: How do you keep it low?
+Sam: And anything at the same level can theoretically happen in parallel?
 
-Alex: Three things. First, clear interface contracts before implementation. Write down what Agent A is going to build and what interface it's going to provide. Agent B does the same. Those interfaces are locked in before coding starts. Second, isolated feature branches - each workstream has its own branch, no shared work-in-progress. Third, and this is important - integration is an explicit task. Don't assume parallel work will merge cleanly. Write a task that says "integrate auth layer with user management" and treat it as serious work.
+Alex: In theory, yes. In practice, some pairs have false dependencies that you need to untangle. But the principle is sound. Map out what absolutely must happen first, then identify what can happen concurrently, then have a clear integration phase at the end.
 
-Sam: And communication boundaries - sharing completed things, not work-in-progress.
+Alex: The deeper point here is that with AI agents, planning becomes your leverage point. You don't save time by skipping planning to jump straight to code - you lose days. You save time by planning well enough that the agent executes cleanly the first time.
 
-Alex: Right. You share the interface definition and then the completed implementation. You don't share half-built code and assume the other agent will figure it out.
+Sam: That's a fundamentally different way of thinking about time investment.
 
-Sam: This is starting to feel less like "have multiple agents work in parallel" and more like classical software engineering.
+Alex: It is. You're optimizing for total throughput - agent execution time plus integration time plus rework. And every minute spent on clear grounding, good decomposition, explicit contracts, upfront saves multiples of that in execution.
 
-Alex: Because it is. This isn't new thinking. You're just applying the thinking that good teams have always applied - clear contracts, explicit integration, visible coordination - to AI agents instead of people.
+Sam: Makes sense. So the next time I'm handing off work to an agent, I need to think about whether I've actually grounded it well enough, whether the task is decomposed properly, and whether I've been specific enough about interfaces and dependencies.
 
-Sam: So when do you actually parallelize versus staying sequential?
-
-Alex: Parallelize when tasks are clearly independent, no shared files, well-defined interface contracts, low integration cost. Parallelize when you have a deadline and need velocity. Stay sequential when you're learning the codebase, when tasks are tightly coupled, when integration costs are high relative to the execution savings.
-
-Sam: What's a concrete example of high integration cost?
-
-Alex: Suppose you're building a multi-factor authentication system. You could parallelize implementation of TOTP, backup codes, and SMS verification because they're pretty independent. But if you parallelize the schema changes, the middleware integration, the API changes, and the UI all at once, you've got everything touching the auth layer. Merging becomes painful.
-
-Sam: So you do the schema and middleware sequentially, then parallelize the TOTP and backup codes implementations once those are in place.
-
-Alex: That's a good hybrid approach. You do the foundational work first, then parallelize the add-ons.
-
-Sam: Alright, so you've grounded the agent, asked good clarifying questions, decomposed the work, and now you're executing it - either sequentially or in parallel. What are the artifacts that make this real?
-
-Alex: Task lists. Interface contracts written down. Architecture decision records if the decisions are significant. These turn invisible planning into tangible deliverables.
-
-Sam: Why does that matter?
-
-Alex: Because it's how you track progress. How you communicate with stakeholders. How you recover context if you get interrupted. And it's how you verify that your plan actually worked. You can look back and ask - did we execute the tasks we said we would? Did we hit the interface contracts we defined?
-
-Sam: So the artifacts are your source of truth.
-
-Alex: They're your project management system. They're your insurance policy against thrashing.
-
-Sam: One more thing. You said earlier that grounding is not optional. But practically, how much effort are we talking about?
-
-Alex: Depends on the complexity of the feature, but for a typical mid-sized feature, maybe 10 to 15 minutes. You spend a few minutes reviewing existing code patterns. A few minutes reading relevant documentation. A minute or two identifying what questions you need to ask. Then you write a grounding prompt that includes all of that context.
-
-Sam: So it's an upfront investment, but not huge.
-
-Alex: It's small relative to the rework time you save. I've watched teams try to skip grounding because they're in a hurry, and I've watched them spend three times as long fixing the agent's output as they would have spent grounding it properly.
-
-Sam: The false economy of skipping preparation.
-
-Alex: Exactly. Especially with agents, where you're not getting course corrections from a person who knows your codebase. You need to load the agent with everything it needs to make good decisions upfront.
-
-Sam: Alright. So to recap - grounding is loading context before execution. Clarifying questions come with evidence, not guesses. Decomposition breaks features into parallelizable units. Execution can be sequential or parallel depending on dependencies and integration costs. And artifacts make it all verifiable.
-
-Alex: That's the framework. And it's not magic. It's the same discipline that good engineering teams have always applied. We're just being intentional about it because we're directing AI agents instead of writing code ourselves.
-
-Sam: Which means we need to be even more explicit about our thinking, because the agent doesn't have institutional knowledge or context recovery like a teammate would.
-
-Alex: Exactly. The agent doesn't have your experience. Doesn't have your instincts. So you have to externalize all of that into explicit context and contracts.
-
-Sam: That actually sounds like it improves team quality across the board.
-
-Alex: It does. Because now you're forced to document your patterns, articulate your constraints, define your interfaces. That's good. That's how systems stay coherent as they scale.
+Alex: Exactly. Those are the levers. Master those, and agent execution becomes predictable and fast. Skip them, and you're spending days debugging misaligned implementations.
