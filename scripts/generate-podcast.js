@@ -87,6 +87,63 @@ function parseArgs() {
 // ============================================================================
 
 /**
+ * Calculate semantic overlap between two text segments using word-based Jaccard similarity
+ * This is a lightweight approach that doesn't require external NLP libraries
+ *
+ * @param {string} text1 - First text segment
+ * @param {string} text2 - Second text segment
+ * @param {number} threshold - Similarity threshold (0-1), default 0.75
+ * @returns {boolean} - True if texts are semantically similar above threshold
+ */
+function detectSemanticOverlap(text1, text2, threshold = 0.75) {
+  // Normalize: lowercase, remove punctuation, split into words
+  const normalize = (text) => {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter(word => word.length > 3); // Ignore short words (a, the, is, etc.)
+  };
+
+  const words1 = new Set(normalize(text1));
+  const words2 = new Set(normalize(text2));
+
+  if (words1.size === 0 || words2.size === 0) {
+    return false;
+  }
+
+  // Jaccard similarity: intersection / union
+  const intersection = new Set([...words1].filter(word => words2.has(word)));
+  const union = new Set([...words1, ...words2]);
+
+  const similarity = intersection.size / union.size;
+
+  return similarity >= threshold;
+}
+
+/**
+ * Extract unique sentences from text2 that are not semantically covered in text1
+ * Used to preserve novel information from pedagogical notes
+ *
+ * @param {string} text1 - Main text (reference)
+ * @param {string} text2 - Secondary text (to filter)
+ * @returns {string} - Sentences from text2 not covered in text1
+ */
+function extractUniqueSentences(text1, text2) {
+  const sentences2 = text2.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 20);
+  const uniqueSentences = [];
+
+  for (const sentence of sentences2) {
+    // Check if this sentence is already covered in text1
+    if (!detectSemanticOverlap(sentence, text1, 0.6)) {
+      uniqueSentences.push(sentence);
+    }
+  }
+
+  return uniqueSentences.join('. ');
+}
+
+/**
  * Analyze code block context and generate audio-appropriate description
  * Transforms code into natural language that preserves pedagogical value
  */
@@ -250,31 +307,148 @@ function parseMarkdownContent(filePath) {
   // Remove frontmatter
   let cleaned = content.replace(/^---[\s\S]*?---\n/, '');
 
-  // Remove JSX components (simple approach - remove anything with <>)
+  // DEDUPLICATION PHASE 1: Handle Deep Dive sections (<details> tags)
+  // Do this BEFORE removing HTML tags so we can detect and process them
+  // These often duplicate main explanations - extract and deduplicate first
+  const detailsRegex = /<details>\s*<summary>([\s\S]*?)<\/summary>\s*([\s\S]*?)<\/details>/gi;
+  let detailsMatch;
+  const detailsToProcess = [];
+
+  console.log(`  🔍 Scanning for Deep Dive sections...`);
+
+  while ((detailsMatch = detailsRegex.exec(cleaned)) !== null) {
+    detailsToProcess.push({
+      fullMatch: detailsMatch[0],
+      title: detailsMatch[1].trim(),
+      content: detailsMatch[2].trim(),
+      index: detailsMatch.index
+    });
+  }
+
+  // Process details sections in reverse order to maintain correct indices
+  for (let i = detailsToProcess.length - 1; i >= 0; i--) {
+    const detail = detailsToProcess[i];
+
+    // Extract broader context (1000 chars before - deep dives cover broader topics)
+    const contextStart = Math.max(0, detail.index - 1000);
+    const precedingContext = cleaned.substring(contextStart, detail.index);
+
+    // Check overlap with preceding content
+    const overlapHigh = detectSemanticOverlap(detail.content, precedingContext, 0.70);
+    const overlapMedium = detectSemanticOverlap(detail.content, precedingContext, 0.45);
+
+    let replacement;
+    if (overlapHigh) {
+      // >70% overlap: Deep dive is redundant, remove entirely
+      console.log(`  🔧 Deduplication: Removed redundant Deep Dive "${detail.title}" (>70% overlap with main content)`);
+      replacement = '';
+    } else if (overlapMedium) {
+      // 45-70% overlap: Keep only unique sentences
+      const uniqueContent = extractUniqueSentences(precedingContext, detail.content);
+      if (uniqueContent.length > 30) {
+        console.log(`  🔧 Deduplication: Condensed Deep Dive "${detail.title}" (45-70% overlap, kept unique parts)`);
+        replacement = `\n[DEEP DIVE: ${detail.title}]\n${uniqueContent}\n[END DEEP DIVE]\n`;
+      } else {
+        console.log(`  🔧 Deduplication: Removed Deep Dive "${detail.title}" (no unique content after filtering)`);
+        replacement = '';
+      }
+    } else {
+      // <45% overlap: Keep entire deep dive (genuinely new information)
+      replacement = `\n[DEEP DIVE: ${detail.title}]\n${detail.content}\n[END DEEP DIVE]\n`;
+    }
+
+    // Replace in cleaned content
+    cleaned = cleaned.substring(0, detail.index) +
+              replacement +
+              cleaned.substring(detail.index + detail.fullMatch.length);
+  }
+
+  console.log(`  🔍 Found ${detailsToProcess.length} Deep Dive section(s)`);
+
+  // DEDUPLICATION PHASE 2: Handle pedagogical note boxes (:::tip, :::warning, etc.)
+  // Extract and deduplicate against surrounding context to prevent repetition
+  console.log(`  🔍 Scanning for pedagogical note boxes...`);
+  // Match both formats: ":::tip Title" and ":::tip[Title]"
+  const pedagogicalNoteRegex = /:::(tip|warning|info|note|caution)\s*(?:\[([^\]]*)\]|([^\n]*))\s*\n([\s\S]*?)\n:::/gi;
+  let noteMatch;
+  const notesToProcess = [];
+
+  while ((noteMatch = pedagogicalNoteRegex.exec(cleaned)) !== null) {
+    notesToProcess.push({
+      fullMatch: noteMatch[0],
+      type: noteMatch[1],
+      title: (noteMatch[2] || noteMatch[3] || 'Note').trim(),
+      content: noteMatch[4].trim(),
+      index: noteMatch.index
+    });
+  }
+
+  // Process pedagogical notes in reverse order to maintain correct indices
+  for (let i = notesToProcess.length - 1; i >= 0; i--) {
+    const note = notesToProcess[i];
+
+    // Extract surrounding context (500 chars before and after)
+    const contextStart = Math.max(0, note.index - 500);
+    const contextEnd = Math.min(cleaned.length, note.index + note.fullMatch.length + 500);
+    const surroundingContext = cleaned.substring(contextStart, note.index) +
+                               cleaned.substring(note.index + note.fullMatch.length, contextEnd);
+
+    // Check overlap with surrounding context
+    const overlapHigh = detectSemanticOverlap(note.content, surroundingContext, 0.75);
+    const overlapMedium = detectSemanticOverlap(note.content, surroundingContext, 0.50);
+
+    let replacement;
+    if (overlapHigh) {
+      // >75% overlap: Completely redundant, remove entirely
+      console.log(`  🔧 Deduplication: Removed redundant ${note.type} note (>75% overlap)`);
+      replacement = '';
+    } else if (overlapMedium) {
+      // 50-75% overlap: Keep only unique sentences
+      const uniqueContent = extractUniqueSentences(surroundingContext, note.content);
+      if (uniqueContent.length > 20) {
+        console.log(`  🔧 Deduplication: Condensed ${note.type} note (50-75% overlap, kept unique parts)`);
+        replacement = `\n[PEDAGOGICAL ${note.type.toUpperCase()}: ${note.title}] ${uniqueContent}\n`;
+      } else {
+        console.log(`  🔧 Deduplication: Removed ${note.type} note (no unique content after filtering)`);
+        replacement = '';
+      }
+    } else {
+      // <50% overlap: Keep entire note (genuinely new information)
+      replacement = `\n[PEDAGOGICAL ${note.type.toUpperCase()}: ${note.title}]\n${note.content}\n[END NOTE]\n`;
+    }
+
+    // Replace in cleaned content
+    cleaned = cleaned.substring(0, note.index) +
+              replacement +
+              cleaned.substring(note.index + note.fullMatch.length);
+  }
+
+  console.log(`  🔍 Found ${notesToProcess.length} pedagogical note(s)`);
+
+  // NOW safe to remove remaining JSX/HTML components after deduplication
   cleaned = cleaned.replace(/<[^>]+>/g, '');
 
-  // First pass: Find all code blocks and their contexts BEFORE transformation
-  // This prevents context pollution from replaced blocks
+  // Process code blocks: Find all code blocks and their contexts
   const codeBlocks = [];
-  const regex = /```[\s\S]*?```/g;
-  let match;
+  const codeRegex = /```[\s\S]*?```/g;
+  let codeMatch;
 
-  while ((match = regex.exec(cleaned)) !== null) {
-    const precedingStart = Math.max(0, match.index - 200);
-    const precedingContext = cleaned.substring(precedingStart, match.index);
+  while ((codeMatch = codeRegex.exec(cleaned)) !== null) {
+    const precedingStart = Math.max(0, codeMatch.index - 200);
+    const precedingContext = cleaned.substring(precedingStart, codeMatch.index);
 
-    const followingEnd = Math.min(cleaned.length, match.index + match[0].length + 200);
-    const followingContext = cleaned.substring(match.index + match[0].length, followingEnd);
+    const followingEnd = Math.min(cleaned.length, codeMatch.index + codeMatch[0].length + 200);
+    const followingContext = cleaned.substring(codeMatch.index + codeMatch[0].length, followingEnd);
 
     codeBlocks.push({
-      original: match[0],
-      index: match.index,
+      original: codeMatch[0],
+      index: codeMatch.index,
       precedingContext,
       followingContext
     });
   }
 
-  // Second pass: Replace code blocks with descriptions
+  // Replace code blocks with descriptions
   let offset = 0;
   for (const block of codeBlocks) {
     const description = describeCodeBlock(block.original, block.precedingContext, block.followingContext);
@@ -298,14 +472,6 @@ function parseMarkdownContent(filePath) {
 
   // Remove HTML comments
   cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, '');
-
-  // Tag admonition boxes so Claude knows they're pedagogical reinforcement
-  // Match :::tip[Title], :::warning, :::info, etc.
-  cleaned = cleaned.replace(/:::(tip|warning|info|note|caution)\s*(?:\[([^\]]*)\])?\s*/gi, (match, type, title) => {
-    return `\n[PEDAGOGICAL ${type.toUpperCase()}: ${title || 'Note'}]\n`;
-  });
-  // Mark end of admonition boxes
-  cleaned = cleaned.replace(/^:::$/gm, '\n[END NOTE]\n');
 
   // Clean up excessive whitespace
   cleaned = cleaned.replace(/\n{3,}/g, '\n\n').trim();
@@ -499,63 +665,21 @@ EXAMPLE - GOOD (preserves specifics):
 switch to semantic search - tools like ChunkHound or Claude Context via MCP servers. Above 100,000 lines, you need
 ChunkHound's structured multi-hop traversal because autonomous agents start missing connections."
 
-CRITICAL: CONTENT DEDUPLICATION REQUIREMENTS
+CRITICAL: CONTENT HAS BEEN PRE-DEDUPLICATED
 
-The source material uses pedagogical reinforcement patterns designed for written learning:
-- Main explanatory text
-- [PEDAGOGICAL TIP/WARNING/INFO/NOTE] boxes that often RESTATE key concepts from the main text
-- Repeated summaries and transitions for visual learners
+The source content has been programmatically deduplicated during preprocessing:
+- Redundant pedagogical note boxes (:::tip, :::warning) have been removed or condensed
+- Duplicate deep dive sections have been filtered out
+- Only unique information remains in [PEDAGOGICAL NOTE] and [DEEP DIVE] tags
 
-For linear podcast format, you MUST deduplicate to avoid boring repetition:
+Your job is to transform this already-clean content into engaging dialog:
 
-✓ SYNTHESIZE: When a concept appears in both main text and [PEDAGOGICAL NOTE] sections, create ONE clear, cohesive explanation that integrates both perspectives naturally
-✓ MERGE: Combine multiple mentions of the same idea into a single well-developed discussion with depth
-✓ ADVANCE: Only return to a concept if you're significantly advancing understanding with genuinely new context, examples, or implications
-✓ FLOW: Prioritize natural conversational progression over written pedagogical reinforcement patterns
-✓ TRIM: Remove redundant restatements - podcast listeners cannot re-read like readers can, so repetition feels tedious rather than reinforcing
+✓ TRUST THE PREPROCESSING: Content is already deduplicated - focus on dialog quality
+✓ NATURAL FLOW: Create conversational progression without forced repetition checks
+✓ AVOID CIRCULAR PHRASES: Don't use "going back to", "as I mentioned", "to circle back"
+✓ PROGRESSIVE DISCUSSION: Each exchange should advance understanding, not restate
 
-✗ DO NOT: Discuss the same point multiple times without adding substantial new insight
-✗ DO NOT: Treat [PEDAGOGICAL NOTE] sections as separate topics requiring their own discussion - they're reinforcement of concepts already covered in main text
-✗ DO NOT: Create circular discussions that return to the same idea repeatedly without meaningful progression
-✗ DO NOT: Feel obligated to cover every sentence - synthesize into the most compelling narrative
-✗ DO NOT: Use transition phrases like "going back to", "as I mentioned", "to circle back" - these signal repetition
-
-DETECT REPETITION PATTERNS - CRITICAL:
-
-Pattern 1: Main text + [PEDAGOGICAL TIP] saying the same thing differently
-Example:
-- Main text: "The real productivity gain is working on multiple projects simultaneously"
-- [PEDAGOGICAL TIP]: "Autonomous mode's power is parallel work, not speed per task"
-→ These are IDENTICAL concepts with different wording. Merge into ONE statement.
-→ DO NOT discuss "productivity gain" then later return to "parallel work advantage"
-
-Pattern 2: Synonym clusters that mean the same thing
-WATCH FOR THESE EQUIVALENT PHRASES:
-- "parallel work" = "working on multiple tasks simultaneously" = "three agents running" = "concurrent projects"
-- "10x productivity" = "actual game changer" = "real gain" = "where productivity explodes" = "genuine productivity improvement"
-- "speed per task" vs "throughput" vs "finishing faster" = same concept, different framing
-
-ANTI-REPETITION RULE:
-If you mention "parallel work" in one exchange, DO NOT return to "working on multiple tasks simultaneously"
-as if it's a new topic. You already covered it. Move forward to genuinely new insights.
-
-Pattern 3: Circular explanations
-BAD (circular):
-- Exchange 1: "Autonomous mode's advantage is you can work on three projects at once"
-- Exchange 3: "The real productivity gain isn't about speed"
-- Exchange 4: "The game changer is parallel work - running multiple agents simultaneously"
-→ This repeats the same point 3 times within close proximity
-
-GOOD (progressive):
-- Exchange 1: "Autonomous mode's advantage is parallel work - three projects simultaneously while living your life"
-- [Move to next concept - don't return to parallel work unless adding 50%+ new insight]
-
-EXAMPLE OF GOOD DEDUPLICATION:
-If main text explains "autonomous mode lets you work on multiple projects simultaneously" and a
-[PEDAGOGICAL TIP] says "the real 10x productivity gain is parallel work, not speed per task",
-synthesize these into ONE cohesive explanation: "Autonomous mode's real power isn't speed - it's
-working on three projects simultaneously while living your life. That's the actual 10x gain."
-Don't discuss autonomous mode, then later discuss "the real 10x gain" as if it's a separate concept.
+The heavy lifting of deduplication is done. Focus on creating engaging, technically accurate dialog.
 
 OUTPUT FORMAT:
 Use clear speaker labels followed by natural dialog. Structure your output within XML tags:
@@ -724,7 +848,7 @@ function validateTechnicalDepth(dialog, sourceContent) {
 }
 
 /**
- * Validate dialog for repetition patterns
+ * Validate dialog for repetition patterns using semantic similarity
  */
 function validateDialogQuality(dialog) {
   const warnings = [];
@@ -736,34 +860,30 @@ function validateDialogQuality(dialog) {
     return warnings; // Can't validate empty dialog
   }
 
-  // Key phrases to watch for repetition (case-insensitive)
-  const keyPhrases = [
-    'parallel work',
-    '10x productivity',
-    'autonomous mode',
-    'game changer',
-    'real gain',
-    'actual productivity',
-    'speed per task',
-    'throughput',
-    'multiple projects',
-    'three agents'
-  ];
+  // SEMANTIC REPETITION DETECTION: Check for exchanges covering the same concepts
+  // Use sliding window of 10 exchanges (broader than old 5-exchange window)
+  const windowSize = 10;
+  const similarityThreshold = 0.65; // 65% semantic overlap = likely repetition
 
-  // Check for repeated key phrases within close proximity (sliding window of 5 exchanges)
-  const windowSize = 5;
-  for (let i = 0; i < exchanges.length - windowSize + 1; i++) {
-    const window = exchanges.slice(i, i + windowSize).join(' ').toLowerCase();
+  for (let i = 0; i < exchanges.length - 2; i++) {
+    const currentExchange = exchanges[i];
 
-    for (const phrase of keyPhrases) {
-      const regex = new RegExp(phrase, 'gi');
-      const occurrences = (window.match(regex) || []).length;
+    // Check if this exchange is semantically similar to any of the next few exchanges
+    for (let j = i + 2; j < Math.min(i + windowSize, exchanges.length); j++) {
+      const laterExchange = exchanges[j];
 
-      if (occurrences >= 3) {
+      if (detectSemanticOverlap(currentExchange, laterExchange, similarityThreshold)) {
+        // Extract preview of both exchanges (first 60 chars)
+        const preview1 = currentExchange.substring(0, 60).replace(/\n/g, ' ') + '...';
+        const preview2 = laterExchange.substring(0, 60).replace(/\n/g, ' ') + '...';
+
         warnings.push(
-          `Potential repetition: "${phrase}" appears ${occurrences} times within 5 exchanges ` +
-          `(exchanges ${i + 1}-${i + windowSize})`
+          `⚠️  Semantic repetition detected:\n` +
+          `     Exchange ${i + 1}: "${preview1}"\n` +
+          `     Exchange ${j + 1}: "${preview2}"\n` +
+          `     (>65% semantic overlap - likely discussing same concept)`
         );
+        break; // Only report first occurrence for this exchange
       }
     }
   }
@@ -782,7 +902,7 @@ function validateDialogQuality(dialog) {
   for (const phrase of circularPhrases) {
     if (fullText.includes(phrase)) {
       warnings.push(
-        `Circular transition detected: "${phrase}" - this often signals unnecessary repetition`
+        `⚠️  Circular transition detected: "${phrase}" - this often signals unnecessary repetition`
       );
     }
   }
