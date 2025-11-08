@@ -10,6 +10,8 @@ export default function UShapeAttentionCurve({
 }: UShapeAttentionCurveProps) {
   const [contextFill, setContextFill] = useState(initialContextFill);
   const [animatedPath, setAnimatedPath] = useState<string>('');
+  const [animatedEndX, setAnimatedEndX] = useState<number>(0);
+  const [animatedMiddleX, setAnimatedMiddleX] = useState<number>(0);
   const previousPathRef = useRef<string>('');
   const animationFrameRef = useRef<number | null>(null);
 
@@ -19,23 +21,39 @@ export default function UShapeAttentionCurve({
   const padding = 70;
 
   // Calculate curve parameters based on context fill percentage
-  // More context = deeper U (worse middle attention)
+  // More context = deeper U (worse middle attention) AND wider span (longer context)
   const curveDepth = 50 + (contextFill / 100) * 100; // Range: 50-150
+
+  // Calculate available width for curve
+  const availableWidth = width - 2 * padding;
+
+  // Non-linear mapping for visual clarity: 90% context uses full available width
+  const getVisualWidth = (contextPercent: number): number => {
+    if (contextPercent <= 30) return 0.3;
+    if (contextPercent <= 60) return 0.3 + (contextPercent - 30) * (0.3 / 30);
+    return 0.6 + (contextPercent - 60) * (0.4 / 30);
+  };
+
+  const scaledWidth = availableWidth * getVisualWidth(contextFill);
 
   // Define the U-shaped curve using cubic Bézier
   // Start high (left), dip low (middle), end high (right)
   const startX = padding;
   const startY = padding;
-  const endX = width - padding;
+  const endX = startX + scaledWidth;
   const endY = padding;
-  const middleX = width / 2;
+  const middleX = (startX + endX) / 2; // Middle of the actual curve span
   const middleY = padding + curveDepth;
 
   // Cubic Bézier path: smooth curve through three points
+  // Use proportional control points for smooth curves at all widths
+  const controlOffset = scaledWidth / 6; // 1/3 of half-width for smooth shoulders
+  const verticalSmoothing = (middleY - startY) * 0.3; // 30% interpolation for gentle transitions
+
   const curvePath = `
     M ${startX},${startY}
-    C ${startX + 100},${startY} ${middleX - 100},${middleY} ${middleX},${middleY}
-    C ${middleX + 100},${middleY} ${endX - 100},${startY} ${endX},${endY}
+    C ${startX + controlOffset},${startY + verticalSmoothing} ${middleX - controlOffset},${middleY} ${middleX},${middleY}
+    C ${middleX + controlOffset},${middleY} ${endX - controlOffset},${startY + verticalSmoothing} ${endX},${endY}
   `.trim();
 
   // Animate path morphing for Safari compatibility
@@ -44,6 +62,8 @@ export default function UShapeAttentionCurve({
     if (!previousPathRef.current) {
       previousPathRef.current = curvePath;
       setAnimatedPath(curvePath);
+      setAnimatedEndX(endX);
+      setAnimatedMiddleX(middleX);
       return;
     }
 
@@ -115,11 +135,15 @@ export default function UShapeAttentionCurve({
       const interpolatedPath = `M ${m1},${m2} C ${c1},${c2} ${c3},${c4} ${c5},${c6} C ${c7},${c8} ${c9},${c10} ${c11},${c12}`;
 
       setAnimatedPath(interpolatedPath);
+      setAnimatedEndX(c11); // Track the animated endpoint X coordinate
+      setAnimatedMiddleX(c5); // Track the animated middle point X coordinate
 
       if (progress < 1) {
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
         previousPathRef.current = curvePath;
+        setAnimatedEndX(endX); // Ensure final position is exact
+        setAnimatedMiddleX(middleX); // Ensure final position is exact
       }
     };
 
@@ -135,9 +159,12 @@ export default function UShapeAttentionCurve({
   }, [curvePath]);
 
   // Area fill path (curve + bottom edge for filled area)
+  // Use animatedEndX to keep the right edge synchronized during transitions
+  const currentEndX = animatedEndX || endX;
+  const currentMiddleX = animatedMiddleX || middleX;
   const areaPath = `
     ${animatedPath || curvePath}
-    L ${endX},${height - padding}
+    L ${currentEndX},${height - padding}
     L ${startX},${height - padding}
     Z
   `.trim();
@@ -146,9 +173,9 @@ export default function UShapeAttentionCurve({
   const gradientId = 'attentionGradient';
 
   const contextLevels = [
-    { label: 'Light', value: 30 },
-    { label: 'Medium', value: 60 },
-    { label: 'Heavy', value: 90 },
+    { label: 'Light (30%)', value: 30 },
+    { label: 'Medium (60%)', value: 60 },
+    { label: 'Heavy (90%)', value: 90 },
   ];
 
   return (
@@ -204,13 +231,25 @@ export default function UShapeAttentionCurve({
         </defs>
 
         {/* Background grid for reference */}
+        {/* Static baseline showing full available width */}
+        <line
+          x1={padding}
+          y1={height - padding}
+          x2={width - padding}
+          y2={height - padding}
+          stroke="var(--ifm-color-emphasis-200)"
+          strokeWidth="1"
+          opacity="0.5"
+        />
+
+        {/* Dynamic baseline showing active context span */}
         <line
           x1={startX}
           y1={height - padding}
-          x2={endX}
+          x2={currentEndX}
           y2={height - padding}
-          stroke="var(--ifm-color-emphasis-300)"
-          strokeWidth="1"
+          stroke="var(--ifm-color-emphasis-400)"
+          strokeWidth="2"
           strokeDasharray="4 4"
         />
 
@@ -278,7 +317,7 @@ export default function UShapeAttentionCurve({
         </text>
 
         <text
-          x={middleX}
+          x={currentMiddleX}
           y={height - padding + 30}
           textAnchor="middle"
           className={styles.label}
@@ -286,7 +325,7 @@ export default function UShapeAttentionCurve({
           Middle
         </text>
         <text
-          x={middleX}
+          x={currentMiddleX}
           y={height - padding + 50}
           textAnchor="middle"
           className={styles.sublabel}
@@ -295,7 +334,7 @@ export default function UShapeAttentionCurve({
         </text>
 
         <text
-          x={endX}
+          x={currentEndX}
           y={height - padding + 30}
           textAnchor="middle"
           className={styles.label}
@@ -303,7 +342,7 @@ export default function UShapeAttentionCurve({
           End
         </text>
         <text
-          x={endX}
+          x={currentEndX}
           y={height - padding + 50}
           textAnchor="middle"
           className={styles.sublabel}
@@ -348,7 +387,7 @@ export default function UShapeAttentionCurve({
       </svg>
 
       <div className={styles.controls}>
-        <span className={styles.controlLabel}>Context Usage:</span>
+        <span className={styles.controlLabel}>Context Length:</span>
         {contextLevels.map((level) => (
           <button
             key={level.value}
@@ -363,11 +402,12 @@ export default function UShapeAttentionCurve({
       </div>
 
       <div className={styles.explanation}>
-        <strong>The U-Curve Effect:</strong> As context usage increases, the
-        attention drop in the middle becomes more pronounced. With light usage,
-        degradation is minimal. With medium usage, the U-curve becomes
-        noticeable. With heavy usage, only the beginning and end are reliably
-        processed.
+        <strong>The U-Curve Effect:</strong> The curve's width shows context
+        length, while depth shows attention quality. As context length increases,
+        the attention drop in the middle becomes more pronounced. Short contexts
+        (30%) have minimal degradation. Medium contexts (60%) show a noticeable
+        U-curve. Long contexts (90%) exhibit severe attention loss—only the
+        beginning and end are reliably processed.
       </div>
     </div>
   );
