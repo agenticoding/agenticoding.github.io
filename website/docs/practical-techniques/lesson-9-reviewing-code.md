@@ -71,19 +71,13 @@ At that point, trust your tests as the objective arbiter and ship the code—fur
 
 ## Pull Requests for Human and AI Reviewers
 
-Pull requests serve two audiences: human maintainers and their AI review assistants. These audiences process information fundamentally differently—humans skim for intent and infer context from visual hierarchy, while AI agents parse statistically and need explicit structure ([Lesson 5](../methodology/lesson-5-grounding.md)). A well-crafted PR description serves both.
+Pull requests serve two audiences: human maintainers and their AI review assistants. These audiences process information fundamentally differently:
 
-This pattern demonstrates an advanced prompting technique that leverages sub-agents ([Lesson 7](./lesson-7-planning-execution.md)) to generate dual-optimized PR descriptions: one concise summary for human reviewers, one detailed technical explanation optimized for AI comprehension.
+- **Human reviewers** scan quickly, infer meaning from context, and value concise summaries (1-3 paragraphs max). They want to understand the "why" and business value at a glance.
 
-### The Dual Audience Problem
+- **AI review assistants** parse content chunk-by-chunk, struggle with vague pronouns and semantic drift, and need explicit structure ([Lesson 5](../methodology/lesson-5-grounding.md)). They require detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
 
-When you create a pull request, your description needs to communicate effectively with:
-
-1. **Human reviewers**: They scan quickly, infer meaning from context, and value concise summaries (1-3 paragraphs max). They want to understand the "why" and business value at a glance.
-
-2. **AI review assistants**: They parse content chunk-by-chunk, struggle with vague pronouns and semantic drift, and need explicit structure. They require detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
-
-Traditional PR descriptions optimize for one audience or the other. This creates friction—too verbose for humans, too vague for AI agents. The solution: generate both in a coordinated workflow.
+Traditional PR descriptions optimize for one audience or the other—too verbose for humans, too vague for AI agents. The solution: generate both in a coordinated workflow using sub-agents.
 
 ### The Advanced Prompt Pattern
 
@@ -120,34 +114,17 @@ Use the code research to learn the overall architecture, module responsibilities
 
 ### Mechanisms at Work
 
-This prompt combines multiple advanced techniques taught throughout the course:
+**Sub-agents for context conservation ([Lesson 5](../methodology/lesson-5-grounding.md#solution-2-sub-agents-for-context-isolation)):**
 
-**Sub-agents for context conservation ([Lesson 7](./lesson-7-planning-execution.md)):**
+The instruction "Using the sub task tool to conserve context" spawns a separate agent for git history exploration, preventing the main orchestrator's context from filling with commit diffs. The sub-agent returns only synthesized findings. Without this, exploring 20-30 changed files consumes 40K+ tokens, pushing critical constraints into the U-shaped attention curve's ignored middle.
 
-The instruction "Using the sub task tool to conserve context" tells Claude Code CLI to spawn a separate agent for git history exploration. This prevents the main orchestrator's context window from filling with commit diffs and file changes—the sub-agent returns only synthesized findings. Without sub-agents, exploring 20-30 changed files would consume 40K+ tokens before you finish gathering context, pushing critical constraints into the ignored middle of the U-shaped attention curve ([Lesson 5](../methodology/lesson-5-grounding.md#the-u-shaped-attention-curve)).
+This sub-agent capability is unique to Claude Code CLI (early 2025). Other tools (Cursor, Windsurf, GitHub Copilot, Cody) require splitting this into multiple sequential prompts: explore first, then draft based on findings.
 
-**For tools without sub-agents:** Remove "Using the sub task tool to conserve context" and accept that context will fill faster. Consider breaking the task into multiple prompts: one for exploration, one for drafting after you've reviewed findings.
+**Multi-source grounding ([Lesson 5](../methodology/lesson-5-grounding.md#production-pattern-multi-source-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
 
-**Agentic RAG with multiple sources ([Lesson 5](../methodology/lesson-5-grounding.md#agentic-rag-agent-driven-retrieval)):**
+**Structured prompting ([Lesson 4](../methodology/lesson-4-prompting-101.md)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
 
-Two grounding tools work in parallel:
-
-1. **ArguSeek**: "learn how to explain and optimize both for humans and LLMs" triggers web research on documentation best practices, PR description standards, and LLM optimization techniques. The agent dynamically queries multiple sources and synthesizes current best practices (2025).
-
-2. **Code Research (ChunkHound)**: "learn the overall architecture, module responsibilities and coding style" grounds the description in your actual codebase. The agent discovers naming conventions, architectural patterns, and module boundaries—ensuring the PR description uses project-specific terminology and accurately reflects your design decisions.
-
-This multi-source grounding combines ecosystem knowledge (web research) with codebase-specific context (semantic code search).
-
-**Structured prompting with persona and constraints ([Lesson 4](../methodology/lesson-4-prompting-101.md)):**
-
-- **Persona**: "You are a contributor to PROJECT_NAME" biases vocabulary toward collaborative development terms and establishes the communication context
-- **Communication constraints**: "Direct and concise, professional but conversational, assume competence" defines the tone—matching the course's target audience of senior engineers
-- **Format constraints**: "1-3 paragraphs max" (human), "focus on explaining changes efficiently" (AI) provide clear boundaries for each output
-- **Structural requirements**: "Explain: What was done... Breaking changes... Value added" creates a checklist that directs attention to critical information
-
-**Evidence requirements ([Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding)):**
-
-The prompt implicitly requires evidence through "explore the changes in the git history" and "learn the overall architecture, module responsibilities and coding style." The agent cannot draft accurate descriptions without reading actual commits and code—this forces grounding in your real changes rather than statistical guesses about what "typical" PRs contain.
+**Evidence requirements ([Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
 
 ### Applying This Pattern
 
@@ -179,29 +156,6 @@ The AI-optimized description should be:
 - **GitHub PR description**: Use the human-optimized version
 - **Separate markdown file** (e.g., `PR_REVIEW_CONTEXT.md`): Commit the AI-optimized version to help reviewers' AI assistants
 - **Commit message**: Reference both: "See PR description for summary, PR_REVIEW_CONTEXT.md for detailed technical context"
-
-:::tip Advanced Pattern: Multi-Agent Orchestration
-
-This prompt demonstrates production-level agent orchestration:
-
-1. **Sub-agent specialization**: Different agents handle different concerns (git exploration, web research, code analysis)
-2. **Context optimization**: Main orchestrator stays clean, receives only synthesized findings
-3. **Tool-specific optimization**: "Using the sub task tool" is Claude Code CLI specific—other tools (Cursor, Windsurf, Copilot Workspace) have different context management strategies
-
-**Adapting to other tools:** If your tool doesn't support sub-agents, split this into multiple sequential prompts:
-
-- Prompt 1: Explore git history and architecture
-- (Review findings)
-- Prompt 2: Draft descriptions based on exploration above
-
-The pattern remains valid; execution details change based on tool capabilities.
-:::
-
-### Why This Matters
-
-AI-generated PRs often have significantly longer descriptions than human-written ones—documenting the agent's reasoning and process in detail. This verbosity serves AI reviewers well but creates cognitive load for human maintainers. Dual-optimized descriptions solve this by separating concerns: humans get signal without noise, AI agents get comprehensive context without ambiguity.
-
-As AI-assisted code review becomes standard practice (GitHub Copilot, CodeRabbit, Qodo Merge, etc.), optimizing for both audiences isn't optional—it's necessary for effective collaboration in hybrid human-AI development workflows.
 
 ## Key Takeaways
 
