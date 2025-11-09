@@ -15,11 +15,15 @@ interface Connection {
   endY: number;
 }
 
-export default function WorkflowCircle() {
+interface WorkflowCircleProps {
+  compact?: boolean;
+}
+
+export default function WorkflowCircle({ compact = false }: WorkflowCircleProps) {
   const centerX = 250;
   const centerY = 250;
-  const radius = 140;
-  const nodeRadius = 50;
+  const radius = 170;
+  const nodeRadius = 60;
 
   // Calculate positions for each phase (clockwise starting from top)
   const phases: Phase[] = [
@@ -67,7 +71,7 @@ export default function WorkflowCircle() {
 
     // Calculate control points for curved arrows on the outer ring
     // Use the midpoint between start and end angles, pushed outward
-    const outerRadius = radius + 60;
+    const outerRadius = radius + 50;
 
     // Calculate angles for start and end points
     const startAngle = Math.atan2(startY - centerY, startX - centerX);
@@ -94,7 +98,7 @@ export default function WorkflowCircle() {
 
   return (
     <div
-      className={styles.container}
+      className={`${styles.container} ${compact ? styles.compact : ''}`}
       role="img"
       aria-label="Four-phase iterative workflow diagram showing Research, Plan, Execute, and Validate phases in a continuous cycle"
     >
@@ -183,10 +187,12 @@ export default function WorkflowCircle() {
       </svg>
 
       {/* Text description for additional context */}
-      <p className={styles.description}>
-        Each phase flows into the next in a continuous cycle. After validation,
-        iterate back to research as needed to refine and improve.
-      </p>
+      {!compact && (
+        <p className={styles.description}>
+          Each phase flows into the next in a continuous cycle. After validation,
+          iterate back to research as needed to refine and improve.
+        </p>
+      )}
     </div>
   );
 }

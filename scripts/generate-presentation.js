@@ -155,13 +155,27 @@ Examples you will see:
 **MANDATORY RULE:** When you encounter a [VISUAL_COMPONENT: X] marker, you MUST:
 1. Generate a "visual" slide type (NOT a "concept" slide)
 2. Set "component" field to the exact component name from the marker
-3. Use the surrounding context to write a descriptive caption
+3. Use the surrounding context to write a VALUE-FOCUSED caption
+
+**CAPTION REQUIREMENTS:**
+
+CRITICAL: Captions must be EXACTLY ONE SHORT SENTENCE capturing the core essence.
+- Length: 8-15 words maximum
+- No statistics, percentages, or numerical data
+- Less is more—distill to the single most important insight
+
+✓ Capture the core conceptual essence in one breath
+✓ Be direct and concise—what's the ONE key insight?
+✓ Focus on impact or principle, not detailed explanation
+✗ Don't include multiple points or list consequences
+✗ Don't use numbers, statistics, or percentages
+✗ Don't just describe what's shown (that's the title's job)
 
 Example:
 {
   "type": "visual",
   "component": "AbstractShapesVisualization",
-  "caption": "Visual comparison showing cluttered vs clean context"
+  "caption": "Clean context prevents agent hallucinations"
 }
 
 **DO NOT:**

@@ -8,6 +8,14 @@
   animation: fadeIn 0.6s ease-in-out;
 }
 
+/* Compact mode for presentations - maximize diagram size for prominence */
+.container.compact {
+  padding: 0;
+  margin: 0 auto;
+  max-width: 1000px;
+  max-height: none;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

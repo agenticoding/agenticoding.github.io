@@ -1,0 +1,258 @@
+.container {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: var(--visual-bg-decision);
+  border: 1px solid var(--visual-decision);
+  max-width: 800px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.container.compact {
+  margin: 6rem auto;
+  padding: 1rem;
+  max-width: 700px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+/* Titles */
+.title {
+  fill: var(--ifm-font-color-base);
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--ifm-font-family-base);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Labels (Start/Goal) */
+.label {
+  fill: var(--ifm-color-emphasis-700);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Context labels */
+.contextLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* Trade-off labels */
+.tradeoffLabel {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 11px;
+  font-family: var(--ifm-font-family-base);
+  font-style: italic;
+}
+
+/* ===== EXPLORATION SIDE (LEFT) ===== */
+
+.explorationGroup {
+  animation: slideInLeft 0.5s ease-in-out backwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.explorationNode {
+  fill: var(--ifm-background-surface-color);
+  stroke: var(--visual-workflow);
+  stroke-width: 2;
+}
+
+.explorationNodeEnd {
+  fill: var(--visual-workflow);
+  stroke: var(--visual-workflow);
+  stroke-width: 2;
+}
+
+.explorationPath {
+  stroke: var(--visual-workflow);
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+
+.arrowMarkerExploration polygon {
+  fill: var(--visual-workflow);
+  opacity: 0.8;
+}
+
+/* ===== EXACT SIDE (RIGHT) ===== */
+
+.exactGroup {
+  animation: slideInRight 0.5s ease-in-out 0.1s backwards;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.exactNode {
+  fill: var(--ifm-background-surface-color);
+  stroke: var(--visual-capability);
+  stroke-width: 2.5;
+}
+
+.exactNodeEnd {
+  fill: var(--visual-capability);
+  stroke: var(--visual-capability);
+  stroke-width: 2.5;
+}
+
+.exactPath {
+  stroke: var(--visual-capability);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.exactPathMarker {
+  fill: var(--visual-capability);
+  opacity: 0.4;
+}
+
+.arrowMarkerExact polygon {
+  fill: var(--visual-capability);
+}
+
+/* ===== CENTER DIVIDER ===== */
+
+.dividerLine {
+  stroke: var(--ifm-color-emphasis-300);
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+  opacity: 0.5;
+}
+
+.dividerText {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--ifm-font-family-base);
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+/* Description text */
+.description {
+  margin: 1.5rem 0 0 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-700);
+  text-align: center;
+  padding: 0 1rem;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+  padding-top: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .contextLabel {
+    font-size: 13px;
+  }
+
+  .tradeoffLabel {
+    font-size: 10px;
+  }
+
+  .dividerText {
+    font-size: 10px;
+  }
+
+  .description {
+    font-size: 0.85rem;
+    padding: 0 0.5rem;
+    padding-top: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .label {
+    font-size: 12px;
+  }
+
+  .contextLabel {
+    font-size: 12px;
+  }
+
+  .tradeoffLabel {
+    font-size: 9px;
+  }
+
+  .explorationPath,
+  .exactPath {
+    stroke-width: 1.5;
+  }
+
+  .explorationNode,
+  .exactNode {
+    stroke-width: 1.5;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .explorationGroup,
+  .exactGroup {
+    animation: none;
+  }
+}

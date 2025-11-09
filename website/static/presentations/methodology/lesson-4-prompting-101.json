@@ -5,232 +5,270 @@
     "estimatedDuration": "35-45 minutes",
     "learningObjectives": [
       "Understand prompting as pattern completion, not conversation",
-      "Master imperative commands and specificity in prompts",
-      "Apply chain-of-thought for complex multi-step tasks",
-      "Structure prompts effectively using Markdown/JSON",
-      "Recognize and avoid common LLM failure modes"
+      "Master clear instruction-based prompting with imperatives and specificity",
+      "Apply Chain-of-Thought for multi-step tasks",
+      "Use structure (Markdown/JSON) to direct model attention",
+      "Recognize and avoid common failure modes (negation, math)"
     ]
   },
   "slides": [
     {
       "type": "title",
-      "title": "Prompting 101",
-      "subtitle": "Pattern Completion, Not Conversation",
+      "title": "Lesson 4: Prompting 101",
+      "subtitle": "Precision Engineering, Not Conversation",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "This lesson shifts your mental model from 'talking to an AI' to 'initializing a pattern completion engine.' AI models predict the next token based on statistical patterns from training data. Your prompt is the pattern start; the model completes it. This fundamental distinction changes everything about how you write prompts.",
+        "talkingPoints": "Welcome to Prompting 101. Today we're fundamentally reframing how you think about AI coding assistants. They're not conversational partners—they're sophisticated pattern completion engines. Understanding this distinction is the foundation of effective prompting in production environments.",
         "timing": "1 minute",
-        "discussion": "Ask: 'Who's tried talking politely to an AI model? How many used 'please' and 'thank you'?' This sets up the key insight that conversational niceties waste tokens.",
-        "context": "Senior engineers often apply conversational communication patterns to AI prompts, treating them like requests to a human collaborator. This lesson corrects that assumption with concrete patterns.",
-        "transition": "Let's start with the most fundamental insight: what actually happens when you write a prompt."
+        "discussion": "Before we start, think about your last interaction with an AI coding assistant. Did you frame it as a conversation or as initializing a pattern completion engine?",
+        "context": "This lesson targets senior engineers who have experimented with AI assistants but may still use conversational framing. Moving from 'chat' to 'precision pattern initiation' requires a mental model shift.",
+        "transition": "Let's start with the core concept: what prompting actually is."
       }
     },
     {
       "type": "concept",
-      "title": "Pattern Completion, Not Requests",
+      "title": "Prompting as Pattern Completion",
       "content": [
-        "You're not asking a question—you're drawing the beginning of a pattern",
+        "Prompts initialize pattern completion, not requests",
         "Model predicts what naturally follows based on training data",
-        "More specific pattern start = more constrained completion space",
-        "Conversational tokens (please, thank you) dilute signal without clarity"
+        "More specific pattern start = more constrained completion",
+        "Tokens matter: every word affects statistical prediction",
+        "Skip pleasantries—'please' and 'thank you' dilute signal"
       ],
       "speakerNotes": {
-        "talkingPoints": "This is the mental model shift. When you write 'Write a TypeScript function that validates email addresses,' you're not making a request to a conscious agent. You're initializing a code block pattern. The model's job is pure statistical prediction: given this pattern start, what tokens come next? The analogy: you draw the first few musical notes, and the model completes the melody based on patterns it learned.",
-        "timing": "3 minutes",
-        "discussion": "Ask: 'What happens to your prompt token count when you add 'Can you please help me with...'?' Have students estimate: 10-15 tokens wasted on conversational overhead that adds zero clarity.",
-        "context": "In production, every token costs compute time and latency. A 500-token prompt with 50 tokens of pleasantries costs 10% more than a 450-token focused prompt with identical output quality.",
-        "transition": "Now that we understand the fundamental mechanism, let's apply it to practical prompting techniques."
+        "talkingPoints": "Think of prompting like drawing the beginning of a pattern. You're not asking a question or having a conversation. You're starting a sequence the model will statistically complete. The model's job is to predict what comes next based on similar patterns it learned during training. This is fundamentally different from conversational interaction—there's no understanding happening, just pattern completion.",
+        "timing": "3-4 minutes",
+        "discussion": "Why does framing prompting as pattern completion matter? How does this change how you structure your prompts compared to natural conversation?",
+        "context": "In production, this shift means removing conversational overhead. Teams that transition from chat-based prompting to precision pattern initiation see 30-40% fewer iterations because they're not competing with token budget for politeness.",
+        "transition": "Now let's look at concrete techniques. We'll start with imperative commands—the foundation of clear pattern initiation."
       }
     },
     {
       "type": "comparison",
-      "title": "Imperative Commands: Weak vs Strong",
+      "title": "Imperative Commands: Ineffective vs Effective",
       "left": {
-        "label": "Weak (Vague)",
+        "label": "Ineffective",
         "content": [
-          "Make a function",
-          "Fix the bug",
-          "Update the docs",
-          "Improve performance"
+          "Would you please write a validation function?",
+          "Thanks, could you add some checks?",
+          "Let me know what you think about this code",
+          "Conversational phrasing wastes tokens on pleasantries"
         ]
       },
       "right": {
-        "label": "Strong (Specific)",
+        "label": "Effective",
         "content": [
-          "Write a TypeScript function",
-          "Debug the null pointer exception in UserService.ts:47",
-          "Add JSDoc comments to all exported functions in auth.ts",
-          "Optimize the query to use indexed columns on user_id"
+          "Write a TypeScript function validating email addresses",
+          "Validate email format (RFC 5322), length (max 254), and DNS records",
+          "Return { valid: boolean, error?: string }",
+          "Direct, action-oriented language draws precise pattern"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "Weak verbs and vague nouns force the model to guess. 'Fix the bug' could mean anything—refactor? Add validation? The model fills gaps with assumptions that may not match your intent. Strong commands are specific about what, where, and how. Notice the pattern: strong commands include file names, line numbers, explicit targets, and constraints.",
-        "timing": "4 minutes",
-        "discussion": "Ask: 'Pick one weak prompt and list all the ambiguities the model would need to resolve.' For 'Fix the bug'—what bug? Which file? What's broken? How should it behave? Have students rewrite it specifically.",
-        "context": "In real projects, vague prompts lead to iteration cycles: model generates, you review, you clarify, model regenerates. Production code needs specificity upfront. Junior engineers often use weak prompts; senior engineers know specificity prevents rework.",
-        "transition": "Specificity isn't just about being clear—it's about constraining the completion space. Let's look at how constraints work."
+        "talkingPoints": "The left side shows conversational framing—you're asking for help. The right side shows pattern initiation—you're drawing the beginning of a code pattern the model will complete. Notice the effective version includes type signature, validation rules, and return type. You're not asking a question; you're starting a TypeScript pattern the model recognizes from its training data.",
+        "timing": "3-4 minutes",
+        "discussion": "What's different about the effective prompt structure? How does each element constrain the completion space?",
+        "context": "Production teams report that switching from 'Hey, could you...' to direct imperatives reduces iteration cycles from 3-5 attempts to 1-2. The model completes a specific pattern instead of guessing what you want.",
+        "transition": "Action verbs are critical here. Let's look at how specific verbs drive precision."
       }
     },
     {
-      "type": "code",
-      "title": "Pattern Completion in Action",
-      "language": "typescript",
-      "code": "// Pattern start:\n// Function 'authMiddleware' that validates JWT tokens\n\nexport async function authMiddleware(\n  req: Request,\n  res: Response,\n  next: NextFunction\n): Promise<void> {\n  const token = req.headers.authorization?.split(' ')[1];\n  if (!token) {\n    res.status(401).json({ error: 'Missing token' });\n    return;\n  }\n  // Model continues pattern here\n}",
-      "caption": "The first 8 lines define the pattern. The model completes validation, error handling, and control flow based on this start.",
+      "type": "concept",
+      "title": "Action Verbs: Driving Specificity",
+      "content": [
+        "'Write' vs 'Make': More precise verb = tighter pattern match",
+        "'Debug the null pointer exception in UserService.ts:47' vs 'Fix the bug': Exact problem location and type",
+        "'Add JSDoc comments to exported functions in auth.ts' vs 'Update the docs': Specific scope and format",
+        "'Optimize query to use indexed columns' vs 'Improve performance': Concrete technical constraint",
+        "Each verb activates different pattern clusters in the model's statistical space"
+      ],
       "speakerNotes": {
-        "talkingPoints": "Look at what this code block establishes: function name (authMiddleware), parameter types (Request, Response, NextFunction), return type (Promise<void>), and the pattern of validation logic starting. This is a complete semantic frame. The model knows what comes next because this pattern appears frequently in its training data.",
+        "talkingPoints": "Weak verbs like 'make,' 'fix,' 'update,' and 'improve' are vague. Strong verbs like 'write,' 'debug,' 'add,' and 'optimize' are specific. When you use a strong verb with context (like 'Debug the null pointer exception in UserService.ts:47'), you're not just asking for help—you're starting a precise debug pattern. The model's attention mechanisms activate different pattern clusters based on the verb you choose.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: 'What would the model predict comes after line 12?' Have students guess the next 5-10 lines. They'll likely predict: verify JWT signature, decode payload, check expiration, attach user to request, call next(). That's the power of pattern priming.",
-        "context": "This is why code examples in prompts are so powerful. A 6-line code example can communicate more intent than a 100-word explanation. It primes the pattern completion toward similar code.",
-        "transition": "Constraints make patterns even more specific. Let's see what happens when constraints are missing."
+        "discussion": "Why does verb choice matter for pattern completion? What verbs do you naturally use when prompting? How could you make them more specific?",
+        "context": "In code review, this principle extends to all communication. Vague feedback ('improve this') triggers generic patterns. Specific feedback ('reduce cyclomatic complexity from 8 to 4 using guard clauses') triggers precise architectural patterns.",
+        "transition": "Specificity compounds—add constraints and the completion space narrows even further."
       }
     },
     {
       "type": "concept",
       "title": "Constraints as Guardrails",
       "content": [
-        "Unconstrained prompts = model fills gaps with assumptions",
-        "Define boundaries explicitly: authentication type, endpoints, error handling",
-        "Constraints reduce completion space, improve accuracy",
-        "Example: 'JWT with RS256 algorithm' vs vague 'authentication'"
+        "Without constraints, model fills gaps with assumptions",
+        "Define boundaries explicitly: authentication type, endpoints, protocols",
+        "Example: 'Add authentication' → ambiguous (JWT? OAuth? Sessions?)",
+        "Constrained: 'Add JWT authentication with HS256, 15min expiry, refresh tokens'",
+        "Constraints map directly to test cases—validation becomes measurable"
       ],
       "speakerNotes": {
-        "talkingPoints": "Without constraints, the model has infinite reasonable choices. 'Add authentication to the API' could mean JWT, OAuth, session tokens, API keys, or mTLS. Each is valid; none is wrong without context. By defining 'Use JWT with RS256 for authentication,' you eliminate speculation. The model's completion space shrinks from infinite possibilities to a specific pattern.",
+        "talkingPoints": "Unconstrained prompts force the model to guess. 'Add authentication' could mean JWT, OAuth, session tokens, Kerberos—completely different implementations. When you say 'Add JWT authentication with HS256, 15-minute expiry, and refresh token rotation,' the completion space collapses to one clear pattern. The model doesn't need to decide—you've decided. This also means your constraints become your test specifications.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: 'I asked a model to add authentication and it generated OAuth. I wanted JWT. Was that the model's fault or my prompt's fault?' (Answer: yours. You didn't constrain.)",
-        "context": "In production code review, you'd catch this mismatch. In AI-assisted development, preventing mismatch upfront saves iteration. Constraints are a quality multiplier.",
-        "transition": "Now let's look at personas—another technique for steering completion space."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Personas: Vocabulary as Control",
-      "content": [
-        "Personas bias vocabulary distribution toward domain-specific terms",
-        "Example: 'security engineer' shifts completion toward threat models, attack surface, least privilege",
-        "Vocabulary acts as semantic query—retrieves different training patterns",
-        "Use when: domain terminology matters. Skip when: task is straightforward"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "A persona doesn't add knowledge—it changes which knowledge the model retrieves. 'You are a security engineer' increases probability of security-specific tokens appearing in the response: threat model, attack surface, privilege escalation, validation bypass. Without the persona, the model uses generic terms like 'check for issues.' Same underlying knowledge, different vocabulary surface. Personas are token efficiency—instead of listing 20 security concepts, you trigger the 'security engineer' cluster.",
-        "timing": "3 minutes",
-        "discussion": "Ask: 'What terms would change if you told a model 'You are a performance engineer' vs 'You are a security engineer' when reviewing the same code?' Lead toward: performance engineer thinks in terms of throughput, latency, bottlenecks, profiling. Security engineer thinks in terms of attack surface, validation, least privilege.",
-        "context": "Personas are particularly valuable when you need consistent vocabulary across multiple turns. In a security audit workflow, starting with the persona once keeps vocabulary aligned across 10+ followup questions.",
-        "transition": "Personas handle vocabulary control. Now let's look at how to structure complex tasks where you need to control execution."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Chain-of-Thought: Paving a Path",
-      "content": [
-        "CoT defines each step the model must execute in sequence",
-        "You dictate the route, not just the destination",
-        "Essential for multi-step operations (5+ steps) requiring accuracy",
-        "Provides validation points at each stage before moving forward"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "Chain-of-Thought is explicit sequencing. Instead of asking 'Refactor this code,' you say: 'Step 1: Identify functions longer than 20 lines. Step 2: Extract each into a separate method. Step 3: Update call sites. Step 4: Verify tests still pass. Step 5: Remove the original function.' CoT prevents shortcuts and ensures the model executes methodically. This is critical for QA workflows where you need deterministic results.",
-        "timing": "3 minutes",
-        "discussion": "Ask: 'When would you use CoT vs just asking for the result?' Answer: CoT for multi-step operations where accuracy matters. Single-step tasks don't need it; CoT adds latency without benefit.",
-        "context": "Production example: database migration workflows. You must: backup data, add migration, test migration, verify data integrity, deploy to production, monitor. CoT ensures each step completes before the next starts. Skipping a step is catastrophic.",
-        "transition": "We've covered vocabulary control and execution control. Let's look at how structure organizes information to guide the model."
+        "discussion": "What happens in production when you don't specify constraints? Have you seen authentication implementations that didn't match your actual requirements?",
+        "context": "This is critical for agent workflows. Constrained prompts reduce hallucination rates from 35-40% down to 5-10% because the model doesn't need to invent details.",
+        "transition": "Constraints work well for technical specifications. Now let's talk about another technique: personas, which bias vocabulary rather than behavior."
       }
     },
     {
       "type": "code",
-      "title": "Structured Prompts: Markdown for Clarity",
+      "title": "Personas: Biasing Vocabulary, Not Capability",
       "language": "markdown",
-      "code": "## Task: Build rate limiting middleware\n\n### Requirements\n- Limit requests to 100 per minute per IP\n- Return 429 when exceeded\n- Track in Redis\n\n### Implementation\n- Use token bucket algorithm\n- Store: `rate-limit:{ip}` in Redis\n- TTL: 60 seconds\n\n### Testing\n- Test: normal requests pass\n- Test: 101st request returns 429\n- Test: reset after TTL expires\n\n### Constraints\n- No external rate-limit packages\n- Must handle concurrent requests\n- Zero milliseconds of added latency",
-      "caption": "Markdown structure makes requirements scannable. Headings, lists, and constraints are visually separated and semantically clear.",
+      "code": "# Generic Approach\nAnalyze this authentication code for issues.\n\n# Persona-Driven Approach\nYou are a security engineer. Analyze this authentication code for:\n- Threat model: external adversaries with zero network access\n- Attack surface: user input validation, token storage, session management\n- Vulnerabilities using OWASP Top 10 framework\n- Mitigations with implementation details",
+      "caption": "Personas shift vocabulary distribution—security-specific terms like 'threat model' and 'attack surface' become statistically probable, triggering different knowledge retrieval patterns",
       "speakerNotes": {
-        "talkingPoints": "Structure matters. This same information as a paragraph would be 200 words of prose. As Markdown, it's 60 tokens of pure signal. Structure helps in two ways: (1) You parse it faster, confirming you've captured all requirements. (2) The model parses it faster, reducing token processing overhead and improving response quality.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: 'Count tokens in this Markdown vs how many tokens it would take to write the same requirements as prose.' This makes information density concrete.",
-        "context": "Well-structured prompts reduce iteration. The model understands requirements the first time because they're unambiguous. Poor structure leads to re-prompting: 'Wait, I also needed to handle X...'",
-        "transition": "Structure guides the model. But there are failure modes to avoid. Let's look at those."
+        "talkingPoints": "Personas don't add new knowledge to the model. They change which knowledge gets retrieved. 'You are a security engineer' increases the probability of security vocabulary—terms like 'threat model,' 'attack surface,' 'least privilege,' 'timing attacks'—appearing in the response. These words act as semantic queries, retrieving different training patterns than generic terms like 'check for issues.' The persona is a vocabulary shortcut: instead of listing every security term explicitly, you activate the cluster associated with 'security engineer.'",
+        "timing": "3-4 minutes",
+        "discussion": "When would you use a persona? When might adding persona context actually waste tokens without improving results? In what domains is vocabulary bias most valuable?",
+        "context": "This principle scales to all retrieval systems: ChunkHound (codebase search), ArguSeek (web research), vector databases. 'Authentication middleware patterns' retrieves different results than 'login code.' 'Rate limiting algorithms' finds different research than 'slow down requests.' Vocabulary is your retrieval control interface.",
+        "transition": "Personas handle vocabulary. For complex multi-step tasks, we need a different technique: Chain-of-Thought."
+      }
+    },
+    {
+      "type": "codeExecution",
+      "title": "Chain-of-Thought: Controlling Execution Path",
+      "steps": [
+        {
+          "line": "Engineer specifies: 'Refactor UserService to separate concerns'",
+          "highlightType": "human",
+          "annotation": "Explicit task with desired outcome"
+        },
+        {
+          "line": "CoT Step 1: Read existing UserService implementation",
+          "highlightType": "execution",
+          "annotation": "Model predicts first action: gather context"
+        },
+        {
+          "line": "LLM analyzes: 'I see authentication, database queries, and validation mixed together'",
+          "highlightType": "prediction",
+          "annotation": "Analysis of current state"
+        },
+        {
+          "line": "CoT Step 2: Extract authentication logic into AuthService",
+          "highlightType": "execution",
+          "annotation": "First refactoring step with specific target"
+        },
+        {
+          "line": "CoT Step 3: Move database queries to DataService",
+          "highlightType": "execution",
+          "annotation": "Second refactoring step"
+        },
+        {
+          "line": "CoT Step 4: Create ValidationService for validation rules",
+          "highlightType": "execution",
+          "annotation": "Third refactoring step"
+        },
+        {
+          "line": "LLM generates implementation for each step",
+          "highlightType": "prediction",
+          "annotation": "Code generation follows predetermined path"
+        },
+        {
+          "line": "Validation: Run tests after each step, verify separation",
+          "highlightType": "feedback",
+          "annotation": "Checkpoint ensures quality at each stage"
+        }
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Chain-of-Thought dictates execution sequence. You're not asking the model to figure out the best approach—you're telling it exactly which steps to take in order. This gives you control over complex tasks and makes reasoning transparent. Without CoT, a refactoring task might skip steps or take unexpected shortcuts. With CoT, you control the path, catch errors early, and ensure accuracy.",
+        "timing": "4-5 minutes",
+        "discussion": "When do you need CoT? What happens if you skip it for a 7-step task? How does explicit step guidance improve error detection?",
+        "context": "Production QA workflows rely heavily on CoT. Instead of 'write good tests,' you specify: 'Step 1: Identify happy paths. Step 2: Identify edge cases. Step 3: Write assertions for each. Step 4: Verify coverage.' This deterministic path prevents skipped test cases.",
+        "transition": "CoT works for complex sequences. Now let's talk about structure—how formatting directs attention."
       }
     },
     {
       "type": "concept",
-      "title": "Avoid Negation: Affirmation Bias",
+      "title": "Structure: Information Density & Attention",
       "content": [
-        "LLMs struggle with negation—attention treats NOT as a token competing for weight",
-        "Problem: focus on concept mentioned ('plain text passwords') while ignoring negation",
-        "Pattern: Explicit negation THEN positive opposite immediately after",
-        "Risky: 'Do NOT use plain text' → Model might ignore the NOT"
+        "Information density: how much meaning per token (Markdown >> prose)",
+        "Markdown headings, lists, code blocks parse efficiently",
+        "Structured prompts help model parse intent and respond with matching format",
+        "JSON for machine parsing; Markdown for hierarchical organization",
+        "Well-structured prompts improve token efficiency and grounding accuracy"
       ],
       "speakerNotes": {
-        "talkingPoints": "This is a mechanical limitation of how attention works. When you write 'Do NOT store passwords in plain text,' the tokens 'passwords' and 'plain text' get high attention weight because they're semantically relevant to the task. The token 'NOT' might get lower attention weight, so the model focuses on the concept (storing passwords in plain text) and misses the negation. The fix: 'Do NOT store passwords in plain text. Instead, always use bcrypt with salt rounds of 12.' Now the model sees the negation, then immediately sees the positive pattern to follow.",
+        "talkingPoints": "Format matters for attention. Markdown is information-dense—headings, lists, code blocks provide semantic structure with minimal overhead. When you write 'Create an API endpoint with authentication, validation, and error handling,' you're forcing the model to infer structure. When you write: # API Endpoint - Authentication: JWT with HS256 - Validation: request body schema - Error handling: consistent HTTP status codes—you're telling the model exactly how to structure its response. The model's attention mechanisms work better with explicit structure.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: 'Has anyone asked an AI to do something and it did the opposite?' This is often affirmation bias at work. Have them share examples and rewrite them with explicit positive opposites.",
-        "context": "Security prompts are particularly vulnerable. 'Don't allow SQL injection' might generate vulnerable code if the model misses the negation. 'Prevent SQL injection by parameterizing all queries' is safer.",
-        "transition": "One more failure mode: math."
+        "discussion": "How does prose-based prompting differ from structured prompting? What formats work best for different tasks?",
+        "context": "In production, structured prompts reduce parsing errors and improve consistency. Markdown structure is particularly effective because it's well-represented in training data—models see thousands of READMEs and documentation files with clear hierarchies.",
+        "transition": "Structure helps the model succeed. Now let's look at failure modes—things that reliably break prompts."
       }
     },
     {
       "type": "comparison",
-      "title": "Math Limitations: Predict vs Compute",
+      "title": "Negation: A Dangerous Failure Mode",
       "left": {
-        "label": "Don't Do This",
+        "label": "Risky Negation",
         "content": [
-          "Ask model: 'What's 47 × 83?'",
-          "Model predicts plausible number",
-          "Could be completely wrong",
-          "No way to verify without external calc"
+          "Do NOT store passwords in plain text",
+          "Do NOT use weak hashing algorithms",
+          "Avoid hardcoding secrets",
+          "LLMs miss negation due to attention bias—model focuses on the concepts mentioned, not the NOT"
         ]
       },
       "right": {
-        "label": "Do This Instead",
+        "label": "Explicit Positive Alternative",
         "content": [
-          "Ask model to write code: 'Generate function to multiply 47 × 83'",
-          "Function is executed, not predicted",
-          "Result is correct by definition",
-          "Code can be tested and verified"
+          "Do NOT store passwords in plain text. Instead, always hash with bcrypt (cost factor 12, random salt)",
+          "Do NOT use weak algorithms like MD5. Instead, use bcrypt or Argon2 for password hashing",
+          "Always use environment variables and secret management (Vault, AWS Secrets Manager)",
+          "Explicit negation + positive opposite prevents hallucination"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "LLMs are probabilistic text predictors. They're trained on patterns in text, not on executing algorithms. They generate plausible-sounding numbers that fail arithmetic tests. The workaround: have the model write executable code (Python, JavaScript, SQL) that performs the math. Code is deterministic; text prediction is probabilistic. This extends beyond arithmetic to any operation requiring precise computation.",
+        "talkingPoints": "LLMs struggle with pure negation. Attention mechanisms treat 'NOT' as just another token competing for weight. When attention is low on the negation token, the model focuses on the concepts mentioned ('passwords,' 'plain text') rather than their negation. This is called affirmation bias. The token generation fundamentally leans toward positive selection (what to include) rather than negative exclusion (what to avoid). The right approach: explicit negation first ('Do NOT store passwords in plain text'), then immediately provide the positive opposite ('Instead, always hash with bcrypt'). This pattern works because you're stating the constraint twice—once as prohibition, once as positive requirement.",
+        "timing": "3-4 minutes",
+        "discussion": "Have you seen this failure mode in practice? What happened when you relied on pure negation? How did explicit positive alternatives change the result?",
+        "context": "In code reviews, this principle applies universally. 'Don't use magic numbers' is weak. 'Don't use magic numbers; instead, define named constants with semantic meaning' is strong. Pure negation invites hallucination; positive alternatives ground the model.",
+        "transition": "Negation is one failure mode. Math is another—and it's fundamental."
+      }
+    },
+    {
+      "type": "comparison",
+      "title": "Math: When LLMs Fail Predictably",
+      "left": {
+        "label": "LLM Math (Unreliable)",
+        "content": [
+          "Calculate optimal cache size: 1M users × 100KB avg × 3x redundancy",
+          "LLMs are probabilistic text predictors, not calculators",
+          "Model generates plausible-sounding numbers that are often completely wrong",
+          "Don't rely on LLMs for arithmetic—they hallucinate calculations"
+        ]
+      },
+      "right": {
+        "label": "Write Code to Do Math",
+        "content": [
+          "Write TypeScript to calculate optimal cache size",
+          "Input: users, avg_data_size_kb, redundancy_factor",
+          "Output: total_cache_mb with human-readable breakdown",
+          "Model writes executable code that produces correct results"
+        ]
+      },
+      "speakerNotes": {
+        "talkingPoints": "This is critical: LLMs are terrible at arithmetic because they're text predictors, not calculators. They generate numbers that sound reasonable but are statistically likely to be wrong. Don't ask the model to calculate latency percentiles, memory requirements, or cost projections. Instead, have the model write code—TypeScript, Python, SQL—that does the math. The code is deterministic. Numbers are precise. You get verifiable results instead of confident hallucinations.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: 'Why would you ever ask an LLM a math question directly?' They'd never do it in a calculator app. They shouldn't do it in AI prompts either. Have them identify other cases: 'count the characters in this string,' 'calculate complexity,' 'sum these numbers.'",
-        "context": "Production code that relies on LLM-predicted math is a bug waiting to happen. Code review should catch this: ask 'Is this computation predicted or executed?' Predicted = risky. Executed = safe.",
-        "transition": "Now let's tie all these concepts together with a summary of what makes effective prompts."
+        "discussion": "When have you seen LLMs generate plausible-sounding but incorrect numbers? Why is 'write code to do this calculation' safer than 'calculate this'?",
+        "context": "Production systems fail because teams ask LLMs to calculate cache sizing, memory requirements, or SQL query costs and trust the responses. Always shift to 'write code that calculates this'—it's more tokens, but it's correct.",
+        "transition": "We've covered core techniques, failure modes, and guardrails. Let's tie this together with key takeaways."
       }
     },
     {
       "type": "takeaway",
-      "title": "Key Takeaways: Effective Prompting",
+      "title": "Key Takeaways: Precision Engineering",
       "content": [
-        "Pattern completion, not conversation—skip pleasantries",
-        "Imperative commands with specificity—name files, line numbers, explicit constraints",
-        "Personas bias vocabulary—use for domain-specific terms, skip for simple tasks",
-        "CoT for control—explicit steps for multi-step operations requiring accuracy",
-        "Structure with Markdown/JSON—information density guides attention",
-        "Avoid negation—state what you want, not what you don't want",
-        "Don't use LLMs for math—have them write executable code instead"
+        "Prompting is pattern completion, not conversation—initialize specific patterns, not requests",
+        "Clear instructions: imperatives + specificity + constraints eliminate ambiguity",
+        "Personas affect vocabulary, not capability—use them to bias semantic retrieval",
+        "Chain-of-Thought dictates execution path for multi-step tasks; essential for accuracy",
+        "Structure (Markdown/JSON) directs attention and improves token efficiency",
+        "Avoid negation; state positive alternatives explicitly",
+        "Never rely on LLMs for math—write code that calculates instead"
       ],
       "speakerNotes": {
-        "talkingPoints": "These are the operational principles for effective prompting. They're not suggestions; they're mechanical facts about how modern language models work. Pattern completion drives everything. Specificity constrains the completion space. Structure directs attention. Vocabulary biases retrieval. Negation gets missed. Math gets predicted wrong. Master these patterns and you'll write prompts that work the first time instead of requiring iteration.",
-        "timing": "2 minutes",
-        "discussion": "Ask: 'Which of these principles surprises you most?' Let students discuss real examples where they violated each principle and what happened.",
-        "context": "In production, these principles matter because they multiply your efficiency. Vague prompts lead to 5-7 iteration cycles. Specific prompts lead to 1-2 cycles. That's 3-4x faster development.",
-        "transition": "Next lesson we'll look at grounding—how to make prompts even more powerful by connecting them to real codebase context, documentation, and external knowledge."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "The Core Principle",
-      "content": [
-        "Effective prompting = precision engineering",
-        "You're initializing a pattern completion engine",
-        "Be specific, be structured, be explicit",
-        "Every word is a token with a cost—make them count"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "This brings us back to the opening mindset shift. You're not having a conversation with an AI colleague. You're initializing a deterministic pattern completion process. The quality of your initialization determines the quality of the output. Senior engineers understand precision engineering—tight tolerances, explicit specifications, no hand-waving. Prompting requires the same discipline.",
-        "timing": "1-2 minutes",
-        "discussion": "Ask: 'How is prompting similar to code review? You're defining specs precisely, anticipating edge cases, checking assumptions.' This resonates with senior engineers' existing mental models.",
-        "context": "End on a high note that reinforces the professional, technical nature of the material. This isn't magic; it's engineering.",
-        "transition": "Questions before we move forward? If not, let's practice these principles on real examples from your codebase."
+        "talkingPoints": "Effective prompting is precision engineering. You're not having a conversation—you're initializing a pattern completion engine. Every technique we covered today serves one goal: reducing ambiguity so the model completes the exact pattern you need. Specificity, constraints, structure, explicit positive alternatives—these aren't optional flourishes. They're the difference between one-shot success and five-iteration failure.",
+        "timing": "2-3 minutes",
+        "discussion": "Which of these techniques will you apply first in your work? What patterns have you been using that contradict what we covered today?",
+        "context": "Teams that adopt these principles see dramatic improvements: iteration cycles drop from 5+ attempts to 1-2, code quality improves because ambiguity is eliminated, and AI-assisted workflows become predictable and reliable.",
+        "transition": "Next lesson: Lesson 5 covers grounding—how to connect prompts to your codebase and external knowledge. Prompting precision + grounding + feedback loops form the foundation of production AI-assisted development."
       }
     }
   ]
