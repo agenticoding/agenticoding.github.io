@@ -5,6 +5,7 @@ title: 'Four-Phase Workflow'
 ---
 
 import WorkflowCircle from '@site/src/components/VisualElements/WorkflowCircle';
+import PlanningStrategyComparison from '@site/src/components/VisualElements/PlanningStrategyComparison';
 
 The hardest part of working with AI agents isn't learning new tools or writing better prompts. It's letting go.
 
@@ -77,6 +78,8 @@ For domain knowledge, ArguSeek pulls information from Google directly and effici
 ## Phase 2: Plan (Strategic Decision)
 
 With research complete, you now plan the change. Planning isn't a single approach—it's a strategic choice based on whether you know the solution or need to discover it.
+
+<PlanningStrategyComparison />
 
 **Exploration Planning:** Use this when the solution space is unclear or you need to discover the best approach. Rather than dictating a solution, frame the problem space and steer the agent to research your codebase patterns (via ChunkHound) and domain knowledge (via ArguSeek), explore alternatives, and iterate with you through reasoning-action cycles. You're discovering the approach together.
 
