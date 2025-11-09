@@ -93,9 +93,9 @@
       }
     },
     {
-      "type": "comparison",
+      "type": "marketingReality",
       "title": "Marketing vs Reality: What the LLM Does",
-      "left": {
+      "metaphor": {
         "label": "Marketing Speak",
         "content": [
           "\"The agent thinks\"",
@@ -104,7 +104,7 @@
           "\"The agent reasons\""
         ]
       },
-      "right": {
+      "reality": {
         "label": "Technical Reality",
         "content": [
           "Generates tokens via attention layer matrix ops",
