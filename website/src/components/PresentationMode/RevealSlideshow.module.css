@@ -43,11 +43,14 @@
 }
 
 .objectives {
-  margin-top: 2em;
+  margin-top: 0;
   text-align: left;
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .objectives h3 {
@@ -79,10 +82,13 @@
   text-align: left;
   font-size: clamp(1rem, 2vw, 1.2em);
   line-height: 1.6;
-  margin: 1em 0;
+  margin: 0;
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .bulletList li {
@@ -92,11 +98,15 @@
 .codeBlock {
   font-size: 0.8em;
   line-height: 1.4;
-  margin: 1em 0;
+  margin: 0;
   border-radius: 8px;
   background: #1e1e1e;
   padding: 1em;
   text-align: left;
+  overflow: auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .codeBlock code {
@@ -104,18 +114,22 @@
 }
 
 .caption {
-  font-size: 0.9em;
-  color: #999;
-  margin-top: 1em;
+  font-size: clamp(0.8rem, 1.5vw, 0.95em);
+  line-height: 1.4;
+  color: #e0e0e0;
+  margin-top: 0.5em;
   font-style: italic;
+  font-weight: 500;
 }
 
 .comparison {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(1em, 2vw, 1.5em);
-  margin: 1em 0;
-  max-height: 400px;
+  margin: 1.5em 0 0.5em 0;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
 }
 
 .comparisonLeft,
@@ -151,13 +165,13 @@
 
 .comparison ul {
   text-align: left;
-  font-size: clamp(0.65rem, 1.3vw, 0.75em);
+  font-size: clamp(0.85rem, 1.6vw, 0.95em);
   list-style: none;
   padding: 0;
 }
 
 .comparison li {
-  margin: 0.35em 0;
+  margin: 0.45em 0;
   padding-left: 1.2em;
   position: relative;
   line-height: 1.4;
@@ -182,8 +196,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(1em, 2vw, 1.5em);
-  margin: 1em 0;
-  max-height: 400px;
+  margin: 0;
+  height: 100%;
+  max-height: none;
 }
 
 .metaphorColumn,
@@ -241,22 +256,33 @@
 }
 
 .visualContainer {
-  margin: 2em 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: visible;
+  width: 100%;
+  height: 85%;
+  transform: scale(1.5);
+  transform-origin: center center;
+}
+
+.visualContainer > * {
+  object-fit: contain;
 }
 
 .takeawayList {
   text-align: left;
   font-size: clamp(0.9rem, 1.8vw, 1.1em);
   line-height: 1.6;
-  margin: 1em 0;
+  margin: 0;
   list-style: none;
   padding: 0;
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .takeawayList li {
@@ -277,9 +303,9 @@
 .executionFlow {
   text-align: left;
   max-width: 90%;
-  margin: 1em auto;
+  margin: 0 auto;
   padding: 0.5em;
-  max-height: 450px;
+  height: 100%;
   overflow-y: auto;
 }
 
@@ -427,7 +453,7 @@
 }
 
 :global(.reveal h1) {
-  font-size: clamp(1.8rem, 3.5vw, 2.2em);
+  font-size: clamp(2.5rem, 4.5vw, 3.0em);
   color: var(--ifm-color-primary);
   max-width: 90%;
   margin-left: auto;
@@ -464,11 +490,49 @@
   background: var(--ifm-color-primary);
 }
 
-/* Ensure slide content fits within viewport */
+/* Fixed layout structure for consistent positioning across slides */
 :global(.reveal .slides section) {
   max-width: 95%;
   margin-left: auto;
   margin-right: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1em 0 2.5em 0;
+  box-sizing: border-box;
+}
+
+/* Title area - fixed height and position */
+:global(.reveal .slides section > h2) {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  flex-shrink: 0;
+}
+
+/* Title slides have h1 instead */
+:global(.reveal .slides section > h1) {
+  margin-top: 2em;
+  margin-bottom: 1em;
+  flex-shrink: 0;
+}
+
+/* Content area - fills remaining space */
+:global(.reveal .slides section) > *:not(h1):not(h2):not(.slideCaption):not(.comparison):not(.marketingReality) {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* Caption area - fixed at bottom when present */
+.slideCaption {
+  margin-top: auto;
+  margin-bottom: 0;
+  flex-shrink: 0;
+  padding-top: 0.5em;
+  padding-bottom: 0;
 }
 
 :global(.reveal p),
