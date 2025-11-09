@@ -177,6 +177,69 @@
   color: #51cf66;
 }
 
+/* Marketing vs Reality - Translation Pattern */
+.marketingReality {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1em, 2vw, 1.5em);
+  margin: 1em 0;
+  max-height: calc(100vh - 18rem);
+}
+
+.metaphorColumn,
+.realityColumn {
+  padding: clamp(0.7em, 1.5vw, 1em);
+  border-radius: 8px;
+  overflow-y: auto;
+}
+
+.metaphorColumn {
+  background: rgba(124, 58, 237, 0.1); /* --brand-primary with alpha */
+  border: 2px solid rgba(124, 58, 237, 0.3);
+}
+
+.realityColumn {
+  background: rgba(109, 40, 217, 0.12); /* --brand-primary-dark with alpha */
+  border: 2px solid rgba(109, 40, 217, 0.35);
+}
+
+.metaphorHeading {
+  color: #8b5cf6; /* --brand-primary-light */
+  font-size: clamp(0.9rem, 1.8vw, 1em);
+  margin-bottom: 0.3em;
+  font-weight: 600;
+}
+
+.realityHeading {
+  color: #7c3aed; /* --brand-primary */
+  font-size: clamp(0.9rem, 1.8vw, 1em);
+  margin-bottom: 0.3em;
+  font-weight: 600;
+}
+
+.marketingReality ul {
+  text-align: left;
+  font-size: clamp(0.65rem, 1.3vw, 0.75em);
+  list-style: none;
+  padding: 0;
+}
+
+.marketingReality li {
+  margin: 0.35em 0;
+  padding-left: 1.2em;
+  position: relative;
+  line-height: 1.4;
+}
+
+.metaphorColumn li::before,
+.realityColumn li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #8b5cf6; /* --brand-primary-light */
+  font-weight: 600;
+}
+
 .visualContainer {
   margin: 2em 0;
   display: flex;

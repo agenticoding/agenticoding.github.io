@@ -20,7 +20,7 @@ interface SpeakerNotes {
 }
 
 interface Slide {
-  type: 'title' | 'concept' | 'code' | 'comparison' | 'visual' | 'takeaway';
+  type: 'title' | 'concept' | 'code' | 'comparison' | 'visual' | 'takeaway' | 'marketingReality';
   title: string;
   subtitle?: string;
   content?: string[];
@@ -30,6 +30,8 @@ interface Slide {
   component?: string;
   left?: { label: string; content: string[] };
   right?: { label: string; content: string[] };
+  metaphor?: { label: string; content: string[] };
+  reality?: { label: string; content: string[] };
   speakerNotes?: SpeakerNotes;
 }
 
@@ -189,6 +191,35 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
                   <ul>
                     {slide.right.content.map((item, i) => (
                       <li key={i} className="fragment">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </section>
+        );
+
+      case 'marketingReality':
+        return (
+          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+            <h2>{slide.title}</h2>
+            <div className={styles.marketingReality}>
+              {slide.metaphor && (
+                <div className={styles.metaphorColumn}>
+                  <h3 className={styles.metaphorHeading}>{slide.metaphor.label}</h3>
+                  <ul>
+                    {slide.metaphor.content.map((item, i) => (
+                      <li key={i} className="fragment" data-fragment-index={i * 2}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {slide.reality && (
+                <div className={styles.realityColumn}>
+                  <h3 className={styles.realityHeading}>{slide.reality.label}</h3>
+                  <ul>
+                    {slide.reality.content.map((item, i) => (
+                      <li key={i} className="fragment" data-fragment-index={i * 2 + 1}>{item}</li>
                     ))}
                   </ul>
                 </div>
