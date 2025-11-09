@@ -19,8 +19,14 @@ interface SpeakerNotes {
   transition?: string;
 }
 
+interface CodeExecutionStep {
+  line: string;
+  highlightType?: 'human' | 'prediction' | 'execution' | 'feedback' | 'summary';
+  annotation?: string;
+}
+
 interface Slide {
-  type: 'title' | 'concept' | 'code' | 'comparison' | 'visual' | 'takeaway' | 'marketingReality';
+  type: 'title' | 'concept' | 'code' | 'comparison' | 'visual' | 'takeaway' | 'marketingReality' | 'codeExecution';
   title: string;
   subtitle?: string;
   content?: string[];
@@ -32,6 +38,7 @@ interface Slide {
   right?: { label: string; content: string[] };
   metaphor?: { label: string; content: string[] };
   reality?: { label: string; content: string[] };
+  steps?: CodeExecutionStep[];
   speakerNotes?: SpeakerNotes;
 }
 
@@ -96,11 +103,13 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
 
     deck.initialize().then(() => {
       revealRef.current = deck;
+      deck.on('fragmentshown', handleFragmentShown);
     });
 
     // Cleanup
     return () => {
       if (revealRef.current) {
+        revealRef.current.off('fragmentshown', handleFragmentShown);
         revealRef.current.destroy();
         revealRef.current = null;
       }
@@ -118,6 +127,27 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
+
+  const handleFragmentShown = (event: { fragment: HTMLElement }) => {
+    const fragment = event.fragment;
+
+    // Find any scrollable container parent
+    const scrollContainer = fragment.closest(`.${styles.executionFlow}`) ||
+                           fragment.closest(`.${styles.comparisonLeft}`) ||
+                           fragment.closest(`.${styles.comparisonRight}`) ||
+                           fragment.closest(`.${styles.metaphorColumn}`) ||
+                           fragment.closest(`.${styles.realityColumn}`);
+
+    if (scrollContainer) {
+      // Scroll minimum amount needed to bring fragment into view
+      // Does nothing if fragment already visible
+      fragment.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',    // Only scroll if not visible
+        inline: 'nearest'
+      });
+    }
+  };
 
   const renderSlide = (slide: Slide, index: number) => {
     const key = `slide-${index}`;
@@ -255,6 +285,38 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
                   <li key={i} className="fragment">{item}</li>
                 ))}
               </ul>
+            )}
+          </section>
+        );
+
+      case 'codeExecution':
+        return (
+          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+            <h2>{slide.title}</h2>
+            {slide.steps && (
+              <div className={styles.executionFlow}>
+                {slide.steps.map((step, i) => {
+                  const highlightClass = step.highlightType
+                    ? styles[`execution${step.highlightType.charAt(0).toUpperCase()}${step.highlightType.slice(1)}`]
+                    : '';
+
+                  return (
+                    <div
+                      key={i}
+                      className={`${styles.executionStep} ${highlightClass} fragment`}
+                      data-fragment-index={i}
+                    >
+                      <div className={styles.stepLine}>
+                        {i > 0 && <span className={styles.flowArrow}>↓</span>}
+                        <span className={styles.stepText}>{step.line}</span>
+                      </div>
+                      {step.annotation && (
+                        <div className={styles.stepAnnotation}>{step.annotation}</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </section>
         );
