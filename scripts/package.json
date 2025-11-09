@@ -11,6 +11,7 @@
     "generate-podcast-audio-only": "node generate-podcast.js --audio-only"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1"
+    "@google/generative-ai": "^0.24.1",
+    "canvas": "^3.2.0"
   }
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-labelledby="title" role="img">
+  <title>AI Coding Course</title>
+
+  <!-- Optimized for favicon rendering at small sizes (16x16, 32x32) -->
+  <!-- Uses filled shapes instead of strokes for better ICO conversion -->
+  <!-- Preserves gapped loop design from original -->
+
+  <!-- Gapped ring matching original dasharray="90 30" dashoffset="10" -->
+  <!-- Gap from ~254° to ~350°, stroke from 350° to 254° (265° arc) -->
+  <path d="M 51.7,28.5
+           A 20,20 0 1,1 26.6,12.7
+           L 27.7,16.5
+           A 16,16 0 1,0 47.8,29.2
+           Z"
+        fill="#7c3aed"/>
+
+  <!-- Node (cursor / agent) - positioned in the gap -->
+  <rect x="43" y="15" width="10" height="10" rx="2" ry="2" fill="#ec4899"/>
+</svg>

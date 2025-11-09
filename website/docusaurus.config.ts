@@ -20,6 +20,25 @@ const config: Config = {
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/AI-Coding-Course/',
 
+  // Modern favicon setup (SVG + Apple touch icon)
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'icon',
+        href: '/AI-Coding-Course/img/icon.svg',
+        type: 'image/svg+xml',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'apple-touch-icon',
+        href: '/AI-Coding-Course/img/apple-touch-icon.png',
+      },
+    },
+  ],
+
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'ofriw', // Usually your GitHub org/user name.
@@ -85,8 +104,8 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    // Social media preview card (Open Graph, Twitter Card)
+    image: 'img/social-card.png',
     announcementBar: {
       id: 'under_construction',
       content: '🚧 Course Under Development - Content is still changing',
