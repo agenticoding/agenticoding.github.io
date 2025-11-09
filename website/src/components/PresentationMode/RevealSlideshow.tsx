@@ -10,6 +10,7 @@ import UShapeAttentionCurve from '../VisualElements/UShapeAttentionCurve';
 import WorkflowCircle from '../VisualElements/WorkflowCircle';
 import GroundingComparison from '../VisualElements/GroundingComparison';
 import ContextWindowMeter from '../VisualElements/ContextWindowMeter';
+import AbstractShapesVisualization from '../VisualElements/AbstractShapesVisualization';
 
 interface SpeakerNotes {
   talkingPoints: string;
@@ -64,6 +65,7 @@ const VISUAL_COMPONENTS = {
   WorkflowCircle,
   GroundingComparison,
   ContextWindowMeter,
+  AbstractShapesVisualization,
 };
 
 export default function RevealSlideshow({ presentation, onClose }: RevealSlideshowProps) {
@@ -177,7 +179,7 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
             <h2>{slide.title}</h2>
             {slide.content && (
               <ul className={styles.bulletList}>
-                {slide.content.map((item, i) => (
+                {slide.content.filter(item => item.trim() !== '').map((item, i) => (
                   <li key={i} className="fragment">{item}</li>
                 ))}
               </ul>
