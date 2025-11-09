@@ -11,6 +11,7 @@ import WorkflowCircle from '../VisualElements/WorkflowCircle';
 import GroundingComparison from '../VisualElements/GroundingComparison';
 import ContextWindowMeter from '../VisualElements/ContextWindowMeter';
 import AbstractShapesVisualization from '../VisualElements/AbstractShapesVisualization';
+import PlanningStrategyComparison from '../VisualElements/PlanningStrategyComparison';
 
 interface SpeakerNotes {
   talkingPoints: string;
@@ -66,6 +67,7 @@ const VISUAL_COMPONENTS = {
   GroundingComparison,
   ContextWindowMeter,
   AbstractShapesVisualization,
+  PlanningStrategyComparison,
 };
 
 export default function RevealSlideshow({ presentation, onClose }: RevealSlideshowProps) {
@@ -85,7 +87,7 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
       // Display controls
       controls: true,
       progress: true,
-      center: true,
+      center: false,
       hash: true,
       slideNumber: 'c/t',
 
@@ -197,7 +199,7 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
               </code>
             </pre>
             {slide.caption && (
-              <p className={styles.caption}>{slide.caption}</p>
+              <p className={`${styles.caption} ${styles.slideCaption}`}>{slide.caption}</p>
             )}
           </section>
         );
@@ -266,13 +268,16 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
           <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
             <h2>{slide.title}</h2>
             <div className={styles.visualContainer}>
-              {VisualComponent && <VisualComponent />}
+              {VisualComponent && <VisualComponent compact={true} />}
               {!VisualComponent && (
                 <p className={styles.error}>Visual component '{slide.component}' not found</p>
               )}
             </div>
             {slide.caption && (
-              <p className={styles.caption}>{slide.caption}</p>
+              <p className={`${styles.caption} ${styles.slideCaption}`}>{slide.caption}</p>
+            )}
+            {slide.subtitle && (
+              <p className={`${styles.subtitle} ${styles.slideCaption}`}>{slide.subtitle}</p>
             )}
           </section>
         );
