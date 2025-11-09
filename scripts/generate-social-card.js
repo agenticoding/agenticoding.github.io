@@ -19,12 +19,19 @@ async function generateSocialCard() {
   const canvas = createCanvas(WIDTH, HEIGHT);
   const ctx = canvas.getContext('2d');
 
-  // Create gradient background (purple to pink, matching the original)
-  const gradient = ctx.createLinearGradient(0, 0, 0, HEIGHT);
-  gradient.addColorStop(0, '#7c3aed');   // Purple
-  gradient.addColorStop(1, '#ec4899');   // Fuchsia/Pink
+  // Solid color background (professional minimalist approach)
+  ctx.fillStyle = '#7c3aed';  // Brand primary purple
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-  ctx.fillStyle = gradient;
+  // Add subtle radial overlay for depth without over-saturation
+  const radialGradient = ctx.createRadialGradient(
+    WIDTH / 2, HEIGHT / 2, 0,
+    WIDTH / 2, HEIGHT / 2, WIDTH * 0.8
+  );
+  radialGradient.addColorStop(0, 'rgba(139, 92, 246, 0.3)');  // Lighter purple center
+  radialGradient.addColorStop(1, 'rgba(124, 58, 237, 0)');    // Transparent edges
+
+  ctx.fillStyle = radialGradient;
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
   // Add a white/cream box in the center for the logo
@@ -57,10 +64,11 @@ async function generateSocialCard() {
   ctx.arc(centerX, centerY, radius, startAngle, endAngle);
   ctx.stroke();
 
-  // Draw the node (small square at top-right)
+  // Draw the node (small square at top-right) - matches logo.svg positioning
   const nodeSize = 22;
-  const nodeX = centerX + Math.cos((Math.PI / 180) * 45) * radius - nodeSize / 2;
-  const nodeY = centerY - Math.sin((Math.PI / 180) * 45) * radius - nodeSize / 2;
+  const nodeAngle = 36.9;  // Match logo.svg (was 45°, causing 8.1° misalignment)
+  const nodeX = centerX + Math.cos((Math.PI / 180) * nodeAngle) * radius - nodeSize / 2;
+  const nodeY = centerY - Math.sin((Math.PI / 180) * nodeAngle) * radius - nodeSize / 2;
 
   ctx.fillStyle = '#ec4899';
   ctx.beginPath();
