@@ -1,0 +1,210 @@
+{
+  "metadata": {
+    "title": "Debugging with AI Agents: Scientific Method Over Guesswork",
+    "lessonId": "lesson-10-debugging",
+    "estimatedDuration": "45-60 minutes",
+    "learningObjectives": [
+      "Apply systematic debugging methodology with AI agents as diagnostic tools",
+      "Build reproducible environments that isolate bugs for agent inspection",
+      "Configure agents with direct access to logs, databases, and runtime state",
+      "Establish evidence-based verification before accepting proposed solutions"
+    ]
+  },
+  "slides": [
+    {
+      "type": "title",
+      "title": "Debugging with AI Agents",
+      "subtitle": "Scientific Method Over Guesswork",
+      "content": [],
+      "speakerNotes": {
+        "talkingPoints": "This lesson teaches you how to leverage AI agents as systematic investigators for production debugging. We're moving away from casual 'what's wrong with my code?' conversations toward evidence-based diagnosis. The core insight: AI agents excel when you provide them diagnostic environments, not symptom descriptions.",
+        "timing": "1 minute",
+        "discussion": "How many of you currently use AI for debugging? How do you approach it?",
+        "context": "Production debugging is expensive and risky. The right approach dramatically reduces iteration cycles and prevents bad fixes from reaching production.",
+        "transition": "Let's start with the fundamental shift in mindset required for effective AI-assisted debugging."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "The Scientific Method: Five Steps",
+      "content": [
+        "Observe - Collect logs, metrics, traces, runtime state",
+        "Hypothesize - Form testable theories about root cause",
+        "Reproduce - Isolate the bug in controlled environment",
+        "Test - Verify hypothesis with evidence",
+        "Fix & Verify - Apply solution, confirm no regressions"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Most developers skip directly to guessing at fixes. Production debugging requires discipline. Each step builds on the previous one. Observation gives you data, hypothesis makes your guess testable, reproduction lets you verify, and testing ensures the fix actually works. AI agents are perfect for executing this method systematically when you give them the right information.",
+        "timing": "3-4 minutes",
+        "discussion": "What goes wrong when developers skip the 'reproduce' step? What happens in your org when you skip regression testing?",
+        "context": "In production, skipping reproduction often leads to fixes that work in isolation but break in the real system. Regression testing prevents the same bug from recurring.",
+        "transition": "Let's walk through each phase, starting with how to set up observation systems that agents can analyze."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Bad Approach: Vague Problem Description",
+      "language": "plaintext",
+      "code": "You: \"My API is slow sometimes. Can you fix it?\"\n\nAgent: Guesses wildly\n- Missing indexes?\n- N+1 queries?\n- Memory leak?\n- Bad algorithm?\n\nResult: 5+ iterations to find real issue",
+      "caption": "Without data, agents waste cycles guessing",
+      "speakerNotes": {
+        "talkingPoints": "This is how most developers approach AI-assisted debugging. You describe a symptom vaguely, the agent makes assumptions, and you iterate. This costs time and often results in band-aid fixes. The problem is you're asking the agent to diagnose without any clinical data.",
+        "timing": "1-2 minutes",
+        "discussion": "How many iterations does it typically take you to debug something with an AI assistant today?",
+        "context": "Compare this to a doctor diagnosing without tests vs. with blood work and imaging.",
+        "transition": "Now let's see what systematic observation looks like."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Good Approach: Systematic Observation",
+      "language": "bash",
+      "code": "# 1. Collect timing data\ntime curl https://api.example.com/endpoint\n\n# 2. Check logs for errors\ngrep -i error app.log | tail -20\n\n# 3. Measure resource usage\nps aux | grep node\nsmem -s -a\n\n# 4. Database query analysis\nEXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = ?;\n\n# 5. Heap snapshot for memory\nkill -USR2 <pid>  # Triggers heap dump",
+      "caption": "Gather evidence before forming hypotheses",
+      "speakerNotes": {
+        "talkingPoints": "This is the observation phase. You're not guessing—you're collecting data. When you give the agent this data, it can form real hypotheses. Notice we're getting timing info, error logs, resource usage, and execution plans. This tells the agent what's actually happening, not what you think is happening.",
+        "timing": "2-3 minutes",
+        "discussion": "Which of these observation techniques do you currently use in production? Which are you missing?",
+        "context": "In production debugging at scale, you need all of these. Missing any category leads to incomplete diagnosis.",
+        "transition": "Once you have observation data, you can form testable hypotheses. But the critical part is reproducibility."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Building Reproducible Environments",
+      "content": [
+        "Docker Compose setup with all dependencies (DB, cache, message queue)",
+        "Load test scripts that simulate production traffic patterns",
+        "Heap dump capture and analysis tools (for memory issues)",
+        "Data snapshots: production state captured and restored locally",
+        "Monitoring: Prometheus/Grafana for metrics during reproduction"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Reproducibility is the gateway to verification. If you can't isolate the bug in a controlled environment, you can't prove the fix works. This means Docker for consistency, load testing to trigger the condition, and state capture for complex scenarios. The agent can then run experiments in this environment and show you evidence.",
+        "timing": "3-4 minutes",
+        "discussion": "What production bugs at your company are hard to reproduce locally? What would make them easier?",
+        "context": "Companies with strong reproduction environments catch and fix bugs 10x faster. It's not overhead—it's the foundation for confidence.",
+        "transition": "Let's look at concrete techniques for setting up these environments."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Docker-Based Reproduction Setup",
+      "language": "yaml",
+      "code": "services:\n  app:\n    build: .\n    environment:\n      NODE_ENV: debug\n      DATABASE_URL: postgres://db:5432/app\n      LOG_LEVEL: debug\n    ports:\n      - \"3000:3000\"\n    command: node --max-old-space-size=512 --heapsnapshot-on-oom app.js\n\n  db:\n    image: postgres:15\n    environment:\n      POSTGRES_PASSWORD: debug\n    volumes:\n      - ./dumps/db.sql:/docker-entrypoint-initdb.d/init.sql\n\n  load-test:\n    image: loadimpact/k6\n    volumes:\n      - ./k6-script.js:/scripts/test.js",
+      "caption": "Reproduce exact conditions: code + DB state + traffic patterns",
+      "speakerNotes": {
+        "talkingPoints": "This Docker setup captures three critical elements: the application with heap dump on OOM, the database with production data snapshot, and a load test to simulate traffic. When the agent runs this, it reproduces the bug reliably. The heap snapshot is captured on OOM so you can analyze what objects are consuming memory.",
+        "timing": "2-3 minutes",
+        "discussion": "How close to your current debugging setup is this? What's missing?",
+        "context": "The heap dump on OOM is critical. It captures exactly what's in memory when the process crashes—your smoking gun.",
+        "transition": "Once reproduction works, the agent can inspect logs and databases to form real hypotheses."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Agents Reading Logs and Databases",
+      "content": [
+        "Structured logs (JSON format) with request IDs for tracing",
+        "Read-only database views for agent inspection",
+        "Log aggregation helpers: grep, jq for filtering",
+        "Query analysis: EXPLAIN ANALYZE for slow queries",
+        "Time-scoped queries: logs/data from the exact failure window"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Don't make agents guess what's in your system. Give them direct access to logs and databases. Structured logs (JSON with request IDs) let agents trace execution paths. Read-only database views protect production while giving agents diagnostic access. The key: scope everything to the failure window so agents see only relevant data.",
+        "timing": "2-3 minutes",
+        "discussion": "Do your logs currently have request IDs? Can you query them by request ID for tracing?",
+        "context": "Request ID correlation is essential for understanding flow through microservices. Without it, logs are noise.",
+        "transition": "Let's see how to give agents access to this data safely."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Structured Log Analysis",
+      "language": "bash",
+      "code": "# Get all logs for a specific request\ngrep '\"request_id\":\"abc-123\"' app.log | jq .\n\n# Find errors near a timestamp\njq 'select(.timestamp > \"2024-01-15T14:30:00Z\") | \n     select(.level == \"ERROR\")' app.log\n\n# Agent prompt:\n# \"Here are logs from the memory spike [LOGS]. \n#  What pattern do you see in these request IDs?\n#  Are connections being closed?\"\n\n# Follow with verification:\npsql -c \"SELECT count(*) as open_connections FROM pg_stat_activity;\"",
+      "caption": "Give agents structured data from failure window",
+      "speakerNotes": {
+        "talkingPoints": "This shows the workflow: extract logs for a specific request ID, filter to the failure window, then ask the agent what it observes. Notice the agent prompt is specific—'are connections being closed?' gives direction without guessing. Follow with a database query to verify the hypothesis. This is hypothesis-driven investigation.",
+        "timing": "2-3 minutes",
+        "discussion": "Have you seen memory leaks from unclosed database connections? What would catch that in logs?",
+        "context": "Connection leaks are silent by default. You need explicit logging of connection lifecycle events.",
+        "transition": "Once the agent identifies a hypothesis, you need evidence before accepting a fix."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Evidence-Based Verification",
+      "content": [
+        "Before/after metrics: memory, latency, error rate with fix",
+        "Automated verification scripts that run before accepting solution",
+        "Regression tests that prevent the exact bug from recurring",
+        "Load testing: run 8+ hour test to verify stability",
+        "Monitoring: confirm no side effects on other metrics"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Never accept 'this should fix it' without proof. Require evidence. Run your reproduction environment before and after the fix. Compare heap dumps, memory growth rates, query times. Automated verification scripts prevent human error. Regression tests are non-negotiable—they document the bug and prevent recurrence. Load testing for extended duration catches issues that appear after hours of uptime.",
+        "timing": "3 minutes",
+        "discussion": "How many of your bugs have recurred after you thought they were fixed? What would prevent that?",
+        "context": "Regression testing is how Netflix and Google prevent bugs from recurring. It's standard practice at scale.",
+        "transition": "Let's work through a hands-on exercise to see all this in practice."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Hands-On Exercise: Memory Leak Debug",
+      "content": [
+        "Scenario: Node.js API leaks memory, crashes with OOM after 6-8 hours",
+        "Step 1: Create Docker reproduction with load test and monitoring",
+        "Step 2: Build inspection tools (heap snapshots, memory growth graphs)",
+        "Step 3: Agent analyzes heap dumps, identifies root cause",
+        "Step 4: Verify fix with 8-hour load test + regression test"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "This is a realistic scenario. The bug is silent (no exceptions), only visible through metrics. Your task: set up the environment so the agent can systematically investigate. Heap snapshots show what's accumulating. Load test triggers the condition. The agent analyzes patterns in the heap and compares before/after. Success means stable memory over 8 hours with a regression test.",
+        "timing": "5-10 minutes (hands-on)",
+        "discussion": "What's the hardest part of debugging memory leaks in production? How would you approach it differently with agents?",
+        "context": "Memory leaks are high-cost bugs (process restarts, data loss). Proactive detection and systematic fixing prevents incidents.",
+        "transition": "Let's summarize the key principles before you start the exercise."
+      }
+    },
+    {
+      "type": "takeaway",
+      "title": "Production Debugging Checklist",
+      "content": [
+        "Can you reproduce it in isolation? (Docker + data snapshot)",
+        "Does the agent have access to all diagnostic data? (Logs, DB, metrics)",
+        "Is the fix verified with evidence? (Before/after comparison)",
+        "Does a regression test prevent recurrence? (Always)",
+        "Are there monitoring gaps to address? (Proactive alerting)"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Use this checklist every time you debug. Each point eliminates a class of problems. Reproducibility prevents wild guesses. Diagnostic access lets agents investigate properly. Evidence-based verification stops bad fixes. Regression tests prevent recurrence. Monitoring gaps are where the next bug hides. This transforms debugging from guesswork to engineering discipline.",
+        "timing": "2 minutes",
+        "discussion": "Which of these do you currently skip? What would happen if you added them?",
+        "context": "Companies with strong debugging discipline ship fewer critical bugs and fix them faster.",
+        "transition": "You now have the framework. Let's apply it."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Key Takeaways",
+      "content": [
+        "Systematic debugging beats guesswork: apply scientific method (observe → hypothesize → reproduce → test → verify)",
+        "Reproducibility is everything: Docker, snapshots, scripts isolate bugs for controlled investigation",
+        "Give agents full diagnostic access: logs, databases, runtime state—not just code",
+        "Remote debugging requires safety: read-only queries, controlled access, helper scripts only",
+        "Demand evidence before accepting fixes: reproduction before/after, tests passing, no regressions"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "These five principles separate production-grade debugging from amateur troubleshooting. Systematics beats intuition. Reproducibility enables verification. Access matters. Safety prevents damage. Evidence prevents mistakes. AI agents amplify all of these when used correctly. They're not magic—they're your systematic investigator executing your process.",
+        "timing": "2-3 minutes",
+        "discussion": "Which principle do you want to focus on in your team first?",
+        "context": "Start with reproducibility. It's the foundation for everything else. Once you have reproducible environments, the rest flows naturally.",
+        "transition": "You're ready to apply these techniques to real production issues. Start with the simplest bugs—the ones you already understand—to build the system before tackling the mysteries."
+      }
+    }
+  ]
+}

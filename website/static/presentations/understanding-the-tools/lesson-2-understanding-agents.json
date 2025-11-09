@@ -1,0 +1,230 @@
+{
+  "metadata": {
+    "title": "Understanding Agents: The Feedback Loop",
+    "lessonId": "lesson-2-understanding-agents",
+    "estimatedDuration": "35-45 minutes",
+    "learningObjectives": [
+      "Understand agents as autonomous feedback loops combining reasoning with action",
+      "Recognize that agents operate through text-based context windows with no hidden state",
+      "Learn how to steer agent behavior through context engineering",
+      "Understand built-in vs external tools and the MCP protocol",
+      "Recognize why CLI agents outperform chat interfaces for development work"
+    ]
+  },
+  "slides": [
+    {
+      "type": "title",
+      "title": "Understanding Agents",
+      "subtitle": "From Chat to Autonomous Feedback Loops",
+      "content": [],
+      "speakerNotes": {
+        "talkingPoints": "We established in Lesson 1 that LLMs are brains and agent frameworks are bodies. Now we're diving into how they work together. An agent isn't just an LLM in a loop - it's a deliberate feedback system that closes the execution gap you experience with chat interfaces. By the end of this lesson, you'll understand exactly what's happening when an agent works, and how to engineer it for your specific needs.",
+        "timing": "1 minute",
+        "discussion": "Have you used Claude Code or Cursor? What frustrated you about how fast it could complete tasks?",
+        "context": "This bridges the conceptual foundation from Lesson 1 into practical understanding of how agents operate.",
+        "transition": "Let's start with the fundamental difference between what you do manually in chat and what an agent does automatically."
+      }
+    },
+    {
+      "type": "comparison",
+      "title": "Chat vs Agent: The Feedback Loop",
+      "left": {
+        "label": "Chat Interface (Manual Loop)",
+        "content": [
+          "You read output, decide next action",
+          "You manually execute steps",
+          "You handle errors and retry",
+          "Context resets between conversations",
+          "You're the integration glue"
+        ]
+      },
+      "right": {
+        "label": "Agent (Autonomous Loop)",
+        "content": [
+          "Agent perceives → reasons → acts",
+          "Automatically closes feedback loop",
+          "Agent observes results and adapts",
+          "Continuous context across iterations",
+          "Agent is the integration glue"
+        ]
+      },
+      "speakerNotes": {
+        "talkingPoints": "The core difference is automation of the loop. With chat, you're a synchronous operator - you read, decide, execute manually. With an agent, the loop runs autonomously. The agent sees its own tool outputs, analyzes them, and adjusts. This is why agents can complete complex tasks in minutes that would take you 30 minutes of manual iteration.",
+        "timing": "2-3 minutes",
+        "discussion": "Walk through a real example: adding authentication to an API. In chat, you'd see code, edit it, run tests, handle errors manually. An agent does all of that without your intervention. What changes about your mental model here?",
+        "context": "This is the critical 'aha' moment. Most developers think agents are just LLMs + loops. They don't realize the agent is making decisions based on tool outputs in real-time.",
+        "transition": "Let's look at what happens inside that loop by understanding the agent execution cycle."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "The Agent Execution Loop",
+      "content": [
+        "Perceive: Read current state (files, error messages, test output)",
+        "Reason: Analyze what you learned, plan next action",
+        "Act: Execute tool calls (edit files, run commands)",
+        "Observe: Capture results (success, errors, new state)",
+        "Verify: Did we reach the goal? If not, iterate"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "This is the heartbeat of agent behavior. Each iteration through this loop moves toward the goal. Perceive gives the agent reality. Reason is where the LLM applies its knowledge to the problem. Act is the tool calling. Observe provides feedback. Verify decides if we're done or need another loop. The key insight: this entire cycle happens without you. You specify the goal once, and the agent completes the loop repeatedly until success.",
+        "timing": "2-3 minutes",
+        "discussion": "Take the authentication example: perceive = read the API structure and current code, reason = 'I need to add JWT validation', act = edit the endpoint file, observe = run tests and see the results, verify = tests pass or they don't. If they don't, the loop repeats. How many iterations might this take?",
+        "context": "This is mechanical behavior. The agent doesn't have 'understanding' - it's following this cycle with an LLM at the 'reason' step. That's why context matters so much - the agent's reasoning is only as good as what it perceives.",
+        "transition": "Now here's where it gets interesting: everything happening in this loop is actually just text."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Everything Is Text in the Context Window",
+      "content": [
+        "System instructions, your task, tool calls, and results flow as one continuous text stream",
+        "No hidden reasoning state - reasoning is just tokens in the context",
+        "Extended thinking modes generate hidden reasoning before visible output",
+        "The agent only knows what's currently in the context window",
+        "Context is finite; complex tasks may lose earlier details"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "This is the demystification moment. There's no special reasoning engine. The agent operates entirely in a text buffer. Your task, the agent's thoughts, tool outputs, all text. When you see reasoning like 'I should check the validation logic,' that's not internal thought - it's tokens being generated in context, visible to the LLM itself on the next turn. Extended thinking complicates this: models generate hidden reasoning tokens before producing visible output. You see a summary, but the full thinking is opaque.",
+        "timing": "2-3 minutes",
+        "discussion": "This challenges the mental model. Many developers think 'reasoning' is separate. It's not. It's just text generation. Does that change how you think about what the agent knows vs doesn't know? If the agent forgets something in a long task, where did that knowledge go?",
+        "context": "Production developers need to understand this for debugging. If an agent forgets context, you've filled the window. If it makes a bad decision, it saw bad input. No magic, no hidden state.",
+        "transition": "Understanding this leads to a powerful insight: the LLM is completely stateless. And that's actually a huge advantage."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "The Stateless Advantage",
+      "content": [
+        "LLM has no hidden state - only the current context is its 'world'",
+        "You control what the agent knows by controlling context",
+        "Agent can objectively review code it wrote if you hide authorship",
+        "No ego, no defensive reasoning about past decisions",
+        "Each context is a clean slate for exploring alternatives"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "This is counterintuitive but powerful. No state means no bias. The agent can't get defensive about code it wrote because it doesn't 'remember' writing it unless you tell it. You can present code as external, get an unbiased review, then show it's from the agent's own work. You control what the agent knows entirely through the context you engineer.",
+        "timing": "2-3 minutes",
+        "discussion": "Think about this in your own code reviews. You're biased about your own work. Humans defend their decisions. The agent doesn't. How would you exploit this for better code review? What context would you give to get an objective security review of code the agent just wrote?",
+        "context": "This enables workflows like: generate code → hide authorship → request security review → get unbiased feedback → reveal it was the agent's code → iterate. Impossible with human reviewers without ego issues.",
+        "transition": "Now that we understand agents operate through context, let's look at the tools that give them power to act in the real world."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Tools: Built-In vs External",
+      "content": [
+        "Built-in tools (Read, Edit, Bash, Grep) are optimized for LLM interaction",
+        "They include edge case handling, safety guardrails, and token efficiency",
+        "External tools use MCP (Model Context Protocol) for standardization",
+        "MCP enables plugins for databases, APIs, cloud platforms",
+        "Agent discovers available tools at runtime from configuration"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Built-in tools aren't just shell wrappers. They're engineered for LLMs. Grep output is formatted for token efficiency. Read tool handles large files gracefully. Bash has safety guardrails. External tools extend this through MCP - a standardized protocol that lets you connect agents to Postgres, Stripe, GitHub, anything with an MCP server. The agent doesn't need custom prompting for each tool - it discovers what's available.",
+        "timing": "2-3 minutes",
+        "discussion": "What external systems do you want agents accessing in your workflow? Database queries? Your company's internal APIs? Third-party services? MCP is the bridge.",
+        "context": "MCP is production infrastructure. Knowing this exists is critical for building agents into your development workflow. It's not just for developers writing agents - it's for teams building internal development tools.",
+        "transition": "Now let's understand why CLI agents specifically are powerful for development work."
+      }
+    },
+    {
+      "type": "code",
+      "title": "MCP Configuration Example",
+      "language": "json",
+      "code": "{\n  \"tools\": [\n    {\n      \"name\": \"database\",\n      \"config\": {\n        \"type\": \"postgres\",\n        \"connection\": \"postgresql://...\"\n      }\n    },\n    {\n      \"name\": \"github\",\n      \"config\": {\n        \"token\": \"ghp_...\",\n        \"repo\": \"myorg/myrepo\"\n      }\n    }\n  ]\n}",
+      "caption": "Agents discover available tools from configuration. MCP servers extend agent capabilities beyond built-in tools.",
+      "speakerNotes": {
+        "talkingPoints": "This is how you connect agents to your infrastructure. Configure MCP servers in settings, and the agent automatically gains access to those tools at runtime. No custom prompting needed. The agent sees available tools and can call them appropriately. This is how agents become integrated into your actual development workflow, not just toy examples.",
+        "timing": "1-2 minutes",
+        "discussion": "What would your team's MCP configuration look like? What systems do developers interact with daily that an agent should access?",
+        "context": "This is concrete infrastructure. Teams using agents seriously set up MCP for database access, internal APIs, and deployment systems.",
+        "transition": "With tools and context understood, let's look at why CLI agents outperform other agent interfaces for development work."
+      }
+    },
+    {
+      "type": "comparison",
+      "title": "CLI Agents vs Other Interfaces",
+      "left": {
+        "label": "Chat Interfaces (ChatGPT, Copilot Chat)",
+        "content": [
+          "Context resets between conversations",
+          "You manually copy-paste code between windows",
+          "Single sequential conversation",
+          "Good for questions, poor for complex implementation"
+        ]
+      },
+      "right": {
+        "label": "CLI Agents (Claude Code, etc)",
+        "content": [
+          "Persistent context within a terminal session",
+          "Direct file system access and tool integration",
+          "Multiple agents can run simultaneously in parallel",
+          "Designed for multi-step implementation work"
+        ]
+      },
+      "speakerNotes": {
+        "talkingPoints": "Chat interfaces excel at answering questions. CLI agents excel at getting work done. The key difference: parallelism and persistence. Open three terminal tabs running three agents on three projects. Each keeps context, each works independently. Try that with ChatGPT - you're managing three separate conversations manually. IDE agents (Cursor, Copilot) are tightly coupled to one window. You're blocked until the agent finishes or you lose context switching to another project.",
+        "timing": "2-3 minutes",
+        "discussion": "Have you tried running multiple agents simultaneously? Opening new tabs and letting them work on different projects in parallel is powerful. How does that change your workflow compared to waiting for one agent to finish?",
+        "context": "This is operational advantage. Senior engineers value parallelism and context persistence. CLI agents deliver that better than alternatives.",
+        "transition": "Understanding all of this - loops, text-based context, statefulness, tools - leads to the core principle of agent mastery."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Context Engineering: Steering Agent Behavior",
+      "content": [
+        "Agent's entire world is the text in its context window",
+        "You control behavior by engineering what context the agent sees",
+        "Vague context = wandering, unfocused behavior",
+        "Precise, scoped context = directed behavior",
+        "You can steer upfront with focused prompts or dynamically mid-conversation"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "This is the synthesis: understanding agents as text systems and LLMs as stateless reveals the core truth. You're not 'prompting' the agent - you're engineering its context. Everything it knows comes from text you control: system prompts, your instructions, tool results, conversation history. Precise context steers behavior. This is systems design thinking applied to text - you're designing interfaces and contracts, which you're already expert at. The difference is your interface is now a text buffer instead of an API.",
+        "timing": "2-3 minutes",
+        "discussion": "Think of a task where the agent wandered or did something unexpected. What context was missing? What tool output was misleading? How would you engineer the context differently next time?",
+        "context": "This is the production mindset. You don't blame the agent for confusion - you debug the context you provided. Is the task clear? Does the agent have the right examples? Is the error message providing the right signal?",
+        "transition": "Let's summarize what you now understand about agents and what it means for how you work with them."
+      }
+    },
+    {
+      "type": "takeaway",
+      "title": "Key Takeaways: Agent Mastery",
+      "content": [
+        "Agents are autonomous feedback loops that close execution gaps - they complete cycles without manual intervention",
+        "Everything is text in the context window - no magic, no hidden state, just token prediction",
+        "Statelessness is an advantage - agents can review their own work objectively",
+        "Tools (built-in and MCP) extend agent capabilities beyond reasoning into action",
+        "CLI agents enable parallel work across multiple projects - the operational advantage over chat interfaces",
+        "Effective agent work is context engineering - you're designing the text buffer the agent operates within"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Summarize the shift from Lesson 1 (LLMs are brains, frameworks are bodies) to here (understanding how the feedback loop works, what text actually flows through context, and how to steer behavior). The transition from conceptual understanding to practical mastery happens when you stop thinking about 'prompting' and start thinking about 'context engineering.'",
+        "timing": "2-3 minutes",
+        "discussion": "Which of these insights changed how you think about agents? What's your mental model now - is it different from before the lesson?",
+        "context": "This sets up for Lesson 3 (methodology) where you'll learn the actual practices for engineering context in production.",
+        "transition": "Next lesson, we move from understanding agents to understanding the high-level methodology for using them effectively on real coding tasks."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "What's Next: Lesson 3",
+      "content": [
+        "High-level methodology for structuring agent workflows",
+        "When to use agents vs manual coding",
+        "How to decompose complex tasks into agent-friendly chunks",
+        "Designing prompts that steer behavior precisely",
+        "Real-world case studies from production environments"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "We've laid the conceptual foundation and operational understanding. Lesson 3 shifts to methodology - the actual practices. You'll learn frameworks for deciding when to use agents, how to structure tasks, and how to write prompts that steer behavior. By Lesson 3's end, you'll have actionable patterns you can apply immediately.",
+        "timing": "1 minute",
+        "discussion": "What specific coding tasks in your current work do you think would benefit from agent automation? Start thinking about how you'd structure them for an agent.",
+        "context": "This preview primes students to think about applicability to their own work.",
+        "transition": "Great work on understanding the foundations. We'll dive into methodology next."
+      }
+    }
+  ]
+}
