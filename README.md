@@ -84,17 +84,6 @@ Serves the production build locally for testing.
 - **Custom Interactive Components** - Visual elements like GroundingComparison for conceptual clarity
 - **GitHub Pages Deployment** - Automated deployment via GitHub Actions
 
-## Contributing
-
-We welcome contributions! To contribute:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-lesson`
-3. Make your changes in the `website/docs` directory
-4. Follow the writing guidelines in `website/docs/CLAUDE.md`
-5. Test locally: `cd website && npm start`
-6. Submit a pull request with a clear description
-
 ## Content Structure
 
 ```
@@ -137,7 +126,7 @@ website/
 
 ### Content Generation (AI Pipeline)
 - **[Claude Code CLI](https://claude.ai/claude-code)** - Script and presentation generation (Haiku 4.5)
-- **[Google Gemini 2.5 Flash](https://ai.google.dev/)** - Text-to-speech synthesis for podcasts
+- **[Google Gemini 2.5 Pro](https://ai.google.dev/)** - Text-to-speech synthesis for podcasts
 - **Node.js** - Automation scripts for content pipeline
 
 ## Content Generation (Advanced)
@@ -181,25 +170,6 @@ node generate-presentation.js --all
 
 See [scripts/PRESENTATION_README.md](scripts/PRESENTATION_README.md) for detailed documentation.
 
-## Deployment
-
-The site is automatically deployed to GitHub Pages when changes are pushed to the `main` branch.
-
-**Manual Deployment:**
-```bash
-cd website
-GIT_USER=ofriw npm run deploy
-```
-
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
-
-## Support
-
-- **Issues:** [GitHub Issues](https://github.com/ofriw/AI-Coding-Course/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/ofriw/AI-Coding-Course/discussions)
-
----
-
-Built with by the AI Coding Course team.
