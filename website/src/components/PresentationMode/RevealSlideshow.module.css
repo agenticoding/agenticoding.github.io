@@ -1,0 +1,283 @@
+.presentationOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  background: #000;
+}
+
+.closeButton {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
+  transform: scale(1.1);
+}
+
+.subtitle {
+  font-size: clamp(1rem, 2vw, 1.2em);
+  color: #999;
+  margin-top: 0.5em;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.objectives {
+  margin-top: 2em;
+  text-align: left;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.objectives h3 {
+  font-size: clamp(1rem, 2vw, 1.2em);
+  margin-bottom: 0.5em;
+}
+
+.objectives ul {
+  list-style: none;
+  padding: 0;
+}
+
+.objectives li {
+  margin: 0.4em 0;
+  padding-left: 1.5em;
+  position: relative;
+  line-height: 1.5;
+  font-size: clamp(0.9rem, 1.6vw, 1em);
+}
+
+.objectives li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #42b883;
+}
+
+.bulletList {
+  text-align: left;
+  font-size: clamp(1rem, 2vw, 1.2em);
+  line-height: 1.6;
+  margin: 1em 0;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bulletList li {
+  margin: 0.8em 0;
+}
+
+.codeBlock {
+  font-size: 0.8em;
+  line-height: 1.4;
+  margin: 1em 0;
+  border-radius: 8px;
+  background: #1e1e1e;
+  padding: 1em;
+  text-align: left;
+}
+
+.codeBlock code {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.caption {
+  font-size: 0.9em;
+  color: #999;
+  margin-top: 1em;
+  font-style: italic;
+}
+
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1em, 2vw, 1.5em);
+  margin: 1em 0;
+  max-height: calc(100vh - 18rem);
+}
+
+.comparisonLeft,
+.comparisonRight {
+  padding: clamp(0.7em, 1.5vw, 1em);
+  border-radius: 8px;
+  overflow-y: auto;
+}
+
+.comparisonLeft {
+  background: rgba(255, 100, 100, 0.1);
+  border: 2px solid rgba(255, 100, 100, 0.3);
+}
+
+.comparisonRight {
+  background: rgba(100, 255, 100, 0.1);
+  border: 2px solid rgba(100, 255, 100, 0.3);
+}
+
+.ineffective {
+  color: #ff6b6b;
+  font-size: clamp(0.9rem, 1.8vw, 1em);
+  margin-bottom: 0.3em;
+  font-weight: 600;
+}
+
+.effective {
+  color: #51cf66;
+  font-size: clamp(0.9rem, 1.8vw, 1em);
+  margin-bottom: 0.3em;
+  font-weight: 600;
+}
+
+.comparison ul {
+  text-align: left;
+  font-size: clamp(0.65rem, 1.3vw, 0.75em);
+  list-style: none;
+  padding: 0;
+}
+
+.comparison li {
+  margin: 0.35em 0;
+  padding-left: 1.2em;
+  position: relative;
+  line-height: 1.4;
+}
+
+.comparisonLeft li::before {
+  content: "✗";
+  position: absolute;
+  left: 0;
+  color: #ff6b6b;
+}
+
+.comparisonRight li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #51cf66;
+}
+
+.visualContainer {
+  margin: 2em 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.takeawayList {
+  text-align: left;
+  font-size: clamp(0.9rem, 1.8vw, 1.1em);
+  line-height: 1.6;
+  margin: 1em 0;
+  list-style: none;
+  padding: 0;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.takeawayList li {
+  margin: 1em 0;
+  padding-left: 2em;
+  position: relative;
+  font-weight: 500;
+}
+
+.takeawayList li::before {
+  content: "💡";
+  position: absolute;
+  left: 0;
+  font-size: 1.2em;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 1.2em;
+  padding: 2em;
+}
+
+/* Override Reveal.js theme colors to match course design */
+:global(.reveal) {
+  font-family: var(--ifm-font-family-base);
+}
+
+:global(.reveal h1),
+:global(.reveal h2),
+:global(.reveal h3),
+:global(.reveal h4) {
+  font-family: var(--ifm-font-family-base);
+  font-weight: 700;
+}
+
+:global(.reveal h1) {
+  font-size: clamp(1.8rem, 3.5vw, 2.2em);
+  color: var(--ifm-color-primary);
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: break-word;
+}
+
+:global(.reveal h2) {
+  font-size: clamp(1.2rem, 2.5vw, 1.5em);
+  color: var(--ifm-color-primary);
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: break-word;
+}
+
+:global(.reveal h3) {
+  font-size: clamp(1rem, 2vw, 1.3em);
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: break-word;
+}
+
+:global(.reveal .controls) {
+  color: var(--ifm-color-primary);
+}
+
+:global(.reveal .progress) {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+:global(.reveal .progress span) {
+  background: var(--ifm-color-primary);
+}
+
+/* Ensure slide content fits within viewport */
+:global(.reveal .slides section) {
+  max-width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+:global(.reveal p),
+:global(.reveal ul),
+:global(.reveal ol) {
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
