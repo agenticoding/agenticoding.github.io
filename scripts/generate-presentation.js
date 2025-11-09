@@ -218,6 +218,19 @@ You must generate a valid JSON file with this structure:
       "speakerNotes": { ... }
     },
     {
+      "type": "marketingReality",
+      "title": "Marketing vs Reality: What Actually Happens",
+      "metaphor": {
+        "label": "Marketing Speak",
+        "content": ["Metaphorical statement 1", "Metaphorical statement 2"]
+      },
+      "reality": {
+        "label": "Technical Reality",
+        "content": ["Technical explanation 1", "Technical explanation 2"]
+      },
+      "speakerNotes": { ... }
+    },
+    {
       "type": "visual",
       "title": "Visual Component",
       "component": "CapabilityMatrix",
