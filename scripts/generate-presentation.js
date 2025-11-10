@@ -27,6 +27,7 @@ import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import * as readline from 'readline';
 import { parseMarkdownContent } from './lib/markdown-parser.js';
+import { processPresentation } from './lib/line-breaker.js';
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -146,49 +147,56 @@ For presentation slides:
 
 CODE FORMATTING FOR PRESENTATIONS:
 
-CRITICAL: Add strategic line breaks to prevent horizontal clipping on slides.
+✓ Include natural line breaks in code and text (use \\n for newlines in JSON strings)
+✓ Use standard formatting - post-processing will optimize line lengths automatically
+✓ Preserve semantic meaning and don't break mid-identifier or mid-word
+✓ DO NOT output literal newlines in JSON strings - always use the \\n escape sequence
 
-For ALL code examples and prompt text in slides:
-✓ Keep lines under 60 characters for readability in presentation view
-✓ Break at logical points:
-  - After commas in parameter lists
-  - After operators (&&, ||, =, etc.)
-  - After colons in object literals
-  - Between method chains (one per line)
-  - After opening statements before conditions
-✓ Maintain proper indentation for wrapped lines (2-4 spaces)
-✓ Preserve semantic meaning - don't break mid-identifier or mid-word
-✓ Use \\n escape sequence for line breaks in JSON strings (NOT literal newlines)
+NOTE: Line length optimization (60-char limit) is handled automatically by post-processing.
+Focus on preserving the exact content and structure from the source material.
 
-IMPORTANT: Since you're generating JSON output, use \\n for line breaks.
+<CRITICAL_CONSTRAINT>
+SOURCE MATERIAL VERIFICATION
 
-When you write the JSON output, use \\n in string literals (escaped backslash-n).
-This will be parsed as a newline character (\n) when the JSON is read.
+Before generating any slide containing code:
+1. Read the source material carefully to locate the code
+2. Verify all code examples exist verbatim in the source markdown
+3. Copy code exactly as it appears - character for character
 
-Examples showing what to OUTPUT in your generated JSON:
+ABSOLUTE PROHIBITIONS:
+✗ DO NOT generate hypothetical code examples that aren't in the source
+✗ DO NOT fabricate implementations that "would result" from prompts shown in the lesson
+✗ DO NOT create code to demonstrate "what the AI would produce"
+✗ DO NOT show resulting code unless it explicitly exists in the source markdown
 
-BEFORE (too long):
-"Write a TypeScript function that validates email addresses per RFC 5322"
+CORRECT BEHAVIOR:
+✓ If the lesson shows ONLY a prompt example (text describing what to ask AI):
+  → Show the prompt as-is using code/codeComparison type with language: "text"
+  → DO NOT generate the code that would result from that prompt
+  → The prompt itself IS the educational example
 
-AFTER (with \\n breaks in the output):
-"Write a TypeScript function that validates\\nemail addresses per RFC 5322"
+✓ If the lesson shows BOTH a prompt AND its resulting code:
+  → Show both exactly as they appear in the source
+  → Verify both exist in the source before including
 
-BEFORE (code too long):
-"const result = validateEmail(userInput) && checkDomain(domain) && verifyMX(server);"
+✓ If the lesson shows code WITHOUT a preceding prompt:
+  → Show the code exactly as it appears in the source
+  → Verify it exists before including
 
-AFTER (with \\n breaks in the output):
-"const result = validateEmail(userInput) &&\\n  checkDomain(domain) &&\\n  verifyMX(server);"
+EXAMPLES:
 
-Apply strategic line breaks using \\n to:
-- Prompt examples in codeComparison slides (both leftCode and rightCode)
-- Code snippets in code slides
-- Command examples
-- Text content in comparison slides if lines exceed 60 characters
+❌ WRONG - Fabricating implementation:
+Source contains: "Write a TypeScript function that validates email addresses per RFC 5322..."
+Slide shows: Complete validateEmail() function with regex and edge case handling
+Problem: The implementation was FABRICATED - it doesn't exist in the source
 
-TECHNICAL NOTE: When you output \\n in a JSON string, it represents an escaped newline.
-After JSON parsing, it becomes a single \n (newline character in the string value).
-DO NOT output literal newlines in JSON strings - always use the \\n escape sequence.
-This prevents horizontal scrolling and ensures all content is visible without clipping.
+✅ CORRECT - Showing only what exists:
+Source contains: "Write a TypeScript function that validates email addresses per RFC 5322..."
+Slide shows: The prompt text only (type: "code", language: "text")
+Result: Authentic prompt example preserved, no fabrication
+
+Remember: You are extracting and organizing existing content, NOT generating new examples.
+</CRITICAL_CONSTRAINT>
 
 <MANDATORY_RULES>
 CRITICAL: PRESERVING PROMPT EXAMPLES
@@ -261,6 +269,35 @@ COMMON MISTAKE - DO NOT DO THIS:
 }
 
 If you see prompt examples in the source (text showing what to write to an AI), you MUST use "code" or "codeComparison" slide types. NEVER use "concept" with bullet points for prompts.
+
+<VERIFICATION_PROTOCOL>
+CHAIN-OF-THOUGHT FOR CODE SLIDES
+
+For each code example you consider including in a slide, follow this verification process:
+
+Step 1: LOCATE - Where does this code appear in the source material?
+  → Identify the section and approximate line range
+  → If you cannot find it, STOP - do not include this code
+
+Step 2: EXTRACT - Copy the exact text from the source
+  → Character-by-character match
+  → Preserve all whitespace, formatting, and syntax
+
+Step 3: VERIFY - Does your extracted code match what you're about to include?
+  → Compare character by character
+  → If there's any mismatch, re-extract from source
+
+Step 4: CONFIRM - Is this code explicitly in the source, or did you generate it?
+  → If you generated it (even to "demonstrate" something), DELETE IT
+  → Only include code that passed Steps 1-3
+
+Apply this process to:
+- Every "code" slide
+- Every "codeComparison" leftCode and rightCode
+- Every "codeExecution" step that contains code
+
+This verification prevents fabrication and ensures educational integrity.
+</VERIFICATION_PROTOCOL>
 
 COMPONENT DETECTION (CRITICAL):
 
@@ -377,10 +414,20 @@ SPEAKER NOTES GUIDELINES:
 
 For each slide, provide speaker notes with:
 1. **Talking points**: What to say (2-4 sentences)
+   ✓ Explain what IS shown on the slide
+   ✗ Do NOT describe "what the model would generate" for prompts
+   ✗ Do NOT fabricate hypothetical outcomes or implementations
 2. **Timing**: Estimated time to spend (e.g., "2 minutes")
 3. **Discussion prompts**: Questions to engage students
 4. **Real-world context**: Production scenarios to reference
 5. **Transition**: How to move to next slide
+
+CRITICAL CONSTRAINTS FOR SPEAKER NOTES:
+✗ NEVER say "Notice what the model generated" when showing prompt examples alone
+✗ NEVER describe hypothetical code that would result from a prompt (unless that code exists in the source)
+✗ NEVER fabricate examples or scenarios not present in the source material
+✓ Focus on explaining the content that IS on the slide
+✓ Reference only examples and code that exist in the source
 
 Example speaker notes:
 \`\`\`
@@ -675,7 +722,22 @@ async function generatePresentationWithClaude(prompt, outputPath) {
         }
 
         console.log(`  ✅ Valid presentation JSON (${presentation.slides.length} slides)`);
-        resolve(presentation);
+
+        // Apply deterministic line breaking
+        console.log('  🔧 Applying line breaking...');
+        const { presentation: processedPresentation, stats } = processPresentation(presentation);
+
+        // Log statistics
+        if (stats.linesShortened > 0) {
+          console.log(`  ✂️  Fixed ${stats.linesShortened} long lines (max reduction: ${stats.maxReduction} chars)`);
+        } else {
+          console.log('  ✅ No lines exceeded 60 characters');
+        }
+
+        // Write back the processed presentation
+        writeFileSync(outputPath, JSON.stringify(processedPresentation, null, 2), 'utf-8');
+
+        resolve(processedPresentation);
       } catch (parseError) {
         reject(new Error(`Failed to parse JSON: ${parseError.message}\nContent preview: ${fileContent?.slice(0, 200)}`));
         return;
@@ -1011,6 +1073,106 @@ function validatePromptExamples(content, presentation) {
 }
 
 /**
+ * Normalize whitespace for comparison (remove extra spaces, normalize line breaks)
+ */
+function normalizeWhitespace(str) {
+  return str
+    .replace(/\r\n/g, '\n')  // Normalize line endings
+    .replace(/\s+/g, ' ')     // Collapse multiple spaces
+    .trim();
+}
+
+/**
+ * Check if a code block is a prompt example (text showing what to write to AI)
+ */
+function isPromptExample(slide) {
+  // If language is "text" or "markdown" and contains prompt verbs, it's likely a prompt example
+  const promptVerbs = ['Write a', 'You are', 'Calculate', 'Review', 'Debug', 'Add ', 'Create', 'Implement', 'Refactor'];
+  const slideCode = slide.code || '';
+  const isTextLang = slide.language === 'text' || slide.language === 'markdown';
+
+  return isTextLang && promptVerbs.some(verb => slideCode.includes(verb));
+}
+
+/**
+ * Validate that code examples in slides exist in source material
+ * This prevents fabrication of hypothetical implementations
+ * @param {string} content - Parsed markdown content
+ * @param {object} presentation - Generated presentation object
+ * @returns {object} Validation result with issues
+ */
+function validateCodeExamplesExistInSource(content, presentation) {
+  const issues = [];
+
+  // Extract all code blocks from source markdown
+  const codeBlockRegex = /```[\s\S]*?```/g;
+  const sourceCodeBlocks = content.match(codeBlockRegex) || [];
+
+  // Normalize source code blocks for comparison
+  const normalizedSourceBlocks = sourceCodeBlocks.map(block => {
+    // Remove the backticks and language specifier
+    const codeContent = block.replace(/^```[^\n]*\n/, '').replace(/\n```$/, '');
+    return normalizeWhitespace(codeContent);
+  });
+
+  // Check each code slide
+  const codeSlides = presentation.slides.filter(s =>
+    s.type === 'code' || s.type === 'codeComparison'
+  );
+
+  for (const slide of codeSlides) {
+    // For code slides with actual code (not prompt examples)
+    if (slide.type === 'code' && slide.code) {
+      // Skip prompt examples (text-based prompts are valid educational content)
+      if (isPromptExample(slide)) {
+        continue;
+      }
+
+      const codeContent = normalizeWhitespace(slide.code);
+
+      // Check if this code exists in any source block (allow partial matches for excerpts)
+      const existsInSource = normalizedSourceBlocks.some(sourceBlock =>
+        sourceBlock.includes(codeContent) || codeContent.includes(sourceBlock)
+      );
+
+      if (!existsInSource && codeContent.length > 20) {  // Ignore very short snippets
+        issues.push(`Code in slide "${slide.title}" (${codeContent.substring(0, 50)}...) not found in source`);
+      }
+    }
+
+    // For code comparison slides
+    if (slide.type === 'codeComparison') {
+      const checkCodeBlock = (codeBlock, label) => {
+        if (!codeBlock || !codeBlock.code) return;
+
+        // Skip prompt examples
+        if (codeBlock.language === 'text' || codeBlock.language === 'markdown') {
+          return;
+        }
+
+        const codeContent = normalizeWhitespace(codeBlock.code);
+        const existsInSource = normalizedSourceBlocks.some(sourceBlock =>
+          sourceBlock.includes(codeContent) || codeContent.includes(sourceBlock)
+        );
+
+        if (!existsInSource && codeContent.length > 20) {
+          issues.push(`${label} code in slide "${slide.title}" (${codeContent.substring(0, 50)}...) not found in source`);
+        }
+      };
+
+      checkCodeBlock(slide.leftCode, 'Left');
+      checkCodeBlock(slide.rightCode, 'Right');
+    }
+  }
+
+  return {
+    valid: issues.length === 0,
+    issues,
+    codeSlidesChecked: codeSlides.length
+  };
+}
+
+/**
  * Generate presentation for a file
  */
 async function generatePresentation(filePath, manifest, config) {
@@ -1117,6 +1279,23 @@ async function generatePresentation(filePath, manifest, config) {
       throw new Error('Prompt validation failed - prompt examples were converted to bullet points instead of code blocks');
     } else if (promptValidation.hasPromptExamples) {
       console.log(`  ✅ All prompt examples preserved as code blocks (${promptValidation.codeSlideCount} code slide(s))`);
+    }
+
+    // Validate code examples exist in source material
+    // CRITICAL: This validation prevents fabrication of hypothetical code implementations
+    // All code shown in slides must exist verbatim in the source lesson markdown
+    const codeSourceValidation = validateCodeExamplesExistInSource(content, presentation);
+    if (!codeSourceValidation.valid) {
+      console.log(`  ❌ BUILD FAILURE: ${codeSourceValidation.issues.length} fabricated code issue(s):`);
+      codeSourceValidation.issues.forEach(issue => {
+        console.log(`      - ${issue}`);
+      });
+      console.log(`  ℹ️  All code in slides MUST exist verbatim in the source markdown`);
+      console.log(`  ℹ️  DO NOT generate hypothetical implementations to demonstrate prompts`);
+      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
+      throw new Error('Code source validation failed - slides contain fabricated code not in source');
+    } else if (codeSourceValidation.codeSlidesChecked > 0) {
+      console.log(`  ✅ All ${codeSourceValidation.codeSlidesChecked} code slide(s) verified against source`);
     }
 
     // Copy to static directory for deployment
