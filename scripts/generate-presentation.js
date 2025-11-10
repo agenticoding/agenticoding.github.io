@@ -119,10 +119,11 @@ SLIDE TYPES:
 1. **Title Slide**: Lesson title, learning objectives
 2. **Concept Slide**: Key idea with 3-5 bullet points
 3. **Code Example Slide**: Code snippet with context
-4. **Code Execution Slide**: Step-by-step visualization of execution flows (agent loops, algorithms, workflows)
-5. **Comparison Slide**: Effective vs ineffective patterns
-6. **Visual Slide**: Custom component (CapabilityMatrix, etc.)
-7. **Key Takeaway Slide**: Summary of section or lesson
+4. **Code Comparison Slide**: Side-by-side code examples (especially for prompt examples)
+5. **Code Execution Slide**: Step-by-step visualization of execution flows (agent loops, algorithms, workflows)
+6. **Comparison Slide**: Effective vs ineffective patterns (bullet points)
+7. **Visual Slide**: Custom component (CapabilityMatrix, etc.)
+8. **Key Takeaway Slide**: Summary of section or lesson
 
 HANDLING CODE BLOCKS:
 
@@ -140,6 +141,124 @@ For presentation slides:
 ✓ EXCEPTION: Textual context flow examples showing agent conversation flows should use "codeExecution" slide type regardless of length (see section below)
 ✗ Don't include every code example from the lesson
 ✗ Don't show code without explaining its purpose
+
+CODE FORMATTING FOR PRESENTATIONS:
+
+CRITICAL: Add strategic line breaks to prevent horizontal clipping on slides.
+
+For ALL code examples and prompt text in slides:
+✓ Keep lines under 60 characters for readability in presentation view
+✓ Break at logical points:
+  - After commas in parameter lists
+  - After operators (&&, ||, =, etc.)
+  - After colons in object literals
+  - Between method chains (one per line)
+  - After opening statements before conditions
+✓ Maintain proper indentation for wrapped lines (2-4 spaces)
+✓ Preserve semantic meaning - don't break mid-identifier or mid-word
+✓ Use \\n escape sequence for line breaks in JSON strings (NOT literal newlines)
+
+IMPORTANT: Since you're generating JSON output, use \\n for line breaks.
+
+When you write the JSON output, use \\n in string literals (escaped backslash-n).
+This will be parsed as a newline character (\n) when the JSON is read.
+
+Examples showing what to OUTPUT in your generated JSON:
+
+BEFORE (too long):
+"Write a TypeScript function that validates email addresses per RFC 5322"
+
+AFTER (with \\n breaks in the output):
+"Write a TypeScript function that validates\\nemail addresses per RFC 5322"
+
+BEFORE (code too long):
+"const result = validateEmail(userInput) && checkDomain(domain) && verifyMX(server);"
+
+AFTER (with \\n breaks in the output):
+"const result = validateEmail(userInput) &&\\n  checkDomain(domain) &&\\n  verifyMX(server);"
+
+Apply strategic line breaks using \\n to:
+- Prompt examples in codeComparison slides (both leftCode and rightCode)
+- Code snippets in code slides
+- Command examples
+- Text content in comparison slides if lines exceed 60 characters
+
+TECHNICAL NOTE: When you output \\n in a JSON string, it represents an escaped newline.
+After JSON parsing, it becomes a single \n (newline character in the string value).
+DO NOT output literal newlines in JSON strings - always use the \\n escape sequence.
+This prevents horizontal scrolling and ensures all content is visible without clipping.
+
+<MANDATORY_RULES>
+CRITICAL: PRESERVING PROMPT EXAMPLES
+
+When the source material includes prompt examples (text showing what to write to an AI coding assistant):
+✓ PRESERVE EXACTLY as shown—do NOT paraphrase, rewrite, or summarize
+✓ Use "code" or "codeComparison" slide types, NEVER bullet points
+✓ Set language to "text" or "markdown" for prompt examples
+✓ Include the FULL prompt text with exact formatting and line breaks
+✓ Copy verbatim from source—these are educational examples showing structure
+
+Examples of prompt text that MUST be preserved as code:
+- "Write a TypeScript function that validates email addresses..."
+- "You are a security engineer. Review this code for..."
+- "Calculate the optimal cache size for 1M users..."
+
+For comparison slides showing ineffective vs effective prompts:
+✓ Use "codeComparison" type with leftCode/rightCode fields
+✓ Set language to "text" for both sides
+✓ Copy the EXACT prompt text from the source markdown
+✗ Do NOT convert prompts to bullet points
+✗ Do NOT summarize or paraphrase prompt text
+✗ Do NOT rewrite for "presentation style"—preserve authenticity
+
+Example structure for prompt comparisons:
+{
+  "type": "codeComparison",
+  "title": "Imperative Commands: Ineffective vs Effective",
+  "leftCode": {
+    "label": "Ineffective",
+    "language": "text",
+    "code": "Could you help me write a function to validate email addresses?\nThanks in advance!"
+  },
+  "rightCode": {
+    "label": "Effective",
+    "language": "text",
+    "code": "Write a TypeScript function that validates email addresses per RFC 5322.\nHandle edge cases:\n- Multiple @ symbols (invalid)\n- Missing domain (invalid)\n- Plus addressing (valid)\n\nReturn { valid: boolean, reason?: string }"
+  },
+  "speakerNotes": { ... }
+}
+</MANDATORY_RULES>
+
+COMMON MISTAKE - DO NOT DO THIS:
+
+❌ WRONG - Converting prompts to bullet points:
+{
+  "type": "concept",
+  "title": "Action Verbs and Specificity",
+  "content": [
+    "Write (not make) → establishes code pattern",
+    "Debug X in File.ts:47 (not fix) → pinpoints scope",
+    "Add JSDoc to exported functions (not improve docs) → defines scope"
+  ]
+}
+
+✅ CORRECT - Using codeComparison for prompts:
+{
+  "type": "codeComparison",
+  "title": "Action Verbs and Specificity",
+  "leftCode": {
+    "label": "Weak",
+    "language": "text",
+    "code": "Make a function\nFix the bug\nUpdate the docs\nImprove performance"
+  },
+  "rightCode": {
+    "label": "Strong",
+    "language": "text",
+    "code": "Write a function\nDebug the null pointer exception in UserService.ts:47\nAdd JSDoc comments to all exported functions in auth.ts\nOptimize the query to use indexed columns"
+  }
+}
+
+If you see prompt examples in the source (text showing what to write to an AI), you MUST use "code" or "codeComparison" slide types. NEVER use "concept" with bullet points for prompts.
 
 COMPONENT DETECTION (CRITICAL):
 
@@ -277,6 +396,8 @@ OUTPUT FORMAT:
 
 You must generate a valid JSON file with this structure:
 
+REMINDER: If the source contains prompt examples (text showing what to write to an AI coding assistant), you MUST use "code" or "codeComparison" slide types with language="text". NEVER convert prompts to bullet points in "concept" slides.
+
 {
   "metadata": {
     "title": "Lesson Title",
@@ -391,6 +512,21 @@ INCORRECT: Putting the better option on the left will show it with RED ✗ styli
       "speakerNotes": { ... }
     },
     {
+      "type": "codeComparison",
+      "title": "Prompt Example: Ineffective vs Effective",
+      "leftCode": {
+        "label": "Ineffective",        // MANDATORY: LEFT = worse prompt (RED ✗)
+        "language": "text",
+        "code": "Could you help me write a function?\nThanks!"
+      },
+      "rightCode": {
+        "label": "Effective",          // MANDATORY: RIGHT = better prompt (GREEN ✓)
+        "language": "text",
+        "code": "Write a TypeScript function that validates email addresses.\nHandle edge cases:\n- Invalid @ symbols\n- Missing domain\n\nReturn { valid: boolean }"
+      },
+      "speakerNotes": { ... }
+    },
+    {
       "type": "marketingReality",
       "title": "Marketing vs Reality: What Actually Happens",
       "metaphor": {
@@ -431,6 +567,15 @@ CRITICAL REQUIREMENTS:
 4. Every slide MUST have speakerNotes with all fields
 5. Code examples must be actual code from the lesson, not pseudocode
 6. Content arrays must have 3-5 items (except title slide)
+7. PROMPT EXAMPLES: Use "code" or "codeComparison" slide types, NEVER bullet points
+
+BEFORE YOU GENERATE - CHECKLIST:
+
+□ Did I identify all prompt examples in the source?
+□ Will I use "codeComparison" type for those slides (NOT "concept")?
+□ Will I set language="text" for prompt code blocks?
+□ Will I copy the EXACT prompt text without paraphrasing?
+□ Did I avoid converting prompts to explanatory bullet points?
 
 TECHNICAL CONTENT TITLE: ${fileName}
 
@@ -691,6 +836,77 @@ function validateComparisonSemantics(presentation) {
 }
 
 /**
+ * Validate that prompt examples are preserved as code blocks
+ * @param {string} content - Parsed markdown content
+ * @param {object} presentation - Generated presentation object
+ * @returns {object} Validation result with issues
+ */
+function validatePromptExamples(content, presentation) {
+  // Shared regex patterns for detecting prompt-like content
+  // Common action verbs that indicate AI assistant commands
+  const PROMPT_VERBS = 'Write |You are |Calculate |Review |Debug |Add |Create |Implement |Refactor ';
+
+  // Detect prompt examples in fenced code blocks
+  const promptInCodeBlocks = new RegExp(`\`\`\`[^\\n]*\\n(${PROMPT_VERBS})`, 'gi');
+  const hasPromptExamples = promptInCodeBlocks.test(content);
+
+  if (!hasPromptExamples) {
+    return { valid: true, issues: [], hasPromptExamples: false };
+  }
+
+  const codeSlides = presentation.slides.filter(s =>
+    s.type === 'code' || s.type === 'codeComparison'
+  );
+
+  const issues = [];
+
+  if (codeSlides.length === 0) {
+    issues.push('Source contains prompt examples but no code/codeComparison slides were generated');
+  }
+
+  // Pattern for detecting prompts in bullet points (should trigger codeComparison)
+  const promptLikeContent = new RegExp(`${PROMPT_VERBS}|Return \\{`, 'i');
+
+  // Pattern for detecting full prompt sentences (more specific check)
+  const fullPromptPattern = /Write [a-z]+ [a-z]+ function|You are a [a-z]+ engineer|Calculate the [a-z]+ [a-z]+|Review this [a-z]+ code/i;
+
+  // Check if any comparison slides have prompt-like content that should be codeComparison
+  const comparisonSlides = presentation.slides.filter(s => s.type === 'comparison');
+  for (const slide of comparisonSlides) {
+    if (slide.left?.content || slide.right?.content) {
+      const leftContent = slide.left?.content?.join(' ') || '';
+      const rightContent = slide.right?.content?.join(' ') || '';
+      const combinedContent = leftContent + ' ' + rightContent;
+
+      // Check if content looks like prompt examples
+      if (promptLikeContent.test(combinedContent)) {
+        issues.push(`Slide "${slide.title}" appears to contain prompt examples as bullet points - should use codeComparison type`);
+      }
+    }
+  }
+
+  // Check if any concept slides have prompt-like content that should be code/codeComparison
+  const conceptSlides = presentation.slides.filter(s => s.type === 'concept');
+  for (const slide of conceptSlides) {
+    if (slide.content && Array.isArray(slide.content)) {
+      const combinedContent = slide.content.join(' ');
+
+      // Check if content looks like prompt examples (full sentences/commands, not just explanatory text)
+      if (fullPromptPattern.test(combinedContent)) {
+        issues.push(`Slide "${slide.title}" appears to contain prompt examples as bullet points - should use code or codeComparison type`);
+      }
+    }
+  }
+
+  return {
+    valid: issues.length === 0,
+    issues,
+    hasPromptExamples,
+    codeSlideCount: codeSlides.length
+  };
+}
+
+/**
  * Generate presentation for a file
  */
 async function generatePresentation(filePath, manifest, config) {
@@ -732,6 +948,13 @@ async function generatePresentation(filePath, manifest, config) {
     // Generate presentation using Claude
     const presentation = await generatePresentationWithClaude(prompt, outputPath);
 
+    // ========================================================================
+    // POST-GENERATION VALIDATION
+    // These validations run AFTER Claude generates the JSON to ensure quality.
+    // They check that the LLM followed the prompt instructions correctly.
+    // Visual components and comparisons generate warnings; prompts cause errors.
+    // ========================================================================
+
     // Validate that all visual components were included
     const validation = validateComponents(content, presentation);
     if (!validation.allPresent) {
@@ -755,6 +978,23 @@ async function generatePresentation(filePath, manifest, config) {
       console.log(`  ℹ️  Remember: LEFT = ineffective/worse (RED ✗), RIGHT = effective/better (GREEN ✓)`);
     } else if (semanticValidation.totalComparisons > 0) {
       console.log(`  ✅ All ${semanticValidation.totalComparisons} comparison slide(s) follow correct convention`);
+    }
+
+    // Validate prompt examples are preserved as code
+    // CRITICAL: This validation is intentionally strict and throws an error because
+    // prompt examples are core educational content that must be preserved exactly.
+    // If the LLM converts prompts to bullet points, it loses pedagogical value.
+    const promptValidation = validatePromptExamples(content, presentation);
+    if (!promptValidation.valid) {
+      console.log(`  ❌ BUILD FAILURE: ${promptValidation.issues.length} prompt example issue(s):`);
+      promptValidation.issues.forEach(issue => {
+        console.log(`      - ${issue}`);
+      });
+      console.log(`  ℹ️  Prompt examples MUST use "code" or "codeComparison" slide types, NOT bullet points`);
+      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
+      throw new Error('Prompt validation failed - prompt examples were converted to bullet points instead of code blocks');
+    } else if (promptValidation.hasPromptExamples) {
+      console.log(`  ✅ All prompt examples preserved as code blocks (${promptValidation.codeSlideCount} code slide(s))`);
     }
 
     // Copy to static directory for deployment
