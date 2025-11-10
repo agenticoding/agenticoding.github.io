@@ -1,0 +1,61 @@
+/**
+ * Presentation slide content wrapper styles
+ *
+ * Provides reusable layout primitive for all presentation slide content.
+ * Replaces scattered centering and container patterns in RevealSlideshow.
+ */
+
+/* Base container - flexbox with configurable alignment */
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  overflow: hidden; /* Constrain to slide boundaries by default */
+}
+
+/* Content wrapper - handles scaling and centering */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Allow content to overflow slide boundaries (for scrollable content) */
+.allowOverflow {
+  overflow: visible;
+}
+
+.allowOverflow .content {
+  overflow: visible;
+}
+
+/* GPU optimization for smooth slide transitions */
+.gpuOptimized {
+  will-change: transform;
+  contain: layout paint;
+  transform: translateZ(0);
+}
+
+/* Responsive adjustments for edge cases */
+@media (max-width: 768px) {
+  .container {
+    max-width: 95%;
+  }
+}
+
+/* Accessibility - disable transforms for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .gpuOptimized {
+    will-change: auto;
+    transform: none;
+  }
+
+  .content {
+    transform: none !important;
+  }
+}
