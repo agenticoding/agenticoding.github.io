@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
+import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './UShapeAttentionCurve.module.css';
 
-interface UShapeAttentionCurveProps {
+interface UShapeAttentionCurveProps extends PresentationAwareProps {
   initialContextFill?: number; // Percentage of context window used (0-100)
 }
 
 export default function UShapeAttentionCurve({
   initialContextFill = 30,
+  compact = false,
 }: UShapeAttentionCurveProps) {
+  const containerClassName = compact
+    ? `${styles.container} ${styles.compact}`
+    : styles.container;
   const [contextFill, setContextFill] = useState(initialContextFill);
   const [animatedPath, setAnimatedPath] = useState<string>('');
   const [animatedEndX, setAnimatedEndX] = useState<number>(0);
@@ -179,7 +184,7 @@ export default function UShapeAttentionCurve({
   ];
 
   return (
-    <div className={styles.container}>
+    <div className={containerClassName}>
       <div className={styles.header}>
         <h4 className={styles.title}>Context Window Attention Curve</h4>
         <span className={styles.subtitle}>
@@ -402,12 +407,12 @@ export default function UShapeAttentionCurve({
       </div>
 
       <div className={styles.explanation}>
-        <strong>The U-Curve Effect:</strong> The curve's width shows context
-        length, while depth shows attention quality. As context length increases,
-        the attention drop in the middle becomes more pronounced. Short contexts
-        (30%) have minimal degradation. Medium contexts (60%) show a noticeable
-        U-curve. Long contexts (90%) exhibit severe attention loss—only the
-        beginning and end are reliably processed.
+        <strong>The U-Curve Effect:</strong> The curve&apos;s width shows
+        context length, while depth shows attention quality. As context length
+        increases, the attention drop in the middle becomes more pronounced.
+        Short contexts (30%) have minimal degradation. Medium contexts (60%)
+        show a noticeable U-curve. Long contexts (90%) exhibit severe attention
+        loss—only the beginning and end are reliably processed.
       </div>
     </div>
   );

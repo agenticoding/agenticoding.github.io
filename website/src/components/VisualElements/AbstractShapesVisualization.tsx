@@ -1,10 +1,17 @@
 import React from 'react';
+import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './AbstractShapesVisualization.module.css';
 
-export default function AbstractShapesVisualization() {
+export default function AbstractShapesVisualization({
+  compact = false,
+}: PresentationAwareProps = {}) {
+  const containerClassName = compact
+    ? `${styles.container} ${styles.compact}`
+    : styles.container;
+
   return (
     <div
-      className={styles.container}
+      className={containerClassName}
       role="img"
       aria-label="Comparison of cluttered context with multiple squares versus clean context with single circle, demonstrating how context density affects agent solutions"
     >

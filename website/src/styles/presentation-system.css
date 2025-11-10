@@ -1,0 +1,434 @@
+/**
+ * ========================================================================
+ * PRESENTATION SYSTEM - Unified Reveal.js Integration
+ * ========================================================================
+ *
+ * Single source of truth for all presentation-specific styling.
+ *
+ * Purpose:
+ * - Eliminates scattered CSS fixes across component files
+ * - Provides consistent dark mode variables for presentations
+ * - Defines spacing/sizing rules for fixed 1280x720 viewport
+ * - Establishes component contract for presentation compatibility
+ *
+ * Architecture:
+ * 1. CSS Custom Properties - Presentation-specific variable overrides
+ * 2. Layout Primitives - Spacing, sizing, flexbox rules for slides
+ * 3. Compact Mode Utilities - Zero-margin/padding classes for components
+ * 4. Dark Mode Overrides - Color system adapted for Reveal.js black theme
+ *
+ * Usage:
+ * - Import this file in custom.css
+ * - Visual components should support `compact` prop
+ * - Use presentation variables (--pres-*) for slide-specific values
+ *
+ * ========================================================================
+ */
+
+/* ========================================================================
+   PRESENTATION CUSTOM PROPERTIES
+   ======================================================================== */
+
+:root {
+  /* Spacing scale - optimized for 1280x720 fixed viewport */
+  --pres-space-none: 0;
+  --pres-space-xs: 0.25rem;
+  --pres-space-sm: 0.5rem;
+  --pres-space-md: 1rem;
+  --pres-space-lg: 1.5rem;
+  --pres-space-xl: 2rem;
+
+  /* Component sizing constraints */
+  --pres-component-max-width: 90%;
+  --pres-visual-max-width: 95%;
+  --pres-content-max-height: 85vh;
+
+  /* Scaling factors for visual prominence */
+  --pres-visual-scale: 1.5;
+  --pres-visual-scale-compact: 1;
+}
+
+/* ========================================================================
+   REVEAL.JS DARK MODE OVERRIDES
+   ========================================================================
+   All presentations use Reveal.js black theme. Components must adapt
+   to dark backgrounds using these CSS variables.
+   ======================================================================== */
+
+.reveal {
+  /* Base typography - critical for proper text sizing */
+  font-size: 42px;
+  color: #fff;
+  line-height: 1.3;
+
+  /* Typography colors - high contrast for readability */
+  --ifm-font-color-base: #c9d1d9;
+  --ifm-heading-color: #e6edf3;
+  --ifm-color-emphasis-700: #8b949e;
+  --ifm-color-emphasis-600: #6e7681;
+  --ifm-color-emphasis-500: #545d68;
+  --ifm-color-emphasis-300: #3d444d;
+  --ifm-color-emphasis-200: #30363d;
+
+  /* Backgrounds - GitHub-style dark theme */
+  --ifm-background-color: #0d1117;
+  --ifm-background-surface-color: #161b22;
+
+  /* Brand colors - brighter for dark backgrounds */
+  --brand-primary: #a78bfa;
+  --brand-primary-light: #c4b5fd;
+  --brand-primary-dark: #8b5cf6;
+
+  /* Semantic colors - ensures dark mode throughout presentation */
+  --semantic-info: #60a5fa;
+  --semantic-success: #22d3ee;
+  --semantic-warning: #fb923c;
+  --semantic-error: #fb7185;
+  --semantic-neutral: #94a3b8;
+
+  /* Visual element colors - adjusted for dark mode contrast */
+  --visual-workflow: #a78bfa; /* Purple - AI workflows */
+  --visual-capability: #22d3ee; /* Cyan - capabilities */
+  --visual-limitation: #fb923c; /* Orange - limitations */
+  --visual-decision: #c4b5fd; /* Light purple - decisions */
+  --visual-error: #fb7185; /* Rose - errors */
+  --visual-neutral: #94a3b8; /* Slate - neutral */
+
+  /* Visual element backgrounds - transparent overlays */
+  --visual-bg-workflow: rgba(167, 139, 250, 0.15);
+  --visual-bg-capability: rgba(34, 211, 238, 0.15);
+  --visual-bg-limitation: rgba(251, 146, 60, 0.15);
+  --visual-bg-decision: rgba(196, 181, 253, 0.15);
+  --visual-bg-error: rgba(251, 113, 133, 0.15);
+}
+
+/* ========================================================================
+   REVEAL.JS SLIDE LAYOUT STRUCTURE
+   ========================================================================
+   Fixed flexbox layout ensuring consistent positioning:
+   - Title (h1/h2) at top (flex-shrink: 0)
+   - Content area fills remaining space (flex-grow: 1)
+   - Caption at bottom when present (margin-top: auto)
+   ======================================================================== */
+
+.reveal .slides section {
+  /* Full viewport layout with flexbox */
+  width: 100%;
+  height: 100%;
+  max-width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* Vertical flex container */
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  /* Padding reserves space for slide numbers/progress */
+  padding: 1em 0 2.5em 0;
+  box-sizing: border-box;
+}
+
+/* Title area - fixed at top */
+:global(.reveal .slides section > h1) {
+  margin-top: 2em;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+:global(.reveal .slides section > h2) {
+  margin-top: 0;
+  margin-bottom: 1.5em;
+  flex-shrink: 0;
+}
+
+/* Content area - grows to fill available space */
+.reveal .slides section > *:not(h1):not(h2):not(.slideCaption):not(.subtitle) {
+  flex-grow: 1;
+  min-height: 0; /* Critical for flexbox shrinking */
+}
+
+/* Caption area - fixed at bottom */
+.reveal .slideCaption {
+  margin-top: auto;
+  margin-bottom: 2em;
+  flex-shrink: 0;
+  padding-top: 0.5em;
+  padding-bottom: 0;
+}
+
+/* Subtitle - below title, before content */
+.reveal .subtitle {
+  font-size: clamp(1rem, 2vw, 1.2em);
+  color: #999;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  max-width: var(--pres-component-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+
+/* ========================================================================
+   REVEAL.JS TYPOGRAPHY OVERRIDES
+   ======================================================================== */
+
+.reveal h1 {
+  font-size: clamp(2rem, 2.5em, 5rem);
+  color: var(--ifm-color-primary);
+  max-width: var(--pres-component-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.reveal h2 {
+  font-size: clamp(1.5rem, 1.6em, 3.5rem);
+  color: var(--ifm-color-primary);
+  max-width: var(--pres-component-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.reveal h3 {
+  font-size: clamp(1.2rem, 1.3em, 2.5rem);
+  max-width: var(--pres-component-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: break-word;
+}
+
+/* Body text and list sizing */
+.reveal p,
+.reveal li {
+  font-size: 1em;
+  line-height: 1.3;
+}
+
+/* Center-align content elements horizontally */
+.reveal p:not(.slideCaption),
+.reveal ul,
+.reveal ol {
+  max-width: var(--pres-component-max-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ========================================================================
+   REVEAL.JS THEME CUSTOMIZATION
+   ======================================================================== */
+
+.reveal {
+  font-family: var(--ifm-font-family-base);
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+  font-family: var(--ifm-font-family-base);
+  font-weight: 700;
+}
+
+.reveal .controls {
+  color: var(--ifm-color-primary);
+}
+
+.reveal .progress {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.reveal .progress span {
+  background: var(--ifm-color-primary);
+}
+
+/* Link styles */
+.reveal a {
+  color: var(--semantic-info);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.reveal a:hover {
+  color: var(--brand-primary-light);
+}
+
+/* Selection highlighting */
+.reveal ::selection {
+  color: #fff;
+  background: rgba(167, 139, 250, 0.4);
+  text-shadow: none;
+}
+
+.reveal ::-moz-selection {
+  color: #fff;
+  background: rgba(167, 139, 250, 0.4);
+  text-shadow: none;
+}
+
+/* Blockquote styles */
+.reveal blockquote {
+  display: block;
+  position: relative;
+  width: 70%;
+  margin: 1.5em auto;
+  padding: 0.75em;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid var(--brand-primary);
+  border-radius: 4px;
+}
+
+/* ========================================================================
+   COMPACT MODE UTILITIES
+   ========================================================================
+   Applied to visual components in presentations via `compact` prop.
+   Removes padding/margins to maximize content area within 1280x720.
+   ======================================================================== */
+
+/* Component-level compact mode */
+.compact {
+  padding: 0 !important;
+  margin: 0 auto !important;
+  max-width: var(--pres-visual-max-width) !important;
+}
+
+/* Compact mode for containers with borders */
+.compact-bordered {
+  composes: compact;
+  padding: var(--pres-space-sm) !important;
+}
+
+/* Compact mode for text-heavy components */
+.compact-text {
+  composes: compact;
+  padding: var(--pres-space-md) !important;
+}
+
+/* ========================================================================
+   GPU OPTIMIZATION
+   ========================================================================
+   Performance utilities for smooth slide transitions and animations.
+   ======================================================================== */
+
+.gpu-optimized {
+  will-change: transform;
+  contain: layout paint;
+  transform: translateZ(0);
+}
+
+/* ========================================================================
+   PRESENTATION-SPECIFIC COMPONENT PATTERNS
+   ========================================================================
+   Common layout patterns used across multiple slide types.
+   Components should use these utilities instead of custom CSS.
+   ======================================================================== */
+
+/* Vertical centering for content */
+.vertical-center {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Container for visual elements (diagrams, SVGs, interactive components) */
+.visual-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+}
+
+.visual-container > * {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Scaled visual container for prominence */
+.visual-container-scaled {
+  composes: visual-container;
+  transform: scale(var(--pres-visual-scale));
+}
+
+/* Two-column comparison grid */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1em, 2vw, 1.5em);
+  margin: 0;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+.comparison-column {
+  composes: gpu-optimized;
+  padding: clamp(0.7em, 1.5vw, 1em);
+  border-radius: 8px;
+  overflow-y: auto;
+}
+
+/* Code block container */
+.code-container {
+  composes: gpu-optimized;
+  font-size: 0.8em;
+  line-height: 1.4;
+  margin: 0;
+  border-radius: 8px;
+  background: #1e1e1e;
+  padding: 1.2em;
+  text-align: left;
+  overflow-y: auto;
+  overflow-x: auto;
+  height: 100%;
+  white-space: pre;
+}
+
+.code-container code {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* ========================================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================================
+   Presentations are fixed 1280x720, but these handle edge cases
+   (e.g., browser zoom, mobile preview).
+   ======================================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --pres-visual-scale: 1.2;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --pres-visual-scale: 1;
+  }
+}
+
+/* ========================================================================
+   ACCESSIBILITY - REDUCED MOTION
+   ========================================================================
+   Disable animations for users with motion sensitivity.
+   ======================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .gpu-optimized {
+    will-change: auto;
+    animation: none;
+    transition: none;
+  }
+
+  .reveal .slides section {
+    animation: none;
+  }
+}

@@ -6,6 +6,13 @@
   border: 1px solid var(--visual-workflow);
 }
 
+/* Compact mode for presentations - maximize diagram size */
+.container.compact {
+  margin: 0 auto;
+  padding: 0.75rem;
+  max-width: 95%;
+}
+
 .header {
   margin-bottom: 1.5rem;
   text-align: center;
@@ -169,19 +176,25 @@
   background: var(--visual-workflow);
   color: white;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+  /* Shadow uses --brand-primary with alpha - updates automatically in dark mode */
+  box-shadow: 0 2px 8px
+    color-mix(in srgb, var(--brand-primary) 30%, transparent);
 }
 
 .buttonActive {
   background: var(--visual-workflow);
   color: white;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
+  /* Shadow uses --brand-primary with alpha - updates automatically in dark mode */
+  box-shadow: 0 2px 4px
+    color-mix(in srgb, var(--brand-primary) 20%, transparent);
 }
 
 .buttonActive:hover {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
+  /* Shadow uses --brand-primary with alpha - updates automatically in dark mode */
+  box-shadow: 0 2px 4px
+    color-mix(in srgb, var(--brand-primary) 20%, transparent);
 }
 
 /* Explanation text */
@@ -238,13 +251,12 @@
 }
 
 [data-theme='dark'] .explanation {
-  background: rgba(22, 27, 34, 0.5);
+  background: color-mix(
+    in srgb,
+    var(--ifm-background-surface-color) 50%,
+    transparent
+  );
 }
 
-[data-theme='dark'] .button:hover {
-  box-shadow: 0 2px 8px rgba(167, 139, 250, 0.4);
-}
-
-[data-theme='dark'] .buttonActive {
-  box-shadow: 0 2px 4px rgba(167, 139, 250, 0.3);
-}
+/* Note: button shadows now use color-mix with --brand-primary,
+   which automatically adapts to light/dark mode */

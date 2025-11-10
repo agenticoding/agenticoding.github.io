@@ -1,10 +1,17 @@
 import React from 'react';
+import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './PlanningStrategyComparison.module.css';
 
-export default function PlanningStrategyComparison() {
+export default function PlanningStrategyComparison({
+  compact = false,
+}: PresentationAwareProps = {}) {
+  const containerClassName = compact
+    ? `${styles.container} ${styles.compact}`
+    : styles.container;
+
   return (
     <div
-      className={styles.container}
+      className={containerClassName}
       role="img"
       aria-label="Abstract visualization comparing exploration planning approach with scattered discovery pattern versus exact planning with direct linear path"
     >

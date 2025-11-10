@@ -1,4 +1,5 @@
 import React from 'react';
+import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './CapabilityMatrix.module.css';
 
 interface Capability {
@@ -60,9 +61,15 @@ function getTrustIndicator(level: 'high' | 'medium' | 'low'): {
   }
 }
 
-export default function CapabilityMatrix() {
+export default function CapabilityMatrix({
+  compact = false,
+}: PresentationAwareProps = {}) {
+  const containerClassName = compact
+    ? `${styles.container} ${styles.compact}`
+    : styles.container;
+
   return (
-    <div className={styles.container}>
+    <div className={containerClassName}>
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>

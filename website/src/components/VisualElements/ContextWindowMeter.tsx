@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './ContextWindowMeter.module.css';
 
-interface ContextWindowMeterProps {
+interface ContextWindowMeterProps extends PresentationAwareProps {
   initialTokens?: number;
   maxTokens?: number;
 }
@@ -9,7 +10,11 @@ interface ContextWindowMeterProps {
 export default function ContextWindowMeter({
   initialTokens = 2000,
   maxTokens = 200000,
+  compact = false,
 }: ContextWindowMeterProps) {
+  const containerClassName = compact
+    ? `${styles.container} ${styles.compact}`
+    : styles.container;
   const [tokens, setTokens] = useState(initialTokens);
 
   const percentage = (tokens / maxTokens) * 100;
@@ -29,7 +34,7 @@ export default function ContextWindowMeter({
   };
 
   return (
-    <div className={styles.container}>
+    <div className={containerClassName}>
       <div className={styles.header}>
         <h4 className={styles.title}>Context Window Usage</h4>
         <span className={styles.stats}>

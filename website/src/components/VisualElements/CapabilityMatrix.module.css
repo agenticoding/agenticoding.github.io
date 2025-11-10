@@ -6,6 +6,13 @@
   border: 1px solid var(--visual-capability);
 }
 
+/* Compact mode for presentations - maximize table size */
+.container.compact {
+  margin: 0 auto;
+  padding: 0.5rem;
+  max-width: 95%;
+}
+
 .tableWrapper {
   overflow-x: auto;
   margin-bottom: 1.5rem;

@@ -6,6 +6,13 @@
   border: 1px solid var(--visual-workflow);
 }
 
+/* Compact mode for presentations - maximize content area */
+.container.compact {
+  margin: 0 auto;
+  padding: 0.5rem;
+  max-width: 95%;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -114,7 +121,7 @@
   background: var(--visual-workflow);
   color: white;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
 }
 
 .button:disabled {
@@ -130,7 +137,7 @@
 .buttonReset:hover:not(:disabled) {
   background: var(--visual-neutral);
   color: white;
-  box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
 }
 
 .statusMessage {
@@ -159,7 +166,7 @@
 }
 
 .alertCritical {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--visual-bg-error, rgba(225, 29, 72, 0.1));
   border: 1px solid var(--visual-error);
   color: var(--visual-error);
 }

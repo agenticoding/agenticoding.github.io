@@ -18,6 +18,12 @@
   }
 }
 
+.container.compact {
+  margin: 0 auto;
+  padding: 0.5rem;
+  max-width: 95%;
+}
+
 .header {
   padding: 1.5rem;
   text-align: center;
@@ -81,7 +87,7 @@
 .comparisonWrapper {
   position: relative;
   display: flex;
-  min-height: 400px;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -281,7 +287,7 @@
 }
 
 .phaseDetailsExpanded {
-  max-height: 800px;
+  max-height: 100vh;
 }
 
 .phaseDetailsContent {

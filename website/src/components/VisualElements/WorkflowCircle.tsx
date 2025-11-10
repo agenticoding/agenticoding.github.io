@@ -1,4 +1,5 @@
 import React from 'react';
+import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './WorkflowCircle.module.css';
 
 interface Phase {
@@ -15,11 +16,9 @@ interface Connection {
   endY: number;
 }
 
-interface WorkflowCircleProps {
-  compact?: boolean;
-}
-
-export default function WorkflowCircle({ compact = false }: WorkflowCircleProps) {
+export default function WorkflowCircle({
+  compact = false,
+}: PresentationAwareProps = {}) {
   const centerX = 250;
   const centerY = 250;
   const radius = 170;
@@ -189,8 +188,8 @@ export default function WorkflowCircle({ compact = false }: WorkflowCircleProps)
       {/* Text description for additional context */}
       {!compact && (
         <p className={styles.description}>
-          Each phase flows into the next in a continuous cycle. After validation,
-          iterate back to research as needed to refine and improve.
+          Each phase flows into the next in a continuous cycle. After
+          validation, iterate back to research as needed to refine and improve.
         </p>
       )}
     </div>
