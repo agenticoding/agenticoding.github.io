@@ -54,22 +54,25 @@
 .objectives {
   margin-top: 1.5em;
   text-align: left;
-  max-width: 90%;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .objectives h3 {
   font-size: clamp(1rem, 2vw, 1.2em);
   margin-bottom: 0.5em;
+  margin-left: 0;
+  margin-right: 0;
 }
 
-.objectives ul {
+:global(.reveal) .objectives ul {
   list-style: none;
   padding: 0;
+  display: block;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .objectives li {
