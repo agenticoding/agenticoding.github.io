@@ -157,7 +157,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(1em, 2vw, 1.5em);
-  margin: 1.5em 0 0.5em 0;
+  margin: 1.5em auto 0.5em auto;
+  max-width: var(--pres-component-max-width);
   flex: 1;
   min-height: 0;
   max-height: none;
@@ -228,7 +229,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(1em, 2vw, 1.5em);
-  margin: 0;
+  margin: 0 auto;
+  max-width: var(--pres-component-max-width);
   height: 100%;
   max-height: none;
 }
