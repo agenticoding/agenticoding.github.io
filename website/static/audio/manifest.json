@@ -28,11 +28,11 @@
   },
   "practical-techniques/lesson-7-planning-execution.md": {
     "audioUrl": "/audio/practical-techniques/lesson-7-planning-execution.wav",
-    "size": 40245348,
+    "size": 62089714,
     "format": "audio/wav",
-    "tokenCount": 2755,
-    "chunks": 4,
-    "generatedAt": "2025-11-08T09:33:31.202Z",
+    "tokenCount": 3789,
+    "chunks": 5,
+    "generatedAt": "2025-11-10T08:43:24.919Z",
     "scriptSource": "practical-techniques/lesson-7-planning-execution.md"
   },
   "practical-techniques/lesson-8-tests-as-guardrails.md": {
@@ -46,11 +46,11 @@
   },
   "practical-techniques/lesson-9-reviewing-code.md": {
     "audioUrl": "/audio/practical-techniques/lesson-9-reviewing-code.wav",
-    "size": 35522148,
+    "size": 34925028,
     "format": "audio/wav",
-    "tokenCount": 2742,
+    "tokenCount": 3031,
     "chunks": 4,
-    "generatedAt": "2025-11-08T17:06:23.759Z",
+    "generatedAt": "2025-11-10T08:59:37.113Z",
     "scriptSource": "practical-techniques/lesson-9-reviewing-code.md"
   },
   "understanding-the-tools/lesson-1-intro.md": {
