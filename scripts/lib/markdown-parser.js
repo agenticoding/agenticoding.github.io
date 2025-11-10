@@ -120,9 +120,10 @@ export function extractCodeSummary(code, language) {
 /**
  * Parse MDX/MD file and extract clean text content
  * @param {string} filePath - Path to MDX/MD file
- * @returns {string} Cleaned text content with code blocks described
+ * @param {boolean} preserveCode - If true, keeps code blocks intact instead of converting to descriptions
+ * @returns {string} Cleaned text content with code blocks described (or preserved if preserveCode=true)
  */
-export function parseMarkdownContent(filePath) {
+export function parseMarkdownContent(filePath, preserveCode = false) {
   const content = readFileSync(filePath, 'utf-8');
 
   // Remove frontmatter
@@ -135,41 +136,44 @@ export function parseMarkdownContent(filePath) {
   // Remove remaining HTML tags (lowercase = HTML elements)
   cleaned = cleaned.replace(/<[^>]+>/g, '');
 
-  // First pass: Find all code blocks and their contexts
-  const codeBlocks = [];
-  const regex = /```[\s\S]*?```/g;
-  let match;
+  // Code block processing: preserve or describe based on mode
+  if (!preserveCode) {
+    // First pass: Find all code blocks and their contexts
+    const codeBlocks = [];
+    const regex = /```[\s\S]*?```/g;
+    let match;
 
-  while ((match = regex.exec(cleaned)) !== null) {
-    const precedingStart = Math.max(0, match.index - 200);
-    const precedingContext = cleaned.substring(precedingStart, match.index);
+    while ((match = regex.exec(cleaned)) !== null) {
+      const precedingStart = Math.max(0, match.index - 200);
+      const precedingContext = cleaned.substring(precedingStart, match.index);
 
-    const followingEnd = Math.min(cleaned.length, match.index + match[0].length + 200);
-    const followingContext = cleaned.substring(match.index + match[0].length, followingEnd);
+      const followingEnd = Math.min(cleaned.length, match.index + match[0].length + 200);
+      const followingContext = cleaned.substring(match.index + match[0].length, followingEnd);
 
-    codeBlocks.push({
-      original: match[0],
-      index: match.index,
-      precedingContext,
-      followingContext
-    });
+      codeBlocks.push({
+        original: match[0],
+        index: match.index,
+        precedingContext,
+        followingContext
+      });
+    }
+
+    // Second pass: Replace code blocks with descriptions
+    let offset = 0;
+    for (const block of codeBlocks) {
+      const description = describeCodeBlock(block.original, block.precedingContext, block.followingContext);
+      const adjustedIndex = block.index + offset;
+
+      cleaned = cleaned.substring(0, adjustedIndex) +
+                description +
+                cleaned.substring(adjustedIndex + block.original.length);
+
+      offset += description.length - block.original.length;
+    }
+
+    // Remove inline code (only when converting code blocks to descriptions)
+    cleaned = cleaned.replace(/`[^`]+`/g, (match) => match.replace(/`/g, ''));
   }
-
-  // Second pass: Replace code blocks with descriptions
-  let offset = 0;
-  for (const block of codeBlocks) {
-    const description = describeCodeBlock(block.original, block.precedingContext, block.followingContext);
-    const adjustedIndex = block.index + offset;
-
-    cleaned = cleaned.substring(0, adjustedIndex) +
-              description +
-              cleaned.substring(adjustedIndex + block.original.length);
-
-    offset += description.length - block.original.length;
-  }
-
-  // Remove inline code
-  cleaned = cleaned.replace(/`[^`]+`/g, (match) => match.replace(/`/g, ''));
 
   // Remove images
   cleaned = cleaned.replace(/!\[.*?\]\(.*?\)/g, '[Image]');

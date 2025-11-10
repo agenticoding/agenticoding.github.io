@@ -722,21 +722,11 @@ async function generatePresentationWithClaude(prompt, outputPath) {
 
         console.log(`  ✅ Valid presentation JSON (${presentation.slides.length} slides)`);
 
-        // Apply deterministic line breaking
-        console.log('  🔧 Applying line breaking...');
-        const { presentation: processedPresentation, stats } = processPresentation(presentation);
+        // Write the unmodified presentation to file for validation
+        // Line breaking will happen after validation passes
+        writeFileSync(outputPath, JSON.stringify(presentation, null, 2), 'utf-8');
 
-        // Log statistics
-        if (stats.linesShortened > 0) {
-          console.log(`  ✂️  Fixed ${stats.linesShortened} long lines (max reduction: ${stats.maxReduction} chars)`);
-        } else {
-          console.log('  ✅ No lines exceeded 60 characters');
-        }
-
-        // Write back the processed presentation
-        writeFileSync(outputPath, JSON.stringify(processedPresentation, null, 2), 'utf-8');
-
-        resolve(processedPresentation);
+        resolve(presentation);
       } catch (parseError) {
         reject(new Error(`Failed to parse JSON: ${parseError.message}\nContent preview: ${fileContent?.slice(0, 200)}`));
         return;
@@ -1181,8 +1171,8 @@ async function generatePresentation(filePath, manifest, config) {
   console.log(`\n📄 Generating presentation: ${relativePath}`);
 
   try {
-    // Parse content
-    const content = parseMarkdownContent(filePath);
+    // Parse content (preserve code blocks for visual presentation)
+    const content = parseMarkdownContent(filePath, true);
 
     if (content.length < 100) {
       console.log(`  ⚠️  Skipping - content too short`);
@@ -1297,24 +1287,38 @@ async function generatePresentation(filePath, manifest, config) {
       console.log(`  ✅ All ${codeSourceValidation.codeSlidesChecked} code slide(s) verified against source`);
     }
 
+    // Apply deterministic line breaking (AFTER validation passes)
+    console.log('  🔧 Applying line breaking...');
+    const { presentation: processedPresentation, stats } = processPresentation(presentation);
+
+    // Log statistics
+    if (stats.linesShortened > 0) {
+      console.log(`  ✂️  Fixed ${stats.linesShortened} long lines (max reduction: ${stats.maxReduction} chars)`);
+    } else {
+      console.log('  ✅ No lines exceeded 60 characters');
+    }
+
+    // Write the line-broken version back to output file
+    writeFileSync(outputPath, JSON.stringify(processedPresentation, null, 2), 'utf-8');
+
     // Copy to static directory for deployment
     const staticPath = join(STATIC_OUTPUT_DIR, dirname(relativePath), outputFileName);
     mkdirSync(dirname(staticPath), { recursive: true });
-    writeFileSync(staticPath, JSON.stringify(presentation, null, 2), 'utf-8');
+    writeFileSync(staticPath, JSON.stringify(processedPresentation, null, 2), 'utf-8');
 
     // Update manifest
     const presentationUrl = `/presentations/${join(dirname(relativePath), outputFileName)}`;
     manifest[relativePath] = {
       presentationUrl,
-      slideCount: presentation.slides.length,
-      estimatedDuration: presentation.metadata.estimatedDuration,
-      title: presentation.metadata.title,
+      slideCount: processedPresentation.slides.length,
+      estimatedDuration: processedPresentation.metadata.estimatedDuration,
+      title: processedPresentation.metadata.title,
       generatedAt: new Date().toISOString()
     };
 
     console.log(`  ✅ Generated: ${presentationUrl}`);
-    console.log(`  📊 Slides: ${presentation.slides.length}`);
-    console.log(`  ⏱️  Duration: ${presentation.metadata.estimatedDuration}`);
+    console.log(`  📊 Slides: ${processedPresentation.slides.length}`);
+    console.log(`  ⏱️  Duration: ${processedPresentation.metadata.estimatedDuration}`);
 
     return outputPath;
 
