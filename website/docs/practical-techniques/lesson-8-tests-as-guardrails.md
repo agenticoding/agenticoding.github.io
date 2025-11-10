@@ -4,6 +4,8 @@ sidebar_label: 'Lesson 8: Tests as Guardrails'
 title: 'Lesson 8: Tests as Guardrails'
 ---
 
+import ThreeContextWorkflow from '@site/src/components/VisualElements/ThreeContextWorkflow';
+
 AI agents can refactor half your codebase in minutes. They'll rename functions, restructure modules, and update dozens of files—all while you grab coffee. This velocity is powerful, but dangerous. Small logic errors compound fast when changes happen at scale.
 
 Tests are your constraint system. They define operational boundaries agents cannot cross. More importantly, they're living documentation that agents read to understand intent, edge cases, and the gotchas that tribal knowledge usually covers.
@@ -52,7 +54,9 @@ When tests become the optimization target, agents optimize for passing tests rat
 
 Apply the same planning and execution methodology from [Lesson 7](./lesson-7-planning-execution.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Lessons 1](../understanding-the-tools/lesson-1-intro.md) and [2](../understanding-the-tools/lesson-2-understanding-agents.md)—the agent doesn't carry assumptions or defend prior decisions between contexts.
 
-**The three-context workflow:**
+## The three-context workflow:
+
+<ThreeContextWorkflow />
 
 1. **Write code** in Context A—research existing patterns using [grounding from Lesson 5](../methodology/lesson-5-grounding.md), plan implementation, execute, verify correctness
 2. **Write tests** in fresh Context B—research requirements and edge cases, plan test coverage, execute (agent doesn't remember writing implementation, so tests derive independently from requirements), verify tests fail initially
