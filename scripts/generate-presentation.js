@@ -107,6 +107,8 @@ PRESENTATION STRUCTURE REQUIREMENTS:
   - Real-world examples to reference
 ✓ DO: Preserve important code examples as slide content
 ✓ DO: Identify which visual components to use (CapabilityMatrix, UShapeAttentionCurve, WorkflowCircle, GroundingComparison, ContextWindowMeter, AbstractShapesVisualization, etc.)
+✓ DO: Generate exactly 4 learning objectives (no more, no less)
+✓ DO: Keep each learning objective to 5 words or fewer
 
 ✗ AVOID: Long paragraphs on slides (slides are visual anchors, not reading material)
 ✗ AVOID: More than 5 bullet points per slide
@@ -403,7 +405,12 @@ REMINDER: If the source contains prompt examples (text showing what to write to 
     "title": "Lesson Title",
     "lessonId": "lesson-id",
     "estimatedDuration": "30-45 minutes",
-    "learningObjectives": ["Objective 1", "Objective 2", "Objective 3"]
+    "learningObjectives": [
+      "Master active context engineering",
+      "Review agent plans before execution",
+      "Set up parallel workflows",
+      "Identify and prevent hallucinations"
+    ]
   },
   "slides": [
     {

@@ -44,13 +44,15 @@
   font-size: clamp(1rem, 2vw, 1.2em);
   color: #999;
   margin-top: 0.5em;
+  margin-bottom: 1em;
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
+  flex-shrink: 0;
 }
 
 .objectives {
-  margin-top: 0;
+  margin-top: 1.5em;
   text-align: left;
   max-width: 90%;
   margin-left: auto;
@@ -574,12 +576,13 @@
 /* Title slides have h1 instead */
 :global(.reveal .slides section > h1) {
   margin-top: 2em;
-  margin-bottom: 1em;
+  margin-bottom: 0;
   flex-shrink: 0;
 }
 
 /* Content area - fills remaining space with natural flow (safe by default) */
-:global(.reveal .slides section) > *:not(h1):not(h2):not(.slideCaption) {
+:global(.reveal .slides section)
+  > *:not(h1):not(h2):not(.slideCaption):not(.subtitle) {
   flex-grow: 1;
   min-height: 0;
 }
