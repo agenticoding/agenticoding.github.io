@@ -205,7 +205,7 @@ export default function RevealSlideshow({
           >
             <h2>{slide.title}</h2>
             {slide.content && (
-              <ul className={`${styles.bulletList} ${styles.centeredContent}`}>
+              <ul className={styles.bulletList}>
                 {slide.content
                   .filter((item) => item.trim() !== '')
                   .map((item, i) => (
@@ -398,9 +398,7 @@ export default function RevealSlideshow({
           >
             <h2>{slide.title}</h2>
             {slide.content && (
-              <ul
-                className={`${styles.takeawayList} ${styles.centeredContent}`}
-              >
+              <ul className={styles.takeawayList}>
                 {slide.content.map((item, i) => (
                   <li key={i} className="fragment">
                     {item}
