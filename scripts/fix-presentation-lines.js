@@ -21,6 +21,11 @@ import { processPresentation } from './lib/line-breaker.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Line breaking has been disabled - this script is no longer functional
+console.log('⚠️  Line breaking has been disabled in the presentation generation pipeline.');
+console.log('ℹ️  This script is no longer functional and will not modify presentations.');
+process.exit(0);
+
 const PRESENTATIONS_DIR = join(__dirname, '../website/static/presentations');
 
 /**

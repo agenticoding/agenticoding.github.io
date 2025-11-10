@@ -27,7 +27,6 @@ import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import * as readline from 'readline';
 import { parseMarkdownContent } from './lib/markdown-parser.js';
-import { processPresentation } from './lib/line-breaker.js';
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -1406,24 +1405,13 @@ async function generatePresentation(filePath, manifest, config) {
       console.log(`  ✅ All ${objectivesValidation.totalObjectivesChecked} learning objective(s) are 5 words or fewer`);
     }
 
-    // Apply deterministic line breaking (AFTER validation passes)
-    console.log('  🔧 Applying line breaking...');
-    const { presentation: processedPresentation, stats } = processPresentation(presentation);
-
-    // Log statistics
-    if (stats.linesShortened > 0) {
-      console.log(`  ✂️  Fixed ${stats.linesShortened} long lines (max reduction: ${stats.maxReduction} chars)`);
-    } else {
-      console.log('  ✅ No lines exceeded 60 characters');
-    }
-
-    // Write the line-broken version back to output file
-    writeFileSync(outputPath, JSON.stringify(processedPresentation, null, 2), 'utf-8');
+    // Write presentation to output file
+    writeFileSync(outputPath, JSON.stringify(presentation, null, 2), 'utf-8');
 
     // Copy to static directory for deployment
     const staticPath = join(STATIC_OUTPUT_DIR, dirname(relativePath), outputFileName);
     mkdirSync(dirname(staticPath), { recursive: true });
-    writeFileSync(staticPath, JSON.stringify(processedPresentation, null, 2), 'utf-8');
+    writeFileSync(staticPath, JSON.stringify(presentation, null, 2), 'utf-8');
 
     // Update manifest
     const presentationUrl = `/presentations/${join(dirname(relativePath), outputFileName)}`;
