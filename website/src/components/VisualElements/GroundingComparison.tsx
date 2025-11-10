@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './GroundingComparison.module.css';
 
 // Import icons
@@ -167,7 +168,10 @@ function PhaseCard({ phase, side, isExpanded, onToggle }: PhaseCardProps) {
   );
 }
 
-export default function GroundingComparison() {
+export default function GroundingComparison({ compact = false }: PresentationAwareProps = {}) {
+  const containerClassName = compact
+    ? `${styles.container} ${styles.compact}`
+    : styles.container;
   const [expandedPhases, setExpandedPhases] = useState<Set<string>>(new Set());
 
   const togglePhase = (phaseId: number, side: 'without' | 'with') => {
@@ -198,7 +202,7 @@ export default function GroundingComparison() {
 
   return (
     <div
-      className={styles.container}
+      className={containerClassName}
       role="region"
       aria-label="Grounding comparison visualization"
     >

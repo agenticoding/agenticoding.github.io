@@ -8,6 +8,13 @@
   animation: fadeIn 0.6s ease-in-out;
 }
 
+/* Compact mode for presentations - maximize content area */
+.container.compact {
+  margin: 0 auto;
+  padding: 0.5rem;
+  max-width: 95%;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -6,6 +6,12 @@
   border: 1px solid var(--visual-decision);
 }
 
+.container.compact {
+  margin: 0 auto;
+  padding: 0.5rem;
+  max-width: 95%;
+}
+
 .comparison {
   display: flex;
   gap: 3rem;
@@ -28,7 +34,7 @@
 }
 
 .shapes {
-  min-height: 180px;
+  min-height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;

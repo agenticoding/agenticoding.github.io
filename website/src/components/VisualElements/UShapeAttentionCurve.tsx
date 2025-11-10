@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
+import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './UShapeAttentionCurve.module.css';
 
-interface UShapeAttentionCurveProps {
+interface UShapeAttentionCurveProps extends PresentationAwareProps {
   initialContextFill?: number; // Percentage of context window used (0-100)
 }
 
 export default function UShapeAttentionCurve({
   initialContextFill = 30,
+  compact = false,
 }: UShapeAttentionCurveProps) {
+  const containerClassName = compact
+    ? `${styles.container} ${styles.compact}`
+    : styles.container;
   const [contextFill, setContextFill] = useState(initialContextFill);
   const [animatedPath, setAnimatedPath] = useState<string>('');
   const [animatedEndX, setAnimatedEndX] = useState<number>(0);
@@ -179,7 +184,7 @@ export default function UShapeAttentionCurve({
   ];
 
   return (
-    <div className={styles.container}>
+    <div className={containerClassName}>
       <div className={styles.header}>
         <h4 className={styles.title}>Context Window Attention Curve</h4>
         <span className={styles.subtitle}>
