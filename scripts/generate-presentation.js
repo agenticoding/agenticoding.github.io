@@ -109,7 +109,9 @@ PRESENTATION STRUCTURE REQUIREMENTS:
 ✓ DO: Preserve important code examples as slide content
 ✓ DO: Identify which visual components to use (CapabilityMatrix, UShapeAttentionCurve, WorkflowCircle, GroundingComparison, ContextWindowMeter, AbstractShapesVisualization, etc.)
 ✓ DO: Generate exactly 4 learning objectives (no more, no less)
-✓ DO: Keep each learning objective to 5 words or fewer
+✓ DO: Keep each learning objective to 5 words or fewer - THIS IS STRICTLY ENFORCED
+  - Good: "Master active context engineering" (4 words) ✓
+  - Bad: "Learn how to master active context" (6 words) ✗
 
 ✗ AVOID: Long paragraphs on slides (slides are visual anchors, not reading material)
 ✗ AVOID: More than 5 bullet points per slide
@@ -625,10 +627,19 @@ STEP 2: Then, condense to the 3-5 MOST critical takeaways
 - Prioritize by impact and generality (what will matter most in production?)
 - Combine related points into higher-level insights when possible
 - Remove redundant or overly specific points
-- Ensure each takeaway is actionable and memorable
+- **STRICT REQUIREMENT: Each takeaway MUST be 5 words or fewer**
+- Use active verbs and eliminate filler words
+- Examples:
+  ✓ "Tests ground agent code quality" (5 words)
+  ✓ "Context management improves agent reliability" (5 words)
+  ✓ "Prompt versioning prevents regression bugs" (5 words)
+  ✗ "Tests are critical for agent workflows in production" (8 words)
+  ✗ "You should manage context to improve reliability" (7 words)
 
 IMPORTANT: The final takeaway slide MUST have exactly 3-5 items, even if the source material lists more.
 Quality over quantity—choose the most impactful insights.
+
+WORD COUNT VALIDATION: This is strictly enforced. The build will fail if any takeaway exceeds 5 words.
 
 CRITICAL REQUIREMENTS:
 
@@ -639,6 +650,8 @@ CRITICAL REQUIREMENTS:
 5. Code examples must be actual code from the lesson, not pseudocode
 6. Content arrays MUST have 3-5 items (except title slide) - THIS IS STRICTLY ENFORCED
 7. PROMPT EXAMPLES: Use "code" or "codeComparison" slide types, NEVER bullet points
+8. Learning objectives MUST be 5 words or fewer - THIS IS STRICTLY ENFORCED
+9. Takeaway items MUST be 5 words or fewer - THIS IS STRICTLY ENFORCED
 
 BEFORE YOU GENERATE - CHECKLIST:
 
@@ -1162,6 +1175,73 @@ function validateCodeExamplesExistInSource(content, presentation) {
 }
 
 /**
+ * Validate that takeaway items have 5 words or fewer
+ *
+ * Takeaways are final memorable insights displayed prominently on conclusion slides.
+ * Enforcing brevity ensures they're memorable and impactful for the audience.
+ */
+function validateTakeawayWordCount(presentation) {
+  const MAX_WORDS = 5;
+  const issues = [];
+
+  const takeawaySlides = presentation.slides.filter(s => s.type === 'takeaway');
+
+  for (const slide of takeawaySlides) {
+    if (slide.content && Array.isArray(slide.content)) {
+      slide.content.forEach((item, index) => {
+        const wordCount = item.trim().split(/\s+/).length;
+        if (wordCount > MAX_WORDS) {
+          issues.push({
+            slide: slide.title,
+            index: index + 1,
+            wordCount,
+            content: item.substring(0, 60) + (item.length > 60 ? '...' : ''),
+            excess: wordCount - MAX_WORDS
+          });
+        }
+      });
+    }
+  }
+
+  return {
+    valid: issues.length === 0,
+    issues,
+    totalTakeawaysChecked: takeawaySlides.reduce((sum, s) => sum + (s.content?.length || 0), 0)
+  };
+}
+
+/**
+ * Validate that learning objectives have 5 words or fewer
+ *
+ * Learning objectives appear on the title slide and set expectations for the lesson.
+ * Brief objectives are more memorable and easier for students to internalize.
+ */
+function validateLearningObjectivesWordCount(presentation) {
+  const MAX_WORDS = 5;
+  const issues = [];
+
+  const objectives = presentation.metadata?.learningObjectives || [];
+
+  objectives.forEach((objective, index) => {
+    const wordCount = objective.trim().split(/\s+/).length;
+    if (wordCount > MAX_WORDS) {
+      issues.push({
+        index: index + 1,
+        wordCount,
+        content: objective.substring(0, 60) + (objective.length > 60 ? '...' : ''),
+        excess: wordCount - MAX_WORDS
+      });
+    }
+  });
+
+  return {
+    valid: issues.length === 0,
+    issues,
+    totalObjectivesChecked: objectives.length
+  };
+}
+
+/**
  * Generate presentation for a file
  */
 async function generatePresentation(filePath, manifest, config) {
@@ -1285,6 +1365,44 @@ async function generatePresentation(filePath, manifest, config) {
       throw new Error('Code source validation failed - slides contain fabricated code not in source');
     } else if (codeSourceValidation.codeSlidesChecked > 0) {
       console.log(`  ✅ All ${codeSourceValidation.codeSlidesChecked} code slide(s) verified against source`);
+    }
+
+    // Validate takeaway word count (5 words or fewer)
+    // CRITICAL: This validation is intentionally strict and throws an error because
+    // takeaways are displayed prominently on conclusion slides and must be memorable.
+    // Verbose takeaways defeat the purpose of distilling key insights.
+    const takeawayValidation = validateTakeawayWordCount(presentation);
+    if (!takeawayValidation.valid) {
+      console.log(`  ❌ BUILD FAILURE: ${takeawayValidation.issues.length} takeaway word limit violation(s):`);
+      takeawayValidation.issues.forEach(issue => {
+        console.log(`      - "${issue.slide}" item ${issue.index}: ${issue.wordCount} words (${issue.excess} over limit)`);
+        console.log(`        "${issue.content}"`);
+      });
+      console.log(`  ℹ️  All takeaway items MUST be 5 words or fewer for memorability`);
+      console.log(`  ℹ️  Examples: "Tests ground agent code quality" (5) ✓ | "Tests are critical for agent workflows" (6) ✗`);
+      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
+      throw new Error('Takeaway validation failed - items exceed 5-word limit');
+    } else if (takeawayValidation.totalTakeawaysChecked > 0) {
+      console.log(`  ✅ All ${takeawayValidation.totalTakeawaysChecked} takeaway item(s) are 5 words or fewer`);
+    }
+
+    // Validate learning objectives word count (5 words or fewer)
+    // CRITICAL: This validation is intentionally strict and throws an error because
+    // learning objectives appear on the title slide and set learner expectations.
+    // Brief objectives are more memorable and easier to internalize.
+    const objectivesValidation = validateLearningObjectivesWordCount(presentation);
+    if (!objectivesValidation.valid) {
+      console.log(`  ❌ BUILD FAILURE: ${objectivesValidation.issues.length} learning objective word limit violation(s):`);
+      objectivesValidation.issues.forEach(issue => {
+        console.log(`      - Objective ${issue.index}: ${issue.wordCount} words (${issue.excess} over limit)`);
+        console.log(`        "${issue.content}"`);
+      });
+      console.log(`  ℹ️  All learning objectives MUST be 5 words or fewer for clarity`);
+      console.log(`  ℹ️  Examples: "Master active context engineering" (4) ✓ | "Learn how to master active context" (6) ✗`);
+      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
+      throw new Error('Learning objectives validation failed - items exceed 5-word limit');
+    } else if (objectivesValidation.totalObjectivesChecked > 0) {
+      console.log(`  ✅ All ${objectivesValidation.totalObjectivesChecked} learning objective(s) are 5 words or fewer`);
     }
 
     // Apply deterministic line breaking (AFTER validation passes)
