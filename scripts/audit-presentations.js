@@ -13,11 +13,13 @@ const __dirname = dirname(__filename);
 
 const MIN_ITEMS = 3;
 const MAX_ITEMS = 5;
+const MAX_WORDS = 5;
 
 function auditPresentation(filePath) {
   const content = readFileSync(filePath, 'utf-8');
   const presentation = JSON.parse(content);
   const violations = [];
+  const wordCountViolations = [];
 
   // Check slides with content arrays
   const slidesWithContent = presentation.slides.filter(slide => {
@@ -71,9 +73,45 @@ function auditPresentation(filePath) {
     }
   }
 
+  // Check takeaway word counts
+  const takeawaySlides = presentation.slides.filter(s => s.type === 'takeaway');
+  for (const slide of takeawaySlides) {
+    if (slide.content && Array.isArray(slide.content)) {
+      slide.content.forEach((item, index) => {
+        const wordCount = item.trim().split(/\s+/).length;
+        if (wordCount > MAX_WORDS) {
+          wordCountViolations.push({
+            type: 'takeaway',
+            slide: slide.title,
+            index: index + 1,
+            wordCount,
+            content: item,
+            excess: wordCount - MAX_WORDS
+          });
+        }
+      });
+    }
+  }
+
+  // Check learning objectives word counts
+  const objectives = presentation.metadata?.learningObjectives || [];
+  objectives.forEach((objective, index) => {
+    const wordCount = objective.trim().split(/\s+/).length;
+    if (wordCount > MAX_WORDS) {
+      wordCountViolations.push({
+        type: 'objective',
+        index: index + 1,
+        wordCount,
+        content: objective,
+        excess: wordCount - MAX_WORDS
+      });
+    }
+  });
+
   return {
     title: presentation.metadata?.title || 'Unknown',
     violations,
+    wordCountViolations,
     totalSlides: presentation.slides.length
   };
 }
@@ -94,10 +132,15 @@ function main() {
     'understanding-the-tools/lesson-2-understanding-agents.json'
   ];
 
-  console.log('📊 Auditing presentations for content array violations (3-5 items rule)\n');
+  console.log('📊 Auditing presentations for violations\n');
+  console.log('Checking:');
+  console.log('  • Content arrays (3-5 items rule)');
+  console.log('  • Takeaway word counts (5 words max)');
+  console.log('  • Learning objectives word counts (5 words max)\n');
 
   const results = [];
   let totalViolations = 0;
+  let totalWordCountViolations = 0;
 
   for (const file of files) {
     const filePath = join(presentationsDir, file);
@@ -105,19 +148,41 @@ function main() {
       const result = auditPresentation(filePath);
       results.push({ file, ...result });
 
-      if (result.violations.length > 0) {
-        totalViolations += result.violations.length;
+      const hasViolations = result.violations.length > 0;
+      const hasWordViolations = result.wordCountViolations.length > 0;
+
+      if (hasViolations || hasWordViolations) {
         console.log(`❌ ${file}`);
         console.log(`   Title: ${result.title}`);
-        result.violations.forEach(v => {
-          console.log(`   - "${v.slide}" (${v.type}): ${v.count} items`);
-          if (v.count <= 8) {
-            v.items.forEach(item => {
-              const truncated = item.length > 60 ? item.substring(0, 57) + '...' : item;
-              console.log(`     • ${truncated}`);
-            });
-          }
-        });
+
+        if (hasViolations) {
+          totalViolations += result.violations.length;
+          console.log(`   Content array violations (${result.violations.length}):`);
+          result.violations.forEach(v => {
+            console.log(`   - "${v.slide}" (${v.type}): ${v.count} items`);
+            if (v.count <= 8) {
+              v.items.forEach(item => {
+                const truncated = item.length > 60 ? item.substring(0, 57) + '...' : item;
+                console.log(`     • ${truncated}`);
+              });
+            }
+          });
+        }
+
+        if (hasWordViolations) {
+          totalWordCountViolations += result.wordCountViolations.length;
+          console.log(`   Word count violations (${result.wordCountViolations.length}):`);
+          result.wordCountViolations.forEach(v => {
+            if (v.type === 'takeaway') {
+              console.log(`   - Takeaway "${v.slide}" item ${v.index}: ${v.wordCount} words (+${v.excess})`);
+            } else {
+              console.log(`   - Learning objective ${v.index}: ${v.wordCount} words (+${v.excess})`);
+            }
+            const truncated = v.content.length > 60 ? v.content.substring(0, 57) + '...' : v.content;
+            console.log(`     "${truncated}"`);
+          });
+        }
+
         console.log('');
       }
     } catch (error) {
@@ -127,7 +192,7 @@ function main() {
 
   // Summary
   console.log('═══════════════════════════════════════════════════════════');
-  const violatingFiles = results.filter(r => r.violations.length > 0);
+  const violatingFiles = results.filter(r => r.violations.length > 0 || r.wordCountViolations.length > 0);
 
   if (violatingFiles.length === 0) {
     console.log('✅ All presentations pass validation!');
@@ -135,10 +200,18 @@ function main() {
     console.log(`\n📋 SUMMARY:\n`);
     console.log(`Total files audited: ${results.length}`);
     console.log(`Files with violations: ${violatingFiles.length}`);
-    console.log(`Total violations: ${totalViolations}\n`);
+    console.log(`  • Content array violations: ${totalViolations}`);
+    console.log(`  • Word count violations: ${totalWordCountViolations}`);
+    console.log(`  • Total: ${totalViolations + totalWordCountViolations}\n`);
     console.log('Files needing regeneration:');
     violatingFiles.forEach(r => {
-      console.log(`  - ${r.file} (${r.violations.length} violation(s))`);
+      const arrayViolations = r.violations.length;
+      const wordViolations = r.wordCountViolations.length;
+      const total = arrayViolations + wordViolations;
+      const details = [];
+      if (arrayViolations > 0) details.push(`${arrayViolations} array`);
+      if (wordViolations > 0) details.push(`${wordViolations} word`);
+      console.log(`  - ${r.file} (${total} total: ${details.join(', ')})`);
     });
   }
   console.log('═══════════════════════════════════════════════════════════');
