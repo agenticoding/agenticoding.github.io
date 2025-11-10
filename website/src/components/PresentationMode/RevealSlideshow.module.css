@@ -150,7 +150,7 @@
 }
 
 .caption {
-  font-size: clamp(0.8rem, 1.5vw, 0.95em);
+  font-size: clamp(0.75rem, 1vw, 0.85em);
   line-height: 1.4;
   color: #e0e0e0;
   margin-top: 0.5em;
@@ -299,11 +299,15 @@
   align-items: center;
   overflow: visible;
   width: 100%;
+  height: 100%;
+  max-height: 100%;
   transform-origin: center center;
 }
 
 .visualContainer > * {
   object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .takeawayList {
@@ -478,130 +482,9 @@
   padding: 2em;
 }
 
-/* Override Reveal.js theme colors to match course design */
-:global(.reveal) {
-  font-family: var(--ifm-font-family-base);
-}
-
-:global(.reveal h1),
-:global(.reveal h2),
-:global(.reveal h3),
-:global(.reveal h4) {
-  font-family: var(--ifm-font-family-base);
-  font-weight: 700;
-}
-
-:global(.reveal h1) {
-  font-size: clamp(2.5rem, 4.5vw, 3em);
-  color: var(--ifm-color-primary);
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  word-wrap: break-word;
-}
-
-:global(.reveal h2) {
-  font-size: clamp(1.2rem, 2.5vw, 1.5em);
-  color: var(--ifm-color-primary);
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  word-wrap: break-word;
-}
-
-:global(.reveal h3) {
-  font-size: clamp(1rem, 2vw, 1.3em);
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  word-wrap: break-word;
-}
-
-:global(.reveal .controls) {
-  color: var(--ifm-color-primary);
-}
-
-:global(.reveal .progress) {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-:global(.reveal .progress span) {
-  background: var(--ifm-color-primary);
-}
-
-/* Enable dark mode CSS variables for all components in presentation mode */
-:global(.reveal) {
-  --ifm-font-color-base: #c9d1d9;
-  --ifm-heading-color: #e6edf3;
-  --ifm-color-emphasis-700: #8b949e;
-  --ifm-color-emphasis-600: #6e7681;
-  --ifm-color-emphasis-300: #3d444d;
-  --ifm-color-emphasis-200: #30363d;
-  --ifm-background-color: #0d1117;
-  --ifm-background-surface-color: #161b22;
-
-  /* Visual element colors - adjusted for dark mode */
-  --visual-workflow: #a78bfa;
-  --visual-capability: #22d3ee;
-  --visual-limitation: #fb923c;
-  --visual-decision: #c4b5fd;
-  --visual-error: #fb7185;
-  --visual-neutral: #94a3b8;
-
-  /* Visual element backgrounds */
-  --visual-bg-workflow: rgba(167, 139, 250, 0.15);
-  --visual-bg-capability: rgba(34, 211, 238, 0.15);
-  --visual-bg-limitation: rgba(251, 146, 60, 0.15);
-  --visual-bg-decision: rgba(196, 181, 253, 0.15);
-}
-
-/* Fixed layout structure for consistent positioning across slides */
-:global(.reveal .slides section) {
-  max-width: 95%;
-  margin-left: auto;
-  margin-right: auto;
-  height: 100%;
-  display: flex !important;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 1em 0 2.5em 0;
-  box-sizing: border-box;
-}
-
-/* Title area - fixed height and position */
-:global(.reveal .slides section > h2) {
-  margin-top: 0;
-  margin-bottom: 0.5em;
-  flex-shrink: 0;
-}
-
-/* Title slides have h1 instead */
-:global(.reveal .slides section > h1) {
-  margin-top: 2em;
-  margin-bottom: 0;
-  flex-shrink: 0;
-}
-
-/* Content area - fills remaining space with natural flow (safe by default) */
-:global(.reveal .slides section)
-  > *:not(h1):not(h2):not(.slideCaption):not(.subtitle) {
-  flex-grow: 1;
-  min-height: 0;
-}
-
-/* Caption area - fixed at bottom when present */
-:global(.reveal) .slideCaption {
-  margin-top: auto;
-  margin-bottom: 2em;
-  flex-shrink: 0;
-  padding-top: 0.5em;
-  padding-bottom: 0;
-}
-
-:global(.reveal p:not(.slideCaption)),
-:global(.reveal ul),
-:global(.reveal ol) {
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-}
+/**
+ * NOTE: Core Reveal.js overrides (typography, layout, dark mode CSS variables)
+ * have been moved to /website/src/styles/presentation-system.css
+ *
+ * This file now contains only component-specific styles for RevealSlideshow.
+ */
