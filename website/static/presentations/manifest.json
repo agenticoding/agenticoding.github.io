@@ -3,71 +3,71 @@
     "presentationUrl": "/presentations/intro.json",
     "slideCount": 11,
     "estimatedDuration": "25-35 minutes",
-    "title": "Introduction: Operating AI Coding Agents",
-    "generatedAt": "2025-11-10T17:45:41.295Z"
+    "title": "AI Coding Assistants: Operator Training",
+    "generatedAt": "2025-11-10T18:21:59.791Z"
   },
   "methodology/lesson-3-high-level-methodology.md": {
     "presentationUrl": "/presentations/methodology/lesson-3-high-level-methodology.json",
-    "slideCount": 11,
-    "estimatedDuration": "40-50 minutes",
-    "title": "Lesson 3: High-Level Methodology",
-    "generatedAt": "2025-11-10T17:46:43.772Z"
+    "slideCount": 12,
+    "estimatedDuration": "45-60 minutes",
+    "title": "High-Level Methodology: Research, Plan, Execute, Validate",
+    "generatedAt": "2025-11-10T18:22:58.400Z"
   },
   "methodology/lesson-4-prompting-101.md": {
     "presentationUrl": "/presentations/methodology/lesson-4-prompting-101.json",
-    "slideCount": 11,
-    "estimatedDuration": "35-45 minutes",
+    "slideCount": 12,
+    "estimatedDuration": "45-60 minutes",
     "title": "Lesson 4: Prompting 101",
-    "generatedAt": "2025-11-10T17:47:50.750Z"
+    "generatedAt": "2025-11-10T18:24:08.971Z"
   },
   "methodology/lesson-5-grounding.md": {
     "presentationUrl": "/presentations/methodology/lesson-5-grounding.json",
-    "slideCount": 12,
+    "slideCount": 11,
     "estimatedDuration": "40-50 minutes",
-    "title": "Grounding: Injecting Reality Into Agents",
-    "generatedAt": "2025-11-10T18:01:50.781Z"
+    "title": "Lesson 5: Grounding - Anchoring Agents in Reality",
+    "generatedAt": "2025-11-10T18:25:26.293Z"
   },
   "practical-techniques/lesson-10-debugging.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-10-debugging.json",
-    "slideCount": 13,
-    "estimatedDuration": "35-45 minutes",
-    "title": "Lesson 10: Debugging with AI Agents",
-    "generatedAt": "2025-11-10T17:50:14.774Z"
+    "slideCount": 10,
+    "estimatedDuration": "40-50 minutes",
+    "title": "Debugging with AI Agents",
+    "generatedAt": "2025-11-10T18:26:32.394Z"
   },
   "practical-techniques/lesson-6-project-onboarding.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-6-project-onboarding.json",
-    "slideCount": 11,
-    "estimatedDuration": "35-45 minutes",
+    "slideCount": 12,
+    "estimatedDuration": "35-40 minutes",
     "title": "Lesson 6: Project Onboarding",
-    "generatedAt": "2025-11-10T17:51:58.268Z"
+    "generatedAt": "2025-11-10T18:27:37.680Z"
   },
   "practical-techniques/lesson-7-planning-execution.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-7-planning-execution.json",
-    "slideCount": 14,
-    "estimatedDuration": "35-40 minutes",
-    "title": "Lesson 7: Planning & Execution",
-    "generatedAt": "2025-11-10T17:53:03.438Z"
+    "slideCount": 15,
+    "estimatedDuration": "45-60 minutes",
+    "title": "Lesson 7: Planning and Execution",
+    "generatedAt": "2025-11-10T18:28:53.875Z"
   },
   "practical-techniques/lesson-8-tests-as-guardrails.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-8-tests-as-guardrails.json",
-    "slideCount": 12,
-    "estimatedDuration": "40-50 minutes",
+    "slideCount": 13,
+    "estimatedDuration": "35-45 minutes",
     "title": "Tests as Guardrails",
-    "generatedAt": "2025-11-10T17:54:23.212Z"
+    "generatedAt": "2025-11-10T19:00:40.895Z"
   },
   "practical-techniques/lesson-9-reviewing-code.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-9-reviewing-code.json",
-    "slideCount": 12,
+    "slideCount": 11,
     "estimatedDuration": "45-60 minutes",
     "title": "Lesson 9: Reviewing Code",
-    "generatedAt": "2025-11-10T17:55:34.768Z"
+    "generatedAt": "2025-11-10T18:31:02.571Z"
   },
   "understanding-the-tools/lesson-1-intro.md": {
     "presentationUrl": "/presentations/understanding-the-tools/lesson-1-intro.json",
-    "slideCount": 12,
-    "estimatedDuration": "40-50 minutes",
-    "title": "Lesson 1: Introduction - Understanding AI Agents",
-    "generatedAt": "2025-11-10T17:56:38.823Z"
+    "slideCount": 11,
+    "estimatedDuration": "35-45 minutes",
+    "title": "Understanding AI-Driven Software Engineering",
+    "generatedAt": "2025-11-10T18:32:03.187Z"
   },
   "understanding-the-tools/lesson-2-understanding-agents.md": {
     "presentationUrl": "/presentations/understanding-the-tools/lesson-2-understanding-agents.json",
