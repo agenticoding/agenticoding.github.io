@@ -57,9 +57,6 @@
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .objectives h3 {
@@ -87,17 +84,19 @@
   color: #42b883;
 }
 
-.bulletList {
+/* Base class for all list-based presentation content */
+.presentationList {
   text-align: left;
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.bulletList {
+  composes: presentationList;
   font-size: clamp(1rem, 2vw, 1.2em);
   line-height: 1.6;
-  margin: 0;
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .bulletList li {
@@ -109,6 +108,7 @@
   display: flex !important;
   flex-direction: column;
   justify-content: center;
+  align-self: stretch;
 }
 
 .codeBlock {
@@ -313,18 +313,9 @@
 }
 
 .takeawayList {
-  text-align: left;
+  composes: presentationList;
   font-size: clamp(0.9rem, 1.8vw, 1.1em);
   line-height: 1.6;
-  margin: 0;
-  list-style: none;
-  padding: 0;
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .takeawayList li {
@@ -593,6 +584,7 @@
   > *:not(h1):not(h2):not(.slideCaption):not(.subtitle) {
   flex-grow: 1;
   min-height: 0;
+  margin-top: 0.5em;
 }
 
 /* Caption area - fixed at bottom when present */
