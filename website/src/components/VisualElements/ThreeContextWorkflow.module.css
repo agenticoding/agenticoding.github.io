@@ -1,0 +1,167 @@
+/* Container Styles */
+.container {
+  margin: 2rem 0;
+  padding: 1.5rem 0;
+}
+
+/* Compact mode for presentations - maximize content area */
+.container.compact {
+  margin: 0 auto;
+  padding: 0;
+  max-width: 100%;
+}
+
+/* SVG Sizing */
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Context Box Animations */
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.contextGroup {
+  animation: fadeInSlide 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .contextGroup {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Context Boxes */
+.contextBox {
+  fill: var(--visual-bg-workflow);
+  stroke: var(--visual-workflow);
+  stroke-width: 3;
+  transition: all 0.3s ease;
+}
+
+.contextBox:hover {
+  fill: var(--visual-bg-decision);
+  stroke: var(--visual-decision);
+}
+
+/* Text Styles */
+.contextTitle {
+  fill: var(--ifm-color-emphasis-700);
+  font-size: 28px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+}
+
+.contextLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 44px;
+  font-weight: 700;
+  font-family: var(--ifm-font-family-base);
+}
+
+.contextDescription {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 22px;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* Arrows */
+.arrow {
+  stroke: var(--visual-workflow);
+  stroke-width: 4;
+  fill: none;
+}
+
+.arrowMarker {
+  fill: var(--visual-workflow);
+}
+
+/* Separation Barriers */
+.barrier {
+  stroke: var(--visual-decision);
+  stroke-width: 2;
+  opacity: 0.3;
+}
+
+/* Description Text */
+.description {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-700);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Presentation Mode Adjustments */
+.container.compact .svg {
+  max-width: 100%;
+}
+
+.container.compact .contextTitle {
+  font-size: 32px;
+}
+
+.container.compact .contextLabel {
+  font-size: 52px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem 0;
+  }
+
+  .contextTitle {
+    font-size: 16px;
+  }
+
+  .contextLabel {
+    font-size: 24px;
+  }
+
+  .contextDescription {
+    font-size: 14px;
+  }
+}
+
+/* Dark mode specific adjustments for presentations */
+:global(.reveal) .contextBox {
+  fill: rgba(167, 139, 250, 0.2);
+  stroke: #a78bfa;
+  stroke-width: 3;
+}
+
+:global(.reveal) .arrow {
+  stroke: #a78bfa;
+  stroke-width: 5;
+}
+
+:global(.reveal) .arrowMarker {
+  fill: #a78bfa;
+}
+
+:global(.reveal) .barrier {
+  stroke: #c4b5fd;
+  opacity: 0.4;
+}
+
+:global(.reveal) .contextTitle,
+:global(.reveal) .contextLabel,
+:global(.reveal) .contextDescription {
+  fill: #e5e7eb;
+}

@@ -18,6 +18,7 @@ import styles from './RevealSlideshow.module.css';
 import CapabilityMatrix from '../VisualElements/CapabilityMatrix';
 import UShapeAttentionCurve from '../VisualElements/UShapeAttentionCurve';
 import WorkflowCircle from '../VisualElements/WorkflowCircle';
+import ThreeContextWorkflow from '../VisualElements/ThreeContextWorkflow';
 import GroundingComparison from '../VisualElements/GroundingComparison';
 import ContextWindowMeter from '../VisualElements/ContextWindowMeter';
 import AbstractShapesVisualization from '../VisualElements/AbstractShapesVisualization';
@@ -85,6 +86,7 @@ const VISUAL_COMPONENTS = {
   CapabilityMatrix,
   UShapeAttentionCurve,
   WorkflowCircle,
+  ThreeContextWorkflow,
   GroundingComparison,
   ContextWindowMeter,
   AbstractShapesVisualization,
