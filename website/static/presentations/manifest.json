@@ -50,10 +50,10 @@
   },
   "practical-techniques/lesson-8-tests-as-guardrails.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-8-tests-as-guardrails.json",
-    "slideCount": 11,
+    "slideCount": 12,
     "estimatedDuration": "40-50 minutes",
-    "title": "Tests as Guardrails",
-    "generatedAt": "2025-11-10T19:55:47.621Z"
+    "title": "Lesson 8: Tests as Guardrails",
+    "generatedAt": "2025-11-10T20:09:05.001Z"
   },
   "practical-techniques/lesson-9-reviewing-code.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-9-reviewing-code.json",
