@@ -54,7 +54,7 @@
 .objectives {
   margin-top: 1.5em;
   text-align: left;
-  max-width: 100%;
+  max-width: 90%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -62,17 +62,11 @@
 .objectives h3 {
   font-size: clamp(1rem, 2vw, 1.2em);
   margin-bottom: 0.5em;
-  margin-left: 0;
-  margin-right: 0;
 }
 
-:global(.reveal) .objectives ul {
+.objectives ul {
   list-style: none;
   padding: 0;
-  display: block;
-  max-width: 100%;
-  margin-left: 0;
-  margin-right: 0;
 }
 
 .objectives li {
@@ -90,19 +84,14 @@
   color: #42b883;
 }
 
-/* Base class for all list-based presentation content */
-.presentationList {
-  text-align: left;
-  max-width: 90%;
-  margin: 0 auto;
-  padding: 0;
-  list-style: none;
-}
-
 .bulletList {
-  composes: presentationList;
+  text-align: left;
   font-size: clamp(1rem, 2vw, 1.2em);
   line-height: 1.6;
+  margin: 0;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .bulletList li {
@@ -114,7 +103,6 @@
   display: flex !important;
   flex-direction: column;
   justify-content: center;
-  align-self: stretch;
 }
 
 .codeBlock {
@@ -316,10 +304,23 @@
   max-height: 100%;
 }
 
+/* Override constraints for large visual components */
+.visualContainer > :global(.three-context-workflow) {
+  max-width: none;
+  max-height: none;
+  min-width: 85%;
+}
+
 .takeawayList {
-  composes: presentationList;
+  text-align: left;
   font-size: clamp(0.9rem, 1.8vw, 1.1em);
   line-height: 1.6;
+  margin: 0;
+  list-style: none;
+  padding: 0;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .takeawayList li {
