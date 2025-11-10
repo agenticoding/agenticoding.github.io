@@ -30,7 +30,16 @@ interface CodeExecutionStep {
 }
 
 interface Slide {
-  type: 'title' | 'concept' | 'code' | 'comparison' | 'codeComparison' | 'visual' | 'takeaway' | 'marketingReality' | 'codeExecution';
+  type:
+    | 'title'
+    | 'concept'
+    | 'code'
+    | 'comparison'
+    | 'codeComparison'
+    | 'visual'
+    | 'takeaway'
+    | 'marketingReality'
+    | 'codeExecution';
   title: string;
   subtitle?: string;
   content?: string[];
@@ -74,7 +83,10 @@ const VISUAL_COMPONENTS = {
   PlanningStrategyComparison,
 };
 
-export default function RevealSlideshow({ presentation, onClose }: RevealSlideshowProps) {
+export default function RevealSlideshow({
+  presentation,
+  onClose,
+}: RevealSlideshowProps) {
   const deckRef = useRef<HTMLDivElement>(null);
   const revealRef = useRef<Reveal.Api | null>(null);
 
@@ -140,19 +152,20 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
     const fragment = event.fragment;
 
     // Find any scrollable container parent
-    const scrollContainer = fragment.closest(`.${styles.executionFlow}`) ||
-                           fragment.closest(`.${styles.comparisonLeft}`) ||
-                           fragment.closest(`.${styles.comparisonRight}`) ||
-                           fragment.closest(`.${styles.metaphorColumn}`) ||
-                           fragment.closest(`.${styles.realityColumn}`);
+    const scrollContainer =
+      fragment.closest(`.${styles.executionFlow}`) ||
+      fragment.closest(`.${styles.comparisonLeft}`) ||
+      fragment.closest(`.${styles.comparisonRight}`) ||
+      fragment.closest(`.${styles.metaphorColumn}`) ||
+      fragment.closest(`.${styles.realityColumn}`);
 
     if (scrollContainer) {
       // Scroll minimum amount needed to bring fragment into view
       // Does nothing if fragment already visible
       fragment.scrollIntoView({
         behavior: 'smooth',
-        block: 'nearest',    // Only scroll if not visible
-        inline: 'nearest'
+        block: 'nearest', // Only scroll if not visible
+        inline: 'nearest',
       });
     }
   };
@@ -163,11 +176,16 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
     switch (slide.type) {
       case 'title':
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h1>{slide.title}</h1>
-            {slide.subtitle && <p className={styles.subtitle}>{slide.subtitle}</p>}
+            {slide.subtitle && (
+              <p className={styles.subtitle}>{slide.subtitle}</p>
+            )}
             {presentation.metadata.learningObjectives && (
-              <div className={styles.objectives}>
+              <div className={`${styles.objectives} ${styles.centeredContent}`}>
                 <h3>Learning Objectives</h3>
                 <ul>
                   {presentation.metadata.learningObjectives.map((obj, i) => (
@@ -181,13 +199,20 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
 
       case 'concept':
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h2>{slide.title}</h2>
             {slide.content && (
-              <ul className={styles.bulletList}>
-                {slide.content.filter(item => item.trim() !== '').map((item, i) => (
-                  <li key={i} className="fragment">{item}</li>
-                ))}
+              <ul className={`${styles.bulletList} ${styles.centeredContent}`}>
+                {slide.content
+                  .filter((item) => item.trim() !== '')
+                  .map((item, i) => (
+                    <li key={i} className="fragment">
+                      {item}
+                    </li>
+                  ))}
               </ul>
             )}
           </section>
@@ -195,7 +220,10 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
 
       case 'code':
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h2>{slide.title}</h2>
             <pre className={styles.codeBlock}>
               <code className={`language-${slide.language || 'javascript'}`}>
@@ -203,14 +231,19 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
               </code>
             </pre>
             {slide.caption && (
-              <p className={`${styles.caption} ${styles.slideCaption}`}>{slide.caption}</p>
+              <p className={`${styles.caption} ${styles.slideCaption}`}>
+                {slide.caption}
+              </p>
             )}
           </section>
         );
 
       case 'comparison':
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h2>{slide.title}</h2>
             <div className={styles.comparison}>
               {slide.left && (
@@ -218,7 +251,9 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
                   <h3 className={styles.ineffective}>{slide.left.label}</h3>
                   <ul>
                     {slide.left.content.map((item, i) => (
-                      <li key={i} className="fragment">{item}</li>
+                      <li key={i} className="fragment">
+                        {item}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -228,7 +263,9 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
                   <h3 className={styles.effective}>{slide.right.label}</h3>
                   <ul>
                     {slide.right.content.map((item, i) => (
-                      <li key={i} className="fragment">{item}</li>
+                      <li key={i} className="fragment">
+                        {item}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -239,14 +276,19 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
 
       case 'codeComparison':
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h2>{slide.title}</h2>
             <div className={styles.comparison}>
               {slide.leftCode && (
                 <div className={styles.comparisonLeft}>
                   <h3 className={styles.ineffective}>{slide.leftCode.label}</h3>
                   <pre className={styles.codeBlockSmall}>
-                    <code className={`language-${slide.leftCode.language || 'text'}`}>
+                    <code
+                      className={`language-${slide.leftCode.language || 'text'}`}
+                    >
                       {slide.leftCode.code}
                     </code>
                   </pre>
@@ -256,7 +298,9 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
                 <div className={styles.comparisonRight}>
                   <h3 className={styles.effective}>{slide.rightCode.label}</h3>
                   <pre className={styles.codeBlockSmall}>
-                    <code className={`language-${slide.rightCode.language || 'text'}`}>
+                    <code
+                      className={`language-${slide.rightCode.language || 'text'}`}
+                    >
                       {slide.rightCode.code}
                     </code>
                   </pre>
@@ -268,25 +312,44 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
 
       case 'marketingReality':
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h2>{slide.title}</h2>
             <div className={styles.marketingReality}>
               {slide.metaphor && (
                 <div className={styles.metaphorColumn}>
-                  <h3 className={styles.metaphorHeading}>{slide.metaphor.label}</h3>
+                  <h3 className={styles.metaphorHeading}>
+                    {slide.metaphor.label}
+                  </h3>
                   <ul>
                     {slide.metaphor.content.map((item, i) => (
-                      <li key={i} className="fragment" data-fragment-index={i * 2}>{item}</li>
+                      <li
+                        key={i}
+                        className="fragment"
+                        data-fragment-index={i * 2}
+                      >
+                        {item}
+                      </li>
                     ))}
                   </ul>
                 </div>
               )}
               {slide.reality && (
                 <div className={styles.realityColumn}>
-                  <h3 className={styles.realityHeading}>{slide.reality.label}</h3>
+                  <h3 className={styles.realityHeading}>
+                    {slide.reality.label}
+                  </h3>
                   <ul>
                     {slide.reality.content.map((item, i) => (
-                      <li key={i} className="fragment" data-fragment-index={i * 2 + 1}>{item}</li>
+                      <li
+                        key={i}
+                        className="fragment"
+                        data-fragment-index={i * 2 + 1}
+                      >
+                        {item}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -295,34 +358,53 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
           </section>
         );
 
-      case 'visual':
-        const VisualComponent = slide.component ? VISUAL_COMPONENTS[slide.component] : null;
+      case 'visual': {
+        const VisualComponent = slide.component
+          ? VISUAL_COMPONENTS[slide.component]
+          : null;
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h2>{slide.title}</h2>
             <div className={styles.visualContainer}>
-              {VisualComponent && <VisualComponent compact={true} />}
+              {VisualComponent && <VisualComponent compact />}
               {!VisualComponent && (
-                <p className={styles.error}>Visual component '{slide.component}' not found</p>
+                <p className={styles.error}>
+                  Visual component &apos;{slide.component}&apos; not found
+                </p>
               )}
             </div>
             {slide.caption && (
-              <p className={`${styles.caption} ${styles.slideCaption}`}>{slide.caption}</p>
+              <p className={`${styles.caption} ${styles.slideCaption}`}>
+                {slide.caption}
+              </p>
             )}
             {slide.subtitle && (
-              <p className={`${styles.subtitle} ${styles.slideCaption}`}>{slide.subtitle}</p>
+              <p className={`${styles.subtitle} ${styles.slideCaption}`}>
+                {slide.subtitle}
+              </p>
             )}
           </section>
         );
+      }
 
       case 'takeaway':
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h2>{slide.title}</h2>
             {slide.content && (
-              <ul className={styles.takeawayList}>
+              <ul
+                className={`${styles.takeawayList} ${styles.centeredContent}`}
+              >
                 {slide.content.map((item, i) => (
-                  <li key={i} className="fragment">{item}</li>
+                  <li key={i} className="fragment">
+                    {item}
+                  </li>
                 ))}
               </ul>
             )}
@@ -331,13 +413,18 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
 
       case 'codeExecution':
         return (
-          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+          <section
+            key={key}
+            data-notes={formatSpeakerNotes(slide.speakerNotes)}
+          >
             <h2>{slide.title}</h2>
             {slide.steps && (
               <div className={styles.executionFlow}>
                 {slide.steps.map((step, i) => {
                   const highlightClass = step.highlightType
-                    ? styles[`execution${step.highlightType.charAt(0).toUpperCase()}${step.highlightType.slice(1)}`]
+                    ? styles[
+                        `execution${step.highlightType.charAt(0).toUpperCase()}${step.highlightType.slice(1)}`
+                      ]
                     : '';
 
                   return (
@@ -351,7 +438,9 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
                         <span className={styles.stepText}>{step.line}</span>
                       </div>
                       {step.annotation && (
-                        <div className={styles.stepAnnotation}>{step.annotation}</div>
+                        <div className={styles.stepAnnotation}>
+                          {step.annotation}
+                        </div>
                       )}
                     </div>
                   );
@@ -400,7 +489,11 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
 
   return (
     <div className={styles.presentationOverlay}>
-      <button className={styles.closeButton} onClick={onClose} title="Exit presentation (ESC)">
+      <button
+        className={styles.closeButton}
+        onClick={onClose}
+        title="Exit presentation (ESC)"
+      >
         ✕
       </button>
       <div className="reveal" ref={deckRef}>

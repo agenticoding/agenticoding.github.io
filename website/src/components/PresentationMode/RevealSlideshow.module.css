@@ -79,7 +79,7 @@
 }
 
 .objectives li::before {
-  content: "→";
+  content: '→';
   position: absolute;
   left: 0;
   color: #42b883;
@@ -100,6 +100,13 @@
 
 .bulletList li {
   margin: 0.8em 0;
+}
+
+/* Explicit vertical centering for content elements */
+.centeredContent {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .codeBlock {
@@ -206,14 +213,14 @@
 }
 
 .comparisonLeft li::before {
-  content: "✗";
+  content: '✗';
   position: absolute;
   left: 0;
   color: #ff6b6b;
 }
 
 .comparisonRight li::before {
-  content: "✓";
+  content: '✓';
   position: absolute;
   left: 0;
   color: #51cf66;
@@ -277,7 +284,7 @@
 
 .metaphorColumn li::before,
 .realityColumn li::before {
-  content: "→";
+  content: '→';
   position: absolute;
   left: 0;
   color: #8b5cf6; /* --brand-primary-light */
@@ -290,8 +297,6 @@
   align-items: center;
   overflow: visible;
   width: 100%;
-  height: 85%;
-  transform: scale(1.5);
   transform-origin: center center;
 }
 
@@ -322,7 +327,7 @@
 }
 
 .takeawayList li::before {
-  content: "💡";
+  content: '💡';
   position: absolute;
   left: 0;
   font-size: 1.2em;
@@ -483,7 +488,7 @@
 }
 
 :global(.reveal h1) {
-  font-size: clamp(2.5rem, 4.5vw, 3.0em);
+  font-size: clamp(2.5rem, 4.5vw, 3em);
   color: var(--ifm-color-primary);
   max-width: 90%;
   margin-left: auto;
@@ -520,6 +525,32 @@
   background: var(--ifm-color-primary);
 }
 
+/* Enable dark mode CSS variables for all components in presentation mode */
+:global(.reveal) {
+  --ifm-font-color-base: #c9d1d9;
+  --ifm-heading-color: #e6edf3;
+  --ifm-color-emphasis-700: #8b949e;
+  --ifm-color-emphasis-600: #6e7681;
+  --ifm-color-emphasis-300: #3d444d;
+  --ifm-color-emphasis-200: #30363d;
+  --ifm-background-color: #0d1117;
+  --ifm-background-surface-color: #161b22;
+
+  /* Visual element colors - adjusted for dark mode */
+  --visual-workflow: #a78bfa;
+  --visual-capability: #22d3ee;
+  --visual-limitation: #fb923c;
+  --visual-decision: #c4b5fd;
+  --visual-error: #fb7185;
+  --visual-neutral: #94a3b8;
+
+  /* Visual element backgrounds */
+  --visual-bg-workflow: rgba(167, 139, 250, 0.15);
+  --visual-bg-capability: rgba(34, 211, 238, 0.15);
+  --visual-bg-limitation: rgba(251, 146, 60, 0.15);
+  --visual-bg-decision: rgba(196, 181, 253, 0.15);
+}
+
 /* Fixed layout structure for consistent positioning across slides */
 :global(.reveal .slides section) {
   max-width: 95%;
@@ -547,12 +578,9 @@
   flex-shrink: 0;
 }
 
-/* Content area - fills remaining space */
-:global(.reveal .slides section) > *:not(h1):not(h2):not(.slideCaption):not(.comparison):not(.marketingReality):not(.executionFlow) {
+/* Content area - fills remaining space with natural flow (safe by default) */
+:global(.reveal .slides section) > *:not(h1):not(h2):not(.slideCaption) {
   flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   min-height: 0;
 }
 
