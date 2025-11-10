@@ -75,7 +75,7 @@
       "type": "code",
       "title": "Review Prompt Template",
       "language": "bash",
-      "code": "# After tests pass, review in fresh context\n\necho \"You are a code reviewer. Analyze\nthis implementation for correctness,\narchitecture, and readability.\n\nAccept the following context:\n- Domain: [specific domain]\n- Architecture: [key patterns]\n- Review standards: [team guidelines]\n\nProvide:\n1. Logic errors or edge cases\n2. Architecture mismatches\n3. Code readability issues\n4. Actionable suggestions\n\nProvide file paths and line numbers.\" | \\n  agent --review src/feature/",
+      "code": "# After tests pass, review in fresh context\n\necho \"You are a code reviewer. Analyze\nthis implementation for correctness,\narchitecture, and readability.\n\nAccept the following context:\n- Domain: [specific domain]\n- Architecture: [key patterns]\n- Review standards: [team guidelines]\n\nProvide:\n1. Logic errors or edge cases\n2. Architecture mismatches\n3. Code readability issues\n4. Actionable suggestions\n\nProvide file paths and line numbers.\" | \\\n  \\n  agent --review src/feature/",
       "caption": "Structure review with persona, constraints, and grounding",
       "speakerNotes": {
         "talkingPoints": "This template integrates techniques from Lesson 4: Prompting 101. The persona (code reviewer) sets perspective. Context constraints (domain, architecture) prevent hallucinations. Structured output format (numbered list) ensures consistency. Critically: 'Provide file paths and line numbers' forces grounding in actual code, not statistical guesses.",
