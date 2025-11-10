@@ -2,11 +2,19 @@ import React, { useEffect, useRef } from 'react';
 import Reveal from 'reveal.js';
 import RevealHighlight from 'reveal.js/plugin/highlight/highlight';
 import 'reveal.js/dist/reveal.css';
-import 'reveal.js/dist/theme/black.css';
 import 'reveal.js/plugin/highlight/monokai.css';
 import styles from './RevealSlideshow.module.css';
 
-// Import visual components that might be used in presentations
+/**
+ * Import visual components for presentations
+ *
+ * All components implement PresentationAwareProps and support compact mode.
+ * When rendered in slides, pass compact={true} to remove padding/margins
+ * and maximize content area within the 1280x720 viewport.
+ *
+ * See: /website/src/components/PresentationMode/types.ts
+ * See: /website/src/styles/presentation-system.css
+ */
 import CapabilityMatrix from '../VisualElements/CapabilityMatrix';
 import UShapeAttentionCurve from '../VisualElements/UShapeAttentionCurve';
 import WorkflowCircle from '../VisualElements/WorkflowCircle';
@@ -367,7 +375,7 @@ export default function RevealSlideshow({
             key={key}
             data-notes={formatSpeakerNotes(slide.speakerNotes)}
           >
-            <h2>{slide.title}</h2>
+            {slide.title && <h2>{slide.title}</h2>}
             <div className={styles.visualContainer}>
               {VisualComponent && <VisualComponent compact />}
               {!VisualComponent && (
