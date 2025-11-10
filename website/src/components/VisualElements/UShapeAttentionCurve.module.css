@@ -9,7 +9,7 @@
 /* Compact mode for presentations - maximize diagram size */
 .container.compact {
   margin: 0 auto;
-  padding: 0.75rem;
+  padding: 0.5rem;
   max-width: 95%;
 }
 

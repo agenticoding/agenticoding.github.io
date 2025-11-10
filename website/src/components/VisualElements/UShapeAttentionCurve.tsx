@@ -185,13 +185,15 @@ export default function UShapeAttentionCurve({
 
   return (
     <div className={containerClassName}>
-      <div className={styles.header}>
-        <h4 className={styles.title}>Context Window Attention Curve</h4>
-        <span className={styles.subtitle}>
-          Information at the beginning and end gets strong attention, middle
-          gets skimmed
-        </span>
-      </div>
+      {!compact && (
+        <div className={styles.header}>
+          <h4 className={styles.title}>Context Window Attention Curve</h4>
+          <span className={styles.subtitle}>
+            Information at the beginning and end gets strong attention, middle
+            gets skimmed
+          </span>
+        </div>
+      )}
 
       <svg
         className={styles.svg}
@@ -406,14 +408,16 @@ export default function UShapeAttentionCurve({
         ))}
       </div>
 
-      <div className={styles.explanation}>
-        <strong>The U-Curve Effect:</strong> The curve&apos;s width shows
-        context length, while depth shows attention quality. As context length
-        increases, the attention drop in the middle becomes more pronounced.
-        Short contexts (30%) have minimal degradation. Medium contexts (60%)
-        show a noticeable U-curve. Long contexts (90%) exhibit severe attention
-        loss—only the beginning and end are reliably processed.
-      </div>
+      {!compact && (
+        <div className={styles.explanation}>
+          <strong>The U-Curve Effect:</strong> The curve&apos;s width shows
+          context length, while depth shows attention quality. As context length
+          increases, the attention drop in the middle becomes more pronounced.
+          Short contexts (30%) have minimal degradation. Medium contexts (60%)
+          show a noticeable U-curve. Long contexts (90%) exhibit severe
+          attention loss—only the beginning and end are reliably processed.
+        </div>
+      )}
     </div>
   );
 }
