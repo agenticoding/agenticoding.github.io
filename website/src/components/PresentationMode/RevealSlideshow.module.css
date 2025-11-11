@@ -119,7 +119,7 @@
   overflow-y: auto;
   overflow-x: auto;
   height: 100%;
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
 .codeBlock code {
