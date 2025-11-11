@@ -5,7 +5,7 @@
  *
  * Generates presentation slides from MDX course content using AI:
  * 1. Parses MDX lesson content
- * 2. Uses Claude Code CLI (Haiku 4.5) to condense into presentation slides
+ * 2. Uses Claude Code CLI (Sonnet 4.5) to condense into presentation slides
  * 3. Generates structured JSON with slides, speaker notes, and metadata
  *
  * Modes:
@@ -77,7 +77,7 @@ function parseArgs() {
 // ============================================================================
 
 /**
- * Generate presentation slides prompt optimized for Claude Haiku 4.5
+ * Generate presentation slides prompt optimized for Claude Sonnet 4.5
  */
 function buildPresentationPrompt(content, fileName, outputPath) {
   return `You are a presentation script writer specializing in educational content for senior software engineers.
@@ -700,7 +700,7 @@ Just write the raw JSON to the file now.`;
  */
 async function generatePresentationWithClaude(prompt, outputPath) {
   return new Promise((resolve, reject) => {
-    console.log(`  🤖 Calling Claude Code CLI (Haiku 4.5)...`);
+    console.log(`  🤖 Calling Claude Code CLI (Sonnet 4.5)...`);
 
     // Ensure output directory exists
     mkdirSync(dirname(outputPath), { recursive: true });
@@ -708,7 +708,7 @@ async function generatePresentationWithClaude(prompt, outputPath) {
     // Spawn claude process with headless mode
     const claude = spawn('claude', [
       '-p',              // Headless mode
-      '--model', 'haiku', // Use Haiku 4.5
+      '--model', 'sonnet', // Use Sonnet 4.5
       '--allowedTools', 'Edit', 'Write' // Allow file editing and writing only
     ]);
 
@@ -1469,7 +1469,7 @@ async function main() {
   console.log(`📂 Docs directory: ${DOCS_DIR}`);
   console.log(`📝 Output directory: ${OUTPUT_DIR}`);
   console.log(`🌐 Static directory: ${STATIC_OUTPUT_DIR}`);
-  console.log(`🤖 Model: Claude Haiku 4.5 (via CLI)`);
+  console.log(`🤖 Model: Claude Sonnet 4.5 (via CLI)`);
   console.log(`📋 Mode: ${config.mode}`);
 
   // Find markdown files
