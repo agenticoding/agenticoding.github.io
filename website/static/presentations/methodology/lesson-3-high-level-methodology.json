@@ -120,6 +120,7 @@
     {
       "type": "codeComparison",
       "title": "Planning Examples: Exploration vs Exact",
+      "neutral": true,
       "leftCode": {
         "label": "Exploration Planning",
         "language": "text",
@@ -146,9 +147,7 @@
         "label": "Supervised Mode",
         "content": [
           "Actively monitor agent actions in real-time",
-          "Review intermediate outputs and steer as needed",
           "Maximum control and immediate error detection",
-          "Blocks your attention—can't multitask",
           "Use when learning agent behavior or handling critical security work"
         ]
       },
@@ -156,8 +155,6 @@
         "label": "Autonomous Mode",
         "content": [
           "Give agent task, let it run, check results later",
-          "You work on other projects while agent executes",
-          "Requires excellent grounding and planning",
           "Enable parallel work and genuine 10x productivity",
           "Use with well-defined tasks and strong confidence in your setup"
         ]
