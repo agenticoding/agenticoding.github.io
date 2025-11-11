@@ -63,6 +63,7 @@
     {
       "type": "comparison",
       "title": "AGENTS.md vs CLAUDE.md",
+      "neutral": true,
       "left": {
         "label": "AGENTS.md (Vendor-Neutral)",
         "content": [

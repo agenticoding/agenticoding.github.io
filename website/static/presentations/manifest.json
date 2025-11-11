@@ -15,24 +15,24 @@
   },
   "methodology/lesson-4-prompting-101.md": {
     "presentationUrl": "/presentations/methodology/lesson-4-prompting-101.json",
-    "slideCount": 11,
+    "slideCount": 14,
     "estimatedDuration": "35-45 minutes",
     "title": "Prompting 101: Pattern Completion Engineering",
-    "generatedAt": "2025-11-10T21:15:33.473Z"
+    "generatedAt": "2025-11-11T06:42:30.832Z"
   },
   "methodology/lesson-5-grounding.md": {
     "presentationUrl": "/presentations/methodology/lesson-5-grounding.json",
-    "slideCount": 15,
-    "estimatedDuration": "45-60 minutes",
+    "slideCount": 14,
+    "estimatedDuration": "35-45 minutes",
     "title": "Grounding: Anchoring Agents in Reality",
-    "generatedAt": "2025-11-11T04:24:31.477Z"
+    "generatedAt": "2025-11-11T06:44:25.031Z"
   },
   "practical-techniques/lesson-10-debugging.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-10-debugging.json",
     "slideCount": 10,
-    "estimatedDuration": "45-60 minutes",
+    "estimatedDuration": "40-50 minutes",
     "title": "Debugging with AI Agents",
-    "generatedAt": "2025-11-10T21:39:50.140Z"
+    "generatedAt": "2025-11-11T06:45:51.862Z"
   },
   "practical-techniques/lesson-6-project-onboarding.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-6-project-onboarding.json",
@@ -51,29 +51,29 @@
   "practical-techniques/lesson-8-tests-as-guardrails.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-8-tests-as-guardrails.json",
     "slideCount": 12,
-    "estimatedDuration": "45-60 minutes",
-    "title": "Lesson 8: Tests as Guardrails",
-    "generatedAt": "2025-11-11T05:21:45.228Z"
+    "estimatedDuration": "35-45 minutes",
+    "title": "Tests as Guardrails",
+    "generatedAt": "2025-11-11T06:51:19.041Z"
   },
   "practical-techniques/lesson-9-reviewing-code.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-9-reviewing-code.json",
-    "slideCount": 10,
+    "slideCount": 9,
     "estimatedDuration": "35-45 minutes",
     "title": "Reviewing Code with AI",
-    "generatedAt": "2025-11-10T21:25:04.301Z"
+    "generatedAt": "2025-11-11T06:52:57.123Z"
   },
   "understanding-the-tools/lesson-1-intro.md": {
     "presentationUrl": "/presentations/understanding-the-tools/lesson-1-intro.json",
     "slideCount": 11,
-    "estimatedDuration": "35-45 minutes",
-    "title": "Understanding the Machinery: LLMs and Agents",
-    "generatedAt": "2025-11-11T05:24:11.560Z"
+    "estimatedDuration": "30-40 minutes",
+    "title": "Introduction: The Paradigm Shift",
+    "generatedAt": "2025-11-11T06:54:19.086Z"
   },
   "understanding-the-tools/lesson-2-understanding-agents.md": {
     "presentationUrl": "/presentations/understanding-the-tools/lesson-2-understanding-agents.json",
-    "slideCount": 11,
+    "slideCount": 10,
     "estimatedDuration": "35-45 minutes",
     "title": "Understanding Agents",
-    "generatedAt": "2025-11-11T06:36:39.297Z"
+    "generatedAt": "2025-11-11T06:55:59.738Z"
   }
 }

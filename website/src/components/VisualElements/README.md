@@ -90,12 +90,12 @@ export default function MyComponent({ compact = false }: PresentationAwareProps 
 | **CapabilityMatrix**            | Trust levels for AI capabilities       | ✅           | Lesson 1 docs, Lesson 2 presentation |
 | **UShapeAttentionCurve**        | Context window attention visualization | ✅           | Lesson 3 docs & presentation         |
 | **WorkflowCircle**              | 4-phase iterative workflow diagram     | ✅           | Lesson 2 docs & presentation         |
-| **GroundingComparison**         | Grounding strategies side-by-side      | ✅           | Lesson 4 presentation                |
+| **GroundingComparison**         | Grounding strategies side-by-side      | ❌           | Lesson 5 docs only                   |
 | **ContextWindowMeter**          | Interactive token usage meter          | ✅           | Lesson 3 docs & presentation         |
 | **AbstractShapesVisualization** | Clean vs cluttered context demo        | ✅           | Lesson 5 presentation                |
 | **PlanningStrategyComparison**  | Exploration vs exact planning          | ✅           | Lesson 6 presentation                |
 
-All components support both documentation and presentation modes.
+Most components support both documentation and presentation modes. Some components (marked ❌) are documentation-only.
 
 ---
 

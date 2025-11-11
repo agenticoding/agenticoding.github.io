@@ -1,214 +1,196 @@
 {
   "metadata": {
-    "title": "Lesson 8: Tests as Guardrails",
+    "title": "Tests as Guardrails",
     "lessonId": "lesson-8-tests-as-guardrails",
-    "estimatedDuration": "45-60 minutes",
+    "estimatedDuration": "35-45 minutes",
     "learningObjectives": [
-      "Ground agent implementation with tests",
-      "Separate code, test, debug contexts",
-      "Write sociable tests, not mocks",
-      "Diagnose failures systematically"
+      "Tests ground agent code quality",
+      "Prevent cycle of self-deception",
+      "Smoke tests enable fast iteration",
+      "Agent simulation discovers edge cases"
     ]
   },
   "slides": [
     {
       "type": "title",
       "title": "Tests as Guardrails",
-      "subtitle": "Grounding agent behavior at scale",
+      "subtitle": "Constraining Agent Velocity with Living Documentation",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "This lesson covers how tests function as constraints that guide agent behavior at scale. We'll explore tests as documentation, discuss the critical importance of context separation when writing code and tests, and learn systematic approaches to debugging failures.",
+        "talkingPoints": "This lesson covers how tests serve as both constraints and documentation for AI agents. We'll explore how to prevent agents from breaking production code at scale, discover edge cases through autonomous testing, and debug failures systematically.",
         "timing": "1 minute",
-        "discussion": "Ask students: What problems have you seen when agents generate code without test guidance?",
-        "context": "This is a practical lesson focused on production workflows. Tests aren't just verification—they're the primary way agents learn about your codebase's constraints, edge cases, and domain-specific rules.",
-        "transition": "Let's start by understanding what agents actually read when they encounter tests."
+        "discussion": "Ask students: Have you experienced an AI agent refactoring code successfully but breaking subtle edge cases?",
+        "context": "Agents can modify dozens of files in minutes. Without tests, small logic errors compound fast.",
+        "transition": "Let's start by understanding why tests matter at agent velocity..."
       }
     },
     {
       "type": "concept",
-      "title": "Tests as Living Documentation",
+      "title": "The Velocity Problem",
       "content": [
-        "Good tests ground agent decisions in real constraints",
-        "Bad tests pollute context with noise",
-        "Agents read test names, assertions, and comments",
-        "Quality of tests determines quality of implementation"
+        "Agents refactor 30+ files in minutes",
+        "2,000-line diffs cause pattern blindness",
+        "Manual review misses subtle logic errors",
+        "Small bugs compound at scale"
       ],
       "speakerNotes": {
-        "talkingPoints": "Tests aren't passive documentation—agents actively search for and read them during the research phase. A test that clearly shows 'negative quantities are rejected' teaches the agent a concrete constraint. A test named 'test(\"works\")' teaches nothing. The tests that load into context window during research directly influence implementation decisions.",
-        "timing": "3-4 minutes",
-        "discussion": "Show an example of a poorly named test. Ask: What would an agent infer from this? Then show a well-named test with clear assertions. The difference is dramatic.",
-        "context": "In production, test quality determines whether agents implement features correctly or just make assumptions based on training data patterns.",
-        "transition": "Before writing tests, we need to discover what should be tested. Let's look at the discovery process."
+        "talkingPoints": "Agents operate at velocity humans can't match. When an agent refactors 30 files in one session, unintended changes hide in massive diffs. You review 2,000 lines, develop pattern blindness, and might miss 2 files with subtle logic errors among 28 correct ones. Tests cement which behaviors are intentional and must not change.",
+        "timing": "2-3 minutes",
+        "discussion": "Have students share experiences reviewing large AI-generated diffs. What got missed?",
+        "context": "In production, an agent might 'simplify' away critical rounding logic buried in a 50-line file change. Without tests, this ships to production.",
+        "transition": "Tests aren't just verification—they're documentation agents actually read during their research phase..."
       }
     },
     {
-      "type": "codeComparison",
-      "title": "Edge Case Discovery: Weak vs Strong",
-      "leftCode": {
-        "label": "Vague Discovery",
-        "language": "text",
-        "code": "What edge cases exist in validateUser()?"
-      },
-      "rightCode": {
-        "label": "Grounded Discovery",
-        "language": "text",
-        "code": "How does validateUser() work? What edge cases exist\n  in the current implementation?\nWhat special handling exists for different auth providers?\nSearch for related tests and analyze what they cover."
-      },
+      "type": "concept",
+      "title": "Tests as Documentation: What Agents Read",
+      "content": [
+        "Tests load into context during research phase",
+        "Good tests show concrete constraints and edge cases",
+        "Bad tests pollute context with noise",
+        "Tests ground implementation in your codebase"
+      ],
       "speakerNotes": {
-        "talkingPoints": "The left side asks a generic question—the agent might hallucinate generic auth edge cases. The right side is specific: it asks the agent to read the actual implementation, find real tests, and synthesize findings. This loads concrete constraints into context derived from YOUR codebase, not from training patterns.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: Why is 'Search for related tests and analyze' different from just asking 'what are edge cases'? The answer: it grounds discovery in actual code.",
-        "context": "This discovery phase is the foundation for all subsequent testing. When you skip this step, agents generate tests that pass but don't capture real constraints.",
-        "transition": "Once you've discovered edge cases, you follow up with deeper analysis to identify gaps."
+        "talkingPoints": "Before agents write code, they research—searching for relevant files and reading implementations. Both source code and tests load into context. Tests aren't documentation agents 'learn' from; they're concrete constraints that ground implementation in your actual codebase rather than statistical patterns from training data. When 50 tests load into context before an auth refactor, their quality determines grounding.",
+        "timing": "3 minutes",
+        "discussion": "Ask: What makes a test 'good documentation'? What information do test names and assertions convey?",
+        "context": "Tests named 'test(works)' with unclear assertions fill context with noise. Tests showing 'OAuth users skip email verification' provide concrete constraints.",
+        "transition": "Let's look at how to discover what needs testing using agent questions..."
       }
     },
     {
-      "type": "codeComparison",
-      "title": "Gap Analysis: Finding Untested Paths",
-      "leftCode": {
-        "label": "Generic Follow-up",
-        "language": "text",
-        "code": "What edge cases should we test?"
-      },
-      "rightCode": {
-        "label": "Implementation-Grounded Follow-up",
-        "language": "text",
-        "code": "Based on the implementation you found,\n  what edge cases are NOT covered by tests?\nWhat happens with:\n- Null or undefined inputs\n- Users mid-registration (incomplete profile)\n- Concurrent validation requests"
-      },
+      "type": "code",
+      "title": "Research First: Discover Edge Cases Through Questions",
+      "language": "text",
+      "code": "How does validateUser() work? What edge cases exist in the current implementation?\nWhat special handling exists for different auth providers?\nSearch for related tests and analyze what they cover.",
+      "caption": "Prompt pattern for edge case discovery",
       "speakerNotes": {
-        "talkingPoints": "This follow-up is critical. The agent has now read the actual implementation and existing tests. This question forces the agent to compare what's actually implemented against what's tested. The specific examples (null inputs, mid-registration, concurrency) guide the agent toward high-value edge cases rather than generic testing advice.",
-        "timing": "2-3 minutes",
-        "discussion": "Why is asking for specific cases better than 'find gaps'? Because it forces the agent to think about your actual system, not generic testing patterns.",
-        "context": "At scale, this difference is enormous. An agent that discovers 3-5 real untested edge cases per session prevents bugs that would otherwise reach production.",
-        "transition": "Now we understand discovery. The challenge comes when code and tests are written together—this creates a 'cycle of self-deception.'"
+        "talkingPoints": "Before writing tests, use planning techniques from Lesson 7 to discover what needs testing. This prompt shows the pattern: ask questions that load implementation details and existing edge cases into context. The agent searches for the function, reads implementation, finds existing tests, and synthesizes findings—loading concrete constraints like 'OAuth users skip email verification' or 'admin users bypass rate limits' into context.",
+        "timing": "3 minutes",
+        "discussion": "What other questions would help discover edge cases for a payment processing function?",
+        "context": "This grounded approach derives edge cases from actual code, not generic testing advice.",
+        "transition": "Once you've discovered edge cases, follow up to identify gaps in test coverage..."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Follow Up: Identify Coverage Gaps",
+      "language": "text",
+      "code": "Based on the implementation you found, what edge cases are NOT covered by tests?\nWhat happens with:\n- Null or undefined inputs\n- Users mid-registration (incomplete profile)\n- Concurrent validation requests",
+      "caption": "Prompt pattern for gap analysis",
+      "speakerNotes": {
+        "talkingPoints": "This follow-up prompt guides the agent to analyze the implementation against specific questions and identify untested paths. Notice the structured format with specific scenarios. The agent produces a grounded list of edge cases derived from actual code, not hypothetical scenarios.",
+        "timing": "2 minutes",
+        "discussion": "What edge case categories apply universally? (null/undefined, concurrency, partial state, error conditions)",
+        "context": "This two-step research approach (discover implementation, then identify gaps) ensures comprehensive test coverage.",
+        "transition": "Now we'll address a critical failure mode when agents generate both code and tests in the same context..."
       }
     },
     {
       "type": "concept",
       "title": "The Cycle of Self-Deception",
       "content": [
-        "Agent implements feature in Context A",
-        "Same agent writes tests in Context A immediately after",
-        "Tests inherit implementation's blind spots",
-        "Both artifacts are 'correct' together but wrong independently",
-        "Specification gaming: tests weaken to match implementation"
+        "Code and tests in same context inherit identical assumptions",
+        "Agent implements bug, then writes passing test for buggy behavior",
+        "Example: Accept zero quantities, test verifies zero succeeds",
+        "Specification gaming: optimize for green tests, not correctness"
       ],
       "speakerNotes": {
-        "talkingPoints": "When an agent writes code and tests in the same conversation, they share the same assumptions. If the agent missed a constraint (negative quantities should be rejected), the test will verify the buggy implementation. Both pass validation. The test doesn't catch the bug because the agent who wrote the implementation also wrote the test. This is Goodhart's Law: when the test becomes the optimization target, agents optimize for passing tests rather than correctness.",
-        "timing": "4-5 minutes",
-        "discussion": "Real example: agent implements payment processing, allows $0 transactions in code. In same session, agent writes test verifying $0 transactions work. Test passes. Bug reaches production. Ask: How would separate contexts have prevented this?",
-        "context": "Research shows this 'specification gaming' occurs in ~1% of test-code cycles but compounds across large codebases. Enterprise systems report this is a leading cause of preventable bugs in AI-assisted development.",
-        "transition": "The solution is context separation. Let's look at the three-context workflow."
+        "talkingPoints": "When code and tests are generated within the same context—the same conversation, shared reasoning state—they inherit the same assumptions and blind spots. An agent might implement an API endpoint that accepts zero quantities, then generate tests verifying that adding zero items succeeds. Both artifacts stem from the same flawed reasoning. The test passes, the bug remains. This is Goodhart's Law: when tests become the optimization target, agents optimize for passing tests rather than correctness.",
+        "timing": "3-4 minutes",
+        "discussion": "Ask students: Have you seen tests that validate incorrect behavior? How did it happen?",
+        "context": "Research shows this occurs in ~1% of test-code generation cycles, but compounds across large codebases. Enterprise systems at Salesforce validate this pattern.",
+        "transition": "The solution requires a circuit breaker that prevents convergence on mutually-compatible-but-incorrect artifacts..."
       }
     },
     {
       "type": "visual",
       "title": "The Three-Context Workflow",
       "component": "ThreeContextWorkflow",
-      "caption": "Fresh contexts prevent blind spots from compounding",
+      "caption": "Fresh contexts prevent assumption inheritance and enable objective analysis",
       "speakerNotes": {
-        "talkingPoints": "The diagram shows three separate conversations: Context A for code, Context B for tests, Context C for debugging. Each context is stateless—the agent doesn't carry assumptions from the previous step. This forces independent thinking at each phase.",
-        "timing": "3-4 minutes",
-        "discussion": "Walk through each context: In A, agent writes code grounded in existing patterns. In B (fresh context), agent reads requirements and edge cases without knowledge of A's implementation—tests derive independently. In C (fresh context), agent analyzes failures objectively without defending either code or tests.",
-        "context": "Salesforce reported 30% reduction in debugging time using this approach at scale (millions of test runs). The stateless nature forces objectivity at each phase.",
-        "transition": "Now let's discuss how to write tests that actually catch bugs: sociable tests versus heavily mocked tests."
+        "talkingPoints": "The solution uses fresh contexts for each step: Write code in Context A, write tests in fresh Context B, triage failures in fresh Context C. This leverages statelessness from Lessons 1-2—the agent doesn't carry assumptions or defend prior decisions between contexts. In Context B, the agent doesn't remember writing implementation, so tests derive independently from requirements. In Context C, the agent doesn't know who wrote code or tests, providing objective analysis.",
+        "timing": "4 minutes",
+        "discussion": "Why does fresh context matter? What assumptions get broken when the agent 'forgets' writing the code?",
+        "context": "Salesforce reduced debugging time 30% using automated root cause analysis for millions of daily test runs with this approach.",
+        "transition": "Each context follows the same four-phase workflow from Lesson 7: Research, Plan, Execute, Validate. Now let's look at test design patterns..."
       }
     },
     {
       "type": "comparison",
-      "title": "Test Quality: Sociable vs Heavily Mocked",
+      "title": "Sociable Tests vs Heavy Mocking",
       "left": {
-        "label": "Heavily Mocked",
+        "label": "Heavy Mocking",
         "content": [
-          "Stubs internal implementations",
-          "Passes even when code breaks",
+          "Stubs findByEmail(), verify(), create()",
           "Verifies function calls, not behavior",
-          "False confidence in CI pipeline"
+          "Passes even when implementations break",
+          "False confidence at scale"
         ]
       },
       "right": {
         "label": "Sociable Tests",
         "content": [
-          "Uses real implementations for internal code",
-          "Fails immediately when behavior changes",
+          "Uses real database queries and password hashing",
           "Exercises actual code paths",
-          "Catches silent breakage from agent changes"
+          "Fails immediately when agent breaks logic",
+          "Mocks only external systems (Stripe, APIs)"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "A heavily mocked test might stub findByEmail(), verify(), and create(). If an agent breaks all three implementations, the test still passes—it only checked that methods were called. A sociable test uses real database queries, real password hashing, real session tokens. If any part of the flow breaks, the test fails. Mock only external systems (Stripe, third-party APIs) that cost money or require credentials.",
+        "talkingPoints": "Tests with heavy mocking give false confidence. They verify implementation details (function calls) rather than behavior. Sociable unit tests and narrow integration tests use real implementations for internal code. For authentication testing, a heavily mocked test passes even when an agent breaks all three implementations. A sociable test uses real database queries, real password hashing, and real session tokens—if the agent breaks any part of the flow, the test fails. Mock only what costs money or requires external credentials.",
         "timing": "3-4 minutes",
-        "discussion": "Show both versions of an authentication test. Ask students: Which one would catch a bug if an agent refactored the password hashing logic?",
-        "context": "This is a critical distinction for AI-assisted development. Mocking made sense when tests were written by humans who knew what to test. Agents need real implementations to discover what actually breaks.",
-        "transition": "Writing good tests is important, but speed matters too. Let's talk about smoke test strategy."
+        "discussion": "What's the trade-off? When would you use mocks? (External APIs, third-party services, infrastructure you don't control)",
+        "context": "Testing Without Mocks advocates for 'Nullables'—production code with an off switch—for in-memory infrastructure testing.",
+        "transition": "Sociable tests catch breakage, but only if you actually run them. Let's talk about fast feedback..."
       }
     },
     {
       "type": "concept",
-      "title": "Smoke Tests: Fast Feedback Loop",
+      "title": "Fast Feedback with Smoke Tests",
       "content": [
-        "Sub-30-second smoke suite is essential",
-        "Cover only critical junctions (auth, core flows, DB)",
-        "Run after every agent task, not just end of session",
-        "10-minute comprehensive suite = no one runs it",
-        "Codify in AGENTS.md: agents auto-run smoke tests"
+        "Build sub-30-second smoke test suite",
+        "Cover critical junctions only (auth, core journey, DB)",
+        "Run after each task during iteration",
+        "Codify in AGENTS.md or CLAUDE.md"
       ],
       "speakerNotes": {
-        "talkingPoints": "When agents refactor rapidly, a 10-minute test suite is ignored until the end when bugs have compounded. A 30-second smoke suite that runs after each task catches failures immediately while context is fresh. This prevents the snowball effect where 20 tasks hide which one broke the system.",
+        "talkingPoints": "A 10-minute comprehensive suite is useless for iterative agent development—you'll skip running it until the end when debugging becomes expensive. Build a sub-30-second smoke test suite covering critical junctions only. Run smoke tests after each task to catch failures immediately while context is fresh, rather than making 20 changes before discovering which one broke the system. Reserve edge cases and detailed validation for the full test suite. Codify this practice in your project's AGENTS.md so agents automatically run smoke tests without explicit reminders.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: How long would YOU wait to run tests if they took 10 minutes? Most teams skip it. Now ask: How fast do you need feedback from an agent? Immediate feedback prevents compounding errors.",
-        "context": "Jeremy Miller's research on test automation strategy supports this: use 'the finest grained mechanism that tells you something important.' Smoke tests are that mechanism.",
-        "transition": "We've covered how to write tests. Now let's discuss using agents themselves to find edge cases."
+        "discussion": "What belongs in smoke tests vs comprehensive suites? How do you decide the boundary?",
+        "context": "As Jeremy Miller notes, use 'the finest grained mechanism that tells you something important.' Smoke tests prevent compounding errors during rapid iteration.",
+        "transition": "Deterministic tests verify known requirements. Now let's explore autonomous testing for discovering unknown edge cases..."
       }
     },
     {
       "type": "concept",
-      "title": "Autonomous Testing: Agent Simulation",
+      "title": "Autonomous Agent Testing: Complementary Strategies",
       "content": [
-        "Non-deterministic exploration finds unknown edge cases",
-        "Agents explore different paths on each run",
-        "Unreliable for regression testing, excellent for discovery",
-        "Give agents product access: browser, CLI, API",
-        "MCP servers (Playwright, Chrome DevTools, mobile-mcp)"
+        "Deterministic tests: verify known requirements, reliable in CI/CD",
+        "Agent simulation: discover unknown edge cases, non-deterministic exploration",
+        "Workflow: agents discover, deterministic tests solidify",
+        "Connect agents via MCP servers (browser, mobile, desktop)"
       ],
       "speakerNotes": {
-        "talkingPoints": "Deterministic tests verify known requirements. Agent simulation discovers unknown edge cases. These are complementary. When you give an agent access to your product (via MCP servers), it behaves like a human tester exploring—but it explores non-deterministically. Run it twice and it takes different paths. This randomness is useless for CI/CD but excellent for finding race conditions, unicode handling bugs, state machine errors you didn't think to test for.",
+        "talkingPoints": "AI agents can simulate actual user behavior by giving them a task and tools to interact with your product—browser automation, CLI access, API clients. The critical difference: agents explore state spaces non-deterministically. Run the same test script twice, and the agent explores different paths each time. This randomness is unreliable for regression testing but excellent for discovery—finding edge cases, state machine bugs, and input validation gaps you didn't think to write. Use agents for discovery, then solidify findings into deterministic tests.",
         "timing": "3-4 minutes",
-        "discussion": "Ask: What edge cases have you missed that a random tester would have found? That's what autonomous testing does.",
-        "context": "Use agents for discovery, then codify findings into deterministic tests. Agents explore the unknown; deterministic tests prevent backsliding on the known.",
-        "transition": "Eventually tests will fail. When they do, we need a systematic approach to diagnosis."
+        "discussion": "What kinds of bugs are hard to find with deterministic tests but easy with randomized exploration? (Race conditions, timing bugs, creative inputs)",
+        "context": "MCP servers give agents 'eyes and hands': Chrome DevTools MCP (Google), Playwright MCP (Microsoft), mobile-mcp for iOS/Android, and emerging desktop automation.",
+        "transition": "When tests fail, you need systematic diagnosis. Let's look at the agent-driven debug cycle..."
       }
     },
     {
       "type": "code",
-      "title": "Diagnostic Prompt Pattern",
+      "title": "The Diagnostic Prompt Pattern",
       "language": "markdown",
-      "code": "```\n$FAILURE_DESCRIPTION\n```\n\nUse the code research to analyze the test failure above.\n\nDIAGNOSE:\n\n1. Examine the test code and its assertions.\n2.\n  Understand and clearly explain the intention and\n  reasoning of the test - what is it testing?\n3. Compare against the implementation code being tested\n4. Identify the root cause of failure\n\nDETERMINE:\nIs this a test that needs updating or a real bug\n  in the implementation?\n\nProvide your conclusion with evidence.",
-      "caption": "Chain-of-Thought forces sequential analysis before jumping to conclusions",
+      "code": "```\n$FAILURE_DESCRIPTION\n```\n\nUse the code research to analyze the test failure above.\n\nDIAGNOSE:\n1. Examine the test code and its assertions.\n2. Understand and clearly explain the intention and reasoning of the test - what is it testing?\n3. Compare against the implementation code being tested\n4. Identify the root cause of failure\n\nDETERMINE:\nIs this a test that needs updating or a real bug in the implementation?\n\nProvide your conclusion with evidence.",
+      "caption": "Chain-of-Thought diagnostic pattern with evidence constraints",
       "speakerNotes": {
-        "talkingPoints": "This prompt applies Chain-of-Thought, constraints, and structured format from Lesson 4. The numbered DIAGNOSE steps force sequential analysis—agent can't jump to 'root cause' without examining test intent first. The DETERMINE question constrains output to a binary decision. The evidence requirement forces grounding. This pattern can be adapted for performance issues, security vulnerabilities, or deployment failures.",
-        "timing": "3-4 minutes",
-        "discussion": "Walk through why each element matters: Fenced code block preserves error formatting. 'Use the code research' prevents hallucination. Numbered steps implement CoT. 'Evidence requirement' prevents vague assertions. Ask: How would this change if you removed any of these elements?",
-        "context": "This diagnostic approach is more reliable than asking agents for general debugging help. The constraints and structure guide agents toward systematic analysis.",
-        "transition": "Let's talk about why each part of this prompt works."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Why Diagnostic Prompts Work",
-      "content": [
-        "Fenced code blocks prevent interpretation as instructions",
-        "'Use code research' forces grounding over hallucination",
-        "Numbered steps implement Chain-of-Thought reasoning",
-        "Binary DETERMINE question constrains scope",
-        "Evidence requirement prevents vague assertions"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "Each element of the diagnostic prompt serves a specific function. Fenced code blocks are a structured format that prevents the LLM from misinterpreting error messages as commands. The explicit grounding directive 'use code research' forces the agent to search the codebase instead of reasoning from training data. Numbered steps force sequential analysis. The binary decision (bug vs test update) prevents open-ended speculation. The evidence requirement (file paths, line numbers) requires concrete proof.",
-        "timing": "2-3 minutes",
-        "discussion": "Show what happens if you remove the evidence requirement: agents give vague answers like 'probably a timing issue.' With the requirement: agents cite specific line numbers and explain why.",
-        "context": "This is an example of how constraints from Lesson 4 apply to real debugging scenarios. Structure enables precision.",
-        "transition": "Now let's summarize the key takeaways from this lesson."
+        "talkingPoints": "This diagnostic prompt applies techniques from Lesson 4: Chain-of-Thought sequential steps, constraints requiring evidence, and structured format. The fenced code block preserves error formatting. 'Use the code research' forces codebase search instead of hallucination. DIAGNOSE numbered steps implement CoT—can't jump to 'root cause' without examining test intent first. 'Understand the intention' ensures the agent articulates WHY the test exists. DETERMINE constrains output to binary decision. 'Provide evidence' requires file paths and line numbers, not vague assertions.",
+        "timing": "4 minutes",
+        "discussion": "Why does step 2 ('understand the intention') matter? What happens if you skip it?",
+        "context": "You can adapt this for performance issues, security vulnerabilities, or deployment failures by changing diagnostic steps while preserving the structure: sequential CoT, constrained decision, evidence requirement.",
+        "transition": "Let's wrap up with the key takeaways from this lesson..."
       }
     },
     {
@@ -216,16 +198,16 @@
       "title": "Key Takeaways",
       "content": [
         "Tests ground agent implementation decisions",
-        "Separate contexts prevent specification gaming",
-        "Sociable tests catch silent breakage",
-        "Smoke tests enable fast feedback"
+        "Use three separate contexts always",
+        "Sociable tests catch real breakage",
+        "Agent simulation discovers unknown edges"
       ],
       "speakerNotes": {
-        "talkingPoints": "The core insight: tests are the primary way agents learn about your system. Good tests provide grounding; bad tests pollute context. Context separation prevents the cycle of self-deception where agents optimize tests to match buggy implementations. Sociable tests catch actual breakage; heavily mocked tests hide problems. Fast smoke tests enable iteration without compounding errors.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask students to think of a test they've written that didn't catch a real bug. What would have made it better? What context was missing?",
-        "context": "These principles apply whether you're working with Claude, other AI models, or human developers. Tests are your primary guardrail at scale.",
-        "transition": "We've covered testing strategy. Next lesson is code review—how to verify agent work before it reaches production."
+        "talkingPoints": "First, tests are documentation agents actually read—they load into context during research and provide concrete constraints. Second, use separate contexts for code, tests, and debugging to prevent the cycle of self-deception. Third, write sociable tests that use real implementations for internal code, mocking only external systems. Fourth, autonomous testing discovers edge cases through non-deterministic exploration—use it for discovery, then solidify into deterministic tests. Remember: green tests don't equal working software—run the actual product yourself.",
+        "timing": "3 minutes",
+        "discussion": "Which takeaway will change your workflow immediately? What will you implement first?",
+        "context": "Next lesson covers code review patterns for agent-generated code. These testing patterns provide the foundation for effective review.",
+        "transition": "Questions before we move to Lesson 9?"
       }
     }
   ]

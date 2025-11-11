@@ -2,229 +2,233 @@
   "metadata": {
     "title": "Debugging with AI Agents",
     "lessonId": "lesson-10-debugging",
-    "estimatedDuration": "45-60 minutes",
+    "estimatedDuration": "40-50 minutes",
     "learningObjectives": [
-      "Require evidence before accepting fixes",
-      "Master closed-loop debugging workflow",
-      "Analyze logs with AI patterns",
-      "Design reproducible debugging environments"
+      "Require evidence at every step",
+      "Leverage AI for log analysis",
+      "Build closed-loop debugging workflows",
+      "Generate diagnostic scripts effortlessly"
     ]
   },
   "slides": [
     {
       "type": "title",
       "title": "Debugging with AI Agents",
-      "subtitle": "Evidence-driven investigation, closed-loop verification",
+      "subtitle": "Evidence-Based Investigation and Closed-Loop Verification",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "Debugging with AI is fundamentally different from traditional debugging. Instead of describing symptoms and hoping for solutions, you demand evidence at every step. The agent becomes your tireless investigator—but only when given access to diagnostic tools and failing environments.",
+        "talkingPoints": "Debugging with AI agents requires a fundamental shift: from describing symptoms and hoping for solutions to requiring reproducible proof at every step. The core principle is never accepting a fix without evidence it works.",
         "timing": "1 minute",
-        "discussion": "Ask students: 'How often do you accept a fix without verifying it actually works?' This sets up the core tension we'll address.",
-        "context": "Senior engineers know that unverified fixes create cascading problems. This lesson teaches a systematic approach where AI handles the tedious diagnostic work while you maintain verification rigor.",
-        "transition": "Let's start with the fundamental principle that changes how we approach debugging with AI..."
+        "discussion": "Ask students: How do you currently debug production issues? Do you verify fixes before deploying?",
+        "context": "This lesson focuses on production debugging workflows where speculation is expensive and evidence is critical.",
+        "transition": "Let's start with the fundamental principle that transforms AI debugging from guesswork to systematic investigation."
       }
     },
     {
       "type": "concept",
-      "title": "The Core Shift: Evidence Over Speculation",
+      "title": "The Fundamental Shift: Evidence Over Speculation",
       "content": [
-        "Move from 'what do you think is wrong?' to 'prove the bug exists'",
-        "AI excels at pattern recognition with concrete data",
-        "AI fails spectacularly when forced to speculate",
-        "Never accept a fix without reproducible proof it works"
+        "Never accept fixes without reproducible proof",
+        "Provide reproduction steps and diagnostic tool access",
+        "Require before/after evidence for every change",
+        "Move from 'what do you think?' to 'prove it works'"
       ],
       "speakerNotes": {
-        "talkingPoints": "The anti-pattern is describing a bug and asking the agent to fix it blindly. The production pattern is providing reproduction steps, giving the agent diagnostic tools, and requiring before/after evidence. This shift moves debugging from guesswork to systematic investigation.",
+        "talkingPoints": "The anti-pattern is describing a bug and asking the agent to fix it blindly. The production pattern is providing reproduction steps, giving the agent access to diagnostic tools, and requiring before/after evidence. AI agents excel at pattern recognition and systematic investigation when given concrete data, but fail spectacularly when forced to speculate.",
         "timing": "3-4 minutes",
-        "discussion": "Ask: 'What's the cost of accepting a fix that sounds right but doesn't actually work?' In production systems, unverified fixes cause cascading failures. Have students think about recent bugs they debugged without full proof.",
-        "context": "In production, the worst bugs are ones that 'seem fixed' but have subtle regressions. Demanding evidence prevents this. AI agents are great at this—they can run multiple test scenarios and provide concrete before/after comparisons.",
-        "transition": "Now that we understand the principle, let's look at the specific techniques. We'll start with code inspection—understanding architecture before diving into symptoms..."
+        "discussion": "Have students share examples of debugging failures caused by unverified fixes. What was the cost of deploying an untested solution?",
+        "context": "In production environments, deploying speculative fixes causes cascading failures. Evidence-based debugging prevents these catastrophic outcomes.",
+        "transition": "Before diving into logs or reproduction, let's understand the system architecture through code inspection."
       }
     },
     {
       "type": "concept",
-      "title": "Code Inspection: Understand Before Fixing",
+      "title": "Code Inspection: Understanding Before Fixing",
       "content": [
-        "Have agent explain architecture and execution flow first",
-        "Trace request paths and identify data flow patterns",
-        "Use semantic code search for relevant components",
-        "Focus on critical paths, not entire codebase",
-        "Spot edge cases and assumptions the team missed"
+        "Have agent explain architecture and execution flow",
+        "Use semantic search to find relevant components",
+        "Ask agent to trace request paths and data flow",
+        "Identify mismatches between mental model and reality"
       ],
       "speakerNotes": {
-        "talkingPoints": "Before diving into logs or reproduction, have the agent build a mental model of your system. Ask specific questions: 'Trace the authentication flow from API request to database. Where could a race condition occur?' The agent's explanation often reveals edge cases.",
-        "timing": "3 minutes",
-        "discussion": "Show an example: 'We have a race condition in our payment processing.' Instead of jumping to fix, ask the agent to explain the entire payment flow first. Often the explanation itself reveals the bug.",
-        "context": "This is where tools like ChunkHound's code research shine. The agent can get architectural context across the entire codebase rather than reading individual files. In smaller codebases, Grep and Read work fine.",
-        "transition": "Once the agent understands the architecture, the next step is analyzing the evidence—and logs are where AI has its biggest advantage..."
+        "talkingPoints": "Use conversational analysis to identify mismatches between your mental model and actual system behavior. This isn't about having the agent read every line of code—use semantic code search and research tools to find relevant components, then focus the conversation on critical paths. For example: 'Trace the authentication flow from API request to database query. Where could a race condition occur?' The agent's explanation often reveals edge cases or assumptions you missed.",
+        "timing": "4-5 minutes",
+        "discussion": "Ask: When was the last time your mental model of a system was wrong? How did you discover the mismatch?",
+        "context": "Code inspection catches architectural misunderstandings that lead to incorrect hypotheses. It's faster to understand the system first than to chase wrong theories.",
+        "transition": "Now that we understand the architecture, let's look at where AI agents truly excel: log analysis."
       }
     },
     {
       "type": "concept",
       "title": "Log Analysis: AI's Superpower",
       "content": [
-        "AI processes thousands of log lines humans can't parse manually",
-        "Spots patterns across inconsistent log formats",
-        "Identifies cascading errors in distributed systems",
-        "Detects timing patterns indicating race conditions",
-        "Works with whatever you have—raw output, grep, JSON"
+        "Processes messy logs humans can't parse manually",
+        "Spots patterns across inconsistent formats",
+        "Correlates cascading errors in minutes, not days",
+        "Works with whatever logs you have—no perfect structure needed"
       ],
       "speakerNotes": {
-        "talkingPoints": "This is where AI debugging has the biggest advantage over human capability. Multi-line stack traces scattered across thousands of entries? Different services with different logging formats? Raw debug output without structured fields? AI excels at processing this chaos. What takes a senior engineer days takes AI minutes. The agent correlates patterns, identifies user cohorts experiencing failures, and traces cascading errors across system boundaries.",
-        "timing": "4-5 minutes",
-        "discussion": "Ask: 'Ever spent hours correlating logs from different services with different formats?' Have students share frustrating examples. Then emphasize: AI doesn't need perfect JSON—it parses whatever you give it. The messier the logs, the bigger AI's advantage.",
-        "context": "Real-world example: A production incident with logs from 7 different microservices in 5 different formats. An agent can ingest all of it, spot the cascading failure pattern, and identify the root cause in the first service. This is fundamentally faster than human log analysis.",
-        "transition": "But logs often tell you what's happening, not why. When you need to reproduce and understand the exact conditions, that's where reproduction scripts come in..."
+        "talkingPoints": "AI agents excel with the messy logs humans struggle with. Multi-line stack traces scattered across thousands of entries? Inconsistent formats from different services? Raw debug output without structured fields? That's where AI has the biggest advantage—processing chaos humans can't parse manually. What takes senior engineers days of manual correlation happens in minutes. The messier the logs, the more AI's pattern recognition outpaces human capability.",
+        "timing": "5-6 minutes",
+        "discussion": "Have students share their most painful log analysis experiences. What patterns were they trying to find? How long did it take?",
+        "context": "Production systems generate millions of log lines. AI makes it trivial to find the signal in the noise: cascading errors in microservices, timing patterns indicating race conditions, specific user cohorts experiencing failures.",
+        "transition": "AI doesn't need JSON with correlation IDs to be effective—it parses whatever you have. Let's talk about making logs even more useful."
       }
     },
     {
       "type": "concept",
-      "title": "Reproduction Scripts: Building Proof",
+      "title": "Logging Economics with AI",
       "content": [
-        "Code generation is cheap—leverage it massively",
-        "AI creates complex environments humans would skip",
-        "Docker configs, database snapshots, mock services",
-        "Capture full context: state, external responses, config",
-        "Environments that take hours to set up take minutes"
+        "Add diagnostic logs at dozens of strategic points",
+        "Agent generates and places logs in minutes",
+        "Agent systematically removes temporary logs after fix",
+        "Shifts debugging from 'minimal' to 'evidence-rich' instrumentation"
       ],
       "speakerNotes": {
-        "talkingPoints": "When code inspection and log analysis aren't sufficient—when you need bulletproof evidence or must reproduce complex state/timing conditions—reproduction scripts are invaluable. This is where AI agents' massive code generation capabilities shine. AI can generate Docker configs, database state initialization, mock external services, and test scenarios in minutes. What would be prohibitively tedious setup for humans becomes trivial.",
-        "timing": "3 minutes",
-        "discussion": "Ask: 'How long does it take to reproduce a customer bug locally?' Then show: 'AI can generate the entire reproduction environment—Docker setup, database state, configuration—in one prompt.' The economic shift is profound: reproducibility becomes cheap, so you demand it.",
-        "context": "Example: A customer reports a race condition in payment processing under specific load. AI generates a complete reproduction: Docker Compose with load generator, database snapshots mimicking production state, mock external services, and a script that reproduces the failure reliably. No human would write all this—it's tedious. AI does it in minutes.",
-        "transition": "With reproducible environments, we can now place agents inside failing systems to test and verify their fixes. This is the closed-loop debugging workflow..."
+        "talkingPoints": "This insight transforms the debugging economics: AI makes it trivial to add diagnostic logs at dozens of strategic points—far more volume than humans would ever instrument manually—because the agent can generate and place them in minutes. Once the bug is verified fixed, the same agent systematically removes all temporary diagnostic statements, restoring code hygiene and baseline logging practices. What would be prohibitively tedious instrumentation for humans becomes a routine part of AI-assisted investigation.",
+        "timing": "4-5 minutes",
+        "discussion": "Ask: How often do you skip adding diagnostic logs because it's too tedious? What if that work was free?",
+        "context": "The agent can guide what to log based on its hypothesis—then analyze the new output immediately. Fifteen minutes writing specific log output beats hours of speculation.",
+        "transition": "When logs aren't sufficient, we need bulletproof evidence through reproduction scripts."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Reproduction Scripts: Code is Cheap",
+      "content": [
+        "Eliminate ambiguity with verifiable test cases",
+        "AI generates complex environments in minutes",
+        "Capture full context: database state, configs, API responses",
+        "Create isolated Docker environments for reliability"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Reproduction scripts are where AI agents' massive code generation capabilities shine: environments that take humans hours to set up—K8s, Docker configs, database snapshots, mock services, state initialization—take AI minutes to generate. Reproduction scripts eliminate ambiguity and create verifiable test cases. They capture full context: database state, external API responses, configuration, and user inputs. Once you have reliable reproduction, the agent can iterate on fixes and verify each attempt.",
+        "timing": "4-5 minutes",
+        "discussion": "Have students share bugs they couldn't reproduce. What context was missing? How long did investigation take?",
+        "context": "For complex systems, use Docker to create isolated reproduction environments. Snapshot production database state, configure services with production-like settings, and write a script that triggers the bug reliably.",
+        "transition": "Reproduction gives us reliable evidence. Now let's close the loop by placing agents inside failing environments."
       }
     },
     {
       "type": "comparison",
       "title": "Open-Loop vs Closed-Loop Debugging",
       "left": {
-        "label": "Open-Loop (Agent Without Environment Access)",
+        "label": "Open-Loop (Research Only)",
         "content": [
           "Agent researches code and online issues",
-          "Reports hypothesis: 'Try adding validation at jwt.ts:67'",
-          "Engineer must apply fix and verify manually",
-          "No feedback loop for the agent"
+          "Reports: 'Bug is likely missing RS256 validation'",
+          "You manually apply fix and test",
+          "No verification by agent—speculation only"
         ]
       },
       "right": {
-        "label": "Closed-Loop (Agent With Environment Access)",
+        "label": "Closed-Loop (Test & Verify)",
         "content": [
-          "Agent researches AND applies fixes within environment",
-          "Runs reproduction to verify fix works",
-          "Reports: 'Fixed at jwt.ts:67, reproduction now passes'",
-          "Complete feedback loop enables iteration"
+          "Agent researches, applies fix, re-runs reproduction",
+          "Reports: 'Fixed and verified—RS256 validation added'",
+          "Agent proves fix works or iterates on new hypothesis",
+          "Evidence-based validation in every iteration"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "The difference is profound. An open-loop agent can research and hypothesize, but cannot validate its own reasoning. A closed-loop agent applies fixes, re-runs reproduction, and proves they work—or iterates when they don't. Without environment access, you get educated guesses. With it, you get verified solutions.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask students: 'Which would you rather have—a suggestion you need to verify, or a fix you can trust because the agent verified it?' Emphasize that closed-loop doesn't mean the agent is always right—it means the agent can't hide behind speculation.",
-        "context": "In production debugging, this feedback loop is everything. The agent learns from failed verification attempts and refines its hypotheses. Open-loop agents are helpful for research but can't serve as the final verification step.",
-        "transition": "Now let's look at the specific closed-loop workflow that ties everything together..."
+        "talkingPoints": "Closing the loop means the agent can test its fixes and verify its reasoning actually works. Without environment access, the agent proposes solutions it can't validate. With closed-loop access, it applies fixes, re-runs reproduction, and proves they work—or iterates on new hypotheses when they don't. The difference is moving from 'research and guess' to 'research, fix, test, and prove.'",
+        "timing": "4-5 minutes",
+        "discussion": "Ask: How many times have you applied a suggested fix only to find it doesn't work? What if the agent verified it first?",
+        "context": "This is where CLI agents like Claude Code shine over IDE assistants. CLI agents can run anywhere you have shell access: inside Docker containers, on remote servers, in CI/CD pipelines, on problematic production instances. IDE agents are tied to your local development machine.",
+        "transition": "Let's walk through the complete closed-loop debugging workflow."
       }
     },
     {
       "type": "codeExecution",
-      "title": "Closed-Loop Debugging: BUILD → REPRODUCE → PLACE → INVESTIGATE → VERIFY",
+      "title": "The Closed-Loop Debugging Workflow",
       "steps": [
         {
-          "line": "BUILD:\n  Create Docker environment with snapshots, configs, mocks",
+          "line": "BUILD: Create reproducible environment (Docker, scripts, database snapshots)",
           "highlightType": "human",
-          "annotation": "Engineer defines reproducible conditions"
+          "annotation": "Engineer sets up isolated environment that reliably triggers the bug"
         },
         {
-          "line": "REPRODUCE: Verify bug manifests consistently with evidence",
+          "line": "REPRODUCE: Verify bug manifests consistently with concrete evidence",
           "highlightType": "execution",
-          "annotation": "Agent runs reproduction script, captures logs/errors"
+          "annotation": "Run reproduction script to capture logs, status codes, error output"
         },
         {
-          "line": "PLACE: Grant agent tool access in failing environment",
+          "line": "PLACE: Give agent tool access WITHIN the environment",
           "highlightType": "human",
-          "annotation": "Engineer enables CLI/tool execution inside environment"
+          "annotation": "Not just code access—runtime execution capabilities"
         },
         {
-          "line": "INVESTIGATE:\n  Agent correlates runtime behavior + code + known issues",
+          "line": "INVESTIGATE: Agent correlates runtime behavior, codebase, and known issues",
           "highlightType": "prediction",
-          "annotation": "Agent uses ChunkHound for code research, ArguSeek for ecosystem patterns"
+          "annotation": "Agent forms hypotheses using grounding techniques from Lesson 5"
         },
         {
-          "line": "VERIFY:\n  Agent applies fix, re-runs reproduction, confirms resolution",
+          "line": "Agent executes: Bash diagnostic commands, Read relevant code, Grep for patterns",
           "highlightType": "execution",
-          "annotation": "Concrete before/after proof—bug is resolved or iteration continues"
+          "annotation": "Agent gathers evidence from runtime and codebase"
+        },
+        {
+          "line": "Agent predicts: 'Missing RS256 signature verification at jwt.ts:67'",
+          "highlightType": "prediction",
+          "annotation": "Hypothesis formed from correlating evidence"
+        },
+        {
+          "line": "VERIFY: Agent applies fix, re-runs reproduction script",
+          "highlightType": "execution",
+          "annotation": "Edit jwt.ts:67 to add algorithm validation, then Bash to re-run test"
+        },
+        {
+          "line": "Reproduction now passes—401 returned correctly",
+          "highlightType": "feedback",
+          "annotation": "Environment validates the fix works"
+        },
+        {
+          "line": "If reproduction still fails: iterate with new hypothesis",
+          "highlightType": "summary",
+          "annotation": "Closed feedback loop continues until verified"
         }
       ],
       "speakerNotes": {
-        "talkingPoints": "This is the complete closed-loop workflow. Unlike traditional debugging where you gather info and hand off to an engineer, the agent operates inside the failing environment with real feedback. Each step closes the loop tighter: BUILD provides reproducibility, REPRODUCE provides evidence, PLACE provides agency, INVESTIGATE provides hypothesis, VERIFY provides proof.",
-        "timing": "4-5 minutes",
-        "discussion": "Walk through a concrete example: 'Memory leak in a Node.js service. Build: Docker with load simulator. Reproduce: Show memory growth. Place: Agent has Bash access. Investigate: Agent reads heap snapshots, correlates with code. Verify: Agent applies fix, re-runs load test, confirms memory stabilizes.' Ask: 'At which step could this have gone wrong if we skipped the next one?'",
-        "context": "This workflow works at any scale—local reproduction, staging, or production. The key is that the agent can't speculate about the final step. VERIFY is non-negotiable.",
-        "transition": "One critical detail: CLI agents enable this workflow anywhere. IDE agents can't operate in Docker, remote servers, or CI/CD pipelines. Let's clarify the distinction..."
-      }
-    },
-    {
-      "type": "comparison",
-      "title": "CLI Agents vs IDE Agents for Debugging",
-      "left": {
-        "label": "IDE Agents (Chat, Copilot Chat)",
-        "content": [
-          "Tied to local development machine",
-          "Can't execute in Docker containers",
-          "Can't access remote servers or CI/CD",
-          "Limited to code reading and local tools"
-        ]
-      },
-      "right": {
-        "label": "CLI Agents (Claude Code, Codex CLI)",
-        "content": [
-          "Run anywhere you have shell access",
-          "Execute inside Docker, remote servers, production",
-          "Integrate with CI/CD pipelines seamlessly",
-          "Enable true closed-loop debugging at scale"
-        ]
-      },
-      "speakerNotes": {
-        "talkingPoints": "This is a critical distinction that many engineers miss. IDE agents are great for code generation and local exploration, but they can't implement closed-loop debugging in production environments. CLI agents can run anywhere you have shell access—that's the entire point. For remote diagnosis, customer deployments, and edge infrastructure, CLI agents are indispensable.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: 'How would an IDE agent help debug a production incident on a customer's infrastructure?' The answer is: it can't. But a CLI agent running in their environment (or yours via SSH) can. This is why CLI agents are the choice for production debugging.",
-        "context": "This is practical guidance for tool selection. Use IDE agents for local development and exploration. Use CLI agents when you need environment access, especially in production or locked-down systems.",
-        "transition": "Sometimes you don't have direct access to failing environments—customer deployments or locked-down production. Let's look at how to debug remotely..."
+        "talkingPoints": "This workflow transforms debugging from 'research and guess' to 'research, fix, test, and prove.' The agent leverages grounding techniques to form hypotheses by correlating runtime behavior (execute diagnostic commands, inspect responses, analyze logs), codebase (use ChunkHound's code research for comprehensive investigation with architectural context), and known issues (research error patterns, CVEs, and similar bugs using tools like ArguSeek). The environment validates or refutes the agent's reasoning in every iteration.",
+        "timing": "6-7 minutes",
+        "discussion": "Walk through each step and ask: Where would manual debugging fail here? How does closed-loop access change the investigation?",
+        "context": "CLI agents can run anywhere you have shell access: inside Docker containers, on remote servers, in CI/CD pipelines, on problematic production instances. This is a massive advantage over IDE-bound assistants.",
+        "transition": "But what about situations where you can't access the failing environment? Let's talk about remote diagnosis."
       }
     },
     {
       "type": "concept",
-      "title": "Remote Diagnosis: Scripts Over Direct Access",
+      "title": "Remote Diagnosis: Scripts Over Access",
       "content": [
-        "Generate targeted diagnostic scripts for each hypothesis",
-        "Scripts check configuration, versions, timing, cross-references",
-        "Send script to customer, load output into agent's context",
-        "Agent correlates evidence with hypotheses to identify root cause",
-        "Trade developer time for compute time and thoroughness"
+        "Can't reproduce locally? Generate comprehensive diagnostic scripts",
+        "Agent produces ranked hypotheses based on codebase + known issues",
+        "Scripts check dozens of potential issues automatically",
+        "Trade developer time for compute time—30 minutes to generate thorough diagnostics"
       ],
       "speakerNotes": {
-        "talkingPoints": "When you can't reproduce bugs locally or access the failing environment—customer deployments, edge infrastructure, locked-down production—you face limited information and no iteration cycle. This is where AI agents' probabilistic reasoning becomes a feature. The workflow: ground yourself in the codebase using code research, research known issues, then have the agent generate ranked hypotheses. Then produce targeted diagnostic scripts that collect evidence for each hypothesis. What would be days of manual work becomes 30 minutes for the agent to generate comprehensive diagnostics.",
-        "timing": "3-4 minutes",
-        "discussion": "Example: 'Customer reports intermittent 502 errors. You can't reproduce locally. Ask the agent: What are the top 10 hypotheses? What diagnostic data proves/refutes each?' The agent generates a script checking all of them. Customer runs it once, you load the output, agent identifies the root cause. This transforms 'send logs and wait' into active investigation.",
-        "context": "This is real-world debugging. Not every bug can be reproduced in your environment. The agent's code generation capability lets you collect evidence systematically without manual back-and-forth with customers.",
-        "transition": "Now let's consolidate the key principles and patterns you should remember from this lesson..."
+        "talkingPoints": "When you can't reproduce bugs locally or access the failing environment—customer deployments, edge infrastructure, locked-down production—you face limited information and no iteration cycle. This is where AI agents' probabilistic reasoning becomes a feature, not a limitation. Combined with their code generation capabilities, agents turn remote diagnosis from 'send me logs and wait' into an active investigation workflow. Writing a comprehensive diagnostic script takes humans days but takes agents 30 minutes. Send the script to the customer, load the output into the agent's context, and it correlates evidence with hypotheses to identify the root cause.",
+        "timing": "5-6 minutes",
+        "discussion": "Ask students: Have you debugged customer deployments you couldn't access? How long did the back-and-forth take?",
+        "context": "The workflow follows the research-first pattern from Lesson 5: ground yourself in the codebase (understand the architecture around the failing component using code research) and in known issues (search for similar problems in the ecosystem). Then generate targeted diagnostic scripts that collect evidence for each hypothesis: configuration states, version mismatches, timing data, whatever's needed to validate or refute each theory.",
+        "transition": "Let's summarize the key principles for debugging with AI agents."
       }
     },
     {
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Evidence trumps speculation always",
-        "Closed-loop feedback enables verification",
-        "AI excels at log analysis",
-        "Place agents in failing environments",
-        "Generate diagnostic scripts liberally"
+        "Require reproducible proof always",
+        "Log analysis is AI's superpower",
+        "Generate comprehensive diagnostic scripts effortlessly",
+        "Closed-loop workflows enable verification",
+        "CLI agents access any environment"
       ],
       "speakerNotes": {
-        "talkingPoints": "These five principles transform debugging from a research exercise into a systematic, verifiable process. Evidence means you never accept unverified fixes. Closed-loop means the agent can't hide behind speculation. AI excels at log analysis—leverage that. Placement means the agent can test its hypotheses. Liberal script generation means you demand thorough diagnostics instead of settling for manual investigation.",
-        "timing": "3 minutes",
-        "discussion": "Ask students to commit to one change: 'Next time you find a bug with AI assistance, require proof before accepting the fix. Demand before/after evidence. Build a reproduction first. How does that change your debugging process?'",
-        "context": "These principles apply whether you're debugging locally, in staging, or in production. The workflow scales—only the environment and tooling changes.",
-        "transition": "You're now equipped with a complete debugging framework. In the next session, we'll look at how to handle edge cases and complex scenarios where debugging becomes particularly challenging..."
+        "talkingPoints": "Debugging with AI agents is about building diagnostic environments where evidence is abundant and verification is systematic. The agent is your tireless investigator—give it the tools and demand proof. Never accept fixes without reproducible evidence. Use AI's strength in processing messy logs and generating code liberally. Place agents inside failing environments with the BUILD → REPRODUCE → PLACE → INVESTIGATE → VERIFY workflow. When direct access isn't possible, generate comprehensive diagnostic scripts instead.",
+        "timing": "3-4 minutes",
+        "discussion": "Final question: What's one debugging workflow you'll change after this lesson?",
+        "context": "These principles apply across all debugging scenarios: local development, staging, production, customer deployments. The core principle remains: evidence over speculation.",
+        "transition": "End of lesson. Questions?"
       }
     }
   ]
