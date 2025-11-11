@@ -113,7 +113,7 @@
       "type": "comparison",
       "title": "Open-Loop vs Closed-Loop Debugging",
       "left": {
-        "label": "Open-Loop (Research Only)",
+        "label": "Open-Loop",
         "content": [
           "Agent researches code and online issues",
           "Reports: 'Bug is likely missing RS256 validation'",
@@ -122,7 +122,7 @@
         ]
       },
       "right": {
-        "label": "Closed-Loop (Test & Verify)",
+        "label": "Closed-Loop",
         "content": [
           "Agent researches, applies fix, re-runs reproduction",
           "Reports: 'Fixed and verified—RS256 validation added'",
