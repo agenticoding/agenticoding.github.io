@@ -56,6 +56,7 @@ interface Slide {
   code?: string;
   caption?: string;
   component?: string;
+  neutral?: boolean;
   left?: { label: string; content: string[] };
   right?: { label: string; content: string[] };
   leftCode?: { label: string; language: string; code: string };
@@ -257,8 +258,18 @@ export default function RevealSlideshow({
             <h2>{slide.title}</h2>
             <div className={styles.comparison}>
               {slide.left && (
-                <div className={styles.comparisonLeft}>
-                  <h3 className={styles.ineffective}>{slide.left.label}</h3>
+                <div
+                  className={
+                    slide.neutral ? styles.neutralLeft : styles.comparisonLeft
+                  }
+                >
+                  <h3
+                    className={
+                      slide.neutral ? styles.neutralHeading : styles.ineffective
+                    }
+                  >
+                    {slide.left.label}
+                  </h3>
                   <ul>
                     {slide.left.content.map((item, i) => (
                       <li key={i} className="fragment">
@@ -269,8 +280,18 @@ export default function RevealSlideshow({
                 </div>
               )}
               {slide.right && (
-                <div className={styles.comparisonRight}>
-                  <h3 className={styles.effective}>{slide.right.label}</h3>
+                <div
+                  className={
+                    slide.neutral ? styles.neutralRight : styles.comparisonRight
+                  }
+                >
+                  <h3
+                    className={
+                      slide.neutral ? styles.neutralHeading : styles.effective
+                    }
+                  >
+                    {slide.right.label}
+                  </h3>
                   <ul>
                     {slide.right.content.map((item, i) => (
                       <li key={i} className="fragment">

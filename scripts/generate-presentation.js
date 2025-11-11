@@ -536,13 +536,22 @@ REMINDER: If the source contains prompt examples (text showing what to write to 
       "speakerNotes": { ... }
     },
 
-COMPARISON SLIDE CONVENTION (CRITICAL - HARDCODED IN UI):
+COMPARISON SLIDE CONVENTION (CRITICAL - STYLING RULES):
 
-The comparison slide type has HARDCODED styling in the presentation component:
-- LEFT side → RED background, RED heading, ✗ icons (ineffective/worse/limited)
-- RIGHT side → GREEN background, GREEN heading, ✓ icons (effective/better/superior)
+The comparison slide type has TWO variants based on the "neutral" flag:
 
-YOU MUST ALWAYS follow this convention:
+1. EVALUATIVE (default, neutral=false or omitted):
+   - LEFT side → RED background, RED heading, ✗ icons (ineffective/worse/limited)
+   - RIGHT side → GREEN background, GREEN heading, ✓ icons (effective/better/superior)
+   - Use when one approach is clearly inferior to the other
+   - Examples: "Ineffective vs Effective", "Traditional vs Modern", "Limited vs Superior"
+
+2. NEUTRAL (neutral=true):
+   - BOTH sides → PURPLE background, PURPLE heading, → arrows (both valid options)
+   - Use for architectural trade-offs where both options are valid but have different characteristics
+   - Examples: "Autonomous vs Structured sub-agents", "Synchronous vs Asynchronous APIs"
+
+FOR EVALUATIVE COMPARISONS, YOU MUST ALWAYS follow this convention:
 - LEFT: The worse/ineffective/traditional/limited approach
 - RIGHT: The better/effective/modern/superior approach
 
@@ -563,6 +572,20 @@ INCORRECT: Putting the better option on the left will show it with RED ✗ styli
       },
       "right": {
         "label": "Effective",          // MANDATORY: RIGHT = better/effective/superior (GREEN ✓)
+        "content": ["Point 1", "Point 2"]
+      },
+      "speakerNotes": { ... }
+    },
+    {
+      "type": "comparison",
+      "title": "Architectural Trade-offs: Option A vs Option B",
+      "neutral": true,                 // OPTIONAL: Use neutral=true for valid trade-offs (PURPLE neutral styling)
+      "left": {
+        "label": "Option A",           // Both options valid - neutral styling
+        "content": ["Point 1", "Point 2"]
+      },
+      "right": {
+        "label": "Option B",           // Both options valid - neutral styling
         "content": ["Point 1", "Point 2"]
       },
       "speakerNotes": { ... }

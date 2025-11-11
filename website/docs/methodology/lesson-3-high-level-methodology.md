@@ -81,6 +81,12 @@ With research complete, you now plan the change. Planning isn't a single approac
 
 <PlanningStrategyComparison />
 
+<!-- presentation-only-start -->
+
+**Planning strategy comparison - both approaches are valid depending on project phase and certainty level. Use neutral styling.**
+
+<!-- presentation-only-end -->
+
 **Exploration Planning:** Use this when the solution space is unclear or you need to discover the best approach. Rather than dictating a solution, frame the problem space and steer the agent to research your codebase patterns (via ChunkHound) and domain knowledge (via ArguSeek), explore alternatives, and iterate with you through reasoning-action cycles. You're discovering the approach together.
 
 This approach has higher cost and time investment, but it discovers better solutions, catches architectural issues early, and helps you build a clearer mental model before committing to implementation.
@@ -192,6 +198,12 @@ This template provides a solid baseline for any planning task. In [Lesson 4: Pro
 :::
 
 ## Phase 3: Execute (Two Execution Modes)
+
+<!-- presentation-only-start -->
+
+**Execution modes comparison - both approaches are valid depending on context (learning stage, task criticality, grounding quality). Use neutral styling.**
+
+<!-- presentation-only-end -->
 
 With your plan complete, you execute—but how you interact with the agent during execution fundamentally changes your productivity. There are two modes: supervised (actively watching and steering) and autonomous (fire-and-forget). Most engineers start with supervised mode to build trust, then gradually shift to autonomous mode as they develop stronger grounding and planning skills. Here's the counterintuitive truth: the real productivity gain isn't about finishing individual tasks faster. It's about working on multiple projects simultaneously and maintaining extremely long work stretches. That's where 10x productivity actually hides.
 

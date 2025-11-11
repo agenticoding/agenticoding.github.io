@@ -243,6 +243,38 @@
   color: #51cf66;
 }
 
+/* Neutral comparison variant - uses primary color for both sides */
+.neutralLeft,
+.neutralRight {
+  composes: gpuOptimized;
+  padding: clamp(0.7em, 1.5vw, 1em);
+  border-radius: 8px;
+  overflow-y: auto;
+  background: var(--visual-bg-workflow);
+  border: 2px solid rgba(124, 58, 237, 0.3);
+}
+
+.reveal .neutralLeft,
+.reveal .neutralRight {
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+.neutralHeading {
+  color: var(--brand-primary-light);
+  font-size: clamp(0.9rem, 1.8vw, 1em);
+  margin-bottom: 0.3em;
+  font-weight: 600;
+}
+
+.neutralLeft li::before,
+.neutralRight li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--brand-primary-light);
+  font-weight: 600;
+}
+
 /* Marketing vs Reality - Translation Pattern */
 .marketingReality {
   display: grid;

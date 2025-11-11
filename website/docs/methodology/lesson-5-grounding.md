@@ -156,6 +156,19 @@ Example: ChunkHound uses a fixed multi-hop pipeline where the system controls tr
 
 **The architectural trade-off:** Autonomous agents work well but degrade in large codebases where they make suboptimal exploration choices. Structured agents scale reliably but cost more to build and run.
 
+<!-- presentation-only-start -->
+
+**Sub-agent architecture comparison - both approaches are valid depending on codebase scale. Use neutral styling.**
+
+| Approach A (Autonomous)                    | Approach B (Structured)                       |
+| ------------------------------------------ | --------------------------------------------- |
+| Agent decides search strategy autonomously | Deterministic control plane defines algorithm |
+| Simpler to build and maintain              | Scales reliably to millions of LOC            |
+| Works well for varied research tasks       | LLM makes tactical decisions within structure |
+| Degrades on very large codebases           | Higher cost and complexity to build           |
+
+<!-- presentation-only-end -->
+
 ### Sub-Agent Availability
 
 **Availability depends on your agent platform:**
