@@ -17,6 +17,12 @@ This lesson covers context files and how to structure them across user, project,
 
 ## The Context File Ecosystem
 
+<!-- presentation-only-start -->
+
+**AGENTS.md vs CLAUDE.md comparison - both approaches are valid depending on team tooling and project complexity. Use neutral styling.**
+
+<!-- presentation-only-end -->
+
 Context files are markdown documents that inject project-specific knowledge between the system prompt and your input, giving AI agents "project memory" without requiring repeated explanations of your tech stack, conventions, and architecture. The industry has converged on two approaches: `AGENTS.md` (vendor-neutral standard working across most major AI tools like Cursor, Windsurf, and GitHub Copilot) and tool-specific extensions like `CLAUDE.md` (for advanced features like hierarchical context in Claude Code).
 
 <Tabs groupId="ai-tool">
