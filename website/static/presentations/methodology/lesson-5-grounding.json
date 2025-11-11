@@ -200,21 +200,21 @@
       "left": {
         "label": "Autonomous",
         "content": [
-          "Agent decides search strategy autonomously",
-          "Simpler to build and maintain",
-          "Works well for varied research tasks",
-          "Example: Claude Code's Explore agent",
-          "Degrades on very large codebases"
+          "Autonomous search strategy",
+          "Simpler to build",
+          "Varied research tasks",
+          "Example: Explore agent",
+          "Degrades at scale"
         ]
       },
       "right": {
         "label": "Structured",
         "content": [
-          "Deterministic control plane defines algorithm",
-          "LLM makes tactical decisions within structure",
-          "Scales reliably to millions of LOC",
-          "Example: ChunkHound's multi-hop pipeline",
-          "Higher cost and complexity to build"
+          "Deterministic control plane",
+          "Tactical LLM decisions",
+          "Scales better",
+          "Example: ChunkHound",
+          "Higher complexity and cost"
         ]
       },
       "speakerNotes": {
@@ -262,64 +262,32 @@
       }
     },
     {
-      "type": "codeExecution",
-      "title": "Production Pattern: Multi-Source Grounding",
-      "steps": [
-        {
-          "line": "Task: Implement OAuth2 client credentials flow for our API",
-          "highlightType": "human",
-          "annotation": "Engineer specifies implementation task"
-        },
-        {
-          "line": "Step 1: Code research—How does existing auth work? (ChunkHound)",
-          "highlightType": "execution",
-          "annotation": "Ground in actual codebase patterns"
-        },
-        {
-          "line": "Returns: Session-based auth architecture, middleware patterns, config locations (3.2K tokens)",
-          "highlightType": "feedback",
-          "annotation": "Concise synthesis of current system"
-        },
-        {
-          "line": "Step 2: Web research—Current OAuth2 best practices and CVEs? (ArguSeek)",
-          "highlightType": "execution",
-          "annotation": "Ground in current ecosystem knowledge"
-        },
-        {
-          "line": "Returns: RFC 6749 guidance, security considerations, recent vulnerabilities (4.8K tokens)",
-          "highlightType": "feedback",
-          "annotation": "Current standards and known issues"
-        },
-        {
-          "line": "Step 3: Synthesize both sources for implementation",
-          "highlightType": "prediction",
-          "annotation": "Agent combines code and web grounding"
-        },
-        {
-          "line": "Result: Follows existing architecture + uses 2025 security standards + avoids known CVEs + integrates cleanly",
-          "highlightType": "summary",
-          "annotation": "Solution fits your system using current standards"
-        }
-      ],
+      "type": "comparison",
+      "title": "Context Management Without Sub-Agents",
+      "left": {
+        "label": "Ineffective Structure",
+        "content": [
+          "Task begins first",
+          "Constraints buried middle",
+          "Context floods fast",
+          "Agent forgets requirements"
+        ]
+      },
+      "right": {
+        "label": "Effective (U-Curve)",
+        "content": [
+          "Constraints come first",
+          "Supporting context middle",
+          "Task ends last",
+          "Constraints stay visible"
+        ]
+      },
       "speakerNotes": {
-        "talkingPoints": "In production, you combine code grounding with web grounding. This example shows implementing OAuth2: first, code research discovers your existing auth architecture. Second, web research gets current best practices and security advisories. Third, the agent synthesizes both sources. This prevents two failure modes: code-only grounding risks outdated patterns, web-only grounding doesn't fit your architecture. Combining both gives you solutions that work for your specific system using current standards.",
-        "timing": "4-5 minutes - this is the production payoff",
-        "discussion": "Ask: What happens if you skip code grounding? What happens if you skip web grounding? Why do you need both?",
-        "context": "This is the complete pattern for production. Ground in your codebase to prevent hallucinations and match your architecture. Ground in current web sources to get best practices and avoid outdated patterns. The combination delivers production-ready solutions.",
-        "transition": "Let's wrap up with the key takeaways..."
-      }
-    },
-    {
-      "type": "visual",
-      "title": "Grounding Architecture Comparison",
-      "component": "GroundingComparison",
-      "caption": "Sub-agents isolate research context from orchestrator",
-      "speakerNotes": {
-        "talkingPoints": "This visual shows the architectural difference between direct grounding and sub-agent grounding. On the left, search results flood the orchestrator context directly. On the right, sub-agents process extensive search in isolated contexts and return concise syntheses. The orchestrator maintains clean context throughout, keeping constraints at the beginning and tasks at the end where attention is strongest.",
-        "timing": "2 minutes",
-        "discussion": "Ask: Why does the orchestrator context stay clean with sub-agents? What's the trade-off?",
-        "context": "This visual reinforces the architectural pattern that enables scale. Clean orchestrator context means first-iteration accuracy, even though you pay more tokens for the sub-agent processing.",
-        "transition": "Let's summarize the key takeaways from this lesson..."
+        "talkingPoints": "When you don't have sub-agents, you can still manage effectively by exploiting the U-shaped attention curve. Put critical constraints at the start where attention is strongest. Put supporting information in the middle where it's skimmable but available. Put your task or question at the end where attention is strong again. As agentic search loads results, they push middle content—which is fine because constraints stay at the top and your task stays fresh at the bottom. This pattern works reliably for small to medium codebases without requiring sub-agent infrastructure.",
+        "timing": "3-4 minutes",
+        "discussion": "Ask: Why does putting the task at the end work better than at the beginning? What happens to middle content as search results load?",
+        "context": "This is the practical pattern for engineers working with basic agentic search or tools without sub-agent support. It's referenced in the lesson but often overlooked—yet it's critical for most real-world usage where you don't have ChunkHound or Explore agents.",
+        "transition": "This pattern works for small to medium codebases. Now let's see the complete architectural picture..."
       }
     },
     {
