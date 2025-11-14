@@ -69,7 +69,7 @@ This is **grounding**—the bridge between the general-purpose knowledge and pat
 
 For code context, you need semantic code search. [ChunkHound](https://chunkhound.github.io/) performs **code deep research**—answering architectural questions like "How is authentication handled?" or "What's the error handling pattern?" instead of just keyword matching. It retrieves the relevant patterns and implementations from your codebase.
 
-### Domain Research: ArguSeek
+### Domain Research: [ArguSeek](https://github.com/ArguSeek/arguseek)
 
 For domain knowledge, ArguSeek pulls information from Google directly and efficiently into your context. Need the latest API docs? Best practices from a specific framework? An algorithm buried in a 50-page research paper PDF? A solution from a GitHub issue? ArguSeek retrieves it and makes it available to your agent—no manual tab-switching, copy-pasting, or context reconstruction.
 

@@ -284,7 +284,7 @@ Total cost to your orchestrator: 9,300 tokens instead of 42,000+ from raw fetchi
 <details>
 <summary>Deep Dive: ArguSeek Architecture</summary>
 
-[ArguSeek](https://arguseek.com)—structured pipeline for web research with semantic state management.
+[ArguSeek](https://github.com/ArguSeek/arguseek)—structured pipeline for web research with semantic state management.
 
 **Key Differentiators:**
 
