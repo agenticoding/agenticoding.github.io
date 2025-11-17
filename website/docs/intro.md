@@ -64,7 +64,7 @@ Most importantly: you'll know **when to use agents** and **when to write code yo
 ## Prerequisites
 
 - **Experience:** 3+ years professional software engineering
-- **Tools:** Access to a CLI coding agent (Claude Code, OpenAI Codex, Copilot CLI, etc)
+- **Tools:** Access to a CLI coding agent (Claude Code, OpenAI Codex, Copilot CLI, etc). If you haven't picked one yet, Claude Code is recommended at time of writing (plan mode, sub-agents, slash commands, hierarchical CLAUDE.md, status bar support).
 - **Mindset:** Willingness to unlearn "AI as teammate" and adopt "AI as tool"
 
 ## About This Course's Development
