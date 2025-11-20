@@ -6,6 +6,7 @@ title: 'Lesson 6: Project Onboarding'
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import GenerateAgentsMD from '@site/shared-prompts/\_generate-agents-md.mdx';
 
 When you join a new project, the first week is brutal. You're swimming in unfamiliar architecture, tech stack decisions, tribal knowledge buried in Slack threads, and that one critical bash script everyone runs but nobody documented.
 
@@ -221,29 +222,13 @@ npm run deploy                       # Deploy to GitHub Pages
 
 **The meta-move: Apply lessons 3-5 to generate context files automatically.** Instead of manually drafting `AGENTS.md` or `CLAUDE.md`, use the four-phase workflow ([Lesson 3](/docs/methodology/lesson-3-high-level-methodology)) to let agents bootstrap their own context. **Research phase:** Use ChunkHound's `code_research()` tool to understand your project's architecture, patterns, and conventions—query for architecture, coding styles, module responsibilities, and testing conventions, etc to build a comprehensive architectural understanding. Use ArguSeek's `research_iteratively()` and `fetch_url()` to retrieve framework documentation, best practices, and security guidelines relevant to your tech stack. **Plan phase:** The agent synthesizes codebase insights (from ChunkHound) and domain knowledge (from ArguSeek) into a structured context file plan. **Execute phase:** Generate the context file using prompt optimization techniques specific to your model. **Validate phase:** Test the generated context with a typical task, iterate based on gaps.
 
-**Concrete example prompt:**
-
-```
-Generate AGENTS.md for this project.
-Use the code research tool to to learn the project architecture, tech stack,
-how auth works, testing conventions, coding style, and deployment process.
-Use ArguSeek to fetch current best practices for the tech stack used and the
-latest security guidelines.
-
-Create a concise file (≤500 lines) with sections:
-- Tech Stack
-- Development Commands (modified for non-interactive execution)
-- Architecture (high-level structure)
-- Coding Conventions and Style
-- Critical Constraints
-- Common Pitfalls (if found).
-
-Do NOT duplicate information already in README or code comments—instead, focus
-exclusively on AI-specific operations: environment variables, non-obvious
-dependencies, and commands requiring modification for agents.
-```
+<GenerateAgentsMD />
 
 This prompt demonstrates grounding ([Lesson 5](/docs/methodology/lesson-5-grounding)): ChunkHound provides codebase-specific context, ArguSeek provides current ecosystem knowledge, and structured Chain-of-Thought ensures the agent follows a methodical path. The result: production-ready context files generated in one iteration, not manually curated over weeks. Add tribal knowledge manually afterward—production incidents, team conventions, non-obvious gotchas that only humans know.
+
+:::tip Reference
+See the complete prompt template with validation guidance and adaptations: [Generate AGENTS.md](/prompts/onboarding/generate-agents-md)
+:::
 
 ---
 

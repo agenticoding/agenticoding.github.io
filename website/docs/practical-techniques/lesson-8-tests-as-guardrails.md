@@ -5,6 +5,8 @@ title: 'Lesson 8: Tests as Guardrails'
 ---
 
 import ThreeContextWorkflow from '@site/src/components/VisualElements/ThreeContextWorkflow';
+import EdgeCaseDiscovery from '@site/shared-prompts/\_edge-case-discovery.mdx';
+import TestFailureDiagnosis from '@site/shared-prompts/\_test-failure-diagnosis.mdx';
 
 AI agents can refactor half your codebase in minutes. They'll rename functions, restructure modules, and update dozens of files—all while you grab coffee. This velocity is powerful, but dangerous. Small logic errors compound fast when changes happen at scale.
 
@@ -22,25 +24,13 @@ Before writing tests, use the planning techniques from [Lesson 7](./lesson-7-pla
 
 **Prompt pattern for edge case discovery:**
 
-```
-How does validateUser() work? What edge cases exist in the current implementation?
-What special handling exists for different auth providers?
-Search for related tests and analyze what they cover.
-```
+<EdgeCaseDiscovery />
 
-The agent searches for the function, reads implementation, finds existing tests, and synthesizes findings. This loads concrete constraints into context: OAuth users skip email verification, admin users bypass rate limits, deleted users are rejected.
+The agent searches for the function, reads implementation, finds existing tests, and synthesizes findings from Step 1. This loads concrete constraints into context: OAuth users skip email verification, admin users bypass rate limits, deleted users are rejected. Step 2 analyzes the implementation against your questions and identifies untested paths. You now have a grounded list of edge cases derived from actual code, not generic testing advice.
 
-**Follow up to identify gaps:**
-
-```
-Based on the implementation you found, what edge cases are NOT covered by tests?
-What happens with:
-- Null or undefined inputs
-- Users mid-registration (incomplete profile)
-- Concurrent validation requests
-```
-
-The agent analyzes the implementation against your questions and identifies untested paths. You now have a grounded list of edge cases derived from actual code, not generic testing advice.
+:::tip Reference
+See the complete prompt template with additional examples and adaptations: [Edge Case Discovery](/prompts/testing/edge-case-discovery)
+:::
 
 ### Closed Loop: Evolve Code Alongside Tests
 
@@ -181,25 +171,7 @@ When tests fail, apply the same four-phase workflow from [Lesson 3](../methodolo
 
 This diagnostic prompt applies techniques from [Lesson 4](../methodology/lesson-4-prompting-101.md): [Chain-of-Thought](../methodology/lesson-4-prompting-101.md#chain-of-thought-paving-a-clear-path) sequential steps, [constraints](../methodology/lesson-4-prompting-101.md#constraints-as-guardrails) requiring evidence, and [structured format](../methodology/lesson-4-prompting-101.md#applying-structure-to-prompts). Understanding why each element exists lets you adapt this pattern for other diagnostic tasks.
 
-````markdown title="Diagnostic Prompt for Test Failures"
-```
-$FAILURE_DESCRIPTION
-```
-
-Use the code research to analyze the test failure above.
-
-DIAGNOSE:
-
-1. Examine the test code and its assertions.
-2. Understand and clearly explain the intention and reasoning of the test - what is it testing?
-3. Compare against the implementation code being tested
-4. Identify the root cause of failure
-
-DETERMINE:
-Is this a test that needs updating or a real bug in the implementation?
-
-Provide your conclusion with evidence.
-````
+<TestFailureDiagnosis />
 
 **Why this works:**
 
@@ -211,6 +183,10 @@ Provide your conclusion with evidence.
 - **"Provide evidence"** requires file paths and line numbers—concrete proof via [require evidence](./lesson-7-planning-execution.md#require-evidence-to-force-grounding), not vague assertions
 
 You can adapt this for performance issues, security vulnerabilities, or deployment failures by changing the diagnostic steps while preserving the structure: sequential CoT → constrained decision → evidence requirement.
+
+:::tip Reference
+See the complete prompt template with detailed usage examples and adaptations: [Test Failure Diagnosis](/prompts/testing/test-failure-diagnosis)
+:::
 
 ## Key Takeaways
 

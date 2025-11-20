@@ -4,6 +4,9 @@ sidebar_label: 'Lesson 9: Reviewing Code'
 title: 'Reviewing Code'
 ---
 
+import DualOptimizedPR from '@site/shared-prompts/\_dual-optimized-pr.mdx';
+import AIAssistedReview from '@site/shared-prompts/\_ai-assisted-review.mdx';
+
 You've completed the implementation. Tests pass. The agent executed your plan successfully. Now comes the critical question: is it actually correct?
 
 This is the **Validate** phase from [Lesson 3's four-phase workflow](../methodology/lesson-3-high-level-methodology.md)—the systematic quality gate before shipping. Code review catches the probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, edge cases handled incorrectly, patterns that don't quite fit your codebase.
@@ -60,6 +63,10 @@ DO NOT EDIT ANYTHING - only review.
 
 After implementing code ([Lesson 7](./lesson-7-planning-execution.md)), writing tests ([Lesson 8](./lesson-8-tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
 
+:::tip Reference
+See the complete prompt template with iterative review guidance: [Comprehensive Code Review](/prompts/code-review/comprehensive-review)
+:::
+
 ### Iterative Review: Repeat Until Green or Diminishing Returns
 
 Code review is rarely one-pass—first review finds issues, you fix them, re-run tests ([Lesson 8](./lesson-8-tests-as-guardrails.md)) to catch regressions, then review again in a fresh context (not the same conversation where the agent will defend its prior decisions). Continue this cycle: review in fresh context, fix issues, validate with tests, repeat.
@@ -95,34 +102,7 @@ Traditional PR descriptions optimize for one audience or the other—too verbose
 
 This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.md), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.md), and [Lesson 7 (Planning & Execution)](./lesson-7-planning-execution.md):
 
-```markdown
-You are a contributor to {PROJECT_NAME} creating a GitHub pull request for the current branch.
-Using the sub task tool to conserve context, explore the changes in the git history relative to main.
-Summarize and explain them like you would to a fellow co-worker:
-
-- Direct and concise
-- Professional but conversational
-- Assume competence and intelligence
-- Skip obvious explanations
-
-The intent of the changes are:
-{CHANGES_DESC}
-
-Building upon this, draft two markdown files: one for a human reviewer/maintainer of the project
-and another complementary that's optimized for the reviewer's agent. Explain:
-
-- What was done and the reasoning behind it
-- Breaking changes, if any exist
-- What value the changes adds to the project
-
-Constraints:
-
-- The human optimized markdown file should be 1-3 paragraphs max
-- Agent optimized markdown should focus on explaining the changes efficiently
-
-Use ArguSeek, learn how to explain and optimize both for humans and LLMs.
-Use the code research to learn the overall architecture, module responsibilities and coding style.
-```
+<DualOptimizedPR />
 
 ### Mechanisms at Work
 
@@ -137,6 +117,10 @@ This sub-agent capability is unique to Claude Code CLI. Other tools (Codex, GitH
 **Structured prompting ([Lesson 4](../methodology/lesson-4-prompting-101.md)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
 
 **Evidence requirements ([Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
+
+:::tip Reference
+See the complete prompt template with workflow integration tips: [Dual-Optimized PR Description](/prompts/pull-requests/dual-optimized-pr)
+:::
 
 ### Reviewing PRs with AI Assistants
 
@@ -160,39 +144,11 @@ When you're on the receiving end of a PR with dual-optimized descriptions, you h
 
 When reviewing a PR with dual-optimized descriptions, use this pattern with your AI assistant:
 
-````markdown
-You are {PROJECT_NAME}'s maintainer reviewing {PR_LINK}. Ensure code quality, prevent technical debt, and maintain architectural consistency.
+<AIAssistedReview />
 
-Context from the PR author:
-{PASTE_AI_OPTIMIZED_DESCRIPTION}
-
-# Review Process
-
-1. Use GitHub CLI to read the PR discussions, comments, and related issues
-2. Think step by step, but only keep a minimum draft for each thinking step, with 5 words at most. End the assessment with a separator ####.
-3. Never speculate about code you haven't read - investigate files before commenting
-
-# Critical Checks
-
-Before approving, verify:
-
-- Can existing code be extended instead of creating new?
-- Does this respect module boundaries and responsibilities?
-- Are there similar patterns elsewhere? Search the codebase.
-- Is this introducing duplication?
-
-# Output Format
-
-```markdown
-**Summary**: [One sentence verdict]
-**Strengths**: [2-3 items]
-**Issues**: [By severity: Critical/Major/Minor with file:line refs]
-**Reusability**: [Specific refactoring opportunities]
-**Decision**: [APPROVE/REQUEST CHANGES/REJECT]
-```
-
-Start by executing `gh pr view {PR_LINK} --comments`, follow with the Code Research tool for codebase understanding.
-````
+:::tip Reference
+See the complete prompt template with Chain of Draft explanation: [AI-Assisted PR Review](/prompts/pull-requests/ai-assisted-review)
+:::
 
 :::tip Chain of Draft (CoD): An Efficient Alternative to Chain of Thought
 
