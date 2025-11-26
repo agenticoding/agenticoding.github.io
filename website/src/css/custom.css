@@ -175,8 +175,10 @@
   /* All emphasis colors desaturated for optimal dark mode readability */
 }
 
-/* Mermaid diagram styling - Centered horizontally */
-.mermaid {
+/* Mermaid diagram styling - Centered horizontally
+   Docusaurus theme-mermaid uses CSS modules with hashed class names (e.g., container_lyt7)
+   Target using attribute selector that matches the Mermaid SVG ID pattern */
+[class*="container_"]:has(> svg[id^="mermaid"]) {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -189,7 +191,7 @@
 }
 
 /* Mermaid SVG responsive behavior */
-.mermaid svg {
+[class*="container_"]:has(> svg[id^="mermaid"]) > svg {
   max-width: 100%;
   height: auto;
   display: block;

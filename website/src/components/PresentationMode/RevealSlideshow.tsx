@@ -22,6 +22,7 @@ import ThreeContextWorkflow from '../VisualElements/ThreeContextWorkflow';
 import ContextWindowMeter from '../VisualElements/ContextWindowMeter';
 import AbstractShapesVisualization from '../VisualElements/AbstractShapesVisualization';
 import PlanningStrategyComparison from '../VisualElements/PlanningStrategyComparison';
+import CompoundQualityVisualization from '../VisualElements/CompoundQualityVisualization';
 
 interface SpeakerNotes {
   talkingPoints: string;
@@ -90,6 +91,7 @@ const VISUAL_COMPONENTS = {
   ContextWindowMeter,
   AbstractShapesVisualization,
   PlanningStrategyComparison,
+  CompoundQualityVisualization,
 };
 
 export default function RevealSlideshow({
