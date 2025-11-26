@@ -5,7 +5,7 @@
  *
  * Generates presentation slides from MDX course content using AI:
  * 1. Parses MDX lesson content
- * 2. Uses Claude Code CLI (Sonnet 4.5) to condense into presentation slides
+ * 2. Uses Claude Code CLI (Opus 4.5) to condense into presentation slides
  * 3. Generates structured JSON with slides, speaker notes, and metadata
  *
  * Modes:
@@ -21,45 +21,53 @@
  *   node scripts/generate-presentation.js --file intro.md # Specific file
  */
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, existsSync, unlinkSync } from 'fs';
-import { join, relative, dirname, basename, extname } from 'path';
-import { fileURLToPath } from 'url';
-import { spawn } from 'child_process';
-import * as readline from 'readline';
-import { parseMarkdownContent } from './lib/markdown-parser.js';
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+  existsSync,
+  unlinkSync,
+} from "fs";
+import { join, relative, dirname, basename, extname } from "path";
+import { fileURLToPath } from "url";
+import { spawn } from "child_process";
+import * as readline from "readline";
+import { parseMarkdownContent } from "./lib/markdown-parser.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Configuration
-const DOCS_DIR = join(__dirname, '../website/docs');
-const OUTPUT_DIR = join(__dirname, 'output/presentations');
-const STATIC_OUTPUT_DIR = join(__dirname, '../website/static/presentations');
-const MANIFEST_PATH = join(OUTPUT_DIR, 'manifest.json');
+const DOCS_DIR = join(__dirname, "../website/docs");
+const OUTPUT_DIR = join(__dirname, "output/presentations");
+const STATIC_OUTPUT_DIR = join(__dirname, "../website/static/presentations");
+const MANIFEST_PATH = join(OUTPUT_DIR, "manifest.json");
 
 // Parse command-line arguments
 function parseArgs() {
   const args = process.argv.slice(2);
   const config = {
-    mode: 'interactive',
+    mode: "interactive",
     file: null,
     module: null,
-    debug: false
+    debug: false,
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
-    if (arg === '--all') {
-      config.mode = 'batch';
-    } else if (arg === '--file') {
-      config.mode = 'batch';
+    if (arg === "--all") {
+      config.mode = "batch";
+    } else if (arg === "--file") {
+      config.mode = "batch";
       config.file = args[++i];
-    } else if (arg === '--module') {
-      config.mode = 'batch';
+    } else if (arg === "--module") {
+      config.mode = "batch";
       config.module = args[++i];
-    } else if (arg === '--debug') {
+    } else if (arg === "--debug") {
       config.debug = true;
     }
   }
@@ -77,7 +85,7 @@ function parseArgs() {
 // ============================================================================
 
 /**
- * Generate presentation slides prompt optimized for Claude Sonnet 4.5
+ * Generate presentation slides prompt optimized for Claude Opus 4.5
  */
 function buildPresentationPrompt(content, fileName, outputPath) {
   return `You are a presentation script writer specializing in educational content for senior software engineers.
@@ -731,30 +739,33 @@ Just write the raw JSON to the file now.`;
  */
 async function generatePresentationWithClaude(prompt, outputPath) {
   return new Promise((resolve, reject) => {
-    console.log(`  🤖 Calling Claude Code CLI (Sonnet 4.5)...`);
+    console.log(`  🤖 Calling Claude Code CLI (Opus 4.5)...`);
 
     // Ensure output directory exists
     mkdirSync(dirname(outputPath), { recursive: true });
 
     // Spawn claude process with headless mode
-    const claude = spawn('claude', [
-      '-p',              // Headless mode
-      '--model', 'sonnet', // Use Sonnet 4.5
-      '--allowedTools', 'Edit', 'Write' // Allow file editing and writing only
+    const claude = spawn("claude", [
+      "-p", // Headless mode
+      "--model",
+      "opus", // Use Opus 4.5
+      "--allowedTools",
+      "Edit",
+      "Write", // Allow file editing and writing only
     ]);
 
-    let stdout = '';
-    let stderr = '';
+    let stdout = "";
+    let stderr = "";
 
-    claude.stdout.on('data', (data) => {
+    claude.stdout.on("data", (data) => {
       stdout += data.toString();
     });
 
-    claude.stderr.on('data', (data) => {
+    claude.stderr.on("data", (data) => {
       stderr += data.toString();
     });
 
-    claude.on('close', (code) => {
+    claude.on("close", (code) => {
       if (code !== 0) {
         reject(new Error(`Claude CLI exited with code ${code}: ${stderr}`));
         return;
@@ -762,10 +773,12 @@ async function generatePresentationWithClaude(prompt, outputPath) {
 
       // Check if Claude created the file
       if (!existsSync(outputPath)) {
-        reject(new Error(
-          `Claude did not create the output file: ${outputPath}\n` +
-          `Claude response: ${stdout.slice(0, 200)}`
-        ));
+        reject(
+          new Error(
+            `Claude did not create the output file: ${outputPath}\n` +
+              `Claude response: ${stdout.slice(0, 200)}`,
+          ),
+        );
         return;
       }
 
@@ -774,34 +787,54 @@ async function generatePresentationWithClaude(prompt, outputPath) {
       // Read and validate JSON
       let fileContent;
       try {
-        fileContent = readFileSync(outputPath, 'utf-8');
+        fileContent = readFileSync(outputPath, "utf-8");
         const presentation = JSON.parse(fileContent);
 
         // Validate structure
         if (!presentation.metadata || !presentation.slides) {
-          reject(new Error('Invalid presentation structure - missing metadata or slides'));
+          reject(
+            new Error(
+              "Invalid presentation structure - missing metadata or slides",
+            ),
+          );
           return;
         }
 
         if (presentation.slides.length < 8 || presentation.slides.length > 15) {
-          console.log(`  ⚠️  Warning: ${presentation.slides.length} slides (expected 8-15)`);
+          console.log(
+            `  ⚠️  Warning: ${presentation.slides.length} slides (expected 8-15)`,
+          );
         }
 
-        console.log(`  ✅ Valid presentation JSON (${presentation.slides.length} slides)`);
+        console.log(
+          `  ✅ Valid presentation JSON (${presentation.slides.length} slides)`,
+        );
 
         // Write the unmodified presentation to file for validation
         // Line breaking will happen after validation passes
-        writeFileSync(outputPath, JSON.stringify(presentation, null, 2), 'utf-8');
+        writeFileSync(
+          outputPath,
+          JSON.stringify(presentation, null, 2),
+          "utf-8",
+        );
 
         resolve(presentation);
       } catch (parseError) {
-        reject(new Error(`Failed to parse JSON: ${parseError.message}\nContent preview: ${fileContent?.slice(0, 200)}`));
+        reject(
+          new Error(
+            `Failed to parse JSON: ${parseError.message}\nContent preview: ${fileContent?.slice(0, 200)}`,
+          ),
+        );
         return;
       }
     });
 
-    claude.on('error', (err) => {
-      reject(new Error(`Failed to spawn Claude CLI: ${err.message}. Is 'claude' installed and in PATH?`));
+    claude.on("error", (err) => {
+      reject(
+        new Error(
+          `Failed to spawn Claude CLI: ${err.message}. Is 'claude' installed and in PATH?`,
+        ),
+      );
     });
 
     // Send prompt to stdin
@@ -829,7 +862,7 @@ function findMarkdownFiles(dir) {
 
       if (stat.isDirectory()) {
         traverse(fullPath);
-      } else if (item.match(/\.(md|mdx)$/i) && !item.includes('CLAUDE.md')) {
+      } else if (item.match(/\.(md|mdx)$/i) && !item.includes("CLAUDE.md")) {
         files.push(fullPath);
       }
     }
@@ -845,12 +878,12 @@ function findMarkdownFiles(dir) {
 function filterFiles(files, config, baseDir) {
   if (config.file) {
     const targetFile = join(baseDir, config.file);
-    return files.filter(f => f === targetFile);
+    return files.filter((f) => f === targetFile);
   }
 
   if (config.module) {
     const modulePath = join(baseDir, config.module);
-    return files.filter(f => f.startsWith(modulePath));
+    return files.filter((f) => f.startsWith(modulePath));
   }
 
   return files;
@@ -863,7 +896,7 @@ async function promptSelectFile(files, baseDir) {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
     });
 
     console.log(`\n📚 Available files:\n`);
@@ -873,20 +906,27 @@ async function promptSelectFile(files, baseDir) {
       console.log(`  ${index + 1}. ${relativePath}`);
     });
 
-    console.log('\n');
+    console.log("\n");
 
-    rl.question('Select a file by number (or press Ctrl+C to exit): ', (answer) => {
-      rl.close();
+    rl.question(
+      "Select a file by number (or press Ctrl+C to exit): ",
+      (answer) => {
+        rl.close();
 
-      const selection = parseInt(answer, 10);
+        const selection = parseInt(answer, 10);
 
-      if (isNaN(selection) || selection < 1 || selection > files.length) {
-        reject(new Error(`Invalid selection: ${answer}. Please enter a number between 1 and ${files.length}.`));
-        return;
-      }
+        if (isNaN(selection) || selection < 1 || selection > files.length) {
+          reject(
+            new Error(
+              `Invalid selection: ${answer}. Please enter a number between 1 and ${files.length}.`,
+            ),
+          );
+          return;
+        }
 
-      resolve([files[selection - 1]]);
-    });
+        resolve([files[selection - 1]]);
+      },
+    );
   });
 }
 
@@ -919,16 +959,18 @@ function extractExpectedComponents(content) {
  */
 function validateComponents(content, presentation) {
   const expectedComponents = extractExpectedComponents(content);
-  const visualSlides = presentation.slides.filter(s => s.type === 'visual');
-  const renderedComponents = visualSlides.map(s => s.component);
+  const visualSlides = presentation.slides.filter((s) => s.type === "visual");
+  const renderedComponents = visualSlides.map((s) => s.component);
 
-  const missing = expectedComponents.filter(c => !renderedComponents.includes(c));
+  const missing = expectedComponents.filter(
+    (c) => !renderedComponents.includes(c),
+  );
 
   return {
     expected: expectedComponents,
     rendered: renderedComponents,
     missing,
-    allPresent: missing.length === 0
+    allPresent: missing.length === 0,
   };
 }
 
@@ -940,24 +982,44 @@ function validateComponents(content, presentation) {
  * @returns {object} Validation result with potential ordering issues
  */
 function validateComparisonSemantics(presentation) {
-  const comparisonSlides = presentation.slides.filter(s => s.type === 'comparison');
+  const comparisonSlides = presentation.slides.filter(
+    (s) => s.type === "comparison",
+  );
   const issues = [];
 
   // Keywords that indicate a "positive/better" option
-  const positiveKeywords = ['cli', 'effective', 'better', 'modern', 'agentic', 'sociable', 'agent workflow'];
+  const positiveKeywords = [
+    "cli",
+    "effective",
+    "better",
+    "modern",
+    "agentic",
+    "sociable",
+    "agent workflow",
+  ];
   // Keywords that indicate a "negative/worse" option
-  const negativeKeywords = ['chat', 'ide', 'ineffective', 'worse', 'traditional', 'mocked', 'chat interface'];
+  const negativeKeywords = [
+    "chat",
+    "ide",
+    "ineffective",
+    "worse",
+    "traditional",
+    "mocked",
+    "chat interface",
+  ];
 
   for (const slide of comparisonSlides) {
     if (!slide.left || !slide.right) continue;
 
-    const leftLabel = slide.left.label?.toLowerCase() || '';
-    const rightLabel = slide.right.label?.toLowerCase() || '';
+    const leftLabel = slide.left.label?.toLowerCase() || "";
+    const rightLabel = slide.right.label?.toLowerCase() || "";
 
     // Check if left side has positive keywords (should be on right instead)
-    const leftIsPositive = positiveKeywords.some(k => leftLabel.includes(k));
+    const leftIsPositive = positiveKeywords.some((k) => leftLabel.includes(k));
     // Check if right side has negative keywords (should be on left instead)
-    const rightIsNegative = negativeKeywords.some(k => rightLabel.includes(k));
+    const rightIsNegative = negativeKeywords.some((k) =>
+      rightLabel.includes(k),
+    );
 
     if (leftIsPositive || rightIsNegative) {
       issues.push({
@@ -966,7 +1028,7 @@ function validateComparisonSemantics(presentation) {
         right: slide.right.label,
         reason: leftIsPositive
           ? `"${slide.left.label}" appears positive/better but is on LEFT (will show RED ✗)`
-          : `"${slide.right.label}" appears negative/worse but is on RIGHT (will show GREEN ✓)`
+          : `"${slide.right.label}" appears negative/worse but is on RIGHT (will show GREEN ✓)`,
       });
     }
   }
@@ -974,7 +1036,7 @@ function validateComparisonSemantics(presentation) {
   return {
     valid: issues.length === 0,
     issues,
-    totalComparisons: comparisonSlides.length
+    totalComparisons: comparisonSlides.length,
   };
 }
 
@@ -989,9 +1051,9 @@ function validateContentArrayLengths(presentation) {
   const MAX_ITEMS = 5;
 
   // Slide types that must have content arrays with 3-5 items
-  const slidesWithContent = presentation.slides.filter(slide => {
+  const slidesWithContent = presentation.slides.filter((slide) => {
     // Skip title slide (different rules)
-    if (slide.type === 'title') return false;
+    if (slide.type === "title") return false;
 
     // Check slides with content arrays
     return slide.content && Array.isArray(slide.content);
@@ -1005,16 +1067,17 @@ function validateContentArrayLengths(presentation) {
         slide: slide.title || slide.type,
         type: slide.type,
         count: contentLength,
-        reason: contentLength < MIN_ITEMS
-          ? `Only ${contentLength} item(s), need at least ${MIN_ITEMS}`
-          : `Has ${contentLength} item(s), maximum is ${MAX_ITEMS}`
+        reason:
+          contentLength < MIN_ITEMS
+            ? `Only ${contentLength} item(s), need at least ${MIN_ITEMS}`
+            : `Has ${contentLength} item(s), maximum is ${MAX_ITEMS}`,
       });
     }
   }
 
   // Check comparison slides (left/right content)
-  const comparisonSlides = presentation.slides.filter(s =>
-    s.type === 'comparison' || s.type === 'marketingReality'
+  const comparisonSlides = presentation.slides.filter(
+    (s) => s.type === "comparison" || s.type === "marketingReality",
   );
 
   for (const slide of comparisonSlides) {
@@ -1028,9 +1091,10 @@ function validateContentArrayLengths(presentation) {
           slide: `${slide.title} (LEFT)`,
           type: slide.type,
           count: leftLength,
-          reason: leftLength < MIN_ITEMS
-            ? `Only ${leftLength} item(s), need at least ${MIN_ITEMS}`
-            : `Has ${leftLength} item(s), maximum is ${MAX_ITEMS}`
+          reason:
+            leftLength < MIN_ITEMS
+              ? `Only ${leftLength} item(s), need at least ${MIN_ITEMS}`
+              : `Has ${leftLength} item(s), maximum is ${MAX_ITEMS}`,
         });
       }
     }
@@ -1042,9 +1106,10 @@ function validateContentArrayLengths(presentation) {
           slide: `${slide.title} (RIGHT)`,
           type: slide.type,
           count: rightLength,
-          reason: rightLength < MIN_ITEMS
-            ? `Only ${rightLength} item(s), need at least ${MIN_ITEMS}`
-            : `Has ${rightLength} item(s), maximum is ${MAX_ITEMS}`
+          reason:
+            rightLength < MIN_ITEMS
+              ? `Only ${rightLength} item(s), need at least ${MIN_ITEMS}`
+              : `Has ${rightLength} item(s), maximum is ${MAX_ITEMS}`,
         });
       }
     }
@@ -1053,7 +1118,7 @@ function validateContentArrayLengths(presentation) {
   return {
     valid: issues.length === 0,
     issues,
-    totalSlidesChecked: slidesWithContent.length + comparisonSlides.length
+    totalSlidesChecked: slidesWithContent.length + comparisonSlides.length,
   };
 }
 
@@ -1066,56 +1131,69 @@ function validateContentArrayLengths(presentation) {
 function validatePromptExamples(content, presentation) {
   // Shared regex patterns for detecting prompt-like content
   // Common action verbs that indicate AI assistant commands
-  const PROMPT_VERBS = 'Write |You are |Calculate |Review |Debug |Add |Create |Implement |Refactor ';
+  const PROMPT_VERBS =
+    "Write |You are |Calculate |Review |Debug |Add |Create |Implement |Refactor ";
 
   // Detect prompt examples in fenced code blocks
-  const promptInCodeBlocks = new RegExp(`\`\`\`[^\\n]*\\n(${PROMPT_VERBS})`, 'gi');
+  const promptInCodeBlocks = new RegExp(
+    `\`\`\`[^\\n]*\\n(${PROMPT_VERBS})`,
+    "gi",
+  );
   const hasPromptExamples = promptInCodeBlocks.test(content);
 
   if (!hasPromptExamples) {
     return { valid: true, issues: [], hasPromptExamples: false };
   }
 
-  const codeSlides = presentation.slides.filter(s =>
-    s.type === 'code' || s.type === 'codeComparison'
+  const codeSlides = presentation.slides.filter(
+    (s) => s.type === "code" || s.type === "codeComparison",
   );
 
   const issues = [];
 
   if (codeSlides.length === 0) {
-    issues.push('Source contains prompt examples but no code/codeComparison slides were generated');
+    issues.push(
+      "Source contains prompt examples but no code/codeComparison slides were generated",
+    );
   }
 
   // Pattern for detecting prompts in bullet points (should trigger codeComparison)
-  const promptLikeContent = new RegExp(`${PROMPT_VERBS}|Return \\{`, 'i');
+  const promptLikeContent = new RegExp(`${PROMPT_VERBS}|Return \\{`, "i");
 
   // Pattern for detecting full prompt sentences (more specific check)
-  const fullPromptPattern = /Write [a-z]+ [a-z]+ function|You are a [a-z]+ engineer|Calculate the [a-z]+ [a-z]+|Review this [a-z]+ code/i;
+  const fullPromptPattern =
+    /Write [a-z]+ [a-z]+ function|You are a [a-z]+ engineer|Calculate the [a-z]+ [a-z]+|Review this [a-z]+ code/i;
 
   // Check if any comparison slides have prompt-like content that should be codeComparison
-  const comparisonSlides = presentation.slides.filter(s => s.type === 'comparison');
+  const comparisonSlides = presentation.slides.filter(
+    (s) => s.type === "comparison",
+  );
   for (const slide of comparisonSlides) {
     if (slide.left?.content || slide.right?.content) {
-      const leftContent = slide.left?.content?.join(' ') || '';
-      const rightContent = slide.right?.content?.join(' ') || '';
-      const combinedContent = leftContent + ' ' + rightContent;
+      const leftContent = slide.left?.content?.join(" ") || "";
+      const rightContent = slide.right?.content?.join(" ") || "";
+      const combinedContent = leftContent + " " + rightContent;
 
       // Check if content looks like prompt examples
       if (promptLikeContent.test(combinedContent)) {
-        issues.push(`Slide "${slide.title}" appears to contain prompt examples as bullet points - should use codeComparison type`);
+        issues.push(
+          `Slide "${slide.title}" appears to contain prompt examples as bullet points - should use codeComparison type`,
+        );
       }
     }
   }
 
   // Check if any concept slides have prompt-like content that should be code/codeComparison
-  const conceptSlides = presentation.slides.filter(s => s.type === 'concept');
+  const conceptSlides = presentation.slides.filter((s) => s.type === "concept");
   for (const slide of conceptSlides) {
     if (slide.content && Array.isArray(slide.content)) {
-      const combinedContent = slide.content.join(' ');
+      const combinedContent = slide.content.join(" ");
 
       // Check if content looks like prompt examples (full sentences/commands, not just explanatory text)
       if (fullPromptPattern.test(combinedContent)) {
-        issues.push(`Slide "${slide.title}" appears to contain prompt examples as bullet points - should use code or codeComparison type`);
+        issues.push(
+          `Slide "${slide.title}" appears to contain prompt examples as bullet points - should use code or codeComparison type`,
+        );
       }
     }
   }
@@ -1124,7 +1202,7 @@ function validatePromptExamples(content, presentation) {
     valid: issues.length === 0,
     issues,
     hasPromptExamples,
-    codeSlideCount: codeSlides.length
+    codeSlideCount: codeSlides.length,
   };
 }
 
@@ -1133,8 +1211,8 @@ function validatePromptExamples(content, presentation) {
  */
 function normalizeWhitespace(str) {
   return str
-    .replace(/\r\n/g, '\n')  // Normalize line endings
-    .replace(/\s+/g, ' ')     // Collapse multiple spaces
+    .replace(/\r\n/g, "\n") // Normalize line endings
+    .replace(/\s+/g, " ") // Collapse multiple spaces
     .trim();
 }
 
@@ -1143,11 +1221,21 @@ function normalizeWhitespace(str) {
  */
 function isPromptExample(slide) {
   // If language is "text" or "markdown" and contains prompt verbs, it's likely a prompt example
-  const promptVerbs = ['Write a', 'You are', 'Calculate', 'Review', 'Debug', 'Add ', 'Create', 'Implement', 'Refactor'];
-  const slideCode = slide.code || '';
-  const isTextLang = slide.language === 'text' || slide.language === 'markdown';
+  const promptVerbs = [
+    "Write a",
+    "You are",
+    "Calculate",
+    "Review",
+    "Debug",
+    "Add ",
+    "Create",
+    "Implement",
+    "Refactor",
+  ];
+  const slideCode = slide.code || "";
+  const isTextLang = slide.language === "text" || slide.language === "markdown";
 
-  return isTextLang && promptVerbs.some(verb => slideCode.includes(verb));
+  return isTextLang && promptVerbs.some((verb) => slideCode.includes(verb));
 }
 
 /**
@@ -1165,20 +1253,20 @@ function validateCodeExamplesExistInSource(content, presentation) {
   const sourceCodeBlocks = content.match(codeBlockRegex) || [];
 
   // Normalize source code blocks for comparison
-  const normalizedSourceBlocks = sourceCodeBlocks.map(block => {
+  const normalizedSourceBlocks = sourceCodeBlocks.map((block) => {
     // Remove the backticks and language specifier
-    const codeContent = block.replace(/^```[^\n]*\n/, '').replace(/\n```$/, '');
+    const codeContent = block.replace(/^```[^\n]*\n/, "").replace(/\n```$/, "");
     return normalizeWhitespace(codeContent);
   });
 
   // Check each code slide
-  const codeSlides = presentation.slides.filter(s =>
-    s.type === 'code' || s.type === 'codeComparison'
+  const codeSlides = presentation.slides.filter(
+    (s) => s.type === "code" || s.type === "codeComparison",
   );
 
   for (const slide of codeSlides) {
     // For code slides with actual code (not prompt examples)
-    if (slide.type === 'code' && slide.code) {
+    if (slide.type === "code" && slide.code) {
       // Skip prompt examples (text-based prompts are valid educational content)
       if (isPromptExample(slide)) {
         continue;
@@ -1187,44 +1275,56 @@ function validateCodeExamplesExistInSource(content, presentation) {
       const codeContent = normalizeWhitespace(slide.code);
 
       // Check if this code exists in any source block (allow partial matches for excerpts)
-      const existsInSource = normalizedSourceBlocks.some(sourceBlock =>
-        sourceBlock.includes(codeContent) || codeContent.includes(sourceBlock)
+      const existsInSource = normalizedSourceBlocks.some(
+        (sourceBlock) =>
+          sourceBlock.includes(codeContent) ||
+          codeContent.includes(sourceBlock),
       );
 
-      if (!existsInSource && codeContent.length > 20) {  // Ignore very short snippets
-        issues.push(`Code in slide "${slide.title}" (${codeContent.substring(0, 50)}...) not found in source`);
+      if (!existsInSource && codeContent.length > 20) {
+        // Ignore very short snippets
+        issues.push(
+          `Code in slide "${slide.title}" (${codeContent.substring(0, 50)}...) not found in source`,
+        );
       }
     }
 
     // For code comparison slides
-    if (slide.type === 'codeComparison') {
+    if (slide.type === "codeComparison") {
       const checkCodeBlock = (codeBlock, label) => {
         if (!codeBlock || !codeBlock.code) return;
 
         // Skip prompt examples
-        if (codeBlock.language === 'text' || codeBlock.language === 'markdown') {
+        if (
+          codeBlock.language === "text" ||
+          codeBlock.language === "markdown"
+        ) {
           return;
         }
 
         const codeContent = normalizeWhitespace(codeBlock.code);
-        const existsInSource = normalizedSourceBlocks.some(sourceBlock =>
-          sourceBlock.includes(codeContent) || codeContent.includes(sourceBlock)
+        const existsInSource = normalizedSourceBlocks.some(
+          (sourceBlock) =>
+            sourceBlock.includes(codeContent) ||
+            codeContent.includes(sourceBlock),
         );
 
         if (!existsInSource && codeContent.length > 20) {
-          issues.push(`${label} code in slide "${slide.title}" (${codeContent.substring(0, 50)}...) not found in source`);
+          issues.push(
+            `${label} code in slide "${slide.title}" (${codeContent.substring(0, 50)}...) not found in source`,
+          );
         }
       };
 
-      checkCodeBlock(slide.leftCode, 'Left');
-      checkCodeBlock(slide.rightCode, 'Right');
+      checkCodeBlock(slide.leftCode, "Left");
+      checkCodeBlock(slide.rightCode, "Right");
     }
   }
 
   return {
     valid: issues.length === 0,
     issues,
-    codeSlidesChecked: codeSlides.length
+    codeSlidesChecked: codeSlides.length,
   };
 }
 
@@ -1238,7 +1338,9 @@ function validateTakeawayWordCount(presentation) {
   const MAX_WORDS = 5;
   const issues = [];
 
-  const takeawaySlides = presentation.slides.filter(s => s.type === 'takeaway');
+  const takeawaySlides = presentation.slides.filter(
+    (s) => s.type === "takeaway",
+  );
 
   for (const slide of takeawaySlides) {
     if (slide.content && Array.isArray(slide.content)) {
@@ -1249,8 +1351,8 @@ function validateTakeawayWordCount(presentation) {
             slide: slide.title,
             index: index + 1,
             wordCount,
-            content: item.substring(0, 60) + (item.length > 60 ? '...' : ''),
-            excess: wordCount - MAX_WORDS
+            content: item.substring(0, 60) + (item.length > 60 ? "..." : ""),
+            excess: wordCount - MAX_WORDS,
           });
         }
       });
@@ -1260,7 +1362,10 @@ function validateTakeawayWordCount(presentation) {
   return {
     valid: issues.length === 0,
     issues,
-    totalTakeawaysChecked: takeawaySlides.reduce((sum, s) => sum + (s.content?.length || 0), 0)
+    totalTakeawaysChecked: takeawaySlides.reduce(
+      (sum, s) => sum + (s.content?.length || 0),
+      0,
+    ),
   };
 }
 
@@ -1282,8 +1387,9 @@ function validateLearningObjectivesWordCount(presentation) {
       issues.push({
         index: index + 1,
         wordCount,
-        content: objective.substring(0, 60) + (objective.length > 60 ? '...' : ''),
-        excess: wordCount - MAX_WORDS
+        content:
+          objective.substring(0, 60) + (objective.length > 60 ? "..." : ""),
+        excess: wordCount - MAX_WORDS,
       });
     }
   });
@@ -1291,7 +1397,7 @@ function validateLearningObjectivesWordCount(presentation) {
   return {
     valid: issues.length === 0,
     issues,
-    totalObjectivesChecked: objectives.length
+    totalObjectivesChecked: objectives.length,
   };
 }
 
@@ -1306,7 +1412,7 @@ async function generatePresentation(filePath, manifest, config) {
 
   try {
     // Parse content in presentation mode, preserving code blocks for validation
-    const content = parseMarkdownContent(filePath, 'presentation', true);
+    const content = parseMarkdownContent(filePath, "presentation", true);
 
     if (content.length < 100) {
       console.log(`  ⚠️  Skipping - content too short`);
@@ -1328,14 +1434,17 @@ async function generatePresentation(filePath, manifest, config) {
 
     // Debug mode: save prompt
     if (config.debug) {
-      const debugPath = outputPath.replace('.json', '.debug-prompt.txt');
+      const debugPath = outputPath.replace(".json", ".debug-prompt.txt");
       mkdirSync(dirname(debugPath), { recursive: true });
-      writeFileSync(debugPath, prompt, 'utf-8');
+      writeFileSync(debugPath, prompt, "utf-8");
       console.log(`  🔍 Debug prompt saved: ${debugPath}`);
     }
 
     // Generate presentation using Claude
-    const presentation = await generatePresentationWithClaude(prompt, outputPath);
+    const presentation = await generatePresentationWithClaude(
+      prompt,
+      outputPath,
+    );
 
     // ========================================================================
     // POST-GENERATION VALIDATION
@@ -1347,26 +1456,36 @@ async function generatePresentation(filePath, manifest, config) {
     // Validate that all visual components were included
     const validation = validateComponents(content, presentation);
     if (!validation.allPresent) {
-      console.log(`  ⚠️  WARNING: ${validation.missing.length} visual component(s) not rendered:`);
-      validation.missing.forEach(c => console.log(`      - ${c}`));
-      console.log(`  ℹ️  Expected: [${validation.expected.join(', ')}]`);
-      console.log(`  ℹ️  Rendered: [${validation.rendered.join(', ')}]`);
+      console.log(
+        `  ⚠️  WARNING: ${validation.missing.length} visual component(s) not rendered:`,
+      );
+      validation.missing.forEach((c) => console.log(`      - ${c}`));
+      console.log(`  ℹ️  Expected: [${validation.expected.join(", ")}]`);
+      console.log(`  ℹ️  Rendered: [${validation.rendered.join(", ")}]`);
     } else if (validation.expected.length > 0) {
-      console.log(`  ✅ All ${validation.expected.length} visual component(s) rendered correctly`);
+      console.log(
+        `  ✅ All ${validation.expected.length} visual component(s) rendered correctly`,
+      );
     }
 
     // Validate comparison slide semantics
     const semanticValidation = validateComparisonSemantics(presentation);
     if (!semanticValidation.valid) {
-      console.log(`  ⚠️  WARNING: ${semanticValidation.issues.length} comparison slide(s) may have reversed order:`);
-      semanticValidation.issues.forEach(issue => {
+      console.log(
+        `  ⚠️  WARNING: ${semanticValidation.issues.length} comparison slide(s) may have reversed order:`,
+      );
+      semanticValidation.issues.forEach((issue) => {
         console.log(`      - "${issue.slide}"`);
         console.log(`        LEFT: "${issue.left}" | RIGHT: "${issue.right}"`);
         console.log(`        ${issue.reason}`);
       });
-      console.log(`  ℹ️  Remember: LEFT = ineffective/worse (RED ✗), RIGHT = effective/better (GREEN ✓)`);
+      console.log(
+        `  ℹ️  Remember: LEFT = ineffective/worse (RED ✗), RIGHT = effective/better (GREEN ✓)`,
+      );
     } else if (semanticValidation.totalComparisons > 0) {
-      console.log(`  ✅ All ${semanticValidation.totalComparisons} comparison slide(s) follow correct convention`);
+      console.log(
+        `  ✅ All ${semanticValidation.totalComparisons} comparison slide(s) follow correct convention`,
+      );
     }
 
     // Collect validation errors instead of throwing immediately
@@ -1379,15 +1498,27 @@ async function generatePresentation(filePath, manifest, config) {
     // The two-step condensation process in the prompt should prevent this.
     const contentValidation = validateContentArrayLengths(presentation);
     if (!contentValidation.valid) {
-      console.log(`  ❌ BUILD FAILURE: ${contentValidation.issues.length} content array violation(s):`);
-      contentValidation.issues.forEach(issue => {
-        console.log(`      - Slide "${issue.slide}" (${issue.type}): ${issue.reason}`);
+      console.log(
+        `  ❌ BUILD FAILURE: ${contentValidation.issues.length} content array violation(s):`,
+      );
+      contentValidation.issues.forEach((issue) => {
+        console.log(
+          `      - Slide "${issue.slide}" (${issue.type}): ${issue.reason}`,
+        );
       });
-      console.log(`  ℹ️  All content arrays MUST have 3-5 items (except title slide)`);
-      console.log(`  ℹ️  For takeaway slides: use the two-step condensation process`);
-      validationErrors.push('Content array validation failed - slides have too many or too few items');
+      console.log(
+        `  ℹ️  All content arrays MUST have 3-5 items (except title slide)`,
+      );
+      console.log(
+        `  ℹ️  For takeaway slides: use the two-step condensation process`,
+      );
+      validationErrors.push(
+        "Content array validation failed - slides have too many or too few items",
+      );
     } else if (contentValidation.totalSlidesChecked > 0) {
-      console.log(`  ✅ All ${contentValidation.totalSlidesChecked} content array(s) have 3-5 items`);
+      console.log(
+        `  ✅ All ${contentValidation.totalSlidesChecked} content array(s) have 3-5 items`,
+      );
     }
 
     // Validate prompt examples are preserved as code
@@ -1396,30 +1527,51 @@ async function generatePresentation(filePath, manifest, config) {
     // If the LLM converts prompts to bullet points, it loses pedagogical value.
     const promptValidation = validatePromptExamples(content, presentation);
     if (!promptValidation.valid) {
-      console.log(`  ❌ BUILD FAILURE: ${promptValidation.issues.length} prompt example issue(s):`);
-      promptValidation.issues.forEach(issue => {
+      console.log(
+        `  ❌ BUILD FAILURE: ${promptValidation.issues.length} prompt example issue(s):`,
+      );
+      promptValidation.issues.forEach((issue) => {
         console.log(`      - ${issue}`);
       });
-      console.log(`  ℹ️  Prompt examples MUST use "code" or "codeComparison" slide types, NOT bullet points`);
-      validationErrors.push('Prompt validation failed - prompt examples were converted to bullet points instead of code blocks');
+      console.log(
+        `  ℹ️  Prompt examples MUST use "code" or "codeComparison" slide types, NOT bullet points`,
+      );
+      validationErrors.push(
+        "Prompt validation failed - prompt examples were converted to bullet points instead of code blocks",
+      );
     } else if (promptValidation.hasPromptExamples) {
-      console.log(`  ✅ All prompt examples preserved as code blocks (${promptValidation.codeSlideCount} code slide(s))`);
+      console.log(
+        `  ✅ All prompt examples preserved as code blocks (${promptValidation.codeSlideCount} code slide(s))`,
+      );
     }
 
     // Validate code examples exist in source material
     // CRITICAL: This validation prevents fabrication of hypothetical code implementations
     // All code shown in slides must exist verbatim in the source lesson markdown
-    const codeSourceValidation = validateCodeExamplesExistInSource(content, presentation);
+    const codeSourceValidation = validateCodeExamplesExistInSource(
+      content,
+      presentation,
+    );
     if (!codeSourceValidation.valid) {
-      console.log(`  ❌ BUILD FAILURE: ${codeSourceValidation.issues.length} fabricated code issue(s):`);
-      codeSourceValidation.issues.forEach(issue => {
+      console.log(
+        `  ❌ BUILD FAILURE: ${codeSourceValidation.issues.length} fabricated code issue(s):`,
+      );
+      codeSourceValidation.issues.forEach((issue) => {
         console.log(`      - ${issue}`);
       });
-      console.log(`  ℹ️  All code in slides MUST exist verbatim in the source markdown`);
-      console.log(`  ℹ️  DO NOT generate hypothetical implementations to demonstrate prompts`);
-      validationErrors.push('Code source validation failed - slides contain fabricated code not in source');
+      console.log(
+        `  ℹ️  All code in slides MUST exist verbatim in the source markdown`,
+      );
+      console.log(
+        `  ℹ️  DO NOT generate hypothetical implementations to demonstrate prompts`,
+      );
+      validationErrors.push(
+        "Code source validation failed - slides contain fabricated code not in source",
+      );
     } else if (codeSourceValidation.codeSlidesChecked > 0) {
-      console.log(`  ✅ All ${codeSourceValidation.codeSlidesChecked} code slide(s) verified against source`);
+      console.log(
+        `  ✅ All ${codeSourceValidation.codeSlidesChecked} code slide(s) verified against source`,
+      );
     }
 
     // Validate takeaway word count (5 words or fewer)
@@ -1428,43 +1580,72 @@ async function generatePresentation(filePath, manifest, config) {
     // Verbose takeaways defeat the purpose of distilling key insights.
     const takeawayValidation = validateTakeawayWordCount(presentation);
     if (!takeawayValidation.valid) {
-      console.log(`  ❌ BUILD FAILURE: ${takeawayValidation.issues.length} takeaway word limit violation(s):`);
-      takeawayValidation.issues.forEach(issue => {
-        console.log(`      - "${issue.slide}" item ${issue.index}: ${issue.wordCount} words (${issue.excess} over limit)`);
+      console.log(
+        `  ❌ BUILD FAILURE: ${takeawayValidation.issues.length} takeaway word limit violation(s):`,
+      );
+      takeawayValidation.issues.forEach((issue) => {
+        console.log(
+          `      - "${issue.slide}" item ${issue.index}: ${issue.wordCount} words (${issue.excess} over limit)`,
+        );
         console.log(`        "${issue.content}"`);
       });
-      console.log(`  ℹ️  All takeaway items MUST be 5 words or fewer for memorability`);
-      console.log(`  ℹ️  Examples: "Tests ground agent code quality" (5) ✓ | "Tests are critical for agent workflows" (6) ✗`);
-      validationErrors.push('Takeaway validation failed - items exceed 5-word limit');
+      console.log(
+        `  ℹ️  All takeaway items MUST be 5 words or fewer for memorability`,
+      );
+      console.log(
+        `  ℹ️  Examples: "Tests ground agent code quality" (5) ✓ | "Tests are critical for agent workflows" (6) ✗`,
+      );
+      validationErrors.push(
+        "Takeaway validation failed - items exceed 5-word limit",
+      );
     } else if (takeawayValidation.totalTakeawaysChecked > 0) {
-      console.log(`  ✅ All ${takeawayValidation.totalTakeawaysChecked} takeaway item(s) are 5 words or fewer`);
+      console.log(
+        `  ✅ All ${takeawayValidation.totalTakeawaysChecked} takeaway item(s) are 5 words or fewer`,
+      );
     }
 
     // Validate learning objectives word count (5 words or fewer)
     // CRITICAL: This validation is intentionally strict and throws an error because
     // learning objectives appear on the title slide and set learner expectations.
     // Brief objectives are more memorable and easier to internalize.
-    const objectivesValidation = validateLearningObjectivesWordCount(presentation);
+    const objectivesValidation =
+      validateLearningObjectivesWordCount(presentation);
     if (!objectivesValidation.valid) {
-      console.log(`  ❌ BUILD FAILURE: ${objectivesValidation.issues.length} learning objective word limit violation(s):`);
-      objectivesValidation.issues.forEach(issue => {
-        console.log(`      - Objective ${issue.index}: ${issue.wordCount} words (${issue.excess} over limit)`);
+      console.log(
+        `  ❌ BUILD FAILURE: ${objectivesValidation.issues.length} learning objective word limit violation(s):`,
+      );
+      objectivesValidation.issues.forEach((issue) => {
+        console.log(
+          `      - Objective ${issue.index}: ${issue.wordCount} words (${issue.excess} over limit)`,
+        );
         console.log(`        "${issue.content}"`);
       });
-      console.log(`  ℹ️  All learning objectives MUST be 5 words or fewer for clarity`);
-      console.log(`  ℹ️  Examples: "Master active context engineering" (4) ✓ | "Learn how to master active context" (6) ✗`);
-      validationErrors.push('Learning objectives validation failed - items exceed 5-word limit');
+      console.log(
+        `  ℹ️  All learning objectives MUST be 5 words or fewer for clarity`,
+      );
+      console.log(
+        `  ℹ️  Examples: "Master active context engineering" (4) ✓ | "Learn how to master active context" (6) ✗`,
+      );
+      validationErrors.push(
+        "Learning objectives validation failed - items exceed 5-word limit",
+      );
     } else if (objectivesValidation.totalObjectivesChecked > 0) {
-      console.log(`  ✅ All ${objectivesValidation.totalObjectivesChecked} learning objective(s) are 5 words or fewer`);
+      console.log(
+        `  ✅ All ${objectivesValidation.totalObjectivesChecked} learning objective(s) are 5 words or fewer`,
+      );
     }
 
     // Write presentation to output file (even if validation failed)
-    writeFileSync(outputPath, JSON.stringify(presentation, null, 2), 'utf-8');
+    writeFileSync(outputPath, JSON.stringify(presentation, null, 2), "utf-8");
 
     // Copy to static directory for deployment
-    const staticPath = join(STATIC_OUTPUT_DIR, dirname(relativePath), outputFileName);
+    const staticPath = join(
+      STATIC_OUTPUT_DIR,
+      dirname(relativePath),
+      outputFileName,
+    );
     mkdirSync(dirname(staticPath), { recursive: true });
-    writeFileSync(staticPath, JSON.stringify(presentation, null, 2), 'utf-8');
+    writeFileSync(staticPath, JSON.stringify(presentation, null, 2), "utf-8");
 
     // Update manifest
     const presentationUrl = `/presentations/${join(dirname(relativePath), outputFileName)}`;
@@ -1473,21 +1654,26 @@ async function generatePresentation(filePath, manifest, config) {
       slideCount: presentation.slides.length,
       estimatedDuration: presentation.metadata.estimatedDuration,
       title: presentation.metadata.title,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     };
 
-    console.log(`  ${validationErrors.length > 0 ? '⚠️' : '✅'} Generated: ${presentationUrl}`);
+    console.log(
+      `  ${validationErrors.length > 0 ? "⚠️" : "✅"} Generated: ${presentationUrl}`,
+    );
     console.log(`  📊 Slides: ${presentation.slides.length}`);
     console.log(`  ⏱️  Duration: ${presentation.metadata.estimatedDuration}`);
 
     // Throw validation errors after writing files
     if (validationErrors.length > 0) {
-      console.log(`  ℹ️  The presentation was saved despite validation failures for inspection.`);
-      throw new Error(`Validation failed with ${validationErrors.length} error(s):\n  - ${validationErrors.join('\n  - ')}`);
+      console.log(
+        `  ℹ️  The presentation was saved despite validation failures for inspection.`,
+      );
+      throw new Error(
+        `Validation failed with ${validationErrors.length} error(s):\n  - ${validationErrors.join("\n  - ")}`,
+      );
     }
 
     return outputPath;
-
   } catch (error) {
     console.error(`  ❌ Error: ${error.message}`);
     throw error;
@@ -1501,33 +1687,35 @@ async function generatePresentation(filePath, manifest, config) {
 async function main() {
   const config = parseArgs();
 
-  console.log('🎭 AI Coding Course - Presentation Generator\n');
+  console.log("🎭 AI Coding Course - Presentation Generator\n");
   console.log(`📂 Docs directory: ${DOCS_DIR}`);
   console.log(`📝 Output directory: ${OUTPUT_DIR}`);
   console.log(`🌐 Static directory: ${STATIC_OUTPUT_DIR}`);
-  console.log(`🤖 Model: Claude Sonnet 4.5 (via CLI)`);
+  console.log(`🤖 Model: Claude Opus 4.5 (via CLI)`);
   console.log(`📋 Mode: ${config.mode}`);
 
   // Find markdown files
   const sourceFiles = findMarkdownFiles(DOCS_DIR);
 
   if (sourceFiles.length === 0) {
-    console.error('\n❌ No markdown files found.');
+    console.error("\n❌ No markdown files found.");
     process.exit(1);
   }
 
-  console.log(`\n📚 Found ${sourceFiles.length} source file${sourceFiles.length !== 1 ? 's' : ''}`);
+  console.log(
+    `\n📚 Found ${sourceFiles.length} source file${sourceFiles.length !== 1 ? "s" : ""}`,
+  );
 
   // Load existing manifest
   let manifest = {};
   if (existsSync(MANIFEST_PATH)) {
-    manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf-8'));
+    manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf-8"));
   }
 
   // Select files to process
   let filesToProcess;
 
-  if (config.mode === 'interactive') {
+  if (config.mode === "interactive") {
     try {
       filesToProcess = await promptSelectFile(sourceFiles, DOCS_DIR);
     } catch (error) {
@@ -1541,14 +1729,16 @@ async function main() {
     filesToProcess = filterFiles(sourceFiles, config, DOCS_DIR);
 
     if (filesToProcess.length === 0) {
-      console.error('\n❌ No files match the specified filter.');
+      console.error("\n❌ No files match the specified filter.");
       process.exit(1);
     }
 
-    console.log(`\n📦 Processing ${filesToProcess.length} file${filesToProcess.length !== 1 ? 's' : ''} in batch mode\n`);
+    console.log(
+      `\n📦 Processing ${filesToProcess.length} file${filesToProcess.length !== 1 ? "s" : ""} in batch mode\n`,
+    );
   }
 
-  console.log('='.repeat(60));
+  console.log("=".repeat(60));
 
   // Process files
   let successCount = 0;
@@ -1566,22 +1756,24 @@ async function main() {
 
   // Save manifests
   mkdirSync(dirname(MANIFEST_PATH), { recursive: true });
-  writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
+  writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + "\n");
 
-  const staticManifestPath = join(STATIC_OUTPUT_DIR, 'manifest.json');
+  const staticManifestPath = join(STATIC_OUTPUT_DIR, "manifest.json");
   mkdirSync(dirname(staticManifestPath), { recursive: true });
-  writeFileSync(staticManifestPath, JSON.stringify(manifest, null, 2) + '\n');
+  writeFileSync(staticManifestPath, JSON.stringify(manifest, null, 2) + "\n");
 
   // Summary
-  console.log('\n' + '='.repeat(60));
-  console.log('✨ Generation complete!');
-  console.log(`   Success: ${successCount} file${successCount !== 1 ? 's' : ''}`);
+  console.log("\n" + "=".repeat(60));
+  console.log("✨ Generation complete!");
+  console.log(
+    `   Success: ${successCount} file${successCount !== 1 ? "s" : ""}`,
+  );
   if (errorCount > 0) {
-    console.log(`   Errors: ${errorCount} file${errorCount !== 1 ? 's' : ''}`);
+    console.log(`   Errors: ${errorCount} file${errorCount !== 1 ? "s" : ""}`);
   }
   console.log(`📋 Manifest: ${MANIFEST_PATH}`);
   console.log(`🌐 Static manifest: ${staticManifestPath}`);
-  console.log('='.repeat(60));
+  console.log("=".repeat(60));
 
   if (errorCount > 0) {
     process.exit(1);
@@ -1589,7 +1781,7 @@ async function main() {
 }
 
 // Run
-main().catch(error => {
-  console.error('\n💥 Fatal error:', error);
+main().catch((error) => {
+  console.error("\n💥 Fatal error:", error);
   process.exit(1);
 });
