@@ -13,6 +13,62 @@
   max-width: 95%;
 }
 
+/* Compact view for homepage preview */
+.compactView {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: stretch;
+  padding: 1rem;
+}
+
+.compactBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border: 2px solid;
+  background: var(--ifm-background-surface-color);
+  min-width: 100px;
+}
+
+.compactBadge.high {
+  border-color: var(--visual-capability);
+}
+
+.compactBadge.medium {
+  border-color: var(--visual-limitation);
+}
+
+.compactBadge.low {
+  border-color: var(--visual-error);
+}
+
+.compactIcon {
+  font-size: 1.75rem;
+}
+
+.compactLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.compactBadge.high .compactLabel {
+  color: var(--visual-capability);
+}
+
+.compactBadge.medium .compactLabel {
+  color: var(--visual-limitation);
+}
+
+.compactBadge.low .compactLabel {
+  color: var(--visual-error);
+}
+
 .tableWrapper {
   overflow-x: auto;
   margin-bottom: 1.5rem;

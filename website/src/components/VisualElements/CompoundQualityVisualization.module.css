@@ -274,6 +274,38 @@
 }
 
 /* ========================================================================
+   HOMEPAGE MODE - High contrast on purple background
+   ======================================================================== */
+
+.sideLabelHomepage {
+  font-size: 1.7rem;
+}
+
+.homepageAxis {
+  stroke: var(--ifm-color-emphasis-900);
+}
+
+.homepageAxisLabel {
+  fill: var(--ifm-color-emphasis-900);
+}
+
+.homepageStartPoint {
+  fill: var(--ifm-color-emphasis-900);
+}
+
+[data-theme='dark'] .homepageAxis {
+  stroke: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme='dark'] .homepageAxisLabel {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='dark'] .homepageStartPoint {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+/* ========================================================================
    DARK MODE OPTIMIZATIONS
    ======================================================================== */
 

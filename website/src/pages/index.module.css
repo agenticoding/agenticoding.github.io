@@ -9,9 +9,73 @@
 
 .heroBanner {
   padding: 4rem 0 3rem;
-  text-align: center;
   position: relative;
   overflow: hidden;
+}
+
+.heroSplit {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 3rem;
+  align-items: center;
+  text-align: left;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.heroCodeWrapper {
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.heroCodeHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #3d3d3d;
+}
+
+.codeHeaderDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f56;
+}
+
+.codeHeaderDot:nth-child(2) {
+  background: #ffbd2e;
+}
+
+.codeHeaderDot:nth-child(3) {
+  background: #27ca40;
+}
+
+.codeHeaderTitle {
+  margin-left: 8px;
+  font-size: 0.8rem;
+  color: #999;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+}
+
+.heroCodeBlock {
+  margin: 0;
+  padding: 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #d4d4d4;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+  background: transparent;
 }
 
 .heroAudience {
@@ -59,6 +123,19 @@
     padding: 2rem 1rem;
   }
 
+  .heroSplit {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .heroContent {
+    align-items: center;
+  }
+
+  .heroCodeWrapper {
+    max-width: 100%;
+  }
+
   .heroMeta {
     font-size: 0.85rem;
   }
@@ -69,7 +146,6 @@
    ======================================================================== */
 
 .modulesSection,
-.whySection,
 .prerequisitesSection,
 .ctaSection {
   padding: 3rem 0;
@@ -169,42 +245,6 @@
   left: 0;
   color: var(--ifm-color-primary);
   font-weight: 700;
-}
-
-/* ========================================================================
-   WHY THIS COURSE - REASON CARDS
-   ======================================================================== */
-
-.reasonsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin: 0 auto;
-  max-width: 1200px;
-}
-
-.reasonCard {
-  text-align: center;
-  padding: 2rem 1.5rem;
-}
-
-.reasonIcon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  line-height: 1;
-}
-
-.reasonTitle {
-  font-size: 1.25rem;
-  margin-bottom: 0.75rem;
-  font-weight: 700;
-}
-
-.reasonDescription {
-  font-size: 0.95rem;
-  color: var(--ifm-color-emphasis-700);
-  line-height: 1.6;
-  margin: 0;
 }
 
 /* ========================================================================
@@ -331,8 +371,7 @@
    ======================================================================== */
 
 @media screen and (max-width: 768px) {
-  .modulesGrid,
-  .reasonsGrid {
+  .modulesGrid {
     grid-template-columns: 1fr;
   }
 
@@ -347,9 +386,5 @@
 
   .moduleCard {
     padding: 1.5rem;
-  }
-
-  .reasonCard {
-    padding: 1.5rem 1rem;
   }
 }

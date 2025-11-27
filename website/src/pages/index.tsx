@@ -4,25 +4,55 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import CourseVisualsShowcase from '../components/HomepageVisualPreview';
 
 import styles from './index.module.css';
+
+const heroCodeExample = `Debug the failing test in UserService.test.ts:
+
+INVESTIGATE:
+1. Read the test file, identify which assertion fails
+2. Trace code path through UserService
+3. Examine error messages and stack traces
+
+ANALYZE:
+4. Compare expected vs actual behavior
+5. Identify the root cause
+
+Provide conclusions with evidence:
+- File paths and line numbers (\`src/auth/jwt.ts:45-67\`)
+- Actual values from code (\`timeout: 3000\`)
+- Specific function names (\`validateToken()\`)`;
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
-        </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <p className={styles.heroAudience}>
-          For experienced engineers with 3+ years professional experience
-        </p>
-        <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/docs">
-            Start Learning
-          </Link>
+      <div className={clsx('container', styles.heroSplit)}>
+        <div className={styles.heroContent}>
+          <Heading as="h1" className="hero__title">
+            {siteConfig.title}
+          </Heading>
+          <p className="hero__subtitle">{siteConfig.tagline}</p>
+          <p className={styles.heroAudience}>
+            For experienced engineers with 3+ years professional experience
+          </p>
+          <div className={styles.buttons}>
+            <Link className="button button--secondary button--lg" to="/docs">
+              Start Learning
+            </Link>
+          </div>
+        </div>
+        <div className={styles.heroCodeWrapper}>
+          <div className={styles.heroCodeHeader}>
+            <span className={styles.codeHeaderDot} />
+            <span className={styles.codeHeaderDot} />
+            <span className={styles.codeHeaderDot} />
+            <span className={styles.codeHeaderTitle}>prompt.md</span>
+          </div>
+          <pre className={styles.heroCodeBlock}>
+            <code>{heroCodeExample}</code>
+          </pre>
         </div>
       </div>
     </header>
@@ -58,9 +88,9 @@ function CourseModules() {
       number: 1,
       title: 'Understanding the Tools',
       topics: [
-        'How LLMs and agents work',
-        'Capabilities and limitations',
-        'Context windows and grounding',
+        'LLM internals: context, attention, token limits',
+        'What breaks: hallucinations, code drift, refactoring',
+        'Context management and RAG integration',
       ],
       link: '/docs/understanding-the-tools/lesson-1-intro',
     },
@@ -68,9 +98,9 @@ function CourseModules() {
       number: 2,
       title: 'Methodology',
       topics: [
-        'Systematic prompting approaches',
-        'Grounding techniques',
-        'Workflow design patterns',
+        'Prompt structure: constraints, examples, chain-of-thought',
+        'Grounding: embedding context that persists',
+        'Iteration patterns: plan, execute, verify',
       ],
       link: '/docs/methodology/lesson-3-high-level-methodology',
     },
@@ -78,9 +108,9 @@ function CourseModules() {
       number: 3,
       title: 'Practical Techniques',
       topics: [
-        'Production workflows',
-        'Code review and testing',
-        'Debugging and refactoring',
+        'CI integration and automated review patterns',
+        'Test generation and coverage strategies',
+        'Debugging sessions: when AI makes it worse',
       ],
       link: '/docs/practical-techniques/lesson-6-project-onboarding',
     },
@@ -95,56 +125,6 @@ function CourseModules() {
         <div className={styles.modulesGrid}>
           {modules.map((module) => (
             <ModuleCard key={module.number} {...module} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function WhyThisCourse() {
-  const reasons = [
-    {
-      icon: '🏢',
-      title: 'Enterprise Proven',
-      description:
-        'Battle-tested methodologies validated in production with million+ LOC codebases at scale',
-    },
-    {
-      icon: '⚡',
-      title: 'Production Scale',
-      description:
-        'Patterns proven on large-scale enterprise systems, not academic demos or toy examples',
-    },
-    {
-      icon: '🎯',
-      title: 'Architecture at Scale',
-      description:
-        'System design decisions, scalability patterns, security, and performance for real-world complexity',
-    },
-    {
-      icon: '🤝',
-      title: 'Team Ready',
-      description:
-        'Workflows that work for both solo developers and engineering teams in production environments',
-    },
-  ];
-
-  return (
-    <section className={styles.whySection}>
-      <div className="container">
-        <Heading as="h2" className={styles.sectionTitle}>
-          Why This Course
-        </Heading>
-        <div className={styles.reasonsGrid}>
-          {reasons.map((reason, index) => (
-            <div key={index} className={styles.reasonCard}>
-              <div className={styles.reasonIcon}>{reason.icon}</div>
-              <Heading as="h3" className={styles.reasonTitle}>
-                {reason.title}
-              </Heading>
-              <p className={styles.reasonDescription}>{reason.description}</p>
-            </div>
           ))}
         </div>
       </div>
@@ -233,8 +213,8 @@ export default function Home(): ReactNode {
     >
       <HomepageHeader />
       <main>
+        <CourseVisualsShowcase />
         <CourseModules />
-        <WhyThisCourse />
         <Prerequisites />
         <FinalCTA />
       </main>

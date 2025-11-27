@@ -11,7 +11,8 @@ interface IterationPoint {
 
 export default function CompoundQualityVisualization({
   compact = false,
-}: PresentationAwareProps = {}) {
+  homepageMode = false,
+}: PresentationAwareProps & { homepageMode?: boolean } = {}) {
   const containerClassName = compact
     ? `${styles.container} ${styles.compact}`
     : styles.container;
@@ -200,19 +201,20 @@ export default function CompoundQualityVisualization({
             y1="50"
             x2={startX}
             y2={height - 50}
-            stroke="var(--ifm-color-emphasis-300)"
+            className={homepageMode ? styles.homepageAxis : undefined}
+            stroke={homepageMode ? undefined : 'var(--ifm-color-emphasis-300)'}
             strokeWidth="2"
             strokeDasharray="4 4"
           />
           <text
             x={startX - 15}
-            y="30"
-            className={styles.axisLabel}
+            y="45"
+            className={`${styles.axisLabel} ${homepageMode ? styles.homepageAxisLabel : ''}`}
             textAnchor="middle"
             fontSize="11"
             fontWeight="600"
-            fill="var(--ifm-color-emphasis-600)"
-            transform={`rotate(-90, ${startX - 15}, 30)`}
+            fill={homepageMode ? undefined : 'var(--ifm-color-emphasis-600)'}
+            transform={`rotate(-90, ${startX - 15}, 45)`}
           >
             Code Quality
           </text>
@@ -221,11 +223,11 @@ export default function CompoundQualityVisualization({
           <text
             x={width / 2}
             y={height - 15}
-            className={styles.axisLabel}
+            className={`${styles.axisLabel} ${homepageMode ? styles.homepageAxisLabel : ''}`}
             textAnchor="middle"
             fontSize="11"
             fontWeight="600"
-            fill="var(--ifm-color-emphasis-600)"
+            fill={homepageMode ? undefined : 'var(--ifm-color-emphasis-600)'}
           >
             Time / Iterations →
           </text>
@@ -235,18 +237,19 @@ export default function CompoundQualityVisualization({
             cx={startX}
             cy={centerY}
             r="7"
-            fill="var(--ifm-color-emphasis-700)"
+            className={homepageMode ? styles.homepageStartPoint : undefined}
+            fill={homepageMode ? undefined : 'var(--ifm-color-emphasis-700)'}
             stroke="var(--ifm-background-color)"
             strokeWidth="2"
           />
           <text
             x={startX - 35}
             y={centerY + 5}
-            className={styles.startLabel}
+            className={`${styles.startLabel} ${homepageMode ? styles.homepageStartPoint : ''}`}
             textAnchor="middle"
             fontSize="11"
             fontWeight="600"
-            fill="var(--ifm-color-emphasis-700)"
+            fill={homepageMode ? undefined : 'var(--ifm-color-emphasis-700)'}
           >
             Start
           </text>
@@ -287,9 +290,8 @@ export default function CompoundQualityVisualization({
           <text
             x={width / 2}
             y="60"
-            className={`${styles.sideLabel} ${styles.sideLabelPositive}`}
+            className={`${styles.sideLabel} ${styles.sideLabelPositive} ${homepageMode ? styles.sideLabelHomepage : ''}`}
             textAnchor="middle"
-            fontSize="11"
             fontWeight="600"
             fill="var(--visual-capability)"
           >
@@ -300,9 +302,8 @@ export default function CompoundQualityVisualization({
           <text
             x={width / 2}
             y={height - 60}
-            className={`${styles.sideLabel} ${styles.sideLabelNegative}`}
+            className={`${styles.sideLabel} ${styles.sideLabelNegative} ${homepageMode ? styles.sideLabelHomepage : ''}`}
             textAnchor="middle"
-            fontSize="11"
             fontWeight="600"
             fill="var(--visual-error)"
           >

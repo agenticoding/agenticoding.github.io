@@ -120,6 +120,27 @@
   font-size: 52px;
 }
 
+/* Vertical Layout - Subtle preview aesthetic */
+.container.vertical .contextBox {
+  stroke-width: 1.5;
+}
+
+.container.vertical .arrow {
+  stroke-width: 1.5;
+}
+
+.container.vertical .contextTitle {
+  font-size: 14px;
+  font-weight: 500;
+  fill: var(--ifm-color-emphasis-600);
+}
+
+.container.vertical .contextLabel {
+  font-size: 18px;
+  font-weight: 600;
+  fill: var(--ifm-color-emphasis-700);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
