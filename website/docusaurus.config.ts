@@ -39,6 +39,15 @@ const config: Config = {
     },
   ],
 
+  // Analytics
+  scripts: [
+    {
+      src: 'https://cloud.umami.is/script.js',
+      defer: true,
+      'data-website-id': 'a4797962-f344-4828-8278-8bf6dff239bb',
+    },
+  ],
+
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'ofriw', // Usually your GitHub org/user name.
