@@ -104,10 +104,6 @@ Requirements: None (static binary). Optional: clipboard support via xclip/xsel o
 
 **Trade-offs:** Slightly slower than plain cat due to syntax highlighting overhead (negligible for typical use). Requires Nerd Font or compatible font for icon support in some terminal setups. Syntax highlighter is opinionated—custom language definitions require configuration rather than built-in extensibility.
 
-**vs cat:** Adds syntax highlighting and line numbers automatically without additional piping. Better for code inspection; cat remains faster for raw text piping to other commands.
-
-**vs less with syntax plugins:** bat is simpler—no paging required for most files (output fits terminal), no plugin configuration needed for basic usage. Trade: less offers interactive scrolling and searching for large files where bat defaults to paging.
-
 **Installation:**
 
 ```bash
@@ -121,6 +117,39 @@ cargo install bat
 sudo apt install bat        # Debian/Ubuntu
 sudo pacman -S bat         # Arch
 ```
+
+## Git Operations
+
+### lazygit
+
+![lazygit TUI showing staging, committing, and pushing workflow](https://github.com/jesseduffield/lazygit/raw/assets/demo/commit_and_push-compressed.gif)
+
+[**lazygit**](https://github.com/jesseduffield/lazygit) is a Go-based Git TUI (terminal user interface) for visual branch management, interactive staging, and commit navigation. Cross-platform with extensive customization options.
+
+**Key differentiators:** Visual branch tree shows repository topology without command memorization. Interactive staging supports hunk selection and individual line staging. Commit navigation browses history with inline diffs. Customizable keybindings via YAML config. Mouse support for clicking to select, scrolling through commits. Multi-worktree awareness for parallel branch development.
+
+**Best suited for:** Developers managing multi-worktree workflows who need visual branch context. Engineers doing complex interactive rebases, cherry-picks, and merges. Users wanting git discoverability via menu-driven interface instead of command memorization.
+
+**Trade-offs:** Performance degrades on massive repositories (Linux kernel: 57s load time, 2.6GB RAM usage). Not a replacement for all git commands—some operations faster via raw CLI. Learning curve for keybindings, though discoverable via built-in help menu.
+
+**Installation:**
+
+```bash
+# macOS
+brew install lazygit
+
+# Go
+go install github.com/jesseduffield/lazygit@latest
+
+# Windows
+scoop install lazygit
+
+# Linux package managers
+sudo apt install lazygit     # Debian/Ubuntu
+sudo pacman -S lazygit       # Arch
+```
+
+Requirements: git. Optional: custom config in `~/.config/lazygit/config.yml`.
 
 ## File Navigation
 
@@ -310,75 +339,6 @@ cargo install zellij
 sudo pacman -S zellij       # Arch
 # Others: check https://zellij.dev/documentation/installation
 ```
-
-## Shell History
-
-### Atuin
-
-![Atuin shell history search showing exit codes, duration, and timestamps](https://github.com/atuinsh/atuin/raw/main/demo.gif)
-
-[**Atuin**](https://atuin.sh/) is a Rust-based shell history tool that replaces Ctrl+R with searchable command history backed by SQLite. Cross-platform (macOS, Linux, BSD), actively maintained, production-ready.
-
-**Key differentiators:** Full-text search across command history with filtering by directory, exit code, execution duration, and session. Multi-line command support preserves complex agent invocations (cargo runs, docker commands, multi-step pipelines). Local SQLite database works completely offline—cloud sync is optional and self-hostable. Statistics command (`atuin stats`) provides command usage analytics by directory and frequency. Shell integrations (bash, zsh, fish, nushell) with configurable keybindings beyond Ctrl+R. Fuzzy searching with context preview shows command output and metadata.
-
-**Best suited for:** Engineers managing multi-agent workflows who need to recall complex, multi-line invocations from previous sessions. Developers switching between directories and projects who benefit from directory-scoped history filtering. Teams wanting to share sanitized command history patterns across machines without cloud dependency.
-
-**Trade-offs:** Requires database migration from shell's native history format (one-time import). Fuzzy search interface differs from traditional Ctrl+R—learning curve for muscle memory. Cloud sync adds latency on slow connections, but works perfectly offline with local SQLite—sync is entirely optional and not required for core functionality. Self-hosting option available for privacy-conscious teams.
-
-**vs McFly:** Both support multi-line commands and fuzzy searching. Atuin offers better analytics (`atuin stats`) and offline-first design. McFly focused on scoring frequently used commands; Atuin balances frecency with richer filtering.
-
-**vs Ctrl+R:** Interactive fuzzy search and filtering (by directory, exit code, duration) replaces linear history search. Preserves complex multi-line commands instead of truncating. Cross-machine sync optional, unlike shell history's single-machine scope.
-
-**vs fzf history integration:** fzf provides general-purpose fuzzy selection; Atuin specializes in command history with shell-aware parsing and rich metadata. Atuin's database enables analytics—fzf works on flat history lists. Can use both: fzf for general file selection, Atuin for command recall.
-
-**Installation:**
-
-```bash
-# macOS
-brew install atuin
-
-# Cargo (Rust)
-cargo install atuin
-
-# Linux package managers
-sudo apt install atuin        # Debian/Ubuntu
-sudo pacman -S atuin          # Arch
-```
-
-Requirements: Rust 1.70+ if building from source. Optional: cloud sync account for cross-machine history (local-only operation fully supported without account).
-
-## Git Operations
-
-### lazygit
-
-![lazygit TUI showing staging, committing, and pushing workflow](https://github.com/jesseduffield/lazygit/raw/assets/demo/commit_and_push-compressed.gif)
-
-[**lazygit**](https://github.com/jesseduffield/lazygit) is a Go-based Git TUI (terminal user interface) for visual branch management, interactive staging, and commit navigation. Cross-platform with extensive customization options.
-
-**Key differentiators:** Visual branch tree shows repository topology without command memorization. Interactive staging supports hunk selection and individual line staging. Commit navigation browses history with inline diffs. Customizable keybindings via YAML config. Mouse support for clicking to select, scrolling through commits. Multi-worktree awareness for parallel branch development.
-
-**Best suited for:** Developers managing multi-worktree workflows who need visual branch context. Engineers doing complex interactive rebases, cherry-picks, and merges. Users wanting git discoverability via menu-driven interface instead of command memorization.
-
-**Trade-offs:** Performance degrades on massive repositories (Linux kernel: 57s load time, 2.6GB RAM usage). Not a replacement for all git commands—some operations faster via raw CLI. Learning curve for keybindings, though discoverable via built-in help menu.
-
-**Installation:**
-
-```bash
-# macOS
-brew install lazygit
-
-# Go
-go install github.com/jesseduffield/lazygit@latest
-
-# Windows
-scoop install lazygit
-
-# Linux package managers
-sudo apt install lazygit     # Debian/Ubuntu
-sudo pacman -S lazygit       # Arch
-```
-
-Requirements: git. Optional: custom config in `~/.config/lazygit/config.yml`.
 
 ---
 
