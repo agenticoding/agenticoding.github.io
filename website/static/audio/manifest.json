@@ -73,11 +73,11 @@
   },
   "methodology/lesson-3-high-level-methodology.md": {
     "audioUrl": "/audio/methodology/lesson-3-high-level-methodology.wav",
-    "size": 33213782,
+    "size": 19994582,
     "format": "audio/wav",
-    "tokenCount": 2321,
+    "tokenCount": 2092,
     "chunks": 3,
-    "generatedAt": "2025-11-08T08:31:05.297Z",
+    "generatedAt": "2025-12-09T09:02:40.223Z",
     "scriptSource": "methodology/lesson-3-high-level-methodology.md"
   },
   "methodology/lesson-4-prompting-101.md": {
@@ -100,11 +100,11 @@
   },
   "practical-techniques/lesson-11-agent-friendly-code.md": {
     "audioUrl": "/audio/practical-techniques/lesson-11-agent-friendly-code.wav",
-    "size": 21401416,
+    "size": 23668936,
     "format": "audio/wav",
-    "tokenCount": 1452,
+    "tokenCount": 1617,
     "chunks": 2,
-    "generatedAt": "2025-11-26T07:40:08.172Z",
+    "generatedAt": "2025-12-09T10:00:10.431Z",
     "scriptSource": "practical-techniques/lesson-11-agent-friendly-code.md"
   }
 }

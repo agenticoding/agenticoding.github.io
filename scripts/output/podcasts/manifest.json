@@ -7,9 +7,9 @@
   },
   "methodology/lesson-3-high-level-methodology.md": {
     "scriptPath": "methodology/lesson-3-high-level-methodology.md",
-    "size": 11549,
-    "tokenCount": 2811,
-    "generatedAt": "2025-11-08T08:22:49.205Z"
+    "size": 10394,
+    "tokenCount": 2521,
+    "generatedAt": "2025-12-09T08:56:15.283Z"
   },
   "practical-techniques/lesson-10-debugging.md": {
     "scriptPath": "practical-techniques/lesson-10-debugging.md",
@@ -67,8 +67,8 @@
   },
   "practical-techniques/lesson-11-agent-friendly-code.md": {
     "scriptPath": "practical-techniques/lesson-11-agent-friendly-code.md",
-    "size": 7452,
-    "tokenCount": 1787,
-    "generatedAt": "2025-11-26T07:34:39.155Z"
+    "size": 8251,
+    "tokenCount": 1983,
+    "generatedAt": "2025-12-09T09:53:20.989Z"
   }
 }

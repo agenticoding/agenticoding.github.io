@@ -75,5 +75,12 @@
     "estimatedDuration": "35-45 minutes",
     "title": "Understanding Agents",
     "generatedAt": "2025-11-11T06:55:59.738Z"
+  },
+  "practical-techniques/lesson-11-agent-friendly-code.md": {
+    "presentationUrl": "/presentations/practical-techniques/lesson-11-agent-friendly-code.json",
+    "slideCount": 11,
+    "estimatedDuration": "30-40 minutes",
+    "title": "Agent-Friendly Code",
+    "generatedAt": "2025-12-09T08:48:02.227Z"
   }
 }
