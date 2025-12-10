@@ -232,6 +232,38 @@ export default function CompoundQualityVisualization({
             Time / Iterations →
           </text>
 
+          {/* Negative curve fill area */}
+          <path
+            d={`${negativeCurvePath} L ${endX} ${centerY} L ${startX} ${centerY} Z`}
+            fill="url(#negativeFill)"
+          />
+
+          {/* Positive curve fill area */}
+          <path
+            d={`${positiveCurvePath} L ${endX} ${centerY} L ${startX} ${centerY} Z`}
+            fill="url(#positiveFill)"
+          />
+
+          {/* Negative curve path */}
+          <path
+            d={negativeCurvePath}
+            className={styles.curvePathNegative}
+            fill="none"
+            stroke="url(#negativeGradient)"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+
+          {/* Positive curve path */}
+          <path
+            d={positiveCurvePath}
+            className={styles.curvePathPositive}
+            fill="none"
+            stroke="url(#positiveGradient)"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+
           {/* Starting point (left side where both curves begin) */}
           <circle
             cx={startX}
@@ -253,38 +285,6 @@ export default function CompoundQualityVisualization({
           >
             Start
           </text>
-
-          {/* Positive curve fill area */}
-          <path
-            d={`${positiveCurvePath} L ${endX} ${centerY} L ${startX} ${centerY} Z`}
-            fill="url(#positiveFill)"
-          />
-
-          {/* Negative curve fill area */}
-          <path
-            d={`${negativeCurvePath} L ${endX} ${centerY} L ${startX} ${centerY} Z`}
-            fill="url(#negativeFill)"
-          />
-
-          {/* Positive curve path */}
-          <path
-            d={positiveCurvePath}
-            className={styles.curvePathPositive}
-            fill="none"
-            stroke="url(#positiveGradient)"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-
-          {/* Negative curve path */}
-          <path
-            d={negativeCurvePath}
-            className={styles.curvePathNegative}
-            fill="none"
-            stroke="url(#negativeGradient)"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
 
           {/* Positive feedback label (upper area) */}
           <text
