@@ -18,11 +18,11 @@ The fundamental shift in debugging with AI is moving from "what do you think is 
 
 <EvidenceBasedDebug />
 
-## Code Inspection: Understanding Before Fixing
+## Root Cause Analysis: Understanding Before Fixing
 
-Before diving into logs or reproduction, have the agent explain the architecture and execution flow. Use conversational analysis to identify mismatches between your mental model and actual system behavior. Ask the agent to trace request paths, explain data flow, and identify potential failure points based on code structure.
+Before diving into logs or reproduction, start with **root cause analysis (RCA)**—the systematic process of identifying fundamental causes rather than treating symptoms. Have the agent explain the architecture and execution flow. Use conversational analysis to identify mismatches between your mental model and actual system behavior. Ask the agent to trace request paths, explain data flow, and identify potential failure points based on code structure.
 
-This isn't about having the agent read every line of code. Use semantic code search and research tools to find relevant components, then focus the conversation on critical paths. For example: "Trace the authentication flow from API request to database query. Where could a race condition occur?" The agent's explanation often reveals edge cases or assumptions you missed.
+This isn't about having the agent read every line of code. Use semantic code search and research tools to find relevant components, then focus the conversation on critical paths. Apply the **[5 Whys technique](https://en.wikipedia.org/wiki/Five_whys)**: don't stop at the first answer. For example: "Trace the authentication flow from API request to database query. Where could a race condition occur? _Why_ would that race condition happen? _Why_ isn't it handled?" The agent's explanation often reveals edge cases or assumptions you missed—and repeated "why" questions expose the root cause rather than surface symptoms.
 
 ## Log Analysis: AI's Superpower
 

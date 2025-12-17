@@ -45,6 +45,33 @@ const DOCS_DIR = join(__dirname, "../website/docs");
 const OUTPUT_DIR = join(__dirname, "output/presentations");
 const STATIC_OUTPUT_DIR = join(__dirname, "../website/static/presentations");
 const MANIFEST_PATH = join(OUTPUT_DIR, "manifest.json");
+const REVEAL_SLIDESHOW_PATH = join(
+  __dirname,
+  "../website/src/components/PresentationMode/RevealSlideshow.tsx",
+);
+
+/**
+ * Extract valid visual component names from RevealSlideshow.tsx
+ * Single source of truth: the VISUAL_COMPONENTS object in the renderer
+ */
+function getValidVisualComponents() {
+  const content = readFileSync(REVEAL_SLIDESHOW_PATH, "utf-8");
+  const match = content.match(
+    /const VISUAL_COMPONENTS = \{([^}]+)\}/,
+  );
+  if (!match) {
+    throw new Error(
+      "Could not find VISUAL_COMPONENTS in RevealSlideshow.tsx",
+    );
+  }
+  // Extract component names (the keys of the object)
+  const componentNames = match[1]
+    .split(",")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("//"))
+    .map((line) => line.split(":")[0].trim());
+  return componentNames;
+}
 
 // Parse command-line arguments
 function parseArgs() {
@@ -114,7 +141,8 @@ PRESENTATION STRUCTURE REQUIREMENTS:
   - Discussion prompts or questions to ask students
   - Real-world examples to reference
 ✓ DO: Preserve important code examples as slide content
-✓ DO: Identify which visual components to use (CapabilityMatrix, UShapeAttentionCurve, WorkflowCircle, GroundingComparison, ContextWindowMeter, AbstractShapesVisualization, etc.)
+✓ DO: ONLY use these registered visual components: ${getValidVisualComponents().join(", ")}
+✗ DO NOT: Invent or reference visual components not in this list
 ✓ DO: Generate exactly 4 learning objectives (no more, no less)
 ✓ DO: Keep each learning objective to 5 words or fewer - THIS IS STRICTLY ENFORCED
   - Good: "Master active context engineering" (4 words) ✓
@@ -134,7 +162,7 @@ SLIDE TYPES:
 4. **Code Comparison Slide**: Side-by-side code examples (especially for prompt examples)
 5. **Code Execution Slide**: Step-by-step visualization of execution flows (agent loops, algorithms, workflows)
 6. **Comparison Slide**: Effective vs ineffective patterns (bullet points)
-7. **Visual Slide**: Custom component (CapabilityMatrix, etc.)
+7. **Visual Slide**: ONLY when source has [VISUAL_COMPONENT: X] marker - NEVER invent components
 8. **Key Takeaway Slide**: Summary of section or lesson
 
 HANDLING CODE BLOCKS:
@@ -353,6 +381,8 @@ Example:
 - Generate a "concept" slide when you see a component marker
 
 If you see [VISUAL_COMPONENT: X] anywhere in the content, it MUST become a visual slide.
+
+CRITICAL CONSTRAINT: NEVER create a "visual" slide type unless there is an explicit [VISUAL_COMPONENT: X] marker in the source content. Do NOT invent visual components. If no marker exists, use "concept", "comparison", or "codeExecution" slide types instead.
 
 CODE EXECUTION SLIDES:
 
@@ -660,7 +690,7 @@ Like regular comparison slides, codeComparison also supports the "neutral" flag:
     {
       "type": "visual",
       "title": "Visual Component",
-      "component": "CapabilityMatrix | UShapeAttentionCurve | WorkflowCircle | GroundingComparison | ContextWindowMeter | AbstractShapesVisualization",
+      "component": "${getValidVisualComponents().join(" | ")}",
       "caption": "Description of what the visual shows",
       "speakerNotes": { ... }
     },
@@ -971,6 +1001,35 @@ function validateComponents(content, presentation) {
     rendered: renderedComponents,
     missing,
     allPresent: missing.length === 0,
+  };
+}
+
+/**
+ * Validate that visual slides reference registered components
+ * Prevents AI from inventing non-existent component names
+ * @param {object} presentation - Generated presentation object
+ * @returns {object} Validation result with invalid component references
+ */
+function validateVisualComponentsExist(presentation) {
+  const validComponents = getValidVisualComponents();
+  const visualSlides = presentation.slides.filter((s) => s.type === "visual");
+  const issues = [];
+
+  for (const slide of visualSlides) {
+    if (slide.component && !validComponents.includes(slide.component)) {
+      issues.push({
+        slide: slide.title,
+        component: slide.component,
+        reason: `Component "${slide.component}" is not registered`,
+      });
+    }
+  }
+
+  return {
+    valid: issues.length === 0,
+    issues,
+    totalVisualSlides: visualSlides.length,
+    validComponents,
   };
 }
 
@@ -1491,6 +1550,29 @@ async function generatePresentation(filePath, manifest, config) {
     // Collect validation errors instead of throwing immediately
     // This allows us to write the presentation file even when validation fails
     const validationErrors = [];
+
+    // Validate visual components exist in registry
+    // CRITICAL: This prevents AI from inventing non-existent components
+    const componentRegistryValidation =
+      validateVisualComponentsExist(presentation);
+    if (!componentRegistryValidation.valid) {
+      console.log(
+        `  ❌ BUILD FAILURE: ${componentRegistryValidation.issues.length} invalid visual component(s):`,
+      );
+      componentRegistryValidation.issues.forEach((issue) => {
+        console.log(`      - Slide "${issue.slide}": ${issue.reason}`);
+      });
+      console.log(
+        `  ℹ️  Valid components: ${componentRegistryValidation.validComponents.join(", ")}`,
+      );
+      validationErrors.push(
+        "Visual component validation failed - slides reference non-existent components",
+      );
+    } else if (componentRegistryValidation.totalVisualSlides > 0) {
+      console.log(
+        `  ✅ All ${componentRegistryValidation.totalVisualSlides} visual slide(s) reference valid components`,
+      );
+    }
 
     // Validate content array lengths (3-5 items)
     // CRITICAL: This validation is intentionally strict and throws an error because

@@ -15,6 +15,25 @@ const MIN_ITEMS = 3;
 const MAX_ITEMS = 5;
 const MAX_WORDS = 5;
 
+// Single source of truth: RevealSlideshow.tsx
+const REVEAL_SLIDESHOW_PATH = join(
+  __dirname,
+  '../website/src/components/PresentationMode/RevealSlideshow.tsx'
+);
+
+function getValidVisualComponents() {
+  const content = readFileSync(REVEAL_SLIDESHOW_PATH, 'utf-8');
+  const match = content.match(/const VISUAL_COMPONENTS = \{([^}]+)\}/);
+  if (!match) {
+    throw new Error('Could not find VISUAL_COMPONENTS in RevealSlideshow.tsx');
+  }
+  return match[1]
+    .split(',')
+    .map(line => line.trim())
+    .filter(line => line && !line.startsWith('//'))
+    .map(line => line.split(':')[0].trim());
+}
+
 function auditPresentation(filePath) {
   const content = readFileSync(filePath, 'utf-8');
   const presentation = JSON.parse(content);
@@ -108,10 +127,24 @@ function auditPresentation(filePath) {
     }
   });
 
+  // Check visual component references
+  const validComponents = getValidVisualComponents();
+  const componentViolations = [];
+  const visualSlides = presentation.slides.filter(s => s.type === 'visual');
+  for (const slide of visualSlides) {
+    if (slide.component && !validComponents.includes(slide.component)) {
+      componentViolations.push({
+        slide: slide.title,
+        component: slide.component
+      });
+    }
+  }
+
   return {
     title: presentation.metadata?.title || 'Unknown',
     violations,
     wordCountViolations,
+    componentViolations,
     totalSlides: presentation.slides.length
   };
 }
@@ -136,11 +169,13 @@ function main() {
   console.log('Checking:');
   console.log('  • Content arrays (3-5 items rule)');
   console.log('  • Takeaway word counts (5 words max)');
-  console.log('  • Learning objectives word counts (5 words max)\n');
+  console.log('  • Learning objectives word counts (5 words max)');
+  console.log('  • Visual component references (must be registered)\n');
 
   const results = [];
   let totalViolations = 0;
   let totalWordCountViolations = 0;
+  let totalComponentViolations = 0;
 
   for (const file of files) {
     const filePath = join(presentationsDir, file);
@@ -150,8 +185,9 @@ function main() {
 
       const hasViolations = result.violations.length > 0;
       const hasWordViolations = result.wordCountViolations.length > 0;
+      const hasComponentViolations = result.componentViolations.length > 0;
 
-      if (hasViolations || hasWordViolations) {
+      if (hasViolations || hasWordViolations || hasComponentViolations) {
         console.log(`❌ ${file}`);
         console.log(`   Title: ${result.title}`);
 
@@ -183,6 +219,14 @@ function main() {
           });
         }
 
+        if (hasComponentViolations) {
+          totalComponentViolations += result.componentViolations.length;
+          console.log(`   Invalid visual components (${result.componentViolations.length}):`);
+          result.componentViolations.forEach(v => {
+            console.log(`   - Slide "${v.slide}": component "${v.component}" is not registered`);
+          });
+        }
+
         console.log('');
       }
     } catch (error) {
@@ -192,7 +236,9 @@ function main() {
 
   // Summary
   console.log('═══════════════════════════════════════════════════════════');
-  const violatingFiles = results.filter(r => r.violations.length > 0 || r.wordCountViolations.length > 0);
+  const violatingFiles = results.filter(r =>
+    r.violations.length > 0 || r.wordCountViolations.length > 0 || r.componentViolations.length > 0
+  );
 
   if (violatingFiles.length === 0) {
     console.log('✅ All presentations pass validation!');
@@ -202,15 +248,18 @@ function main() {
     console.log(`Files with violations: ${violatingFiles.length}`);
     console.log(`  • Content array violations: ${totalViolations}`);
     console.log(`  • Word count violations: ${totalWordCountViolations}`);
-    console.log(`  • Total: ${totalViolations + totalWordCountViolations}\n`);
+    console.log(`  • Invalid component violations: ${totalComponentViolations}`);
+    console.log(`  • Total: ${totalViolations + totalWordCountViolations + totalComponentViolations}\n`);
     console.log('Files needing regeneration:');
     violatingFiles.forEach(r => {
       const arrayViolations = r.violations.length;
       const wordViolations = r.wordCountViolations.length;
-      const total = arrayViolations + wordViolations;
+      const compViolations = r.componentViolations.length;
+      const total = arrayViolations + wordViolations + compViolations;
       const details = [];
       if (arrayViolations > 0) details.push(`${arrayViolations} array`);
       if (wordViolations > 0) details.push(`${wordViolations} word`);
+      if (compViolations > 0) details.push(`${compViolations} component`);
       console.log(`  - ${r.file} (${total} total: ${details.join(', ')})`);
     });
   }

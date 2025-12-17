@@ -10,11 +10,11 @@
   },
   "practical-techniques/lesson-10-debugging.md": {
     "audioUrl": "/audio/practical-techniques/lesson-10-debugging.wav",
-    "size": 33557462,
+    "size": 29131862,
     "format": "audio/wav",
-    "tokenCount": 2096,
+    "tokenCount": 1849,
     "chunks": 3,
-    "generatedAt": "2025-12-12T08:54:37.423Z",
+    "generatedAt": "2025-12-16T07:10:06.505Z",
     "scriptSource": "practical-techniques/lesson-10-debugging.md"
   },
   "practical-techniques/lesson-6-project-onboarding.md": {
