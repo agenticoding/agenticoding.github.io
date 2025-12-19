@@ -102,7 +102,7 @@ function HomepageHeader() {
               )}
             </a>
             <Heading as="h1" className="hero__title">
-              A Methodology for AI-First Development
+              Master Agentic Coding
             </Heading>
             <p className="hero__subtitle">
               Structured methodology proven on enterprise mono-repos with
@@ -683,8 +683,8 @@ function LearningFormats() {
 export default function Home(): ReactNode {
   return (
     <Layout
-      title="A Methodology for AI-first Development"
-      description="Structured methodology for AI-first coding proven on enterprise mono-repos with millions of lines of code. Free, MIT licensed, with podcasts, slides, and production-ready prompts."
+      title="Master Agentic Coding"
+      description="Master agentic coding with a structured methodology proven on enterprise mono-repos. Free, MIT licensed, with podcasts, slides, and production-ready prompts."
     >
       <HomepageHeader />
       <main>

@@ -6,7 +6,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Agentic Coding',
-  tagline: 'Master AI-assisted software engineering for experienced developers',
+  tagline: 'A structured methodology for agentic development',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
