@@ -17,11 +17,11 @@ const sidebars: SidebarsConfig = {
     'intro',
     {
       type: 'category',
-      label: 'Understanding the Tools',
+      label: 'Fundamentals',
       collapsed: false,
       items: [
-        'understanding-the-tools/lesson-1-intro',
-        'understanding-the-tools/lesson-2-understanding-agents',
+        'fundamentals/lesson-1-how-llms-work',
+        'fundamentals/lesson-2-how-agents-work',
       ],
     },
     {
