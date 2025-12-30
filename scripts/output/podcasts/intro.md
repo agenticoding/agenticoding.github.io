@@ -7,79 +7,65 @@ speakers:
   - name: Sam
     role: Senior Engineer
     voice: Charon
-generatedAt: 2025-12-21T12:23:17.140Z
+generatedAt: 2025-12-30T13:21:26.115Z
 model: claude-opus-4.5
-tokenCount: 1504
+tokenCount: 1535
 ---
 
-Alex: Welcome to Agentic Coding. I'm Alex, and with me is Sam. We're going to teach you how to actually operate AI coding assistants in production—not the demo version, the real thing.
+Alex: Welcome to Agentic Coding. I'm Alex, and joining me is Sam. We're here to talk about something that's become impossible to ignore in 2025—AI coding assistants and why most engineers are using them wrong.
 
-Sam: Before we dive in, I have to point out something a bit meta here. This script we're reading? It was generated using Claude Code and the exact techniques we're about to teach.
+Sam: Before we dive in, I have to point out something a bit recursive here. This course, including the script we're reading right now, was developed using the exact AI-assisted techniques we're about to teach. We're AI-generated voices reading an AI-generated script about how to work with AI.
 
-Alex: Right, and the audio you're hearing is synthesized through Google's Gemini API. So you've got AI-generated voices reading an AI-generated script about how to use AI effectively.
+Alex: It's meta, I know. But that's actually the point. If these techniques can produce production-grade training material about their own application, they're robust enough for your codebase. Consider it validation, not just instruction.
 
-Sam: There's something almost absurd about that recursion. AI teaching humans how to use AI, using AI.
+Sam: Fair enough. So let's get into the actual problem. What's going wrong out there?
 
-Alex: It is recursive, but here's why it matters: if these techniques can produce production-grade training material about their own application, they're robust enough for your codebase. This isn't a demo. It's validation. Now, let's get into it.
+Alex: The numbers tell the story. Over 77,000 organizations have adopted GitHub Copilot. 51% of developers use AI tools daily. Companies are shipping features faster. Peer-reviewed research shows baseline efficiency gains over 55%, and practitioners with proper methodology—including the author of this course—report 10x improvements. The technology works.
 
-Sam: So what's the actual problem we're solving here? AI coding assistants are everywhere in 2025. Companies are shipping faster, engineers are claiming 10x productivity gains. But most developers I know hit a wall within weeks.
+Sam: But there's a catch, right? I've seen the frustration firsthand.
 
-Alex: The problem isn't the tools. It's the operating model. Most engineers treat AI agents like junior developers—waiting for them to "understand," fixing their code line-by-line, fighting context limits. That mental model is fundamentally wrong.
+Alex: 66% of developers say AI solutions are "almost right, but not quite." Only 3% highly trust the output. The tools aren't the problem. The operating model is.
 
-Sam: What's the right mental model then?
+Sam: What do you mean by operating model?
 
-Alex: AI agents aren't teammates. They're CNC machines for code. Think about it—a CNC machine doesn't "understand" what you want. You give it precise specifications, it executes. If the output is wrong, you don't coach the machine, you fix your specifications.
+Alex: Most engineers treat AI agents like junior developers. They wait for the AI to "understand" the task. They fix code line-by-line. They fight context limits constantly. That's the wrong mental model entirely. AI agents aren't teammates—they're power tools. You don't wait for a power drill to understand what you want. You learn to operate it.
 
-Sam: That reframe is significant. Instead of managing a junior dev, you're operating industrial equipment.
+Sam: That reframe is significant. I've definitely fallen into the "just let it figure it out" trap.
 
-Alex: Exactly. And that's what this course is—operator training. We teach a systematic approach used in production environments. Three phases: Plan, Execute, Validate.
+Alex: And the research confirms the consequences. Developers without proper methodology are actually 19% slower with AI tools. Meanwhile, practitioners using systematic approaches report up to 10x efficiency gains. The difference is entirely operator skill.
 
-Sam: Break those down for me.
+Sam: So this course is operator training.
 
-Alex: Planning means breaking work into agent-appropriate tasks, researching architecture, grounding prompts in context. Execution is crafting precise prompts, delegating to specialized sub-agents, running operations in parallel. Validation uses tests as guardrails, reviews generated code critically, and requires evidence of correctness.
+Alex: Exactly. We teach a systematic approach used in production environments. Four phases: Research, Plan, Execute, Validate. Research means grounding agents in codebase patterns and domain knowledge before they act. Planning means designing changes strategically—exploring when you're uncertain, being directive when you're clear. Execution means running agents supervised or autonomous based on trust and task criticality. Validation means verifying against your mental model, then iterating or regenerating.
 
-Sam: That sounds like a proper engineering workflow, just with agents as the execution layer.
+Sam: Let's set expectations. What is this course not?
 
-Alex: That's precisely what it is. You're still the architect. You're still responsible for quality. But the agent handles execution at a pace you couldn't match manually.
+Alex: It's not AI theory—we cover enough internals to operate effectively, nothing more. It's not prompt templates—copying prompts doesn't work because understanding principles does. It's not a replacement for fundamentals—you still need architecture, design patterns, and system design knowledge. And it's explicitly not for beginners. If you don't have production experience, start there first.
 
-Sam: Let's be clear about what this course isn't, though. I've seen a lot of "prompt engineering" content that's basically template copying.
+Sam: Who should be listening then?
 
-Alex: This isn't that. Copying prompts doesn't work because context matters. We're teaching principles, not templates. This also isn't AI theory—we cover enough internals to operate effectively, nothing more. And critically, this isn't a replacement for fundamentals. You still need architecture knowledge, design patterns, system design. The agent amplifies your skills; it doesn't replace them.
+Alex: You're the target audience if you have three or more years of professional engineering experience. If you've already tried AI coding assistants and hit frustration points. If you want to move faster without sacrificing code quality. If you need to understand codebases, debug issues, or plan features more efficiently. And critically, if you care about production-readiness, not demos.
 
-Sam: So who's this actually for?
+Sam: How should people approach the material?
 
-Alex: Engineers with three or more years of professional experience who've already tried AI assistants and hit frustration points. People who want to move faster without sacrificing code quality. If you don't have production experience yet, go get that first. This course assumes you know how to engineer software—we're teaching you how to orchestrate agents that execute it.
+Alex: This is a reference manual, not a traditional course with exercises. I recommend reading sequentially first—Module 1 covers fundamentals and mental models, Module 2 covers methodology including prompting and grounding and workflow design, Module 3 covers practical techniques for onboarding, planning, testing, reviewing, and debugging. Then return to specific lessons as you encounter relevant situations in your actual work. The value comes from having the right mental models when you need them.
 
-Sam: What's the structure?
+Sam: What outcomes should people expect?
 
-Alex: Three modules, sequential. Module one covers fundamentals—mental models and architecture. Module two is methodology—prompting, grounding, workflow design. Module three is practical techniques—onboarding, planning, testing, reviewing, debugging. Each module builds on the previous. Don't skip ahead.
+Alex: After completing this course, you'll be able to onboard to unfamiliar codebases 5 to 10x faster using agentic research. You'll refactor complex features reliably with test-driven validation. You'll debug production issues by delegating log and database analysis to agents. You'll review code systematically with AI assistance while maintaining critical judgment. And you'll plan and execute features with parallel sub-agent delegation.
 
-Sam: And the exercises?
+Sam: What do people need to get started?
 
-Alex: Mandatory. Reading won't build operating skills. Work through the exercises on real codebases, not the toy examples we provide. You learn to operate by operating.
+Alex: Three things. First, experience—three or more years of professional software engineering. Second, tools—access to a CLI coding agent like Claude Code, OpenAI Codex, or Copilot CLI. If you haven't picked one yet, Claude Code is recommended at time of writing for its plan mode, sub-agents, slash commands, hierarchical configuration, and status bar support. Third, mindset—willingness to unlearn "AI as teammate" and adopt "AI as tool."
 
-Sam: What should engineers expect to gain by the end?
+Sam: There's something deeper here though, isn't there? Beyond just tool proficiency.
 
-Alex: Concrete capabilities. Onboard to unfamiliar codebases five to ten times faster using agentic research. Refactor complex features reliably with test-driven validation. Debug production issues by delegating log and database analysis to agents. Review code systematically with AI assistance while maintaining critical judgment. Plan and execute features with parallel sub-agent delegation.
+Alex: This course isn't really about AI. It's about rigorous engineering with tools that happen to be stochastic systems. AI agents are amplifiers—of your architectural clarity, your testing discipline, your code patterns. Good or bad, they compound what exists. Research shows AI-assisted code has 8x more duplication—not because agents create it, but because they amplify existing patterns in your codebase.
 
-Sam: That's a substantial list. But I'd argue the most valuable skill isn't on it.
+Sam: So the quality of what you put in determines what you get out.
 
-Alex: You're thinking of judgment—knowing when to use agents and when to write code yourself.
+Alex: You are the circuit breaker. Every accepted line becomes pattern context for future agents. Your engineering judgment—in review, in architecture, in pattern design—determines which direction the exponential curve bends. The tools changed. The fundamentals didn't.
 
-Sam: Exactly. That's what separates someone who's productive from someone who's fighting the tools constantly.
+Sam: Where do we start?
 
-Alex: And that judgment is what we're really teaching. The techniques are learnable. The judgment comes from understanding the underlying principles deeply enough to make good calls in novel situations.
-
-Sam: What do people need before starting?
-
-Alex: Three or more years of professional software engineering experience. Access to a CLI coding agent—Claude Code, OpenAI Codex, Copilot CLI, whatever you prefer. If you haven't picked one, Claude Code is recommended at time of writing for its plan mode, sub-agents, slash commands, hierarchical CLAUDE.md configuration, and status bar support. And most importantly, a willingness to unlearn "AI as teammate" and adopt "AI as tool."
-
-Sam: That mindset shift is probably the hardest part.
-
-Alex: It is. Engineers have spent years developing collaboration skills for working with humans. Those instincts actively interfere with operating AI effectively. You have to consciously override them.
-
-Sam: Alright. Where do we start?
-
-Alex: Lesson one: LLMs Demystified. We need to understand just enough about how these systems work to operate them effectively. Not the theory—the practical implications for your workflow.
-
-Sam: Let's get into it.
+Alex: Lesson 1: LLMs Demystified. We'll cover exactly enough about how these systems work to operate them effectively. No more, no less.

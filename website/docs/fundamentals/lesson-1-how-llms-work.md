@@ -8,12 +8,12 @@ Welcome to the future of software engineering. This course teaches you to **oper
 
 ## The Paradigm Shift
 
-Software engineering is undergoing a fundamental transformation, similar to how CNC machines and 3D printers revolutionized manufacturing.
+Software engineering is undergoing a fundamental transformation, similar to how power tools revolutionized construction.
 
-**Manufacturing transformation:**
+**Construction transformation:**
 
-- **Before CNC:** Lathe operators manually shaped every part through craftsmanship
-- **After CNC:** Operators designed parts, programmed machines, monitored execution, verified output
+- **Hand tools era:** Carpenters shaped every piece manually through craftsmanship
+- **Power tools era:** Craftsmen design projects, operate machines, verify output
 - **Result:** Massive gains in bandwidth, repeatability, and precision
 
 **Software engineering transformation:**
@@ -99,9 +99,9 @@ Understanding the machinery prevents three critical errors:
 - Reality: It's a precision instrument that speaks English
 - Your fix: Maintain tool mindset (Principle 3, covered in Lesson 3)
 
-**Analogy: LLM is to software engineers what CNC/3D printers are to mechanical engineers**
+**Analogy: LLMs are power tools for code**
 
-A CNC machine doesn't "understand" the part it's making. It executes instructions precisely. You don't get mad at it for misinterpreting vague coordinates - you provide exact specifications.
+A power tool doesn't "understand" what you're building. It executes based on how you operate it. You don't blame a circular saw for a bad cut—you adjust your technique and setup.
 
 Same with LLMs. They're tools that execute language-based instructions with impressive fluency but zero comprehension.
 

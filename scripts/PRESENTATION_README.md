@@ -207,7 +207,7 @@ Example: `website/static/presentations/intro.json`
         "AI coding assistants are production-standard in 2025",
         "Most developers hit frustration wall within weeks",
         "Wrong mental model: treating AI as junior developer",
-        "Correct model: AI agents are CNC machines for code"
+        "Correct model: AI agents are power tools for code"
       ],
       "speakerNotes": { ... }
     }

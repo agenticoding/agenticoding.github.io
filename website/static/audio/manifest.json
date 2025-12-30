@@ -1,11 +1,11 @@
 {
   "intro.md": {
     "audioUrl": "/audio/intro.wav",
-    "size": 18294856,
+    "size": 19343176,
     "format": "audio/wav",
-    "tokenCount": 1309,
+    "tokenCount": 1318,
     "chunks": 2,
-    "generatedAt": "2025-12-21T12:27:48.513Z",
+    "generatedAt": "2025-12-30T13:26:07.789Z",
     "scriptSource": "intro.md"
   },
   "practical-techniques/lesson-10-debugging.md": {
@@ -55,11 +55,11 @@
   },
   "fundamentals/lesson-1-how-llms-work.md": {
     "audioUrl": "/audio/fundamentals/lesson-1-how-llms-work.wav",
-    "size": 20391496,
+    "size": 19974856,
     "format": "audio/wav",
-    "tokenCount": 1423,
+    "tokenCount": 1390,
     "chunks": 2,
-    "generatedAt": "2025-12-12T10:16:17.082Z",
+    "generatedAt": "2025-12-30T12:45:07.216Z",
     "scriptSource": "fundamentals/lesson-1-how-llms-work.md"
   },
   "fundamentals/lesson-2-how-agents-work.md": {
