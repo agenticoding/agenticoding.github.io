@@ -11,8 +11,24 @@
 /* Compact mode for presentations */
 .container.compact {
   margin: 0 auto;
-  padding: 0.5rem;
-  max-width: 95%;
+  padding: 0;
+  max-width: 100%;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+/* Compact mode - increase text sizes for presentation readability */
+.container.compact .layerLabel {
+  font-size: 14px;
+}
+
+.container.compact .sizeLabel {
+  font-size: 14px;
+}
+
+.container.compact .codeLabel {
+  font-size: 18px;
 }
 
 @keyframes fadeIn {
@@ -220,6 +236,21 @@
 [data-theme='dark'] .layerBox,
 [data-theme='dark'] .layerBoxCode {
   fill: var(--ifm-background-color);
+}
+
+/* Reveal.js presentation dark mode */
+:global(.reveal) .layerBox,
+:global(.reveal) .layerBoxCode {
+  fill: rgba(30, 30, 50, 0.9);
+}
+
+:global(.reveal) .layerLabel,
+:global(.reveal) .codeLabel {
+  fill: #e5e7eb;
+}
+
+:global(.reveal) .sizeLabel {
+  fill: #9ca3af;
 }
 
 /* ===== RESPONSIVE ===== */
