@@ -36,7 +36,7 @@ import {
 } from "fs";
 import { join, relative, dirname, basename, extname } from "path";
 import { fileURLToPath } from "url";
-import { spawn } from "child_process";
+import { spawn, spawnSync } from "child_process";
 import * as readline from "readline";
 
 // ES module __dirname equivalent
@@ -58,6 +58,44 @@ const API_KEY =
   process.env.GOOGLE_API_KEY ||
   process.env.GEMINI_API_KEY ||
   process.env.GCP_API_KEY;
+
+/**
+ * Check if ffmpeg is available with libmp3lame support
+ */
+function checkFfmpegAvailable() {
+  const result = spawnSync("ffmpeg", ["-version"], {
+    encoding: "utf-8",
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  if (result.error || result.status !== 0) {
+    console.error(`
+Error: ffmpeg is required for MP3 conversion but was not found.
+
+Install ffmpeg with:
+  brew install ffmpeg
+
+Then run this script again.
+`);
+    process.exit(1);
+  }
+
+  // Check for libmp3lame support
+  const output = result.stdout || "";
+  if (!output.includes("--enable-libmp3lame")) {
+    console.error(`
+Error: ffmpeg is installed but lacks libmp3lame support for MP3 encoding.
+
+Reinstall ffmpeg with MP3 support:
+  brew reinstall ffmpeg
+
+Then run this script again.
+`);
+    process.exit(1);
+  }
+
+  return true;
+}
 
 // Parse command-line arguments
 function parseArgs() {
@@ -1478,6 +1516,48 @@ async function generateAudio(dialogue, outputPath, genAI) {
   };
 }
 
+/**
+ * Convert WAV file to MP3 using ffmpeg with high-quality settings
+ */
+async function convertWavToMp3(wavPath, mp3Path) {
+  return new Promise((resolve, reject) => {
+    const ffmpeg = spawn("ffmpeg", [
+      "-y", // Overwrite output file
+      "-i",
+      wavPath,
+      "-codec:a",
+      "libmp3lame",
+      "-q:a",
+      "2", // VBR quality 2 (~190 kbps) - high quality for voice
+      mp3Path,
+    ]);
+
+    let stderr = "";
+    ffmpeg.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    ffmpeg.on("close", (code) => {
+      if (code === 0) {
+        // Delete the intermediate WAV file
+        unlinkSync(wavPath);
+
+        const stats = statSync(mp3Path);
+        console.log(
+          `  🔊 Converted to MP3: ${(stats.size / 1024 / 1024).toFixed(2)} MB`,
+        );
+        resolve({ size: stats.size, format: "audio/mp3" });
+      } else {
+        reject(new Error(`ffmpeg failed with code ${code}: ${stderr}`));
+      }
+    });
+
+    ffmpeg.on("error", (err) => {
+      reject(new Error(`Failed to spawn ffmpeg: ${err.message}`));
+    });
+  });
+}
+
 // ============================================================================
 // FILE DISCOVERY AND SELECTION
 // ============================================================================
@@ -1719,32 +1799,37 @@ async function generateAudioFromScript(scriptPath, audioManifest, genAI) {
       `  📊 Estimated tokens: ${frontmatter.tokenCount || "unknown"}`,
     );
 
-    // Determine audio output path
+    // Determine audio output paths
     const relativeDir = dirname(relativePath);
-    const outputFileName = `${fileName}.wav`;
-    const outputPath = join(AUDIO_OUTPUT_DIR, relativeDir, outputFileName);
+    const wavFileName = `${fileName}.wav`;
+    const mp3FileName = `${fileName}.mp3`;
+    const wavPath = join(AUDIO_OUTPUT_DIR, relativeDir, wavFileName);
+    const mp3Path = join(AUDIO_OUTPUT_DIR, relativeDir, mp3FileName);
 
-    // Generate audio
-    const audioInfo = await generateAudio(dialog, outputPath, genAI);
+    // Generate WAV audio first
+    const wavInfo = await generateAudio(dialog, wavPath, genAI);
+
+    // Convert WAV to MP3
+    const mp3Info = await convertWavToMp3(wavPath, mp3Path);
 
     // Update manifest using the source doc path as key
-    const audioUrl = `/audio/${join(relativeDir, outputFileName)}`;
+    const audioUrl = `/audio/${join(relativeDir, mp3FileName)}`;
     audioManifest[frontmatter.source] = {
       audioUrl,
-      size: audioInfo.size,
-      format: audioInfo.format,
-      tokenCount: audioInfo.tokenCount,
-      chunks: audioInfo.chunks,
+      size: mp3Info.size,
+      format: mp3Info.format,
+      tokenCount: wavInfo.tokenCount,
+      chunks: wavInfo.chunks,
       generatedAt: new Date().toISOString(),
       scriptSource: relativePath,
     };
 
     console.log(`  ✅ Generated: ${audioUrl}`);
     console.log(
-      `  📊 Audio size: ${(audioInfo.size / 1024 / 1024).toFixed(2)} MB`,
+      `  📊 Audio size: ${(mp3Info.size / 1024 / 1024).toFixed(2)} MB`,
     );
-    if (audioInfo.chunks > 1) {
-      console.log(`  🧩 Chunks: ${audioInfo.chunks}`);
+    if (wavInfo.chunks > 1) {
+      console.log(`  🧩 Chunks: ${wavInfo.chunks}`);
     }
   } catch (error) {
     console.error(`  ❌ Error: ${error.message}`);
@@ -1810,7 +1895,7 @@ async function main() {
   console.log(`📋 Pipeline: ${config.pipeline}`);
   console.log(`📋 Mode: ${config.mode}`);
 
-  // Initialize Gemini API if needed for audio
+  // Initialize Gemini API and check ffmpeg if needed for audio
   let genAI = null;
   if (config.pipeline !== "script-only") {
     if (!API_KEY) {
@@ -1820,6 +1905,7 @@ async function main() {
       );
       process.exit(1);
     }
+    checkFfmpegAvailable();
     genAI = new GoogleGenerativeAI(API_KEY);
   }
 
