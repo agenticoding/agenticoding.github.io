@@ -1,0 +1,317 @@
+.container {
+  margin: 2.5rem auto;
+  padding: 1.25rem;
+  border-radius: 8px;
+  background: var(--visual-bg-decision);
+  border: 1px solid var(--visual-decision);
+  max-width: 480px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Compact mode for presentations */
+.container.compact {
+  margin: 0 auto;
+  padding: 0.5rem;
+  max-width: 95%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+/* ===== BOX GROUPS (Staggered fade-in) ===== */
+
+.specGroup {
+  animation: fadeInSlide 0.35s ease-out backwards;
+}
+
+.designGroup {
+  animation: fadeInSlide 0.35s ease-out 0.1s backwards;
+}
+
+.codeGroup {
+  animation: fadeInScale 0.4s ease-out 0.2s backwards;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== BOX STYLES ===== */
+
+.layerBox {
+  fill: var(--ifm-background-surface-color);
+  stroke: var(--visual-workflow);
+  stroke-width: 1.5;
+}
+
+.layerLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--ifm-font-family-base);
+  letter-spacing: 0.4px;
+}
+
+.sizeLabel {
+  fill: var(--ifm-color-emphasis-700);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+/* ===== CODE BOX (Emphasized with stronger visual weight) ===== */
+
+.layerBoxCode {
+  fill: var(--ifm-background-surface-color);
+  stroke: url(#codeGlowGradient);
+  stroke-width: 2.5;
+}
+
+.codeLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 14px;
+  font-weight: 800;
+  font-family: var(--ifm-font-family-base);
+  letter-spacing: 1.5px;
+}
+
+.codeSubtitle {
+  fill: var(--visual-capability);
+  font-size: 9px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ===== TRADITIONAL FLOW (Purple - Downward) ===== */
+
+.traditionalGroup {
+  animation: fadeIn 0.35s ease-out 0.35s backwards;
+}
+
+.arrowTraditional {
+  stroke: var(--visual-workflow);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: drawArrow 0.6s ease-out 0.4s forwards;
+}
+
+@keyframes drawArrow {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.arrowMarkerTraditional polygon {
+  fill: var(--visual-workflow);
+}
+
+.annotation {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 9px;
+  font-style: italic;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* ===== AI FLOW (Cyan - Upward) ===== */
+
+.aiGroup {
+  animation: fadeIn 0.35s ease-out 0.6s backwards;
+}
+
+.arrowAI {
+  stroke: var(--visual-capability);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: drawArrow 0.6s ease-out 0.65s forwards;
+}
+
+.arrowMarkerAI polygon {
+  fill: var(--visual-capability);
+}
+
+.annotationAI {
+  fill: var(--visual-capability);
+  font-size: 9px;
+  font-style: italic;
+  font-family: var(--ifm-font-family-base);
+  font-weight: 500;
+}
+
+/* ===== LEGEND ===== */
+
+.legend {
+  animation: fadeIn 0.3s ease-out 0.9s backwards;
+}
+
+.legendDotTraditional {
+  fill: var(--visual-workflow);
+}
+
+.legendDotAI {
+  fill: var(--visual-capability);
+}
+
+.legendText {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 9px;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* ===== DESCRIPTION ===== */
+
+.description {
+  margin: 1.25rem 0 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ifm-color-emphasis-700);
+  text-align: center;
+  padding: 0 0.75rem;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+  padding-top: 0.875rem;
+}
+
+.description strong {
+  color: var(--ifm-font-color-base);
+  font-weight: 600;
+}
+
+/* ===== DARK MODE ===== */
+
+[data-theme='dark'] .layerBox,
+[data-theme='dark'] .layerBoxCode {
+  fill: var(--ifm-background-color);
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    margin: 2rem auto;
+  }
+
+  .layerLabel {
+    font-size: 9px;
+  }
+
+  .sizeLabel {
+    font-size: 10px;
+  }
+
+  .annotation,
+  .annotationAI {
+    font-size: 8px;
+  }
+
+  .codeLabel {
+    font-size: 12px;
+  }
+
+  .codeSubtitle {
+    font-size: 8px;
+  }
+
+  .legendText {
+    font-size: 8px;
+  }
+
+  .description {
+    font-size: 0.8rem;
+    padding: 0 0.5rem;
+    padding-top: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .layerLabel {
+    font-size: 8px;
+    letter-spacing: 0;
+  }
+
+  .sizeLabel {
+    font-size: 9px;
+  }
+
+  .annotation,
+  .annotationAI {
+    font-size: 7px;
+  }
+
+  .codeLabel {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .codeSubtitle {
+    font-size: 7px;
+  }
+
+  .legendText {
+    font-size: 7px;
+  }
+
+  .description {
+    font-size: 0.75rem;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .specGroup,
+  .designGroup,
+  .codeGroup,
+  .traditionalGroup,
+  .aiGroup,
+  .legend {
+    animation: none;
+  }
+
+  .arrowTraditional,
+  .arrowAI {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}

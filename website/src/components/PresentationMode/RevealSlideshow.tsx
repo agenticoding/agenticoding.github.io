@@ -23,6 +23,7 @@ import ContextWindowMeter from '../VisualElements/ContextWindowMeter';
 import AbstractShapesVisualization from '../VisualElements/AbstractShapesVisualization';
 import PlanningStrategyComparison from '../VisualElements/PlanningStrategyComparison';
 import CompoundQualityVisualization from '../VisualElements/CompoundQualityVisualization';
+import KnowledgeExpansionDiamond from '../VisualElements/KnowledgeExpansionDiamond';
 
 interface SpeakerNotes {
   talkingPoints: string;
@@ -92,6 +93,7 @@ const VISUAL_COMPONENTS = {
   AbstractShapesVisualization,
   PlanningStrategyComparison,
   CompoundQualityVisualization,
+  KnowledgeExpansionDiamond,
 };
 
 export default function RevealSlideshow({
