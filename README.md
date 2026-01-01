@@ -84,36 +84,6 @@ Serves the production build locally for testing.
 - **Custom Interactive Components** - Visual elements like GroundingComparison for conceptual clarity
 - **GitHub Pages Deployment** - Automated deployment via GitHub Actions
 
-## Content Structure
-
-```
-website/
-├── docs/                              # Course modules and lessons
-│   ├── intro.md                       # Course introduction
-│   ├── fundamentals/                  # Module 1: Mental models
-│   │   ├── lesson-1-how-llms-work.md  # Lesson 1: LLMs Demystified
-│   │   └── lesson-2-how-agents-work.md # Lesson 2: Agents Demystified
-│   ├── methodology/                   # Module 2: Core techniques
-│   │   ├── lesson-3-high-level-methodology.md
-│   │   ├── lesson-4-prompting-101.md
-│   │   └── lesson-5-grounding.md
-│   └── practical-techniques/          # Module 3: Applied skills
-│       ├── lesson-6-project-onboarding.md
-│       ├── lesson-7-planning-execution.md
-│       ├── lesson-8-tests-as-guardrails.md
-│       ├── lesson-9-reviewing-code.md
-│       └── lesson-10-debugging.md
-├── src/                               # Custom React components
-│   ├── components/
-│   │   ├── PresentationMode/         # Reveal.js integration
-│   │   └── VisualElements/           # Interactive visualizations
-│   └── pages/                         # Custom pages
-├── static/                            # Static assets
-│   ├── audio/                         # Generated podcast files
-│   └── presentations/                 # Generated slide decks (JSON)
-└── docusaurus.config.ts               # Site configuration
-```
-
 ## Technology Stack
 
 ### Site Infrastructure
