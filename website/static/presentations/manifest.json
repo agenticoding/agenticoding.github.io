@@ -26,5 +26,47 @@
     "estimatedDuration": "30-40 minutes",
     "title": "Spec Driven Development",
     "generatedAt": "2025-12-31T15:12:18.125Z"
+  },
+  "methodology/lesson-4-prompting-101.md": {
+    "presentationUrl": "/presentations/methodology/lesson-4-prompting-101.json",
+    "slideCount": 12,
+    "estimatedDuration": "35-45 minutes",
+    "title": "Prompting 101",
+    "generatedAt": "2026-01-05T06:30:34.844Z"
+  },
+  "methodology/lesson-3-high-level-methodology.md": {
+    "presentationUrl": "/presentations/methodology/lesson-3-high-level-methodology.json",
+    "slideCount": 14,
+    "estimatedDuration": "35-45 minutes",
+    "title": "High-Level Methodology",
+    "generatedAt": "2026-01-05T06:34:27.454Z"
+  },
+  "methodology/lesson-5-grounding.md": {
+    "presentationUrl": "/presentations/methodology/lesson-5-grounding.json",
+    "slideCount": 11,
+    "estimatedDuration": "35-45 minutes",
+    "title": "Grounding: Anchoring Agents in Reality",
+    "generatedAt": "2026-01-05T06:41:09.654Z"
+  },
+  "practical-techniques/lesson-8-tests-as-guardrails.md": {
+    "presentationUrl": "/presentations/practical-techniques/lesson-8-tests-as-guardrails.json",
+    "slideCount": 11,
+    "estimatedDuration": "35-45 minutes",
+    "title": "Tests as Guardrails",
+    "generatedAt": "2026-01-05T06:49:59.074Z"
+  },
+  "practical-techniques/lesson-10-debugging.md": {
+    "presentationUrl": "/presentations/practical-techniques/lesson-10-debugging.json",
+    "slideCount": 12,
+    "estimatedDuration": "35-45 minutes",
+    "title": "Debugging with AI Agents",
+    "generatedAt": "2026-01-05T06:47:18.766Z"
+  },
+  "practical-techniques/lesson-11-agent-friendly-code.md": {
+    "presentationUrl": "/presentations/practical-techniques/lesson-11-agent-friendly-code.json",
+    "slideCount": 11,
+    "estimatedDuration": "30-40 minutes",
+    "title": "Agent-Friendly Code",
+    "generatedAt": "2026-01-05T07:09:20.248Z"
   }
 }

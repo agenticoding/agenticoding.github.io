@@ -5,36 +5,53 @@
     "estimatedDuration": "30-40 minutes",
     "learningObjectives": [
       "Understand pattern compounding effects",
-      "Co-locate constraints for agents",
-      "Write agent-critical code comments",
-      "Avoid knowledge cache anti-patterns"
+      "Co-locate related constraints",
+      "Write agent-critical section comments",
+      "Break negative feedback loops"
     ]
   },
   "slides": [
     {
       "type": "title",
       "title": "Agent-Friendly Code",
-      "subtitle": "Patterns that compound—for better or worse",
+      "subtitle": "Patterns compound—control the direction",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "Agents amplify patterns—good or bad. Clean code generates more clean code. Scattered logic generates more scattered logic. Research shows AI-generated code contains 8x more duplicated blocks than human-written code. Your accepted code today becomes pattern context for tomorrow's agents.",
-        "timing": "1-2 minutes",
-        "discussion": "Ask: How many have noticed AI assistants copying existing patterns—including bad ones—from your codebase?",
-        "context": "This lesson bridges code quality principles with AI agent behavior. Understanding this compounding effect is critical for maintaining code quality at scale.",
-        "transition": "Let's start by understanding exactly how this compounding mechanism works..."
+        "talkingPoints": "This lesson covers how agents amplify existing code patterns—both good and bad. We'll learn practical techniques to write code that agents work with effectively, and understand why code review is your critical control point.",
+        "timing": "1 minute",
+        "discussion": "Ask: How many of you have noticed AI generating code that matches existing (sometimes bad) patterns in your codebase?",
+        "context": "Research shows AI-generated code contains 8x more duplicated blocks than human-written code—not because AI creates duplication, but because it amplifies existing patterns.",
+        "transition": "Let's start by understanding the compounding mechanism that drives this behavior."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "The Core Problem",
+      "content": [
+        "Agents amplify patterns—good or bad",
+        "AI code has 8x more duplicated blocks than human code",
+        "Agents don't create duplication—they copy what exists",
+        "Every accepted PR becomes pattern context for future agents"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "GitClear's analysis of 211 million lines of code revealed the 8x duplication stat. This isn't AI being lazy—it's pattern matching working exactly as designed. When agents grep for examples, they find your existing code and use it as templates.",
+        "timing": "2 minutes",
+        "discussion": "What's the implication? If your codebase is clean, agents generate clean code. If it's messy, agents generate mess.",
+        "context": "This creates exponential quality curves—upward or downward. You control the direction through what patterns you allow to exist.",
+        "transition": "But pattern amplification isn't the only source of quality drift..."
       }
     },
     {
       "type": "visual",
-      "title": "The Compounding Mechanism",
+      "title": "Quality Compounding Over Iterations",
       "component": "CompoundQualityVisualization",
-      "caption": "Every accepted PR becomes pattern context for future agents.",
+      "caption": "Accepted patterns compound exponentially—upward or downward.",
       "speakerNotes": {
-        "talkingPoints": "During code research, agents grep for patterns, read implementations, and load examples into context. The code they find becomes the pattern context for generation. This creates exponential quality curves—upward or downward. You control the direction through what you accept in code review.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: Can you think of a time when you noticed an AI assistant amplifying a pattern you wished it hadn't?",
-        "context": "This visualization shows how quality compounds over iterations. A single bad pattern accepted in iteration 1 can become widespread by iteration 5.",
-        "transition": "Now let's look at the two distinct sources of quality drift..."
+        "talkingPoints": "This visualization shows how quality diverges over iterations. With good patterns, each iteration builds on quality. With bad patterns, technical debt compounds. The curves diverge exponentially, not linearly.",
+        "timing": "2-3 minutes",
+        "discussion": "At iteration 1, the difference between good and bad paths seems small. By iteration 5, it's dramatic. Where in your current projects are you on these curves?",
+        "context": "The key insight: early decisions have outsized impact. Accepting one bad pattern in iteration 1 creates the template for 5 more in iteration 3.",
+        "transition": "Let's break down the two distinct sources of quality drift."
       }
     },
     {
@@ -43,221 +60,197 @@
       "left": {
         "label": "Copy Machine Effect",
         "content": [
-          "Predictable pattern amplification",
-          "Agent finds existing code as examples",
-          "Duplication begets more duplication",
-          "Missing tests → more missing tests",
-          "Controllable through clean patterns"
+          "Predictable amplification of existing patterns",
+          "Agent finds duplication → creates more duplication",
+          "Missing tests in similar files → generates without tests",
+          "Inconsistent error handling → produces inconsistency"
         ]
       },
       "right": {
         "label": "The Dice Roll",
         "content": [
-          "Random probabilistic errors",
-          "LLMs generate via weighted randomness",
-          "Hallucinated APIs, non-existent imports",
-          "Complexity increases error probability",
-          "Cannot eliminate—must catch in review"
+          "Random probabilistic errors (stochastic)",
+          "References functions that don't exist",
+          "Imports from non-existent files",
+          "Complexity increases error probability"
         ]
       },
       "neutral": true,
       "speakerNotes": {
-        "talkingPoints": "Your code quality degrades in two fundamentally different ways. The Copy Machine Effect is predictable—show messy patterns, get messy code. The Dice Roll is random—even pristine codebases produce LLM errors. Both feed the same exponential curve when errors are accepted.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: Which type of error do you encounter more often? How do you currently catch each type?",
-        "context": "Understanding this distinction is crucial. You can prevent Copy Machine errors with clean patterns. You can only catch Dice Roll errors through rigorous review.",
-        "transition": "Both problems feed the same exponential curve. Let's see why code review is your critical intervention point..."
+        "talkingPoints": "The Copy Machine Effect is predictable—show messy patterns, get messy output. The Dice Roll is inherent to LLMs as probabilistic systems. Even with perfect code, random errors occur. You can't prevent dice roll errors with better prompts.",
+        "timing": "3 minutes",
+        "discussion": "Why does this distinction matter? Because the solution differs. Copy Machine Effect: fix your patterns. Dice Roll: accept that errors will happen and catch them in review.",
+        "context": "Both feed the same exponential curve. A random hallucinated API call in iteration 1 becomes a copied pattern by iteration 3 if you accept it.",
+        "transition": "Your critical role is breaking the cycle through code review. Now let's look at practical patterns to write agent-friendly code."
       }
     },
     {
       "type": "concept",
-      "title": "You Are the Quality Circuit Breaker",
+      "title": "Co-locate Related Constraints",
       "content": [
-        "Code review (Lesson 9) prevents negative compounding",
-        "Every acceptance affects every future generation",
-        "Reject bad patterns before they multiply",
-        "Reject random errors before they become patterns",
-        "LLMs are probabilistic—errors are inevitable, acceptance isn't"
+        "Agents only see code they explicitly find via search",
+        "Scattered constraints = agent misses critical rules",
+        "Co-location ensures constraints appear in same search",
+        "When separation required: use semantic bridges (comments)"
       ],
       "speakerNotes": {
-        "talkingPoints": "Your job isn't to prevent all errors—that's impossible with probabilistic systems. Your job is to actively reject errors during review to prevent them from entering the compounding cycle. One hallucinated API call accepted in iteration 1 becomes the template for 5 similar hallucinations by iteration 3.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: How does this change how you think about reviewing AI-generated code versus human-written code?",
-        "context": "This connects directly to Lesson 9 on code review. The stakes are higher with AI because accepted code becomes training data for future generations.",
-        "transition": "Now let's look at specific patterns that help agents succeed..."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Why Co-location Matters for Agents",
-      "content": [
-        "Agents discover code through agentic search (Grep, Read, Glob)",
-        "Agents only see code they explicitly find",
-        "Scattered constraints = missed constraints",
-        "Search determines what agent sees and misses",
-        "Co-located code = complete context in single read"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "From Lesson 5, agents discover your codebase through agentic search. When constraints scatter across files, search determines what the agent sees and what it misses. If validation rules live in a separate config file, the agent may never find them.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: Where in your codebase are constraints scattered that might confuse an agent?",
-        "context": "This principle applies especially to validation rules, security constraints, and business logic that must be enforced consistently.",
-        "transition": "Let's see a concrete example of how scattered constraints cause real problems..."
+        "talkingPoints": "From Lesson 5, agents discover code through agentic search—Grep, Read, Glob. When an agent searches for 'createUser', it reads that file. If password validation lives in a separate config file, the agent never sees it.",
+        "timing": "2 minutes",
+        "discussion": "Think about your current codebase. Where are related constraints scattered across files? What could an agent miss?",
+        "context": "This is why 'separation of concerns' sometimes works against AI agents. The concerns are separated for human organization, but agents search for specific functions.",
+        "transition": "Let's see a concrete example of scattered vs co-located constraints."
       }
     },
     {
       "type": "codeComparison",
-      "title": "Co-locate Related Constraints",
+      "title": "Co-location: Scattered vs Co-located",
       "leftCode": {
         "label": "Scattered (Agent Misses)",
         "language": "typescript",
-        "code": "// File: services/auth.ts\nfunction createUser(email: string, password: string) {\n  return db.users.insert({ email, password: hashPassword(password) })\n}\n\n// File: config/validation.ts\nconst MIN_PASSWORD_LENGTH = 12  // Agent never searches for this"
+        "code": "// File: services/auth.ts\nfunction createUser(email: string, password: string) {\n  return db.users.insert({ email, password: hashPassword(password) })\n}\n\n// File: config/validation.ts\nconst MIN_PASSWORD_LENGTH = 12  // ← Agent never searches for this file"
       },
       "rightCode": {
         "label": "Co-located (Agent Sees)",
         "language": "typescript",
-        "code": "// File: services/auth.ts\nconst MIN_PASSWORD_LENGTH = 12  // Agent sees this in same file\n\nfunction createUser(email: string, password: string) {\n  if (password.length < MIN_PASSWORD_LENGTH) {\n    throw new ValidationError('Password too short')\n  }\n  return db.users.insert({ email, password: hashPassword(password) })\n}"
+        "code": "// File: services/auth.ts\nconst MIN_PASSWORD_LENGTH = 12  // ← Agent sees this in same file\n\nfunction createUser(email: string, password: string) {\n  if (password.length < MIN_PASSWORD_LENGTH) {\n    throw new ValidationError(`Password must be ${MIN_PASSWORD_LENGTH}+ chars`)\n  }\n  return db.users.insert({ email, password: hashPassword(password) })\n}"
       },
       "speakerNotes": {
-        "talkingPoints": "When the agent searches for createUser, it reads auth.ts. In the scattered version, it never sees MIN_PASSWORD_LENGTH because it never searches for the config file. In the co-located version, the constraint is visible in the same file read.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: What other constraints in your codebase might be invisible to agents due to file separation?",
-        "context": "This is a common production issue. Validation rules, security constraints, and rate limits often live in separate files that agents never discover.",
-        "transition": "Sometimes separation is required for DRY. Let's look at semantic bridges for those cases..."
+        "talkingPoints": "In the scattered version, agent searches Grep('createUser'), reads auth.ts, and generates code accepting 3-character passwords because it never found the config file. In the co-located version, the constraint appears in the same search result.",
+        "timing": "3 minutes",
+        "discussion": "This isn't about removing config files entirely. It's about ensuring critical constraints are visible when agents search for related code.",
+        "context": "When separation is truly required (DRY principle), use semantic bridges—explicit comments pointing to related files.",
+        "transition": "Sometimes we can't co-locate everything. That's when we use comments as agent guidance."
       }
     },
     {
-      "type": "code",
-      "title": "Semantic Bridges for Required Separation",
-      "language": "typescript",
-      "code": "// File: services/auth.ts\nimport { MIN_PASSWORD_LENGTH } from '../config/validation'\n// NOTE: Password validation rules defined in config/validation.ts\n// MUST check MIN_PASSWORD_LENGTH before creating user\n\nfunction createUser(email: string, password: string) {\n  if (password.length < MIN_PASSWORD_LENGTH) {\n    throw new ValidationError('Password too short')\n  }\n  return db.users.insert({ email, password: hashPassword(password) })\n}",
-      "caption": "Comments create explicit pointers agents can follow",
-      "speakerNotes": {
-        "talkingPoints": "When separation is required for DRY, use explicit comments pointing to related files. The NOTE comment creates a semantic bridge that tells the agent where to look for related constraints. This is deliberate friction that guides agent behavior.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: How would you balance DRY principles with agent discoverability in your architecture?",
-        "context": "This pattern is useful when you can't co-locate due to architectural constraints. The comment serves as a searchable pointer.",
-        "transition": "For genuinely high-risk code, we need stronger protection mechanisms..."
-      }
-    },
-    {
-      "type": "code",
+      "type": "concept",
       "title": "Comments as Agent-Critical Sections",
-      "language": "typescript",
-      "code": "// SECURITY CRITICAL: Authentication token generation\n// NEVER modify without security team review\n// MUST use cryptographically secure random bytes\n// ALWAYS invalidate existing tokens on password change\nfunction generateAuthToken(userId: string): string {\n  const token = crypto.randomBytes(32).toString('hex')\n  return jwt.sign({ userId, token }, SECRET_KEY, { expiresIn: '24h' })\n}",
-      "caption": "Imperative directives (NEVER, MUST, ALWAYS) create deliberate friction",
-      "speakerNotes": {
-        "talkingPoints": "For genuinely high-risk code—authentication, cryptography, payments, PII—write comments as prompts using imperative directives. These keywords create deliberate friction that causes agents to pause before modification. But use sparingly—if everything is marked CRITICAL, the signal becomes noise.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: What areas in your codebase would benefit from this level of protection? What would happen if you overused it?",
-        "context": "This protection mechanism guards sensitive code from accidental modification. The imperative style (NEVER, MUST, ALWAYS) matches how agents interpret instructions.",
-        "transition": "Now let's address a common anti-pattern: caching extracted knowledge..."
-      }
-    },
-    {
-      "type": "codeExecution",
-      "title": "Knowledge Cache Anti-Pattern",
-      "steps": [
-        {
-          "line": "Agent spawns, begins RESEARCH phase",
-          "highlightType": "prediction",
-          "annotation": "Agent needs to understand architecture"
-        },
-        {
-          "line": "Agent executes: Read source code from KB",
-          "highlightType": "execution",
-          "annotation": "Reads actual implementation files"
-        },
-        {
-          "line": "Knowledge extracted to context",
-          "highlightType": "feedback",
-          "annotation": "Architecture understanding built"
-        },
-        {
-          "line": "❌ BAD PATH: Agent saves ARCHITECTURE.md",
-          "highlightType": "execution",
-          "annotation": "Cache committed to repository"
-        },
-        {
-          "line": "Agent executes: Edit code during EXECUTE phase",
-          "highlightType": "execution",
-          "annotation": "Code changes made"
-        },
-        {
-          "line": "⚠️ Cache now stale! Code changed, docs didn't",
-          "highlightType": "summary",
-          "annotation": "Instant staleness problem begins"
-        },
-        {
-          "line": "Future agent spawns, researches KB",
-          "highlightType": "prediction",
-          "annotation": "New agent needs context"
-        },
-        {
-          "line": "Finds BOTH: current code AND outdated cache",
-          "highlightType": "feedback",
-          "annotation": "Conflicting information in context"
-        },
-        {
-          "line": "Confusion! Which source of truth is correct?",
-          "highlightType": "summary",
-          "annotation": "Cache pollution causes errors"
-        }
+      "content": [
+        "For high-risk code: auth, crypto, payments, PII",
+        "Write comments as prompts with imperative directives",
+        "Use NEVER, MUST, ALWAYS to create deliberate friction",
+        "Overuse is counterproductive—signal becomes noise"
       ],
       "speakerNotes": {
-        "talkingPoints": "The moment you commit extracted knowledge, every code change requires documentation updates you'll forget. Source code is your single source of truth. Code research tools extract architectural knowledge dynamically every time, fresh and accurate. Document decisions and WHY (ADRs), not extracted WHAT that tools can regenerate on demand.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: Have you seen this anti-pattern in your codebase? What stale documentation has caused problems?",
-        "context": "This is a common mistake. Teams create ARCHITECTURE.md files that immediately become outdated. Trust grounding tools to re-extract knowledge on-demand.",
-        "transition": "Let's summarize the key principles for agent-friendly code..."
+        "talkingPoints": "For genuinely high-risk code, write comments that function as agent instructions. Imperative directives create friction that makes agents pause and consider carefully. But use sparingly—if everything is marked CRITICAL, the protection loses meaning.",
+        "timing": "2 minutes",
+        "discussion": "What areas of your codebase would benefit from agent-critical comments? What areas would be counterproductive?",
+        "context": "This is about creating semantic barriers for the most sensitive code paths, not documenting everything.",
+        "transition": "Let's see examples of effective agent-critical comments."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Agent-Critical Comment Example",
+      "language": "typescript",
+      "code": "// SECURITY-CRITICAL: Payment token handling\n// NEVER log token values, even in debug mode\n// NEVER store tokens in local storage or cookies\n// MUST use secure memory and clear after use\n// See: docs/security/payment-compliance.md\nfunction processPaymentToken(token: SecureToken): Result {\n  // Implementation with security constraints\n}",
+      "caption": "Imperative directives create deliberate friction for agents modifying sensitive code",
+      "speakerNotes": {
+        "talkingPoints": "Notice the structure: category label, imperative directives (NEVER, MUST), and a reference for more context. When an agent encounters this during code research, these directives become part of its context for any modifications.",
+        "timing": "2-3 minutes",
+        "discussion": "Why imperative voice? Because agents respond to clear instructions. 'Consider security' is vague. 'NEVER log token values' is unambiguous.",
+        "context": "This protection mechanism guards sensitive code from accidental modification. But remember: overuse dilutes the signal.",
+        "transition": "Now let's discuss a common anti-pattern: caching extracted knowledge."
       }
     },
     {
       "type": "comparison",
-      "title": "Document Decisions, Not Extracted Knowledge",
+      "title": "Knowledge Cache Anti-Pattern",
       "left": {
-        "label": "Anti-Pattern: Cached Knowledge",
+        "label": "Bad: Cache Extracted Knowledge",
         "content": [
-          "ARCHITECTURE.md with code structure",
-          "API_OVERVIEW.md extracted from source",
-          "MODULE_MAP.md listing responsibilities",
-          "Becomes stale immediately",
-          "Pollutes future agent context"
+          "Save ARCHITECTURE.md from agent research",
+          "Commit extracted patterns to docs/",
+          "Create summary files of codebase structure",
+          "Cache becomes stale immediately after code changes"
         ]
       },
       "right": {
-        "label": "Best Practice: Decision Records",
+        "label": "Good: Dynamic Extraction",
         "content": [
-          "ADRs explaining WHY decisions were made",
-          "High-level business domain concepts",
-          "Integration points with external systems",
-          "Stays valid as code evolves",
-          "Complements dynamic code research"
+          "Use code research tools (Explore, ChunkHound)",
+          "Extract knowledge dynamically on-demand",
+          "Source code is single source of truth",
+          "Always fresh, never stale"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "Code research tools like ChunkHound, semantic search, and Explore extract WHAT dynamically from source code every time. Document the WHY that tools can't extract: architectural decisions, business context, external constraints. These stay valid even as code changes.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What documentation in your codebase is actually useful versus what just creates noise?",
-        "context": "ADRs (Architecture Decision Records) capture reasoning that would be lost otherwise. Code structure can be regenerated; decision rationale cannot.",
-        "transition": "Let's wrap up with the key takeaways..."
+        "talkingPoints": "The moment you commit extracted knowledge, every code change requires documentation updates you'll forget. Future agents find BOTH current code AND outdated cache, causing confusion. Code research tools extract knowledge dynamically every time.",
+        "timing": "3 minutes",
+        "discussion": "How many of you have ARCHITECTURE.md or similar files that are out of date? How confident are you in their accuracy?",
+        "context": "Document decisions and WHY (ADRs, high-level overviews, business concepts), not extracted WHAT that code research can regenerate on demand.",
+        "transition": "Let's visualize what happens when you cache knowledge vs extract dynamically."
+      }
+    },
+    {
+      "type": "codeExecution",
+      "title": "Knowledge Caching Creates Stale Data",
+      "steps": [
+        {
+          "line": "Agent: Research codebase architecture",
+          "highlightType": "prediction",
+          "annotation": "Agent begins code research phase"
+        },
+        {
+          "line": "Agent executes: Read source code files",
+          "highlightType": "execution",
+          "annotation": "Extracts current knowledge from code"
+        },
+        {
+          "line": "Knowledge extracted to context",
+          "highlightType": "feedback",
+          "annotation": "Agent understands architecture"
+        },
+        {
+          "line": "❌ Bad path: Agent saves ARCHITECTURE.md",
+          "highlightType": "execution",
+          "annotation": "Cache committed to repository"
+        },
+        {
+          "line": "Agent executes: Edit code (makes changes)",
+          "highlightType": "execution",
+          "annotation": "Code changes, cache now stale"
+        },
+        {
+          "line": "Future agent spawns, researches codebase",
+          "highlightType": "prediction",
+          "annotation": "New agent needs architecture info"
+        },
+        {
+          "line": "Finds BOTH: current code AND outdated cache",
+          "highlightType": "feedback",
+          "annotation": "Conflicting information causes confusion"
+        },
+        {
+          "line": "✅ Good path: Extract dynamically each time",
+          "highlightType": "summary",
+          "annotation": "Source code = single source of truth"
+        }
+      ],
+      "speakerNotes": {
+        "talkingPoints": "The bad path shows how knowledge caching creates an impossible cache invalidation problem. The cache is accurate at creation time, but becomes stale with every code change. Future agents find conflicting information.",
+        "timing": "3 minutes",
+        "discussion": "Why is cache invalidation so hard? Because you'd need to update docs with every code change. Who remembers to do that?",
+        "context": "Trust the grounding process (Lesson 5) to re-extract knowledge on-demand. Dynamic extraction is always fresh.",
+        "transition": "Let's bring this all together with key takeaways."
       }
     },
     {
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Patterns compound; errors compound too",
-        "Co-locate constraints for discoverability",
+        "Patterns compound exponentially—control direction",
+        "Co-locate constraints for agent visibility",
+        "Use agent-critical comments sparingly",
         "Code review breaks negative cycles",
-        "Avoid caching extracted knowledge"
+        "Extract knowledge dynamically, never cache"
       ],
       "speakerNotes": {
-        "talkingPoints": "Remember: agents amplify both good patterns and stochastic errors. Co-locate constraints so agents find complete context. Use imperative comments sparingly for critical sections. You are the circuit breaker—reject bad patterns and random errors before they compound. Let code research tools extract knowledge dynamically rather than caching it.",
+        "talkingPoints": "Remember: agents amplify patterns AND produce stochastic errors. Both feed the same exponential curve. Your code review is the circuit breaker that prevents negative compounding. Co-locate constraints, use agent-critical comments for truly sensitive code, and trust dynamic extraction over cached documentation.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: What's one change you'll make to your codebase this week to make it more agent-friendly?",
-        "context": "These principles apply regardless of which AI coding assistant you use. The compounding effect is universal to pattern-matching systems.",
-        "transition": "Questions? Let's discuss how these principles apply to your specific codebases."
+        "discussion": "What's one change you'll make to your codebase this week based on what we covered?",
+        "context": "Every piece of code you accept today becomes pattern context for tomorrow's agents. The quality curve is in your hands.",
+        "transition": "In the next lesson, we'll explore more advanced techniques for working effectively with AI coding assistants."
       }
     }
   ]

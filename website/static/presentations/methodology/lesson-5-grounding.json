@@ -1,45 +1,27 @@
 {
   "metadata": {
-    "title": "Grounding: Injecting Reality into Context",
+    "title": "Grounding: Anchoring Agents in Reality",
     "lessonId": "lesson-5-grounding",
     "estimatedDuration": "35-45 minutes",
     "learningObjectives": [
-      "Understand context window attention patterns",
-      "Choose grounding tools by scale",
-      "Combine code and web grounding",
-      "Prevent hallucinations through context isolation"
+      "Ground agents with external context",
+      "Apply semantic search effectively",
+      "Isolate research with sub-agents",
+      "Choose tools by scale"
     ]
   },
   "slides": [
     {
       "type": "title",
-      "title": "Grounding: Injecting Reality into Context",
-      "subtitle": "Anchoring agents in your actual system, not hypothetical ones",
+      "title": "Grounding: Anchoring Agents in Reality",
+      "subtitle": "Injecting reality into the context window",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "This lesson covers the engineering techniques that prevent agents from hallucinating plausible-but-wrong solutions. We'll explore how to inject reality into the context window through code and web grounding at scale.",
+        "talkingPoints": "This lesson addresses why agents confidently generate wrong solutions. The core issue: agents don't know your codebase exists. Without grounding, they hallucinate from training patterns. We'll cover techniques to anchor agents in your actual system.",
         "timing": "1 minute",
-        "discussion": "Ask: Has anyone experienced an agent confidently generating code that doesn't match your actual architecture?",
-        "context": "This is the final lesson in the methodology module. Students now understand workflows (Plan > Execute > Validate), communication (Prompting), and need to understand how to ground agents in reality.",
-        "transition": "Let's start with the fundamental problem: agents don't know your codebase exists..."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "The Fundamental Problem",
-      "content": [
-        "Agents don't know your codebase exists",
-        "Without grounding: statistically plausible solutions from training data",
-        "With grounding: solutions anchored in your actual system",
-        "Context window is the agent's entire world",
-        "External information must be explicitly injected"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "An agent asked to fix authentication might generate JWT patterns when you use sessions. The agent generates what's statistically likely from training data, not what matches your system. As covered in Lesson 2, the context window is everything—what's not in context doesn't exist to the agent.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask students to identify what the agent needs to know about their system before generating solutions.",
-        "context": "Real production scenario: You ask 'fix the auth bug' and get a complete JWT implementation... but you don't use JWTs. The agent hallucinated based on common patterns.",
-        "transition": "Let's look at how agents discover your codebase autonomously..."
+        "discussion": "Has anyone had an agent generate a solution using patterns that don't exist in your codebase?",
+        "context": "This is common with authentication, database patterns, and framework-specific code where agents default to popular patterns from training data.",
+        "transition": "Let's start with understanding what happens without grounding..."
       }
     },
     {
@@ -48,29 +30,27 @@
       "left": {
         "label": "Without Grounding",
         "content": [
-          "Generic training patterns frozen at Jan 2025",
-          "Guesses architecture and libraries",
+          "Works from generic training patterns frozen at Jan 2025",
+          "Guesses your architecture and libraries",
           "Hallucinates plausible implementations",
-          "Misses current security vulnerabilities",
-          "Confidently wrong solutions"
+          "Misses current security vulnerabilities"
         ]
       },
       "right": {
         "label": "With Grounding",
         "content": [
-          "Your actual codebase patterns",
-          "Current documentation and APIs",
-          "Recent security advisories",
-          "Follows existing architecture",
-          "Solutions that integrate cleanly"
+          "Works from your actual codebase",
+          "Uses current documentation",
+          "Aware of recent security advisories",
+          "Follows your existing patterns"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "Grounding is how you inject reality into the context window. You retrieve relevant external information—your codebase patterns, current docs, best practices—and feed it to the agent before generation. The left side shows what happens when agents work purely from training data. The right side shows what happens when you ground them in your actual system.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What are the consequences of deploying code that compiles but doesn't match your architecture?",
-        "context": "This is the core value proposition of grounding. Without it, you get code that looks right but integrates poorly. With it, you get first-iteration accuracy.",
-        "transition": "Now let's explore how agents discover your codebase autonomously..."
+        "talkingPoints": "Grounding is how you inject reality into the context window. You retrieve relevant external information—codebase patterns, current docs, best practices—and feed it to the agent before generation. The left side shows agents working from stale training data. The right shows agents anchored in reality.",
+        "timing": "2 minutes",
+        "discussion": "What's more dangerous: an agent that fails obviously, or one that generates plausible-looking wrong code?",
+        "context": "The confident wrongness is the real danger. Code reviews may miss subtle architectural mismatches.",
+        "transition": "So how does an agent discover your codebase? Through agentic search..."
       }
     },
     {
@@ -78,83 +58,65 @@
       "title": "Agentic Search: Autonomous Discovery",
       "steps": [
         {
-          "line": "Task: Fix JWT expiration validation",
+          "line": "Task: \"Fix JWT expiration validation\"",
           "highlightType": "human",
-          "annotation": "Engineer provides task with zero codebase context"
+          "annotation": "Engineer provides task specification"
         },
         {
-          "line": "Agent predicts: I'll search for JWT-related code",
+          "line": "Agent: I'll search for JWT-related code",
           "highlightType": "prediction",
-          "annotation": "Agent decides to search autonomously"
+          "annotation": "LLM decides to search"
         },
         {
-          "line": "Agent executes: Grep('JWT', '**/*.ts')",
+          "line": "→ Grep(\"JWT\", \"**/*.ts\")",
           "highlightType": "execution",
-          "annotation": "Tool call to search codebase"
+          "annotation": "Tool call executed"
         },
         {
-          "line": "Tool result: Found in src/auth/jwt.ts:45, src/middleware/auth.ts:12, tests/auth.test.ts:8",
+          "line": "Found in:\n  - src/auth/jwt.ts:45: export function verifyToken\n  - src/middleware/auth.ts:12: import { verifyToken }\n  - tests/auth.test.ts:8: describe('JWT verification')",
           "highlightType": "feedback",
           "annotation": "Search results returned to context"
         },
         {
-          "line": "Agent predicts: Let me read the verification logic",
+          "line": "Agent: Let me read the verification logic",
           "highlightType": "prediction",
-          "annotation": "Agent interprets results, decides next step"
+          "annotation": "LLM decides next action"
         },
         {
-          "line": "Agent executes: Read('src/auth/jwt.ts')",
+          "line": "→ Read(\"src/auth/jwt.ts\")",
           "highlightType": "execution",
-          "annotation": "Tool call to read file"
+          "annotation": "File read tool call"
         },
         {
-          "line": "Tool result: [verification logic shows expiration check missing]",
+          "line": "[verification logic shows expiration check missing]",
           "highlightType": "feedback",
-          "annotation": "File content loaded into context"
+          "annotation": "File content returned"
         },
         {
-          "line": "Agent predicts: Found it—verifyToken doesn't check exp claim",
+          "line": "Agent: Found it - verifyToken doesn't check exp claim",
           "highlightType": "prediction",
-          "annotation": "Agent synthesizes findings and identifies bug"
+          "annotation": "LLM synthesizes finding"
         }
       ],
       "speakerNotes": {
-        "talkingPoints": "Agentic search is how agents discover your codebase autonomously. The agent calls Grep, Read, and Glob on its own—deciding what to search, interpreting results, and determining next steps. This example shows the complete discovery loop from task to finding the bug. Notice how the agent autonomously decides each search and read operation based on previous results.",
-        "timing": "4-5 minutes - this is critical to understanding grounding",
-        "discussion": "Ask: At what point does the agent have enough context to solve the problem? What happens if the first search returns 80 files instead of 3?",
-        "context": "In small codebases (under 10,000 lines), this works beautifully. Two or three searches return 5-10 files totaling 15,000 tokens. But at scale, this breaks down catastrophically.",
-        "transition": "This autonomous discovery works perfectly... until your codebase hits scale. Let's see what happens then..."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "The Scale Problem: Discovery Breakdown",
-      "content": [
-        "Small codebases (<10K LOC): 2-3 searches return 5-10 files (15K tokens)",
-        "Large codebases (100K+ LOC): Search 'authentication' returns 80+ files (60K+ tokens)",
-        "Half your effective context consumed before reasoning starts",
-        "Critical constraints pushed into ignored middle",
-        "Discovery cost exceeds problem-solving capacity"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "At scale, agentic search floods your context. Search for 'authentication' in a 100,000-line project and you get 80+ files consuming 60,000+ tokens before the agent finishes discovery. That's half your effective context window gone. The constraints you provided up front get pushed into the ignored middle as search results flood in.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: How large is your production codebase? Have you experienced agents that seem to forget your initial constraints?",
-        "context": "This is where the rubber meets the road in production. Small demo projects work great. Production codebases break agentic search without sophisticated grounding.",
-        "transition": "To understand why this matters, we need to understand the context window illusion..."
+        "talkingPoints": "This shows agentic search in action. The agent autonomously decides what to search, interprets results, and determines next steps. In small codebases under 10,000 lines, this works beautifully—2-3 searches return 5-10 files totaling 15,000 tokens.",
+        "timing": "3 minutes",
+        "discussion": "What happens when Grep returns 80+ files instead of 3?",
+        "context": "At scale, this autonomous search breaks down. Search results flood the context window before the agent even starts reasoning about the task.",
+        "transition": "Let's look at why scale breaks agentic search..."
       }
     },
     {
       "type": "visual",
-      "title": "Context Window: The U Attention Curve",
+      "title": "The Context Window Illusion",
       "component": "UShapeAttentionCurve",
-      "caption": "Strong attention at beginning and end, middle gets ignored",
+      "caption": "Beginning and end get attention; middle gets skimmed.",
       "speakerNotes": {
-        "talkingPoints": "Claude Sonnet 4.5 advertises 200,000 tokens. The reality? Reliable attention spans 60,000-120,000 tokens—30-60% of advertised capacity. This U-shaped attention curve shows how transformers actually work: strong attention at the beginning and end, the middle gets skimmed or missed entirely. This isn't a bug, it's transformer architecture under realistic constraints.",
-        "timing": "3-4 minutes - spend time on this concept",
-        "discussion": "Ask: Where in the context would you put critical constraints? Where would you put supporting information? Why?",
-        "context": "This explains why agents seem to forget constraints you provided earlier. As context fills with search results, your constraints get pushed into the ignored middle. This is the fundamental reason sub-agents exist.",
-        "transition": "Now let's explore the solutions that work at different scales..."
+        "talkingPoints": "Claude advertises 200K tokens but reliable attention spans 60-120K tokens—30-60% of advertised capacity. U-shaped attention means beginning and end get strong attention while middle gets skimmed. Fill your context and your constraints disappear into the ignored middle.",
+        "timing": "3 minutes",
+        "discussion": "How would you structure a prompt knowing about U-shaped attention?",
+        "context": "This isn't a bug—it's transformer architecture under realistic constraints. Agentic search amplifies this: three Grep searches plus reading five files puts you at 40K tokens before finishing discovery.",
+        "transition": "How do we solve this? First solution: semantic search..."
       }
     },
     {
@@ -163,149 +125,200 @@
       "content": [
         "Query by meaning, not keywords",
         "Vector embeddings capture semantic relationships",
-        "'auth middleware' finds 'login verification' and 'JWT validation'",
-        "IDE assistants: typically built-in",
-        "CLI agents: need MCP servers (Claude Context, Serena, ChunkHound)"
+        "\"auth middleware\" finds \"JWT validation\" code",
+        "Extends scale to 100,000+ lines of code",
+        "Still fills orchestrator context with results"
       ],
       "speakerNotes": {
-        "talkingPoints": "Semantic search lets you query by meaning instead of exact keywords. Ask for 'authentication middleware that validates credentials' and you get relevant code even without those exact terms. This extends your scale to 100,000+ lines of code. Availability depends on your platform: IDE assistants typically include it built-in, CLI agents need MCP servers to add semantic search capabilities.",
-        "timing": "3 minutes",
-        "discussion": "Ask: What's the difference between searching for the keyword 'JWT' versus searching for 'authentication patterns'?",
-        "context": "Semantic search is the first step beyond basic agentic search. It finds relevant code faster with fewer false positives. But it still fills your orchestrator context—you're just filling it more efficiently.",
-        "transition": "Semantic search extends your scale, but there's still a limitation: it fills your orchestrator context. Let's see how sub-agents solve this..."
+        "talkingPoints": "Semantic search lets you query by meaning. Ask for 'authentication middleware that validates user credentials' and you get relevant code even without exact keyword matches. Vector embeddings convert code to high-dimensional vectors where similar concepts cluster together.",
+        "timing": "2-3 minutes",
+        "discussion": "What's the difference between finding 'auth middleware' with Grep vs semantic search?",
+        "context": "IDE assistants often include semantic search built-in. CLI agents need MCP servers like Claude Context, Serena, or ChunkHound to add this capability.",
+        "transition": "But semantic search still fills your orchestrator context. For true isolation, we need sub-agents..."
       }
     },
     {
-      "type": "concept",
-      "title": "Solution 2: Sub-Agents for Context Isolation",
-      "content": [
-        "Sub-agent executes in isolated context (50K-150K tokens processed)",
-        "Returns concise synthesis (2K-5K tokens) to orchestrator",
-        "Trade-off: Higher token cost, cleaner orchestrator context",
-        "First-iteration accuracy vs multiple correction cycles",
-        "Like function calls: parameters = prompt, return value = synthesis"
+      "type": "codeExecution",
+      "title": "Solution 2: Sub-Agent Context Isolation",
+      "steps": [
+        {
+          "line": "Orchestrator: \"I need to understand JWT authentication.\nDelegate research to code sub-agent.\"",
+          "highlightType": "human",
+          "annotation": "Orchestrator delegates research task"
+        },
+        {
+          "line": "Sub-agent spawns with fresh isolated context",
+          "highlightType": "execution",
+          "annotation": "New context created"
+        },
+        {
+          "line": "→ Semantic search: \"JWT authentication patterns\" → 12,000 tokens",
+          "highlightType": "execution",
+          "annotation": "Search in sub-agent context"
+        },
+        {
+          "line": "→ Reads 3 files: jwt.ts, auth.ts, jwt.ts → 18,000 tokens",
+          "highlightType": "execution",
+          "annotation": "Files loaded in sub-agent context"
+        },
+        {
+          "line": "→ Related patterns: \"token validation\" → 7,000 tokens",
+          "highlightType": "execution",
+          "annotation": "Additional search in sub-agent"
+        },
+        {
+          "line": "Total consumed in sub-agent: 37,000 tokens",
+          "highlightType": "feedback",
+          "annotation": "Sub-agent processed full research"
+        },
+        {
+          "line": "Sub-agent synthesizes and returns:\n\"JWT auth at src/auth/jwt.ts:45-67\nLibrary: Passport.js with JWT strategy\nIssue: Missing expiration check\"",
+          "highlightType": "prediction",
+          "annotation": "Synthesis returned to orchestrator"
+        },
+        {
+          "line": "Orchestrator receives: 180 tokens instead of 37,000",
+          "highlightType": "summary",
+          "annotation": "Context isolation achieved"
+        }
       ],
       "speakerNotes": {
-        "talkingPoints": "A sub-agent is an agent invoked by another agent—like a function call but for agents. The orchestrator delegates research with a prompt (the parameters). The sub-agent processes 50,000-150,000 tokens in its own isolated context. It returns a concise synthesis (2,000-5,000 tokens) to the orchestrator (the return value). You pay more tokens but maintain a clean orchestrator context throughout, which typically delivers first-iteration accuracy.",
-        "timing": "4 minutes - this is architecturally important",
-        "discussion": "Ask: When would you accept 2x token cost for cleaner context? What's the cost of multiple correction cycles from a polluted context?",
-        "context": "This is the key architectural pattern that enables scale. The orchestrator maintains clean context with your constraints at the beginning and task at the end. The sub-agent handles the messy discovery work in isolation.",
-        "transition": "There are two ways to architect sub-agents, each with different trade-offs..."
+        "talkingPoints": "A sub-agent is an agent invoked by another agent—like a function call for agents. The orchestrator writes a prompt describing the research task. The sub-agent executes in isolated context, returns a concise synthesis. You pay to process tokens in both contexts, but your orchestrator maintains clean context throughout.",
+        "timing": "4 minutes",
+        "discussion": "What's the trade-off between token cost and first-iteration accuracy?",
+        "context": "The trade-off is token cost, not accuracy. You pay more but get first-iteration accuracy, which typically saves tokens compared to multiple correction cycles from polluted context.",
+        "transition": "There are two architectures for sub-agents..."
       }
     },
     {
       "type": "comparison",
-      "title": "Sub-Agent Architectures: Valid Trade-offs",
+      "title": "Sub-Agent Architectures",
       "neutral": true,
       "left": {
         "label": "Autonomous",
         "content": [
-          "Autonomous search strategy",
-          "Simpler to build",
-          "Varied research tasks",
-          "Example: Explore agent",
-          "Degrades at scale"
+          "Agent decides search strategy autonomously",
+          "Simpler to build and maintain",
+          "Works well for varied research tasks",
+          "Degrades on very large codebases"
         ]
       },
       "right": {
         "label": "Structured",
         "content": [
-          "Deterministic control plane",
-          "Tactical LLM decisions",
-          "Scales better",
-          "Example: ChunkHound",
-          "Higher complexity and cost"
+          "Deterministic control plane defines algorithm",
+          "LLM makes tactical decisions within structure",
+          "Scales reliably to millions of LOC",
+          "Higher cost and complexity to build"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "Both architectures are valid depending on your scale. Autonomous agents (like Claude Code's Explore) give the sub-agent tools and let it decide strategy autonomously—simpler to build, cheaper to run, flexible across tasks. Structured agents (like ChunkHound) use deterministic control planes that define the search algorithm while the LLM makes tactical decisions—more complex and expensive but scale reliably to millions of lines.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: What codebase size would make you choose structured over autonomous? What are the operational costs of each approach?",
-        "context": "This is an architectural trade-off, not a right-vs-wrong choice. Autonomous works well until it doesn't. Structured works consistently but costs more to build and run. Choose based on your scale and consistency requirements.",
-        "transition": "Now let's see how to choose the right grounding tools for your codebase size..."
+        "talkingPoints": "Two valid approaches depending on scale. Autonomous agents like Claude Code's Explore decide their own strategy—flexible across tasks but degrade in large codebases. Structured agents like ChunkHound follow deterministic algorithms—the LLM ranks relevance at decision points but doesn't choose the traversal strategy.",
+        "timing": "2-3 minutes",
+        "discussion": "At what scale would you switch from autonomous to structured sub-agents?",
+        "context": "The inflection point is around 10,000-100,000 LOC. Below that, autonomous works well. Above that, structured becomes valuable for consistency.",
+        "transition": "Let's look at how to choose tools based on your codebase scale..."
       }
     },
     {
       "type": "concept",
-      "title": "Code Grounding: Tool Selection by Scale",
+      "title": "Tool Selection by Scale",
       "content": [
-        "<10K LOC: Agentic search (Grep, Read, Glob)",
+        "Under 10K LOC: Agentic search (Grep, Read, Glob)",
         "10K-100K LOC: Add semantic search or Explore agent",
-        "100K+ LOC: Structured code research (ChunkHound)",
-        "Breaking points: 50+ file results, architectural connections across modules",
-        "ChunkHound is only MCP-based sub-agent option"
+        "100K+ LOC: Structured sub-agents (ChunkHound)",
+        "1M+ LOC: Essential—only progressive aggregation scales"
       ],
       "speakerNotes": {
-        "talkingPoints": "Your codebase size determines which grounding approach works. Under 10,000 lines: basic agentic search works reliably. 10,000-100,000 lines: add semantic search or use Claude Code's Explore agent. Over 100,000 lines: you need structured code research like ChunkHound. The tool you need depends on your scale. Note that ChunkHound is currently the only MCP-based sub-agent for code research—for CLI agents other than Claude Code, it's the only way to add sub-agent functionality.",
-        "timing": "3 minutes",
-        "discussion": "Ask students to identify their codebase size and which tool they should use. Discuss the inflection points where you'd upgrade to the next level.",
-        "context": "This is practical guidance for production. Don't over-engineer for a 5,000-line project. Don't under-tool for a 500,000-line codebase. Match your tools to your scale.",
-        "transition": "We've covered code grounding. Now let's apply the same patterns to web grounding..."
+        "talkingPoints": "Your codebase size determines which grounding approach works. Small codebases work with basic tools. At 10K lines, semantic search or Explore agent extends your reach. At 100K+, structured sub-agents become valuable. At 1M+ lines, they're essential—autonomous agents show incomplete findings.",
+        "timing": "2 minutes",
+        "discussion": "What scale is your primary codebase? Which tools are you currently using?",
+        "context": "Use 'cloc' to measure your codebase. Focus on the 'Code' column for accurate LOC counts. Most enterprise codebases are in the 100K-1M range.",
+        "transition": "Code grounding is only half the picture. You also need web grounding..."
       }
     },
     {
       "type": "concept",
-      "title": "Web Grounding: Same Patterns, Different Sources",
+      "title": "Web Grounding: Same Pattern, Different Sources",
       "content": [
-        "Built-in web search: simple queries, same context pollution",
-        "Synthesis tools (Perplexity): compress 15K-30K tokens to 3K-8K",
-        "ArguSeek: isolated context + semantic state management",
-        "Processes 100+ sources while keeping orchestrator context clean",
-        "Semantic subtraction: follow-ups skip covered content"
+        "Built-in search: Works for simple queries",
+        "Synthesis tools (Perplexity): Compress 15-30K to 3-8K tokens",
+        "Sub-agents (ArguSeek): Isolated context + semantic state",
+        "Follow-ups build on previous research",
+        "Combine code + web for production systems"
       ],
       "speakerNotes": {
-        "talkingPoints": "Web grounding follows the same progression as code grounding. Built-in search works for simple queries but fills context. Synthesis tools like Perplexity compress results but hit limits after 3-5 queries. ArguSeek is a web research sub-agent with isolated context and semantic state management—it processes 100+ sources across multiple calls while keeping your orchestrator context clean. Semantic subtraction means follow-up queries skip already-covered content and advance research instead of repeating basics.",
-        "timing": "3 minutes",
-        "discussion": "Ask: When do you need current documentation vs your codebase patterns? What happens if you only ground in one?",
-        "context": "You need more than just your codebase. Current API docs, best practices, security advisories, recent research—all essential for production solutions. Web grounding prevents outdated patterns.",
-        "transition": "In production, you combine both code and web grounding..."
+        "talkingPoints": "Web grounding follows the same progression as code grounding. Simple tools work initially, then hit context limits. ArguSeek is a web research sub-agent with isolated context and semantic state management—follow-up queries skip already-covered content instead of re-explaining basics.",
+        "timing": "2-3 minutes",
+        "discussion": "When would you use web grounding vs code grounding?",
+        "context": "You need both in production. Code grounding prevents hallucinations. Web grounding gives you current best practices and security advisories.",
+        "transition": "Let's see how these combine in practice..."
       }
     },
     {
-      "type": "comparison",
-      "title": "Context Management Without Sub-Agents",
-      "left": {
-        "label": "Ineffective Structure",
-        "content": [
-          "Task begins first",
-          "Constraints buried middle",
-          "Context floods fast",
-          "Agent forgets requirements"
-        ]
-      },
-      "right": {
-        "label": "Effective (U-Curve)",
-        "content": [
-          "Constraints come first",
-          "Supporting context middle",
-          "Task ends last",
-          "Constraints stay visible"
-        ]
-      },
+      "type": "codeExecution",
+      "title": "Production Pattern: Multi-Source Grounding",
+      "steps": [
+        {
+          "line": "Task: \"Implement OAuth2 client credentials flow for our API\"",
+          "highlightType": "human",
+          "annotation": "Complex task requiring multiple sources"
+        },
+        {
+          "line": "1. Code research: How does existing auth work?",
+          "highlightType": "prediction",
+          "annotation": "First grounding source"
+        },
+        {
+          "line": "→ ChunkHound returns: Current session-based auth,\nmiddleware patterns, config locations (3,200 tokens)",
+          "highlightType": "feedback",
+          "annotation": "Code-grounded context"
+        },
+        {
+          "line": "2. Web research: OAuth2 best practices and CVEs?",
+          "highlightType": "prediction",
+          "annotation": "Second grounding source"
+        },
+        {
+          "line": "→ ArguSeek returns: RFC 6749 guidance,\nsecurity considerations, recent vulnerabilities (4,800 tokens)",
+          "highlightType": "feedback",
+          "annotation": "Web-grounded context"
+        },
+        {
+          "line": "3. Implementation: Synthesize both sources",
+          "highlightType": "prediction",
+          "annotation": "Grounded implementation"
+        },
+        {
+          "line": "Result: Follows existing patterns + uses 2025 standards\n+ avoids known vulnerabilities + integrates cleanly",
+          "highlightType": "summary",
+          "annotation": "Multi-source grounding prevents both failure modes"
+        }
+      ],
       "speakerNotes": {
-        "talkingPoints": "When you don't have sub-agents, you can still manage effectively by exploiting the U-shaped attention curve. Put critical constraints at the start where attention is strongest. Put supporting information in the middle where it's skimmable but available. Put your task or question at the end where attention is strong again. As agentic search loads results, they push middle content—which is fine because constraints stay at the top and your task stays fresh at the bottom. This pattern works reliably for small to medium codebases without requiring sub-agent infrastructure.",
+        "talkingPoints": "In production, combine code grounding with web grounding. Code-only grounding prevents hallucinations but risks outdated patterns. Web-only grounding gives current best practices but doesn't fit your architecture. Combining both gives solutions that work for your specific system using current standards.",
         "timing": "3-4 minutes",
-        "discussion": "Ask: Why does putting the task at the end work better than at the beginning? What happens to middle content as search results load?",
-        "context": "This is the practical pattern for engineers working with basic agentic search or tools without sub-agent support. It's referenced in the lesson but often overlooked—yet it's critical for most real-world usage where you don't have ChunkHound or Explore agents.",
-        "transition": "This pattern works for small to medium codebases. Now let's see the complete architectural picture..."
+        "discussion": "What's an example from your work where you'd need both code and web grounding?",
+        "context": "Authentication, payment processing, and security-sensitive features almost always need both. Your architecture matters, and so do current CVEs.",
+        "transition": "Let's wrap up with the key takeaways..."
       }
     },
     {
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Context window defines agent's reality",
-        "Agentic search breaks at scale",
-        "U-shaped attention curve limits effectiveness",
-        "Sub-agents isolate research context",
+        "Agents only know context contents",
+        "U-shaped attention limits effective capacity",
+        "Sub-agents isolate research, preserve context",
+        "Choose grounding tools by scale",
         "Combine code and web grounding"
       ],
       "speakerNotes": {
-        "talkingPoints": "Five critical takeaways: First, the agent only knows what's in the context window—without grounding, it hallucinates from training data. Second, agentic search works for small projects but breaks at scale when results flood context. Third, models advertise 200K tokens but reliably process 60K-120K due to U-shaped attention. Fourth, sub-agents isolate research in separate contexts and return concise syntheses. Fifth, production systems combine code grounding to prevent hallucinations with web grounding to get current best practices.",
-        "timing": "3 minutes",
-        "discussion": "Ask students to identify which grounding tools they'll use for their codebase. Discuss the scale inflection points where they'd upgrade tools.",
-        "context": "The methodology module is complete. Students now have fundamental workflows (Plan > Execute > Validate), communication patterns (Prompting 101), and context management strategies (Grounding) to operate AI agents effectively in production.",
-        "transition": "This completes the methodology module. You now understand how to ground agents in reality at scale. Next module covers practical techniques for specific development tasks."
+        "talkingPoints": "Five key points to remember: First, without grounding agents hallucinate from training patterns. Second, advertised context capacity isn't effective capacity—U-shaped attention means middle content gets skimmed. Third, sub-agents process research in isolation and return syntheses. Fourth, match your tools to your codebase scale. Fifth, production systems need both code and web grounding.",
+        "timing": "2-3 minutes",
+        "discussion": "Which of these concepts was most surprising? Which will you apply first?",
+        "context": "The methodology module is now complete. You have fundamental workflows, communication patterns, and context management strategies for operating agents in production.",
+        "transition": "Questions before we move on?"
       }
     }
   ]

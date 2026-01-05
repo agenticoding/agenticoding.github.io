@@ -1,50 +1,50 @@
 {
   "metadata": {
-    "title": "High-Level Methodology: The Operator Mindset",
+    "title": "High-Level Methodology",
     "lessonId": "lesson-3-high-level-methodology",
-    "estimatedDuration": "45-60 minutes",
+    "estimatedDuration": "35-45 minutes",
     "learningObjectives": [
       "Shift from craftsman to operator",
-      "Master the four-phase workflow",
-      "Choose effective execution modes",
-      "Validate without reading every line"
+      "Apply Research-Plan-Execute-Validate workflow",
+      "Choose exploration vs exact planning",
+      "Balance supervised vs autonomous execution"
     ]
   },
   "slides": [
     {
       "type": "title",
       "title": "High-Level Methodology",
-      "subtitle": "The Operator Mindset: From Craftsman to Orchestrator",
+      "subtitle": "From Craftsman to Operator",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "Welcome to Lesson 3. We're pivoting from understanding AI agent capabilities to understanding how you work with them at scale. This isn't about writing prompts faster or reading code at superhuman speeds. It's about a fundamental mindset shift: you're no longer the person who writes every line. You're the architect who directs the system.",
-        "timing": "2 minutes",
-        "discussion": "Ask: Who here has tried to read and verify every line of generated code? How did that feel? What happened to your productivity?",
-        "context": "In production environments with real AI coding agents, senior engineers report this mindset shift as the single biggest productivity multiplier—more than any tool feature or prompt technique.",
-        "transition": "Let's start by understanding what this shift actually means for how you work."
+        "talkingPoints": "This lesson covers the fundamental mindset shift required to work effectively with AI agents. We'll learn a systematic four-phase workflow that maintains quality without requiring you to read every line of generated code.",
+        "timing": "1 minute",
+        "discussion": "Ask: How many lines of code do you feel comfortable shipping without reading every one?",
+        "context": "This is the strategic foundation that all tactical lessons build upon.",
+        "transition": "Let's start with the most counterintuitive part—why you need to let go of old habits."
       }
     },
     {
       "type": "concept",
-      "title": "The Mindset Shift",
+      "title": "The Psychological Shift",
       "content": [
-        "Your value moves up the stack: from syntax to structure",
-        "You ensure quality differently: patterns over line-by-line review",
-        "You validate against your mental model, not character by character",
-        "You're moving from implementer to orchestrator",
-        "Your focus becomes context and prompts, not implementation details"
+        "Your entire career: value in the details, understanding every line",
+        "Agents produce 2,000 lines—you can't own them like 200 you wrote",
+        "New value: syntax → structure, loops → logic, implementation → architecture",
+        "Quality assurance changes: reading every line → systematic validation",
+        "Focus shifts to context you provide and prompts you craft"
       ],
       "speakerNotes": {
-        "talkingPoints": "For 20 years, you've built your reputation on clean code and spotting subtle bugs. You owned your implementations deeply. That's not compatible with delegating 2,000 lines of code to an agent. Here's the shift: you still care about quality—you just validate it differently. Instead of reading every line, you're thinking systematically: Does this fit our architecture? Do the patterns match? Does the behavior match my mental model?",
+        "talkingPoints": "The hardest part isn't learning tools—it's letting go. You've built your reputation on understanding every line you ship. That doesn't scale with agents. Your value moves up the stack.",
         "timing": "3-4 minutes",
-        "discussion": "Ask: What aspects of your current job depend on reading every line? What could shift to higher-level validation?",
-        "context": "In our experience, engineers who resist this shift typically burn out within weeks. Those who embrace it ship 5-10x more code without quality regression.",
-        "transition": "Let's contrast this with how you've been working."
+        "discussion": "Ask: What's the largest generated codebase you've shipped? How did you validate it?",
+        "context": "Senior engineers often struggle here because their identity is tied to craftsmanship. Acknowledge this tension.",
+        "transition": "This isn't about caring less about quality—it's about ensuring quality differently."
       }
     },
     {
       "type": "comparison",
-      "title": "Traditional vs Operator Workflow",
+      "title": "Traditional Developer vs Operator Workflow",
       "left": {
         "label": "Traditional Developer",
         "content": [
@@ -56,205 +56,227 @@
         ]
       },
       "right": {
-        "label": "Operator Workflow",
+        "label": "Operator",
         "content": [
-          "Understand the system mentally",
-          "Research context and patterns",
-          "Plan the change architecturally",
-          "Direct the agent precisely",
-          "Validate outcomes against requirements"
+          "Map the system (modules, boundaries, data flow)",
+          "Research existing patterns and constraints",
+          "Plan the change at architecture level",
+          "Direct the agent with precise context",
+          "Validate behavior against mental model"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "Notice what disappears from the operator list: writing implementation code, reading every line, debugging syntax errors. The agent handles those. Your cognitive load shifts entirely to architectural thinking—understanding how pieces fit, what patterns matter, what risks exist. This isn't a small shift. It's restructuring your entire job.",
+        "talkingPoints": "Notice what's missing from the operator list: writing implementation code, reading every line, debugging syntax errors. The agent handles those. Your cognitive load shifts to system-level thinking.",
+        "timing": "3 minutes",
+        "discussion": "Ask: Which activities on the right side do you already do? Which are new?",
+        "context": "Many engineers already do the operator tasks—they just do implementation too. Now you delegate implementation entirely.",
+        "transition": "This doesn't mean you never read code. It means you read selectively."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Selective Code Review",
+      "content": [
+        "50 files generated → don't review line by line",
+        "Review at system level: module responsibilities, I/O contracts, state management",
+        "Spot-check where mental model says 'risky' or 'complex'",
+        "Properly prompted AI code is often MORE consistent than hand-written",
+        "One thing doesn't change: you own the results"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "LLMs follow patterns with mechanical precision. When you provide quality patterns, they replicate perfectly. You're not sacrificing quality—you're achieving structural consistency at scale individual craftsmanship can't match.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: Which items on the left do you never want to do again? Which items on the right require new skills?",
-        "context": "The transition is hardest in the first two weeks. After that, most engineers report they'd never go back to manual implementation.",
-        "transition": "This workflow isn't linear. It's four interconnected phases."
+        "discussion": "Ask: What makes you confident enough to ship code you didn't write?",
+        "context": "Machines can't be held accountable—they execute instructions. Every line ships under your name.",
+        "transition": "Your mental model is your blueprint. Now let's look at the process for building that model."
       }
     },
     {
       "type": "visual",
       "title": "The Four-Phase Workflow",
       "component": "WorkflowCircle",
-      "caption": "Systematic research, planning, execution, and validation cycle.",
+      "caption": "Research, Plan, Execute, Validate—then iterate.",
       "speakerNotes": {
-        "talkingPoints": "Every significant agent interaction follows this cycle: Research to ground the agent in your context, Plan to make strategic decisions about approach, Execute with the right mode for the situation, Validate outcomes against your mental model. These phases aren't steps you do once—they form a continuous loop. Validation often reveals gaps in planning, which loops you back to research.",
+        "talkingPoints": "Every significant agent interaction should follow this pattern. Each phase has a distinct purpose, and skipping any one dramatically increases failure rate. This is your operational framework.",
         "timing": "2 minutes",
-        "discussion": "Ask: Which phase do you typically skip? What breaks when you do?",
-        "context": "Engineers who follow this workflow report near-zero rework cycles. Those who skip phases consistently spend 3x their initial time on fixes.",
-        "transition": "Let's walk through each phase in detail, starting with Research."
+        "discussion": "Ask: Which phase do you think most engineers skip? Why?",
+        "context": "Most skip Research—they jump straight to prompting. Second most skipped is Plan.",
+        "transition": "Let's walk through each phase, starting with Research."
       }
     },
     {
       "type": "concept",
-      "title": "Phase 1: Research & Grounding",
+      "title": "Phase 1: Research (Grounding)",
       "content": [
-        "Bridge model's general knowledge with your real codebase",
-        "ChunkHound for semantic code context (architectural patterns)",
-        "ArguSeek for domain knowledge (APIs, frameworks, standards)",
-        "Without grounding, agents hallucinate patterns and miss implementations",
-        "This phase prevents the agent from inventing inconsistent solutions"
+        "Bridge between model's general knowledge and your actual context",
+        "Without grounding: hallucinated patterns, inconsistent APIs, missed implementations",
+        "ChunkHound: semantic code search—'How is auth handled?' not just keywords",
+        "ArguSeek: domain knowledge—API docs, best practices, GitHub issues",
+        "Ground in both your codebase AND domain knowledge before planning"
       ],
       "speakerNotes": {
-        "talkingPoints": "Grounding is the bridge between the general-purpose knowledge in the model and the specific reality of your codebase. You wouldn't start coding in an unfamiliar system without reading existing implementations. Your agent needs the same. ChunkHound handles semantic code search—answering 'How is authentication handled?' instead of keyword matching. ArguSeek pulls domain knowledge directly from Google, docs, PDFs, GitHub issues. We'll cover both in detail in Lesson 5.",
+        "talkingPoints": "You wouldn't start coding in a new codebase without learning the architecture. Your agent needs the same context. ChunkHound for code, ArguSeek for domain knowledge. We'll cover both in detail in Lesson 5.",
         "timing": "3 minutes",
-        "discussion": "Ask: How many times have agents generated code that doesn't match your patterns? That's usually a grounding failure, not a reasoning failure.",
-        "context": "The best-grounded agents typically need 1-2 refinement iterations. Poorly-grounded agents need 5-10. Grounding is where the real time-save happens.",
-        "transition": "With research complete, you move to planning—and here, strategy matters."
+        "discussion": "Ask: What happens when you prompt an agent without context about your codebase?",
+        "context": "Grounding is the difference between generic code that works anywhere and code that fits your architecture.",
+        "transition": "With research complete, we move to planning—and here you have a strategic choice to make."
       }
     },
     {
       "type": "visual",
-      "title": "Phase 2: Planning Strategies",
+      "title": "Phase 2: Plan (Strategic Decision)",
       "component": "PlanningStrategyComparison",
-      "caption": "Choose exploration when discovering solutions, exact when implementing known approaches.",
+      "caption": "Choose exploration or exact planning based on certainty level.",
       "speakerNotes": {
-        "talkingPoints": "Planning is a strategic choice, not a single approach. When you're uncertain about the best solution, use exploration mode—frame the problem, ask the agent to research your codebase and domain knowledge, explore alternatives together. This costs more but discovers better solutions and catches architectural issues early. When you know the solution, use exact planning—be directive, define the task with specificity, provide constraints, list edge cases, define acceptance criteria. This is faster but requires upfront clarity.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: Think of your last project. Which approach would have worked better?",
-        "context": "Most senior engineers start with exploration for new systems, then shift to exact planning once they understand the architecture deeply.",
-        "transition": "Let's see what these look like in practice."
+        "talkingPoints": "Planning isn't one-size-fits-all. You choose between exploration (discover the solution) and exact planning (execute a known solution). Both are valid—the choice depends on your certainty level.",
+        "timing": "2 minutes",
+        "discussion": "Ask: How do you decide when you know enough to start coding?",
+        "context": "Exploration has higher cost but discovers better solutions. Exact planning is faster but requires upfront clarity.",
+        "transition": "Let's look at examples of each planning mode."
       }
     },
     {
       "type": "codeComparison",
-      "title": "Planning Examples: Exploration vs Exact",
+      "title": "Exploration vs Exact Planning",
       "neutral": true,
       "leftCode": {
         "label": "Exploration Planning",
         "language": "text",
-        "code": "Our Express API has inconsistent error handling—some endpoints return raw errors, others JSON, and stack traces leak to production. Use ChunkHound to search for \"error handling patterns\" and \"error response format\" in our codebase. Use ArguSeek to research Express error handling best practices and RFC 7807. Analyze what you find, propose 2-3 standardization approaches with trade-offs, and recommend one."
+        "code": "Our Express API has inconsistent error handling—some endpoints return raw errors,\nothers JSON, and stack traces leak to production. Use ChunkHound to search for\n\"error handling patterns\" and \"error response format\" in our codebase.\nUse ArguSeek to research Express error handling best practices and RFC 7807.\nAnalyze what you find, propose 2-3 standardization approaches with trade-offs,\nand recommend one."
       },
       "rightCode": {
         "label": "Exact Planning",
         "language": "text",
-        "code": "Add rate limiting middleware to /api/* using Redis.\nFollow the pattern in src/middleware/auth.ts.\nAuthenticated users: 1000 req/hour, anonymous: 100req/hour, admins unlimited. Return 429 with Retry-After header. Fail open if Redis is down - log warning but allow request through."
+        "code": "Add rate limiting middleware to /api/* using Redis.\nFollow the pattern in src/middleware/auth.ts.\nAuthenticated users: 1000 req/hour, anonymous: 100 req/hour, admins unlimited.\nReturn 429 with Retry-After header.\nFail open if Redis is down - log warning but allow request through."
       },
       "speakerNotes": {
-        "talkingPoints": "Left side: discovery mode. You're not dictating the solution; you're framing the problem space and asking the agent to research and explore. Notice it tells the agent what research tools to use and asks for trade-offs. Right side: exact mode. You've already decided the approach—Redis, specific limits per user type, explicit patterns to follow, clear failure mode. No exploration needed.",
+        "talkingPoints": "Exploration: frame the problem space, let the agent research and propose. Use when the solution is unclear. Exact: be directive with specific requirements. Use when you know the solution and just need implementation.",
         "timing": "3-4 minutes",
-        "discussion": "Ask: Which approach would you use for a security vulnerability fix? What about architecting a new feature?",
-        "context": "In production, most teams use exact planning for 70% of work (faster iteration) and exploration for 30% (architectural decisions). Early on, swap that ratio.",
-        "transition": "Once you've planned, you execute. But execution has two very different modes."
+        "discussion": "Ask: Which mode would you use for a new feature vs a bug fix?",
+        "context": "If your exact plan is wrong, the generated code will be wrong. Exploration catches architectural issues early.",
+        "transition": "As you plan, you're building your mental model—the blueprint for validation."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Building Your Mental Model",
+      "content": [
+        "Not memorizing code—understanding relationships",
+        "How auth flows through middleware",
+        "Where validation happens vs business logic",
+        "How errors propagate to the client",
+        "Security boundaries and performance bottlenecks"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Your mental model lets you validate quickly. When the agent completes, you check: 'Does this fit my mental model?' If yes, probably correct. If no, either update your model or regenerate.",
+        "timing": "2 minutes",
+        "discussion": "Ask: How do you currently build mental models of new codebases?",
+        "context": "This is system-level thinking vs implementation-level thinking.",
+        "transition": "With your plan and mental model ready, we execute—but there's a critical choice here too."
       }
     },
     {
       "type": "comparison",
-      "title": "Execution Modes: Supervised vs Autonomous",
+      "title": "Phase 3: Execute (Two Modes)",
       "neutral": true,
       "left": {
         "label": "Supervised Mode",
         "content": [
-          "Actively monitor agent actions in real-time",
-          "Maximum control and immediate error detection",
-          "Use when learning agent behavior or handling critical security work"
+          "Watch each action, review intermediate outputs",
+          "Steer when it drifts, intervene on mistakes",
+          "Maximum control and precision",
+          "Cost: throughput tanks, blocked while agent works",
+          "Use for: learning, security-critical code, complex exploration"
         ]
       },
       "right": {
         "label": "Autonomous Mode",
         "content": [
-          "Give agent task, let it run, check results later",
-          "Enable parallel work and genuine 10x productivity",
-          "Use with well-defined tasks and strong confidence in your setup"
+          "Give task from plan, check results when done",
+          "You're not watching—doing other things",
+          "Enable parallel work on multiple projects",
+          "8-hour output with 2 hours at keyboard",
+          "Requires excellent grounding and planning"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "This is the real productivity multiplier most people miss. Yes, supervised mode gives you control. But your productivity is still tied to single-task speed. Autonomous mode is where magic happens: three agents running simultaneously on different projects, you attending meetings or cooking dinner, all while shipping code continuously. This only works if your grounding and planning are excellent. If they're not, the agent drifts and hallucinates. If they are, you can trust it completely.",
-        "timing": "4-5 minutes",
-        "discussion": "Ask: How many projects are you currently blocked on waiting for yourself to finish implementation? That's autonomous mode opportunity.",
-        "context": "Most engineers report the real 10x gain isn't speed per task—it's working on three tasks in parallel while maintaining other responsibilities. That's a massive quality-of-life upgrade too.",
-        "transition": "Execution always produces output. The question is: how do you validate what you get?"
+        "talkingPoints": "Supervised mode is your training ground—build trust and intuition. Autonomous mode is where real productivity happens. The counterintuitive truth: the gain isn't finishing tasks faster, it's working on multiple tasks simultaneously.",
+        "timing": "4 minutes",
+        "discussion": "Ask: What would you do with your time if agents handled implementation?",
+        "context": "Even if hand-coding takes 20 min and agent takes 30, autonomous wins if you're cooking dinner instead of being blocked.",
+        "transition": "Your goal is to maximize autonomous mode time. But it depends entirely on excellent grounding and planning."
       }
     },
     {
       "type": "concept",
-      "title": "Phase 4: Validation & Iteration",
+      "title": "Phase 4: Validate (The Iteration Decision)",
       "content": [
-        "LLMs are probabilistic—rarely perfect on first pass (this is normal)",
-        "Decision: iterate for refinement OR regenerate if fundamentally wrong",
-        "Iterate when foundation is right but has gaps",
-        "Regenerate when architecture doesn't match your mental model",
-        "Use automated tests and manual testing before declaring success"
+        "LLMs are probabilistic—never expect 100% perfect on first pass",
+        "Goal: identify what's wrong, then decide: iterate or regenerate?",
+        "Iterate: foundation right, needs refinement (edge cases, patterns)",
+        "Regenerate: fundamental flaw (architecture mismatch, wrong approach)",
+        "Easier to fix context than fix generated code"
       ],
       "speakerNotes": {
-        "talkingPoints": "Here's the counterintuitive reality: your job isn't to achieve perfection from the agent. Your job is to accurately identify what's wrong, then decide whether to iterate with fixes or regenerate from scratch. Code generation is cheap. Don't get attached to output. If the foundation is right but has gaps—missing edge cases, some tech debt—iterate. If something fundamental is wrong—wrong architecture, misunderstood requirements—regenerate. Usually it's faster to fix your context (the prompt, examples, constraints) than to fix the generated code.",
+        "talkingPoints": "Imperfection isn't failure—it's expected behavior. Code generation is cheap. Don't get attached. The key principle: debug your input (the prompt), not the output.",
         "timing": "3 minutes",
-        "discussion": "Ask: When was the last time you regenerated vs iterated? How did you know which was faster?",
-        "context": "In production teams, the validate-and-iterate cycle typically needs 1-2 passes for exact planning tasks, 2-4 passes for exploration tasks. That's still 5-10x faster than manual implementation.",
-        "transition": "Let's talk about how you actually validate."
+        "discussion": "Ask: When have you spent too long fixing generated code instead of regenerating?",
+        "context": "Don't patch fundamentally broken code. Fix the context and regenerate.",
+        "transition": "What does effective validation actually look like in practice?"
       }
     },
     {
       "type": "concept",
-      "title": "Validating Without Reading Every Line",
+      "title": "Validation Techniques",
       "content": [
-        "Your mental model is your blueprint for quick validation",
-        "Check architecture: Does it match your system design?",
-        "Check patterns: Are patterns consistent with grounding?",
-        "Check behavior: Run code, test happy path and edge cases",
-        "Spot-check risky areas where your model flags concern"
+        "Run your code: be the user, test happy path, try to break it",
+        "5 minutes of manual testing reveals more than 1 hour of code review",
+        "Use the agent to review its own work (covered in Lesson 9)",
+        "Have the agent create tests as guardrails (covered in Lesson 8)",
+        "Validate behavior matches your plan and mental model"
       ],
       "speakerNotes": {
-        "talkingPoints": "When an agent generates 50 files, you don't review them line by line. You validate against your mental model. Does the architecture match your plan? Do the patterns align with what you grounded it with? Does the behavior satisfy your requirements? If yes, ship it. If no, identify whether it's context (regenerate) or refinement (iterate). This is faster and more reliable than character-by-character review.",
+        "talkingPoints": "Nothing beats actually running your implementation. Check edge cases, error handling, performance. Automated checks (build, tests, linters) give clear signal. If they pass, manually verify behavior matches your mental model.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: What parts of generated code concern you most? Those are your spot-check zones.",
-        "context": "Properly prompted AI-generated code is often easier to read than hand-written code—LLMs follow patterns with mechanical precision. Your job shifts from ensuring every detail is correct to ensuring the patterns themselves are correct.",
-        "transition": "This brings us to the closing principle of the workflow."
+        "discussion": "Ask: What's your current ratio of code review time to testing time?",
+        "context": "The agent is better at finding issues than generating perfect code first try. Leverage that.",
+        "transition": "This workflow isn't linear—it's iterative. Let's close the loop."
       }
     },
     {
       "type": "concept",
-      "title": "The Iteration Loop",
+      "title": "Closing the Loop",
       "content": [
-        "Validation often reveals gaps in research or planning",
-        "That's expected—loops back to Research or Plan phase",
-        "Each cycle should narrow scope and reduce rework",
-        "Few tasks go Research → Plan → Execute → Done",
-        "Framework catches issues before they become expensive"
+        "Validation reveals gaps in research or flaws in plan—that's expected",
+        "Value isn't executing perfectly first time—it's catching issues early",
+        "Validate against mental model, not by reading every line",
+        "Architecture matches plan? Patterns align with grounding? Behavior satisfies requirements?",
+        "If yes, ship it. If no, identify: context problem (regenerate) or refinement (iterate)"
       ],
       "speakerNotes": {
-        "talkingPoints": "This workflow isn't linear. It's a loop. Validation reveals issues. Some require new context or better understanding (loop to Research). Some require refined planning or approach (loop to Plan). Some just need cleanup (iterate in Execute). This is expected and normal. The value of the framework is that it catches issues at each phase instead of in production. Validation doesn't mean perfect code. It means accurate problem identification.",
-        "timing": "2 minutes",
-        "discussion": "Ask: Have you ever had validation reveal something that changed your architectural thinking? That's the loop working correctly.",
-        "context": "Teams that embrace the loop typically see rework costs drop 60-70% compared to teams that try for perfect output on first pass.",
-        "transition": "Let me close with a reality check about productivity."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "The Real 10x Productivity Gain",
-      "content": [
-        "Not about speed per task—about parallel work",
-        "Run three agents simultaneously while you work on other projects",
-        "Autonomous mode lets you maintain 8-hour productive stretches",
-        "You can genuinely multitask in software development for first time",
-        "Quality-of-life improvement: ship more code without grinding yourself"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "Most people think 10x productivity means tasks finish 10x faster. That's not it. It's about working on multiple projects simultaneously. While three agents run on different codebases, you're attending meetings, doing code review, planning architecture, living your life. Even if one task takes 30 minutes when you could hand-code it in 20, you win because you were doing something else valuable with that 30 minutes. This requires trusting your setup—excellent grounding, clear planning, proven execution patterns. But when you have that, you're not blocked by implementation anymore. You're writing code continuously at architectural speed.",
+        "talkingPoints": "The workflow is a systematic framework that catches issues before they compound. You're not validating by reading every line—you're validating against your mental model built during planning.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: How many projects are you currently juggling? How many could you handle if you weren't the bottleneck for implementation?",
-        "context": "Senior engineers in production environments report this as a career-changing shift. Not just more productive. Different kind of productive—strategic instead of tactical.",
-        "transition": "Let's summarize the core insights."
+        "discussion": "Ask: How do you currently decide when code is ready to ship?",
+        "context": "Strategy means nothing without execution. Next lesson covers the tactical prompting skills.",
+        "transition": "Let's summarize the key takeaways from this methodology."
       }
     },
     {
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Validate through patterns, not syntax",
-        "Ground research before planning architecture",
-        "Choose execution mode by certainty",
-        "Iterate or regenerate, not patch",
-        "Productivity comes from parallel work"
+        "Operator mindset: architecture over implementation",
+        "Always: Research → Plan → Execute → Validate",
+        "Mental model enables fast validation",
+        "Autonomous execution maximizes true productivity",
+        "Debug your input, not output"
       ],
       "speakerNotes": {
-        "talkingPoints": "These five points are the core of the operator mindset. You're not learning a new tool or a better prompt. You're restructuring how you think about your job in an AI-assisted environment. From implementation-focused to architecture-focused. From control-through-detail to control-through-pattern. From serial task completion to parallel orchestration.",
+        "talkingPoints": "The shift from craftsman to operator is psychological as much as methodological. The four-phase workflow is your systematic framework. Your mental model is your validation blueprint. Autonomous mode is where real gains hide.",
         "timing": "2 minutes",
-        "discussion": "Ask: Which takeaway challenges your current workflow most? Which excites you most about what's possible?",
-        "context": "If you internalize these concepts and apply them systematically, you'll see the productivity transformation within 2-3 weeks. After that, you'll never go back.",
-        "transition": "Next lesson: Lesson 4 covers the specific prompting techniques that make this workflow actually work in practice."
+        "discussion": "Ask: Which phase will you focus on improving first?",
+        "context": "Next lesson covers prompting—the tactical skills that make this strategic framework work.",
+        "transition": "Next: Lesson 4: Prompting 101 - Learn specific techniques for crafting effective prompts."
       }
     }
   ]
