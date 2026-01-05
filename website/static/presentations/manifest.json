@@ -68,5 +68,26 @@
     "estimatedDuration": "30-40 minutes",
     "title": "Agent-Friendly Code",
     "generatedAt": "2026-01-05T07:09:20.248Z"
+  },
+  "practical-techniques/lesson-6-project-onboarding.md": {
+    "presentationUrl": "/presentations/practical-techniques/lesson-6-project-onboarding.json",
+    "slideCount": 11,
+    "estimatedDuration": "30-40 minutes",
+    "title": "Project Onboarding with Context Files",
+    "generatedAt": "2026-01-05T07:20:46.578Z"
+  },
+  "practical-techniques/lesson-7-planning-execution.md": {
+    "presentationUrl": "/presentations/practical-techniques/lesson-7-planning-execution.json",
+    "slideCount": 14,
+    "estimatedDuration": "35-45 minutes",
+    "title": "Planning and Execution",
+    "generatedAt": "2026-01-05T07:23:14.470Z"
+  },
+  "practical-techniques/lesson-9-reviewing-code.md": {
+    "presentationUrl": "/presentations/practical-techniques/lesson-9-reviewing-code.json",
+    "slideCount": 12,
+    "estimatedDuration": "35-45 minutes",
+    "title": "Reviewing Code",
+    "generatedAt": "2026-01-05T07:24:58.759Z"
   }
 }

@@ -4,10 +4,10 @@
     "lessonId": "lesson-9-reviewing-code",
     "estimatedDuration": "35-45 minutes",
     "learningObjectives": [
-      "Review in fresh contexts",
+      "Review in fresh context",
       "Apply iterative review cycles",
       "Generate dual-audience PR descriptions",
-      "Leverage AI-assisted PR review"
+      "Recognize diminishing review returns"
     ]
   },
   "slides": [
@@ -17,28 +17,28 @@
       "subtitle": "The Validate Phase: Quality Gates Before Shipping",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "This lesson covers the Validate phase from the four-phase workflow. Code review catches probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, and edge cases handled incorrectly.",
+        "talkingPoints": "This lesson covers the Validate phase from our four-phase workflow. You've implemented code, tests pass, the agent executed your plan—now we need to verify it's actually correct. Code review catches probabilistic errors that agents inevitably introduce.",
         "timing": "1 minute",
-        "discussion": "Ask students about their current code review practices with AI-generated code.",
-        "context": "This follows implementation (Lesson 7) and testing (Lesson 8) in the workflow.",
-        "transition": "Let's start with the most critical insight about reviewing AI-generated code."
+        "discussion": "How many of you have shipped agent-generated code that later revealed subtle bugs?",
+        "context": "This is the final quality gate before committing. Without systematic review, you're trusting statistical predictions blindly.",
+        "transition": "Let's start with the fundamental principle that makes AI code review effective."
       }
     },
     {
       "type": "concept",
       "title": "The Fresh Context Principle",
       "content": [
-        "Review in a separate context from where code was written",
+        "Review in a fresh context, separate from implementation",
         "Agents defend decisions in the same conversation",
-        "Fresh context enables objective analysis",
+        "Stateless agents analyze objectively without attachment",
         "Prevents confirmation bias from prior choices"
       ],
       "speakerNotes": {
-        "talkingPoints": "This is the key insight: LLMs are stateless, but within a conversation they build attachment to their decisions. An agent reviewing its own work will rationalize and defend choices rather than critically analyze them.",
+        "talkingPoints": "The key insight for effective AI code review: always review in a fresh context. This leverages the stateless nature of LLMs from Lessons 1 and 2. An agent reviewing its own work in the same conversation will rationalize and defend its decisions. A fresh context provides objective analysis.",
         "timing": "2-3 minutes",
-        "discussion": "Have you noticed AI assistants being defensive about code they just wrote? How did you handle it?",
-        "context": "This connects to Lessons 1-2 on LLM and agent fundamentals—stateless nature can be leveraged for objectivity.",
-        "transition": "Now let's look at the structured review prompt template."
+        "discussion": "Why do you think agents defend their decisions in the same context? Think about how context window affects predictions.",
+        "context": "This is similar to why human developers benefit from code review by others—fresh eyes catch what you've become blind to.",
+        "transition": "With this principle in mind, let's look at the review prompt template."
       }
     },
     {
@@ -46,90 +46,89 @@
       "title": "The Review Prompt Template",
       "language": "markdown",
       "code": "You are an expert code reviewer. Analyze the current changeset and provide a critical review.\n\nThe changes in the working tree were meant to: $DESCRIBE_CHANGES\n\nThink step-by-step through each aspect below, focusing solely on the changes in the working tree.\n\n1. **Architecture & Design**\n   - Verify conformance to project architecture\n   - Check module responsibilities are respected\n   - Ensure changes align with the original intent\n\n2. **Code Quality**\n   - Code must be self-explanatory and readable\n   - Style must match surrounding code patterns\n   - Changes must be minimal - nothing unneeded\n   - Follow KISS principle\n\n3. **Maintainability**\n   - Optimize for future LLM agents working on the codebase\n   - Ensure intent is clear and unambiguous\n   - Verify comments and docs remain in sync with code\n\n4. **User Experience**\n   - Identify areas where extra effort would significantly improve UX\n   - Balance simplicity with meaningful enhancements\n\nReview the changes critically. Focus on issues that matter.\nUse ChunkHound's code research.\nDO NOT EDIT ANYTHING - only review.",
-      "caption": "Structured review prompt applying Lesson 4 prompting principles",
+      "caption": "Structured review prompt applying Lesson 4 techniques",
       "speakerNotes": {
-        "talkingPoints": "This template integrates persona, Chain-of-Thought, structure, and grounding requirements. Each element serves a purpose: persona establishes expertise, numbered sections enforce systematic analysis, and the final constraint prevents the agent from 'fixing' things during review.",
+        "talkingPoints": "This template integrates techniques from Lesson 4. Notice the persona, Chain-of-Thought instruction, structured categories, and explicit constraint at the end. The $DESCRIBE_CHANGES placeholder grounds the review in your actual intent.",
         "timing": "3-4 minutes",
-        "discussion": "Which elements from Lesson 4 do you recognize in this prompt? Why is the 'DO NOT EDIT' constraint important?",
-        "context": "The $DESCRIBE_CHANGES placeholder connects review to original intent, preventing drift.",
-        "transition": "Review is rarely one-pass—let's discuss the iterative cycle."
+        "discussion": "Which elements from Lesson 4 do you recognize here? Why is the 'DO NOT EDIT' constraint important?",
+        "context": "The constraint prevents the agent from making changes during review—separation of concerns between analysis and modification.",
+        "transition": "A single review pass is rarely enough. Let's talk about iterative review."
       }
     },
     {
       "type": "concept",
       "title": "Iterative Review Cycle",
       "content": [
-        "Review finds issues → fix → re-run tests → review again",
-        "Always review in fresh context (not same conversation)",
-        "Review itself is probabilistic—agent can be wrong",
-        "Tests are the objective arbiter"
+        "Review → Fix → Re-test → Review again (fresh context)",
+        "Review itself is probabilistic—agents can be wrong",
+        "Tests are the objective arbiter",
+        "Continue until green light or diminishing returns"
       ],
       "speakerNotes": {
-        "talkingPoints": "The review cycle continues until you reach a green light or diminishing returns. Critical insight: the review agent is also making statistical predictions—it might suggest 'fixes' that break working code. Your test suite catches these regressions.",
+        "talkingPoints": "Code review is rarely one-pass. First review finds issues, you fix them, re-run tests to catch regressions, then review again in a fresh context. The agent might suggest 'fixes' that break working code—your test suite catches this.",
         "timing": "2-3 minutes",
-        "discussion": "Has an AI review ever suggested a 'fix' that broke something? How did you catch it?",
-        "context": "This is where Lesson 8's test-first approach pays off—tests validate review suggestions.",
-        "transition": "How do we know when to stop iterating?"
+        "discussion": "What's the difference between a review-induced regression and a legitimate bug fix?",
+        "context": "In production, I've seen review suggestions that looked reasonable but broke edge cases the tests caught. Trust your tests.",
+        "transition": "Let's be specific about what diminishing returns looks like."
       }
     },
     {
       "type": "comparison",
       "title": "When to Ship vs When to Iterate",
       "left": {
-        "label": "Stop and Ship",
+        "label": "Keep Iterating",
         "content": [
-          "Tests passing + review green",
-          "Tests passing + review nitpicking",
-          "4+ iterations with minor remaining issues",
-          "Agent hallucinating non-existent problems"
+          "Critical logic bugs identified",
+          "Architecture violations found",
+          "Security issues flagged",
+          "Tests failing after changes"
         ]
       },
       "right": {
-        "label": "Continue Iterating",
+        "label": "Ship It",
         "content": [
-          "Tests failing (fix issues first)",
-          "Critical architectural violations found",
-          "Security vulnerabilities identified",
-          "Breaking changes not documented"
+          "Tests passing + review green",
+          "Only trivial style nitpicks remain",
+          "Agent hallucinating non-existent issues",
+          "4+ iterations for minor issues"
         ]
       },
-      "neutral": true,
       "speakerNotes": {
-        "talkingPoints": "Diminishing returns manifest as nitpicking, hallucinations, review-induced test failures, or excessive iteration cost. At that point, trust your tests as the objective arbiter. The key question: does this issue actually matter in production?",
+        "talkingPoints": "This is where operator judgment becomes essential. Left side: legitimate issues worth fixing. Right side: signs of diminishing returns. The agent inventing problems or suggesting fixes that break tests means it's time to trust your tests and ship.",
         "timing": "2-3 minutes",
-        "discussion": "How do you distinguish substantive feedback from nitpicking in your current workflow?",
-        "context": "This balances perfectionism against shipping velocity—both are valid concerns.",
-        "transition": "Now let's move to pull requests—serving two very different audiences."
+        "discussion": "Have you experienced an AI review cycle that went on too long? What were the signs?",
+        "context": "Excessive review iterations cost tokens, time, and risk degrading quality. Know when to stop.",
+        "transition": "Now let's shift to pull requests—they serve two very different audiences."
       }
     },
     {
       "type": "comparison",
-      "title": "PR Audiences: Human vs AI Reviewers",
+      "title": "Two Audiences for PR Descriptions",
       "left": {
         "label": "Human Reviewers",
         "content": [
           "Scan quickly, infer from context",
           "Value concise summaries (1-3 paragraphs)",
-          "Want to understand 'why' and business value",
+          "Want the 'why' and business value",
           "Process holistically at a glance"
         ]
       },
       "right": {
         "label": "AI Review Assistants",
         "content": [
-          "Parse content chunk-by-chunk",
-          "Struggle with vague pronouns",
+          "Parse chunk-by-chunk sequentially",
           "Need explicit structure and terminology",
-          "Require detailed technical context"
+          "Require file paths and architectural context",
+          "Struggle with vague pronouns"
         ]
       },
       "neutral": true,
       "speakerNotes": {
-        "talkingPoints": "Traditional PR descriptions optimize for one audience or the other. The solution: generate both in a coordinated workflow using sub-agents. This applies the dual-audience principle throughout the review process.",
+        "talkingPoints": "PRs serve two fundamentally different audiences that process information differently. Traditional PR descriptions optimize for one or the other—too verbose for humans, too vague for AI. The solution: generate both in a coordinated workflow.",
         "timing": "2-3 minutes",
-        "discussion": "Think about your last PR description. Which audience was it optimized for?",
-        "context": "This connects to Lesson 5's grounding principles—different consumers need different context formats.",
-        "transition": "Let's look at the prompt pattern for generating dual-optimized descriptions."
+        "discussion": "Think about a recent PR you reviewed. Was the description optimized for you or for an AI assistant?",
+        "context": "This dual-audience challenge is increasingly common as teams adopt AI review assistants like GitHub Copilot.",
+        "transition": "Let's look at a prompt pattern that generates both descriptions."
       }
     },
     {
@@ -137,13 +136,13 @@
       "title": "PR Description Generator Prompt",
       "language": "markdown",
       "code": "You are a contributor to {PROJECT_NAME} creating a GitHub pull request for the current branch. Using the sub task tool to conserve context, explore the changes in the git history relative to mainstream. Summarize and explain like you would to a fellow co-worker:\n- Direct and concise\n- Professional but conversational\n- Assume competence and intelligence\n- Skip obvious explanations\n\nThe intent of the changes is:\n```\n{CHANGES_DESC}\n```\n\nBuilding upon this, draft two markdown files: one for a human review / maintainer for the project and another complementary that's optimized for the reviewer's agent. Explain:\n- What was done and the reasoning behind it\n- Breaking changes, if any exist\n- What value it adds to the project\n\n**CONSTRAINTS:**\n- The human optimized markdown file should be 1-3 paragraphs max\n- Do NOT state what was done, instead praise where due and focus on what needs to be done\n- Agent optimized markdown should focus on explaining the changes efficiently\n\n**DELIVERABLES:**\n- HUMAN_REVIEW.md - Human optimized review\n- AGENT_REVIEW.md - Agent optimized review",
-      "caption": "Generates coordinated PR descriptions for both human and AI reviewers",
+      "caption": "Generates dual-audience PR descriptions in one workflow",
       "speakerNotes": {
-        "talkingPoints": "Notice the sub-agent instruction for context conservation—exploring 20-30 changed files consumes 40K+ tokens. The sub-agent returns only synthesized findings. Multi-source grounding (ArguSeek + ChunkHound) ensures descriptions reflect actual codebase patterns.",
+        "talkingPoints": "This prompt demonstrates multiple techniques: sub-agents for context conservation, multi-source grounding, structured output requirements. The 'sub task tool' spawns a separate agent for git exploration, preventing context overflow.",
         "timing": "3-4 minutes",
-        "discussion": "Why does the prompt specify 'Using the sub task tool'? What problem does this solve?",
-        "context": "This combines techniques from Lessons 4, 5, and 7: persona, grounding, evidence requirements.",
-        "transition": "Now let's flip perspectives—how do we review PRs that come with dual descriptions?"
+        "discussion": "Why is the sub-task instruction critical for large PRs with many changed files?",
+        "context": "Without sub-agents, exploring 20-30 changed files consumes 40K+ tokens, pushing constraints into the attention curve's ignored middle.",
+        "transition": "Now let's look at the receiving end—how to review PRs with AI assistance."
       }
     },
     {
@@ -153,50 +152,58 @@
         "Read human description first for 'why' and business value",
         "Form initial mental model of the changeset",
         "Feed AI-optimized description to your review assistant",
-        "Validates findings against comprehensive technical context"
+        "AI gets comprehensive context for accurate analysis"
       ],
       "speakerNotes": {
-        "talkingPoints": "When you're on the receiving end of a PR with dual descriptions, use them strategically. Human-optimized for your quick scan, AI-optimized to feed your AI assistant for accurate analysis with proper grounding.",
+        "talkingPoints": "When you receive a PR with dual descriptions, use both strategically. The human description orients you quickly. The AI-optimized description provides the grounding your AI assistant needs to avoid hallucinations.",
         "timing": "2 minutes",
-        "discussion": "How would this change your current PR review workflow?",
-        "context": "This creates a virtuous cycle: contributors generate structured context, reviewers leverage it efficiently.",
-        "transition": "Let's look at the AI-assisted review prompt pattern."
+        "discussion": "How does having structured context change the quality of AI-assisted reviews?",
+        "context": "The AI-optimized description reduces the need for the review agent to explore and infer—it has explicit paths and patterns.",
+        "transition": "Let's examine the review prompt pattern for analyzing PRs."
       }
     },
     {
       "type": "code",
       "title": "AI-Assisted PR Review Prompt",
       "language": "markdown",
-      "code": "You are ChunkHound's maintainer reviewing {PR_LINK}. Ensure code quality, prevent technical debt, and maintain architectural consistency.\n\n# Review Process\n1. Use `gh` CLI to read the complete PR - all files, commits, comments, related issues.\n2. Think step by step, but only keep a minimum draft for each thinking step, with 5 words at most. End the assessment with a separator ####.\n3. Never speculate about code you haven't read - investigate files before commenting.\n\n# Critical Checks\nBefore approving, verify:\n- Can existing code be extended instead of creating new (DRY)?\n- Does this respect module boundaries and responsibilities?\n- Are there similar patterns elsewhere? Search the codebase.\n- Is this introducing duplication?\n\n# Output Format\n```markdown\n**Summary**: [One sentence verdict]\n**Strengths**: [2-3 items]\n**Issues**: [By severity: Critical/Major/Minor with file:line refs]\n**Reusability**: [Specific refactoring opportunities]\n**Decision**: [APPROVE/REQUEST CHANGES/REJECT]\n```\n\nBelow is the contributor's description of the changes. Do NOT trust it, validate it yourself.\n```\n{AGENT_DESC}\n```",
-      "caption": "Two-step review: generate analysis, validate findings, then create output",
+      "code": "You are ChunkHound's maintainer reviewing {PR_LINK}. Ensure code quality, prevent technical debt, and maintain architectural consistency.\n\n# Review Process\n1. Use `gh` CLI to read the complete PR - all files, commits, comments, related issues.\n2. Think step by step, but only keep a minimum draft for each thinking step, with 5 words at most. End the assessment with a separator ####.\n3. Never speculate about code you haven't read - investigate files before commenting.\n\n# Critical Checks\nBefore approving, verify:\n- Can existing code be extended instead of creating new (DRY)?\n- Does this respect module boundaries and responsibilities?\n- Are there similar patterns elsewhere? Search the codebase.\n- Is this introducing duplication?\n\n# Output Format\n```markdown\n**Summary**: [One sentence verdict]\n**Strengths**: [2-3 items]\n**Issues**: [By severity: Critical/Major/Minor with file:line refs]\n**Reusability**: [Specific refactoring opportunities]\n**Decision**: [APPROVE/REQUEST CHANGES/REJECT]\n```\n\nStart by executing `gh pr view {PR_LINK} --comments`, follow with the Code Research tool for codebase understanding.",
+      "caption": "Two-step review: generate analysis, validate, then create output",
       "speakerNotes": {
-        "talkingPoints": "Notice step 2 uses Chain of Draft—thinking step by step but keeping drafts to 5 words max. This maintains reasoning benefits while reducing token consumption. The 'Do NOT trust it' instruction forces validation over assumption.",
+        "talkingPoints": "Notice step 2: 'Think step by step, but only keep a minimum draft for each thinking step, with 5 words at most.' This is Chain of Draft—an efficiency optimization over Chain of Thought that maintains reasoning quality with fewer tokens.",
         "timing": "3-4 minutes",
-        "discussion": "Why does the prompt say 'Do NOT trust' the contributor's description? How does this prevent review shortcuts?",
-        "context": "After Step 1, review the output for hallucinations before Step 2 generates final files.",
-        "transition": "Let's understand Chain of Draft—the technique used in step 2."
+        "discussion": "Why does the prompt explicitly say 'Never speculate about code you haven't read'?",
+        "context": "Evidence requirements force grounding—the agent must read actual code before commenting, reducing hallucinated issues.",
+        "transition": "Let's examine the Chain of Draft technique more closely."
       }
     },
     {
-      "type": "codeComparison",
+      "type": "comparison",
       "title": "Chain of Thought vs Chain of Draft",
-      "leftCode": {
+      "left": {
         "label": "Chain of Thought (CoT)",
-        "language": "text",
-        "code": "Think step by step through\neach aspect of the code.\nExplain your reasoning\nin detail for each step."
+        "content": [
+          "Verbose step-by-step explanations",
+          "Full reasoning written out",
+          "Higher token consumption",
+          "Longer response times"
+        ]
       },
-      "rightCode": {
+      "right": {
         "label": "Chain of Draft (CoD)",
-        "language": "text",
-        "code": "Think step by step, but\nonly keep a minimum draft\nfor each thinking step,\nwith 5 words at most.\nEnd with separator ####."
+        "content": [
+          "Minimal drafts per step (5 words max)",
+          "Same reasoning benefits",
+          "Reduced token consumption",
+          "Faster responses"
+        ]
       },
       "neutral": true,
       "speakerNotes": {
-        "talkingPoints": "Chain of Draft maintains structured reasoning benefits while being more efficient. Instead of verbose explanations, the LLM keeps concise drafts (5 words max per step) then returns final assessment. Same quality, reduced tokens, faster responses.",
+        "talkingPoints": "Chain of Draft maintains structured reasoning while being more efficient. The instruction 'think step by step, but only keep a minimum draft' triggers the same logical breakdown as CoT but with compressed output. Final assessment comes after the #### separator.",
         "timing": "2-3 minutes",
-        "discussion": "When would you prefer verbose CoT over efficient CoD? What trade-offs exist?",
-        "context": "CoD is particularly useful for reviews where you want reasoning without consuming context space.",
-        "transition": "Let's discuss the critical distinction between codebase types."
+        "discussion": "When would you prefer verbose CoT over efficient CoD?",
+        "context": "For reviews where you need to understand the agent's reasoning, CoT is better. For production throughput, CoD wins.",
+        "transition": "Let's discuss a critical distinction for your codebase."
       }
     },
     {
@@ -212,21 +219,21 @@
         ]
       },
       "right": {
-        "label": "Mixed Codebases (Most Common)",
+        "label": "Mixed Codebases",
         "content": [
           "Human and AI collaboration",
-          "Optimize for human brevity",
-          "Maintain AI navigability",
-          "Add manual review step before committing"
+          "Balance human brevity with AI navigability",
+          "Most production codebases",
+          "Add manual review before committing"
         ]
       },
       "neutral": true,
       "speakerNotes": {
-        "talkingPoints": "Most production codebases are mixed. The critical difference: add a manual review step where you fully read and audit AI-generated code before committing. Without explicit project rules, agents generate code following training patterns that may not match your team's style.",
+        "talkingPoints": "The same engineering standards apply to both—DRY, YAGNI, architecture. What differs is coding style optimization. Most production codebases are mixed, requiring an additional manual review step to ensure human readability.",
         "timing": "2-3 minutes",
-        "discussion": "Is your codebase agent-only or mixed? How does this affect your review process?",
-        "context": "Tune your project rules (Lesson 6) to guide agents toward expected writing style.",
-        "transition": "Let's wrap up with the key takeaways."
+        "discussion": "Which type is your current project? How does that affect your review process?",
+        "context": "Without explicit project rules, agents generate code following training patterns that may not match your team's style.",
+        "transition": "Let's wrap up with the key principles for code review."
       }
     },
     {
@@ -235,16 +242,16 @@
       "content": [
         "Fresh context prevents confirmation bias",
         "Iterate until green or diminishing",
-        "Tests are the objective arbiter",
         "Generate dual-audience PR descriptions",
-        "Validate AI suggestions with evidence"
+        "Chain of Draft optimizes reasoning",
+        "Tests arbitrate review disagreements"
       ],
       "speakerNotes": {
-        "talkingPoints": "Review in fresh context for objectivity. Iterate the review cycle but stop at diminishing returns. Trust tests over AI opinions. Generate separate descriptions for human and AI reviewers. Always validate suggestions against actual code.",
-        "timing": "2 minutes",
-        "discussion": "Which of these practices will you implement first in your workflow?",
-        "context": "These practices integrate with the four-phase workflow: Research → Plan → Execute → Validate.",
-        "transition": "Next lesson covers debugging with AI—when code doesn't work as expected."
+        "talkingPoints": "Five principles to remember: Review in fresh context for objectivity. Iterate the review cycle but recognize diminishing returns. Generate descriptions for both human and AI reviewers. Use Chain of Draft for efficient reasoning. When review suggestions break tests, trust your tests.",
+        "timing": "2-3 minutes",
+        "discussion": "Which of these principles will most change how you approach code review tomorrow?",
+        "context": "These techniques apply whether you're reviewing your own agent-generated code or PRs from others using AI assistance.",
+        "transition": "Next lesson covers Debugging with AI—what happens when things go wrong despite careful review."
       }
     }
   ]
