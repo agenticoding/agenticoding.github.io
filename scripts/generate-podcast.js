@@ -1680,7 +1680,7 @@ async function promptSelectFile(files, baseDir, prompt) {
 /**
  * Generate script for a file
  */
-async function generateScript(filePath, scriptManifest, config) {
+async function generateScript(filePath, scriptManifest, modifiedScriptKeys, config) {
   const relativePath = relative(DOCS_DIR, filePath);
   const fileName = basename(filePath, extname(filePath));
 
@@ -1761,7 +1761,7 @@ async function generateScript(filePath, scriptManifest, config) {
     // Save script with frontmatter
     const scriptInfo = saveScript(dialog, filePath, outputPath, fileName);
 
-    // Update manifest
+    // Update manifest and track modified key
     const scriptUrl = relative(SCRIPT_OUTPUT_DIR, outputPath);
     scriptManifest[relativePath] = {
       scriptPath: scriptUrl,
@@ -1769,6 +1769,7 @@ async function generateScript(filePath, scriptManifest, config) {
       tokenCount: scriptInfo.tokenCount,
       generatedAt: new Date().toISOString(),
     };
+    modifiedScriptKeys.add(relativePath);
 
     console.log(`  ✅ Saved: ${scriptUrl}`);
     console.log(`  📊 Token count: ${scriptInfo.tokenCount}`);
@@ -1784,7 +1785,7 @@ async function generateScript(filePath, scriptManifest, config) {
 /**
  * Generate audio from script
  */
-async function generateAudioFromScript(scriptPath, audioManifest, genAI) {
+async function generateAudioFromScript(scriptPath, audioManifest, modifiedAudioKeys, genAI) {
   const relativePath = relative(SCRIPT_OUTPUT_DIR, scriptPath);
   const fileName = basename(scriptPath, extname(scriptPath));
 
@@ -1812,7 +1813,7 @@ async function generateAudioFromScript(scriptPath, audioManifest, genAI) {
     // Convert WAV to MP3
     const mp3Info = await convertWavToMp3(wavPath, mp3Path);
 
-    // Update manifest using the source doc path as key
+    // Update manifest using the source doc path as key and track modified key
     const audioUrl = `/audio/${join(relativeDir, mp3FileName)}`;
     audioManifest[frontmatter.source] = {
       audioUrl,
@@ -1823,6 +1824,7 @@ async function generateAudioFromScript(scriptPath, audioManifest, genAI) {
       generatedAt: new Date().toISOString(),
       scriptSource: relativePath,
     };
+    modifiedAudioKeys.add(frontmatter.source);
 
     console.log(`  ✅ Generated: ${audioUrl}`);
     console.log(
@@ -1843,7 +1845,9 @@ async function generateAudioFromScript(scriptPath, audioManifest, genAI) {
 async function processFile(
   filePath,
   scriptManifest,
+  modifiedScriptKeys,
   audioManifest,
+  modifiedAudioKeys,
   config,
   genAI,
 ) {
@@ -1854,7 +1858,7 @@ async function processFile(
 
   // Generate script
   if (shouldGenerateScript) {
-    scriptPath = await generateScript(filePath, scriptManifest, config);
+    scriptPath = await generateScript(filePath, scriptManifest, modifiedScriptKeys, config);
 
     if (!scriptPath) {
       console.log(`  ⚠️  Skipping audio generation - no script generated`);
@@ -1875,7 +1879,7 @@ async function processFile(
 
   // Generate audio
   if (shouldGenerateAudio) {
-    await generateAudioFromScript(scriptPath, audioManifest, genAI);
+    await generateAudioFromScript(scriptPath, audioManifest, modifiedAudioKeys, genAI);
   }
 }
 
@@ -1939,13 +1943,15 @@ async function main() {
     `\n📚 Found ${sourceFiles.length} source file${sourceFiles.length !== 1 ? "s" : ""}`,
   );
 
-  // Load existing manifests
+  // Load existing manifests and track modified keys for merge-on-write
   let scriptManifest = {};
+  const modifiedScriptKeys = new Set();
   if (existsSync(SCRIPT_MANIFEST_PATH)) {
     scriptManifest = JSON.parse(readFileSync(SCRIPT_MANIFEST_PATH, "utf-8"));
   }
 
   let audioManifest = {};
+  const modifiedAudioKeys = new Set();
   if (existsSync(AUDIO_MANIFEST_PATH)) {
     audioManifest = JSON.parse(readFileSync(AUDIO_MANIFEST_PATH, "utf-8"));
   }
@@ -1993,10 +1999,10 @@ async function main() {
     try {
       if (config.pipeline === "audio-only") {
         // Audio-only: file is already a script path
-        await generateAudioFromScript(file, audioManifest, genAI);
+        await generateAudioFromScript(file, audioManifest, modifiedAudioKeys, genAI);
       } else {
         // Script or both: file is a doc path
-        await processFile(file, scriptManifest, audioManifest, config, genAI);
+        await processFile(file, scriptManifest, modifiedScriptKeys, audioManifest, modifiedAudioKeys, config, genAI);
       }
       successCount++;
     } catch (error) {
@@ -2005,20 +2011,34 @@ async function main() {
     }
   }
 
-  // Save manifests
+  // Merge-on-write: re-read manifests and merge only our changes to avoid race conditions
   if (config.pipeline !== "audio-only") {
+    let freshScriptManifest = {};
+    if (existsSync(SCRIPT_MANIFEST_PATH)) {
+      freshScriptManifest = JSON.parse(readFileSync(SCRIPT_MANIFEST_PATH, "utf-8"));
+    }
+    for (const key of modifiedScriptKeys) {
+      freshScriptManifest[key] = scriptManifest[key];
+    }
     mkdirSync(dirname(SCRIPT_MANIFEST_PATH), { recursive: true });
     writeFileSync(
       SCRIPT_MANIFEST_PATH,
-      JSON.stringify(scriptManifest, null, 2) + "\n",
+      JSON.stringify(freshScriptManifest, null, 2) + "\n",
     );
   }
 
   if (config.pipeline !== "script-only") {
+    let freshAudioManifest = {};
+    if (existsSync(AUDIO_MANIFEST_PATH)) {
+      freshAudioManifest = JSON.parse(readFileSync(AUDIO_MANIFEST_PATH, "utf-8"));
+    }
+    for (const key of modifiedAudioKeys) {
+      freshAudioManifest[key] = audioManifest[key];
+    }
     mkdirSync(dirname(AUDIO_MANIFEST_PATH), { recursive: true });
     writeFileSync(
       AUDIO_MANIFEST_PATH,
-      JSON.stringify(audioManifest, null, 2) + "\n",
+      JSON.stringify(freshAudioManifest, null, 2) + "\n",
     );
   }
 

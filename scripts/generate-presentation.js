@@ -1463,7 +1463,7 @@ function validateLearningObjectivesWordCount(presentation) {
 /**
  * Generate presentation for a file
  */
-async function generatePresentation(filePath, manifest, config) {
+async function generatePresentation(filePath, manifest, modifiedKeys, config) {
   const relativePath = relative(DOCS_DIR, filePath);
   const fileName = basename(filePath, extname(filePath));
 
@@ -1729,7 +1729,7 @@ async function generatePresentation(filePath, manifest, config) {
     mkdirSync(dirname(staticPath), { recursive: true });
     writeFileSync(staticPath, JSON.stringify(presentation, null, 2), "utf-8");
 
-    // Update manifest
+    // Update manifest and track modified key
     const presentationUrl = `/presentations/${join(dirname(relativePath), outputFileName)}`;
     manifest[relativePath] = {
       presentationUrl,
@@ -1738,6 +1738,7 @@ async function generatePresentation(filePath, manifest, config) {
       title: presentation.metadata.title,
       generatedAt: new Date().toISOString(),
     };
+    modifiedKeys.add(relativePath);
 
     console.log(
       `  ${validationErrors.length > 0 ? "⚠️" : "✅"} Generated: ${presentationUrl}`,
@@ -1788,8 +1789,9 @@ async function main() {
     `\n📚 Found ${sourceFiles.length} source file${sourceFiles.length !== 1 ? "s" : ""}`,
   );
 
-  // Load existing manifest
+  // Load existing manifest and track modified keys for merge-on-write
   let manifest = {};
+  const modifiedKeys = new Set();
   if (existsSync(MANIFEST_PATH)) {
     manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf-8"));
   }
@@ -1828,7 +1830,7 @@ async function main() {
 
   for (const file of filesToProcess) {
     try {
-      await generatePresentation(file, manifest, config);
+      await generatePresentation(file, manifest, modifiedKeys, config);
       successCount++;
     } catch (error) {
       console.error(`  ❌ Failed: ${error.message}`);
@@ -1836,13 +1838,21 @@ async function main() {
     }
   }
 
-  // Save manifests
+  // Merge-on-write: re-read manifest and merge only our changes to avoid race conditions
+  let freshManifest = {};
+  if (existsSync(MANIFEST_PATH)) {
+    freshManifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf-8"));
+  }
+  for (const key of modifiedKeys) {
+    freshManifest[key] = manifest[key];
+  }
+
   mkdirSync(dirname(MANIFEST_PATH), { recursive: true });
-  writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + "\n");
+  writeFileSync(MANIFEST_PATH, JSON.stringify(freshManifest, null, 2) + "\n");
 
   const staticManifestPath = join(STATIC_OUTPUT_DIR, "manifest.json");
   mkdirSync(dirname(staticManifestPath), { recursive: true });
-  writeFileSync(staticManifestPath, JSON.stringify(manifest, null, 2) + "\n");
+  writeFileSync(staticManifestPath, JSON.stringify(freshManifest, null, 2) + "\n");
 
   // Summary
   console.log("\n" + "=".repeat(60));
