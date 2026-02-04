@@ -7,7 +7,7 @@ sidebar_position: 3
 
 [Modern terminals](/developer-tools/terminals) combined with CLI tools achieve feature parity with traditional IDEs—ripgrep + fzf for global search, yazi for file exploration, tmux/Zellij for pane management, lazygit for git operations. For multi-agent development, this stack becomes critical infrastructure: session persistence across disconnects, rapid context switching between worktrees, and efficient file operations without breaking flow.
 
-**Six categories:** Search & discovery (ripgrep, fd), text editing & inspection (micro, bat), file navigation (eza, yazi, fzf, zoxide), session management (tmux, Zellij), shell history (Atuin), and git operations (lazygit) address the most frequent CLI tasks in multi-agent development workflows.
+**Seven categories:** Search & discovery (ripgrep, fd), text editing & inspection (micro, bat), file navigation (eza, yazi, fzf, zoxide), session management (tmux, Zellij), shell history (Atuin), git operations (lazygit), and browser automation (agent-browser) address the most frequent CLI tasks in multi-agent development workflows.
 
 ## Search & Discovery Tools
 
@@ -369,6 +369,44 @@ cargo install zellij
 sudo pacman -S zellij       # Arch
 # Others: check https://zellij.dev/documentation/installation
 ```
+
+## Browser Automation
+
+### agent-browser
+
+[**agent-browser**](https://agent-browser.dev/) is a Rust-based CLI for browser automation designed specifically for AI agents. Native binary, cross-platform support, works with any agent that runs shell commands.
+
+**Key differentiators:** Ref-based accessibility tree system returns compact snapshots with deterministic element references (`@e1`, `@e2`)—agents click by ref instead of fragile CSS selectors or XPath. Token-efficient output (200-400 tokens per snapshot vs 5,000-15,000 for full DOM) preserves agent context window. 50+ commands cover navigation, forms, screenshots, network inspection, and storage. Session support enables multiple isolated browser instances with separate authentication states. Native Rust CLI provides instant command parsing without Node.js or Python runtime overhead.
+
+**Best suited for:** AI-assisted workflows where agents need to interact with web UIs—testing changes in browser, filling forms, extracting data, validating deployments. Engineers using CLI-based agents (Claude Code, Cursor, Copilot) who need browser automation without MCP server setup. Developers wanting deterministic element selection over screenshot-based visual parsing or brittle selector strategies.
+
+**Trade-offs:** Ref-based selection requires snapshot before interaction (two commands minimum). Relies on accessibility tree, which may miss dynamically rendered content without proper ARIA attributes—ensure target applications have semantic markup.
+
+**Example workflow:**
+
+```bash
+agent-browser open example.com
+agent-browser snapshot -i        # Returns refs: [ref=@e1] "Example Domain", [ref=@e2] "More information..."
+agent-browser click @e2          # Click by ref—deterministic, no selector fragility
+agent-browser screenshot page.png
+agent-browser close
+```
+
+**Installation:**
+
+```bash
+# npm (recommended)
+npm install -g agent-browser
+
+# Verify installation
+agent-browser --version
+```
+
+Requirements: Node.js 18+ for npm installation. Chromium-based browser (bundled or system Chrome).
+
+:::tip Why Ref-Based Automation Wins
+agent-browser's ref-based approach (`@e1`, `@e2`) produces deterministic element selection that outperforms selector-based alternatives. The accessibility tree snapshot captures semantic structure, not visual layout—agents understand what elements *are* rather than where they appear on screen. This leads to more reliable automation that survives UI changes.
+:::
 
 ---
 
