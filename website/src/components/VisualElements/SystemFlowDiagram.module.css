@@ -1,0 +1,226 @@
+/* Container Styles */
+.container {
+  margin: 2rem 0;
+  padding: 1rem 0;
+}
+
+/* Compact mode for presentations - maximize content area */
+.container.compact {
+  margin: 0 auto;
+  padding: 0;
+  max-width: 100%;
+}
+
+/* SVG Sizing */
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  max-width: 580px;
+}
+
+.container.compact .svg {
+  max-width: 100%;
+}
+
+/* Animation */
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stepGroup,
+.exitGroup {
+  animation: fadeInSlide 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .stepGroup,
+  .exitGroup {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Main flow step boxes */
+.stepBox {
+  fill: var(--visual-bg-workflow);
+  stroke: var(--visual-workflow);
+  stroke-width: 2.5;
+  transition: all 0.2s ease;
+}
+
+.stepBox:hover {
+  fill: var(--visual-bg-decision);
+  stroke: var(--visual-decision);
+}
+
+/* Step labels */
+.stepLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 18px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* Main flow arrows */
+.mainArrow {
+  stroke: var(--visual-workflow);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+}
+
+/* Fork/Join paths for concurrent phases */
+.forkPath,
+.joinPath {
+  stroke: var(--visual-workflow);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.arrowMarker {
+  fill: var(--visual-workflow);
+}
+
+/* Concurrent phase bracket */
+.concurrentBracket {
+  stroke: var(--visual-workflow);
+  stroke-width: 2;
+  stroke-dasharray: 4 2;
+  fill: none;
+}
+
+/* Success terminal */
+.successTerminal {
+  fill: var(--visual-bg-capability);
+  stroke: var(--visual-capability);
+  stroke-width: 2.5;
+}
+
+.checkmark {
+  fill: var(--visual-capability);
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* Exit path (dashed line down) */
+.exitPath {
+  stroke: var(--ifm-color-emphasis-400);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+  fill: none;
+  stroke-linecap: round;
+}
+
+/* Exit marker pills */
+.exitMarkerError {
+  fill: var(--visual-bg-error);
+  stroke: var(--visual-error);
+  stroke-width: 1.5;
+}
+
+.exitMarkerSuccess {
+  fill: var(--visual-bg-capability);
+  stroke: var(--visual-capability);
+  stroke-width: 1.5;
+}
+
+/* Exit codes */
+.exitCode {
+  fill: var(--ifm-font-color-base);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem 0;
+  }
+
+  .stepLabel {
+    font-size: 14px;
+  }
+
+  .exitCode {
+    font-size: 12px;
+  }
+
+  .checkmark {
+    font-size: 18px;
+  }
+}
+
+/* Dark mode specific adjustments for presentations */
+:global(.reveal) .stepBox {
+  fill: rgba(167, 139, 250, 0.2);
+  stroke: #a78bfa;
+  stroke-width: 3;
+}
+
+:global(.reveal) .mainArrow,
+:global(.reveal) .forkPath,
+:global(.reveal) .joinPath {
+  stroke: #a78bfa;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+:global(.reveal) .arrowMarker {
+  fill: #a78bfa;
+}
+
+:global(.reveal) .concurrentBracket {
+  stroke: #a78bfa;
+  stroke-width: 3;
+}
+
+:global(.reveal) .stepLabel {
+  fill: #e5e7eb;
+  font-size: 22px;
+}
+
+:global(.reveal) .successTerminal {
+  fill: rgba(34, 197, 94, 0.2);
+  stroke: #22c55e;
+  stroke-width: 3;
+}
+
+:global(.reveal) .checkmark {
+  fill: #22c55e;
+  font-size: 26px;
+}
+
+:global(.reveal) .exitPath {
+  stroke: #9ca3af;
+  stroke-width: 2.5;
+}
+
+:global(.reveal) .exitMarkerError {
+  fill: rgba(239, 68, 68, 0.2);
+  stroke: #ef4444;
+  stroke-width: 2;
+}
+
+:global(.reveal) .exitMarkerSuccess {
+  fill: rgba(34, 197, 94, 0.2);
+  stroke: #22c55e;
+  stroke-width: 2;
+}
+
+:global(.reveal) .exitCode {
+  fill: #e5e7eb;
+  font-size: 16px;
+}

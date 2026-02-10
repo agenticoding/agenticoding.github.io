@@ -1,0 +1,335 @@
+## Generate System Specification
+
+Systematic workflow for extracting or creating system specifications using [ChunkHound](https://chunkhound.github.io/) code research. Use this to understand existing systems before modification, or to design new features systematically.
+
+### The Prompt
+
+```````markdown
+---
+argument-hint: [System Name]
+description: Generate Spec for Sub-System 
+---
+
+You are a senior systems architect writing a system oriented specification.
+
+`````markdown
+# {Feature Name}
+
+> **Spec Version:** 1.0 | **Code:** `git:HEAD` | **Status:** draft
+
+## Background
+
+**Problem:** [1-2 sentences]
+
+**Impact:** [who affected, severity]
+
+| Metric | Current | Target | Failure |
+|--------|---------|--------|---------|
+| [name] | [baseline] | [goal] | [unacceptable] |
+
+---
+
+## Map Architecture
+
+### Modules
+
+| Module | Responsibility | Boundary | Trace |
+|--------|---------------|----------|-------|
+| [name] | [single responsibility] | `src/[module]/` | `src/[module]/index.ts` |
+
+### Contracts
+
+> Internal APIs between modules. Changes require version bump.
+
+| Provider | Consumer | Contract | Breaking Change Policy |
+|----------|----------|----------|------------------------|
+| [module] | [modules] | `Service.method(): ReturnType` | semver major / notify / none |
+
+### Boundaries
+
+- **[module]** - NEVER import from [other modules] - [reason]
+- **[module]** - MAY import from [modules] via contract only
+- **Shared kernel:** `src/shared/` - [what lives here]
+
+### Integration Points
+
+| Point | Type | Owner | Consumers |
+|-------|------|-------|-----------|
+| [endpoint/event/service] | HTTP / async / in-process | [module] | [who calls it] |
+
+---
+
+## Define Interfaces
+
+### Inputs
+
+| Name | Type | Source | Validation | Trace |
+|------|------|--------|------------|-------|
+| [input] | [type] | [origin] | [rules] | `path/file.ts:fn()` |
+
+### Outputs
+
+| Name | Type | Destination | Format | Trace |
+|------|------|-------------|--------|-------|
+| [output] | [type] | [target] | [schema] | `path/file.ts:fn()` |
+
+### Endpoints
+
+| Method | Path | Request | Response | Auth | Trace |
+|--------|------|---------|----------|------|-------|
+| POST | /resource | `CreateRequest` | `Resource` | bearer | `src/routes/resource.ts:create` |
+
+---
+
+## Define State
+
+### Entities
+
+| Entity | Persistence | Storage | Owner |
+|--------|-------------|---------|-------|
+| [name] | ephemeral/persistent | [where] | [service] |
+
+### Error States
+
+| Code | Meaning | Recovery | Trace |
+|------|---------|----------|-------|
+| [error] | [cause] | [resolution] | `path/file.ts` |
+
+### State Model
+
+> Choose one: Declarative, Event-Driven, or State Machine. Delete unused.
+
+#### Option A: Declarative (Desired State)
+
+- **Target state:** [what system converges to]
+- **Reconciliation:** [how drift is detected and fixed]
+- **Interval:** [polling frequency or trigger]
+
+#### Option B: Event-Driven
+
+| Event | Payload | Producer | Consumer |
+|-------|---------|----------|----------|
+| [name] | [schema] | [source] | [handler] |
+
+- **Ordering:** strict / causal / none
+- **Delivery:** at-least-once / exactly-once
+- **Replay:** from offset / timestamp / none
+
+#### Option C: State Machine
+
+| State | Transitions To | Trigger |
+|-------|----------------|---------|
+| [state] | [next states] | [event] |
+
+- **Initial:** [start state]
+- **Terminal:** [end states]
+
+### Caching
+
+| Cache | Strategy | TTL | Invalidation |
+|-------|----------|-----|--------------|
+| [name] | write-through/aside | [duration] | [trigger] |
+
+---
+
+## Enforce Constraints
+
+| ID | Rule | Verified By | Data | Stress |
+|----|------|-------------|------|--------|
+| C-001 | NEVER [action] | [verification approach] | [data source/properties] | [edge condition] |
+
+### C-001: NEVER [forbidden action]
+
+- **Instead:** [positive alternative]
+- **Exception:** [if any, or "none"]
+- **Verified by:** [how violation is detected - e.g., "attempt forbidden action, assert rejection"]
+- **Test data:** [synthetic/fixture with properties]
+- **Scale:** [volume] | **Stress:** [concurrent/failure conditions]
+
+---
+
+## Assert Invariants
+
+| ID | Condition | Scope | Manifested By | Data | Scale |
+|----|-----------|-------|---------------|------|-------|
+| I-001 | `[expression]` | [scope] | [how test exercises] | [data properties] | [volume/stress] |
+
+### I-001: [Invariant Name]
+
+- **Condition:** `[expression]` (e.g., `shard_count = rows / shard_size +/- tolerance`)
+- **Manifested by:** [test approach - e.g., "generate N rows, verify shard distribution"]
+- **Data:** [synthetic with known properties that must satisfy condition]
+- **Scale:** [row count] | **Stress:** [concurrent rebalance, failure injection]
+
+---
+
+## Trace Flows
+
+### Primary Flow
+
+1. **[Action verb]** at `path/file.ts:fn()`
+   - Validate: [what is checked]
+   - On success: [next step]
+   - On failure: [error response]
+
+2. **[Action verb]** at `path/file.ts:fn()`
+   - [describe operation]
+   - On success: [next step]
+   - On failure: [error response]
+
+3. **Return response**
+   - Success: [status + schema]
+   - Error: [status + error schema]
+
+### Cleanup Flow
+
+1. **[Setup action]** at `path/file.ts`
+2. **[Operation]** at `path/file.ts`
+3. **[Teardown]** at `path/file.ts`
+   - On failure: [rollback action]
+4. **Verify clean** via `[check command or function]`
+
+---
+
+## Initialize System
+
+| Order | Component | Depends On | Ready When | On Fail |
+|-------|-----------|------------|------------|---------|
+| 1 | [component] | - | [health condition] | abort |
+| 2 | [component] | [1] | [condition] | retry/degrade |
+
+**Cold start:** [notes] | **Crash recovery:** [idempotency]
+
+---
+
+## Secure System
+
+### Threat Model
+
+| Threat | Likelihood | Impact | Mitigation | Trace |
+|--------|------------|--------|------------|-------|
+| [threat] | low/med/high | low/med/high | [control] | `path/file.ts` |
+
+### Authentication
+
+- **Method:** [JWT / OAuth / API key / session]
+- **Token location:** [header / cookie / query]
+- **Validation:** `path/auth.ts:validate()`
+
+### Authorization
+
+- **Model:** [RBAC / ABAC / ACL]
+- **Enforcement:** `path/authz.ts:check()`
+- **Default:** deny
+
+### Data Protection
+
+| Data | Classification | In Transit | At Rest | Retention |
+|------|----------------|------------|---------|-----------|
+| [field] | PII/sensitive/public | TLS 1.3 | AES-256 | [duration] |
+
+---
+
+## Observe System
+
+### Logging
+
+- **Format:** structured JSON
+- **Correlation:** `traceId` from request header
+- **Redaction:** PII fields via `src/logging/redact.ts`
+
+### Metrics
+
+| Metric | Type | Labels | Alert Threshold |
+|--------|------|--------|-----------------|
+| request_duration_ms | histogram | endpoint, status | p99 > 500ms |
+| request_total | counter | endpoint, status | error_rate > 1% |
+| [custom] | gauge/counter | [labels] | [condition] |
+
+### SLOs
+
+| Indicator | Target | Window | Burn Rate Alert |
+|-----------|--------|--------|-----------------|
+| Availability | 99.9% | 30d | 2% budget in 1h |
+| Latency p99 | < 200ms | 30d | 5% budget in 6h |
+
+### Tracing
+
+- **Propagation:** W3C Trace Context
+- **Sampling:** [rate or tail-based rules]
+- **Spans:** [key operations to instrument]
+
+---
+
+## Specify Quality Attributes
+
+| Attribute | Target | Degraded | Failure | Measurement |
+|-----------|--------|----------|---------|-------------|
+| Availability | 99.9% | 99.5% | 99% | uptime/month |
+| Latency p95 | 100ms | 200ms | 1s | APM traces |
+| Throughput | 10k rps | 5k rps | 1k rps | load test |
+| Recovery | 15min | 30min | 1h | incident drill |
+
+---
+
+## Plan Deployment
+
+### Strategy
+
+- **Method:** blue-green / canary / rolling
+- **Canary %:** [if applicable]
+- **Bake time:** [observation period]
+
+### Rollback Triggers
+
+| Condition | Action | Automatic |
+|-----------|--------|-----------|
+| Error rate > 5% for 5m | rollback | yes |
+| Latency p99 > 2x baseline | rollback | yes |
+| [custom condition] | [action] | yes/no |
+
+### Migration
+
+- **Approach:** big-bang / phased
+- **Backward compatible:** [duration]
+- **Verification:** [reconciliation method]
+
+---
+
+## Define Integration
+
+### Dependencies
+
+| Service | Contract | On Failure | Timeout |
+|---------|----------|------------|---------|
+| [name] | [API/schema] | [fallback] | [ms] |
+
+### Exposes
+
+| Endpoint | Contract | SLA | Rate Limit |
+|----------|----------|-----|------------|
+| [path] | [schema] | [latency/uptime] | [requests/window] |
+
+`````
+
+1. Use repeat `code_research` calls to learn the different sub systems and internals of `$ARGUMENTS`.
+2. Write a system spec according to the format above.
+    - Skip sections that are not relevant
+    - Include only what's relevant to fully describing `$ARGUMENTS` in its system context.
+    - Include diagrams where relevant.
+    - Use repeat `code_research` calls to learn the different sub systems and internals of `$ARGUMENTS`.
+    - Write the resulting spec to a markdown file under `specs/` with an appropriate name.
+3. Spawn a general-purpose agent to:
+    - Read the resulting spec file
+    - Determine if and what gaps are present
+    - Follow up with `code_research` and reading relevant files to fill any remaining gaps
+    - Update the spec file, ONLY if needed. Do NOT update if no gaps have been filed.
+```````
+
+### Workflow
+
+1. **Research** - Use `code_research` to understand the system's modules and internals
+2. **Write** - Create spec based on findings (not imagination), skip irrelevant sections, save to `specs/`
+3. **Gap Analysis (Isolated Context)** - Spawn a general-purpose agent with fresh context to review the spec. The distinct context prevents confirmation bias—the reviewing agent approaches the spec as a reader, not the author, and can identify gaps the original agent missed. See [Lesson 5: Grounding](/docs/methodology/lesson-5-grounding) on sub-agent context isolation
+
+**After implementation:** Delete the spec file - code is the source of truth ([Lesson 12](/docs/practical-techniques/lesson-12-spec-driven-development)).

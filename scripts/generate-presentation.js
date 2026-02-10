@@ -182,6 +182,35 @@ For presentation slides:
 ✗ Don't include every code example from the lesson
 ✗ Don't show code without explaining its purpose
 
+HANDLING MARKDOWN TABLES (CRITICAL):
+
+Source material may contain markdown tables (pipe/dash syntax like | Col1 | Col2 |).
+Tables are NOT a valid slide format—they're unreadable at presentation scale and
+violate the one-concept-per-slide principle.
+
+ABSOLUTE RULE: NEVER put pipe/dash table syntax in code or codeComparison slides.
+NEVER use language="markdown" for content containing table structures.
+
+Instead, distill tables into appropriate slide types:
+
+1. Two-category tables → "comparison" slide (neutral=true if both sides are valid)
+   Extract the key insight from each row as a bullet point.
+
+2. List-of-items tables → "concept" slide
+   Each row becomes one bullet capturing the essential insight.
+
+3. Sequential/flow tables → "codeExecution" slide
+   Each row becomes a step with appropriate highlightType.
+
+4. Good-vs-bad tables → "comparison" slide (evaluative, neutral=false)
+   Left = weak approach, Right = strong approach.
+
+Put the FULL original table in speakerNotes.talkingPoints for instructor reference.
+The slide shows the distilled insight; the notes provide the data.
+
+NOTE: language="markdown" IS valid for prompt templates showing what to write to an
+AI (e.g., CLAUDE.md examples). It is ONLY prohibited for pipe/dash table content.
+
 CODE FORMATTING FOR PRESENTATIONS:
 
 ✓ Include natural line breaks in code and text (use \\n for newlines in JSON strings)
@@ -1461,6 +1490,34 @@ function validateLearningObjectivesWordCount(presentation) {
 }
 
 /**
+ * Validate that no code/codeComparison slides contain raw markdown table syntax
+ * Tables rendered as code are unreadable at presentation scale and should be
+ * distilled into comparison/concept/codeExecution slides instead.
+ * @param {object} presentation - Generated presentation object
+ * @returns {object} Validation result with issues
+ */
+function validateNoMarkdownTablesInCode(presentation) {
+  const issues = [];
+  const tablePattern = /\|.+\|.+\|\n\|[-| ]+\|/;
+
+  for (const slide of presentation.slides) {
+    const checkCode = (code, label) => {
+      if (code && tablePattern.test(code)) {
+        issues.push({ slide: slide.title, location: label });
+      }
+    };
+
+    if (slide.type === "code") checkCode(slide.code, "code");
+    if (slide.type === "codeComparison") {
+      checkCode(slide.leftCode?.code, "leftCode");
+      checkCode(slide.rightCode?.code, "rightCode");
+    }
+  }
+
+  return { valid: issues.length === 0, issues };
+}
+
+/**
  * Generate presentation for a file
  */
 async function generatePresentation(filePath, manifest, modifiedKeys, config) {
@@ -1653,6 +1710,30 @@ async function generatePresentation(filePath, manifest, modifiedKeys, config) {
     } else if (codeSourceValidation.codeSlidesChecked > 0) {
       console.log(
         `  ✅ All ${codeSourceValidation.codeSlidesChecked} code slide(s) verified against source`,
+      );
+    }
+
+    // Validate no raw markdown tables in code slides
+    // Tables rendered as <pre><code> are unreadable at presentation scale
+    const tableValidation = validateNoMarkdownTablesInCode(presentation);
+    if (!tableValidation.valid) {
+      console.log(
+        `  ❌ BUILD FAILURE: ${tableValidation.issues.length} raw markdown table(s) in code slides:`,
+      );
+      tableValidation.issues.forEach((issue) => {
+        console.log(
+          `      - Slide "${issue.slide}" (${issue.location})`,
+        );
+      });
+      console.log(
+        `  ℹ️  Distill tables into comparison/concept/codeExecution slides instead`,
+      );
+      validationErrors.push(
+        "Table validation failed - raw markdown tables found in code slides",
+      );
+    } else {
+      console.log(
+        `  ✅ No raw markdown tables in code slides`,
       );
     }
 

@@ -60,19 +60,9 @@ title: 'Lesson Title'
 sidebar_position: X
 ---
 
-## Learning Objectives
-
-- Objective 1 (specific, measurable)
-- Objective 2
-- Objective 3
-
 ## Content
 
 [Main lesson content with examples]
-
-## Hands-On Exercise
-
-[Practical exercise with clear instructions]
 
 ## Key Takeaways
 
@@ -140,62 +130,6 @@ Never expose API keys in client-side code
 :::info Context
 This approach is preferred in TypeScript projects
 :::
-```
-
-## Learning Objectives
-
-### Characteristics of Good Objectives
-
-- **Specific** - Clear, well-defined outcome
-- **Measurable** - Can verify if achieved
-- **Actionable** - Describes what learner will DO
-- **Relevant** - Aligned with module goals
-- **Time-bound** - Achievable within lesson scope
-
-### Examples
-
-**Good:**
-
-- "Implement effective prompt patterns for code refactoring tasks"
-- "Evaluate trade-offs between different AI coding assistants for your workflow"
-- "Design a secure architecture leveraging AI for code generation"
-
-**Bad:**
-
-- "Understand AI coding assistants" (too vague)
-- "Learn about prompting" (not measurable)
-- "Become an expert" (not specific or time-bound)
-
-## Hands-On Exercises
-
-### Exercise Guidelines
-
-- **Real-world context** - Scenarios engineers actually face
-- **Clear instructions** - What to do, expected outcome
-- **Appropriate difficulty** - Challenging but achievable
-- **Multiple paths** - Allow different valid approaches
-- **Extension opportunities** - Bonus challenges for faster learners
-
-### Example Exercise Structure
-
-```markdown
-## Hands-On Exercise: Prompt-Driven Refactoring
-
-**Scenario:** You have a legacy Node.js API with poor error handling...
-
-**Your Task:**
-
-1. Analyze the code structure
-2. Craft a prompt that guides the AI to refactor with:
-   - Proper error handling middleware
-   - Validation at API boundaries
-   - Consistent error response format
-3. Evaluate the AI-generated solution
-4. Iterate based on issues found
-
-**Expected Outcome:** Production-ready error handling that follows REST best practices
-
-**Bonus Challenge:** Add OpenTelemetry tracing to the refactored code
 ```
 
 ## Content Dependencies

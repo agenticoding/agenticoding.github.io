@@ -1,0 +1,299 @@
+/* Container */
+.container {
+  margin: 2rem 0;
+  padding: 1rem 0;
+}
+
+.container.compact {
+  margin: 0 auto;
+  padding: 0;
+  max-width: 100%;
+}
+
+/* SVG */
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  max-width: 580px;
+}
+
+.container.compact .svg {
+  max-width: 100%;
+}
+
+/* Animation */
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animGroup {
+  animation: fadeInSlide 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animGroup {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Boundary dashed rect */
+.boundary {
+  fill: none;
+  stroke: var(--ifm-color-emphasis-400);
+  stroke-width: 2.5;
+  stroke-dasharray: 8 4;
+}
+
+.boundaryLabel {
+  fill: var(--ifm-color-emphasis-500);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Internal module boxes (purple) */
+.moduleBox {
+  fill: var(--visual-bg-workflow);
+  stroke: var(--visual-workflow);
+  stroke-width: 2.5;
+  transition: all 0.2s ease;
+}
+
+.moduleBox:hover {
+  fill: var(--visual-bg-decision);
+  stroke: var(--visual-decision);
+}
+
+.moduleLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 18px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* External actor boxes (gray) */
+.actorBox {
+  fill: var(--visual-bg-decision);
+  stroke: var(--visual-neutral);
+  stroke-width: 2.5;
+  transition: all 0.2s ease;
+}
+
+.actorBox:hover {
+  fill: var(--visual-bg-workflow);
+  stroke: var(--visual-workflow);
+}
+
+.actorLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* Arrow labels — paint-order halo masks underlying arrows/boxes */
+.arrowLabel {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 14px;
+  font-family: var(--ifm-font-family-base);
+  paint-order: stroke;
+  stroke: var(--ifm-background-color);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+
+/* Contract arrows (purple, internal) */
+.contractArrow {
+  stroke: var(--visual-workflow);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.contractMarker {
+  fill: var(--visual-workflow);
+}
+
+/* Input arrows (cyan, external → internal) */
+.inputArrow {
+  stroke: var(--visual-capability);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.inputMarker {
+  fill: var(--visual-capability);
+}
+
+/* Output arrows (orange, internal → external) */
+.outputArrow {
+  stroke: var(--visual-limitation);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.outputMarker {
+  fill: var(--visual-limitation);
+}
+
+/* Legend */
+.legendLine {
+  stroke-width: 3;
+  fill: none;
+}
+
+.legendLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 15px;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem 0;
+  }
+
+  .moduleLabel {
+    font-size: 14px;
+  }
+
+  .actorLabel {
+    font-size: 13px;
+  }
+
+  .arrowLabel {
+    font-size: 11px;
+  }
+
+  .boundaryLabel {
+    font-size: 12px;
+  }
+
+  .legendLabel {
+    font-size: 11px;
+  }
+}
+
+/* Presentation overrides */
+:global(.reveal) .moduleBox {
+  fill: rgba(167, 139, 250, 0.2);
+  stroke: #a78bfa;
+  stroke-width: 3;
+}
+
+:global(.reveal) .actorBox {
+  fill: rgba(156, 163, 175, 0.15);
+  stroke: #9ca3af;
+  stroke-width: 3;
+}
+
+:global(.reveal) .boundary {
+  stroke: #6b7280;
+  stroke-width: 3;
+}
+
+:global(.reveal) .boundaryLabel {
+  fill: #9ca3af;
+  font-size: 18px;
+}
+
+:global(.reveal) .moduleLabel {
+  fill: #e5e7eb;
+  font-size: 22px;
+}
+
+:global(.reveal) .actorLabel {
+  fill: #e5e7eb;
+  font-size: 20px;
+}
+
+:global(.reveal) .arrowLabel {
+  fill: #d1d5db;
+  font-size: 16px;
+  stroke: #000;
+  stroke-width: 6px;
+}
+
+:global(.reveal) .contractArrow {
+  stroke: #a78bfa;
+  stroke-width: 4;
+}
+
+:global(.reveal) .contractMarker {
+  fill: #a78bfa;
+}
+
+:global(.reveal) .inputArrow {
+  stroke: #22d3ee;
+  stroke-width: 4;
+}
+
+:global(.reveal) .inputMarker {
+  fill: #22d3ee;
+}
+
+:global(.reveal) .outputArrow {
+  stroke: #fb923c;
+  stroke-width: 4;
+}
+
+:global(.reveal) .outputMarker {
+  fill: #fb923c;
+}
+
+:global(.reveal) .legendLine {
+  stroke-width: 4;
+}
+
+:global(.reveal) .legendLabel {
+  fill: #e5e7eb;
+  font-size: 16px;
+}
+
+/* Compact/horizontal layout: scale down for wider viewBox */
+:global(.reveal) .compact .moduleLabel {
+  font-size: 16px;
+}
+
+:global(.reveal) .compact .actorLabel {
+  font-size: 15px;
+}
+
+:global(.reveal) .compact .arrowLabel {
+  font-size: 12px;
+  stroke-width: 4px;
+}
+
+:global(.reveal) .compact .boundaryLabel {
+  font-size: 14px;
+}
+
+:global(.reveal) .compact .legendLabel {
+  font-size: 13px;
+}
+
+:global(.reveal) .compact .contractArrow,
+:global(.reveal) .compact .inputArrow,
+:global(.reveal) .compact .outputArrow {
+  stroke-width: 3;
+}
+
+:global(.reveal) .compact .legendLine {
+  stroke-width: 3;
+}

@@ -48,7 +48,7 @@ Both problems feed the same exponential curve. When you accept a random AI error
 
 From [Lesson 5](/docs/methodology/lesson-5-grounding), agents discover your codebase through **agentic search**—Grep, Read, Glob. **Agents only see code they explicitly find.** When constraints scatter across files, search determines what the agent sees and what it misses.
 
-**❌ Anti-pattern (scattered constraints):**
+**Anti-pattern (scattered constraints):**
 
 ```typescript
 // File: services/auth.ts
@@ -62,7 +62,7 @@ const MIN_PASSWORD_LENGTH = 12  // ← Agent never searches for this file
 
 **What happens:** Agent searches `Grep("createUser")` → reads `services/auth.ts` → generates code accepting 3-character passwords because it never saw `MIN_PASSWORD_LENGTH`.
 
-**✅ Production pattern (co-located constraints):**
+**Production pattern (co-located constraints):**
 
 ```typescript
 // File: services/auth.ts

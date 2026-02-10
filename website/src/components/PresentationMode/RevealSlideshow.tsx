@@ -24,6 +24,8 @@ import AbstractShapesVisualization from '../VisualElements/AbstractShapesVisuali
 import PlanningStrategyComparison from '../VisualElements/PlanningStrategyComparison';
 import CompoundQualityVisualization from '../VisualElements/CompoundQualityVisualization';
 import KnowledgeExpansionDiamond from '../VisualElements/KnowledgeExpansionDiamond';
+import SystemFlowDiagram from '../VisualElements/SystemFlowDiagram';
+import SystemBoundaryDiagram from '../VisualElements/SystemBoundaryDiagram';
 
 interface SpeakerNotes {
   talkingPoints: string;
@@ -94,6 +96,8 @@ const VISUAL_COMPONENTS = {
   PlanningStrategyComparison,
   CompoundQualityVisualization,
   KnowledgeExpansionDiamond,
+  SystemFlowDiagram,
+  SystemBoundaryDiagram,
 };
 
 export default function RevealSlideshow({
@@ -244,7 +248,7 @@ export default function RevealSlideshow({
               </code>
             </pre>
             {slide.caption && (
-              <p className={`${styles.caption} ${styles.slideCaption}`}>
+              <p className={`${styles.caption} slideCaption`}>
                 {slide.caption}
               </p>
             )}
@@ -430,12 +434,12 @@ export default function RevealSlideshow({
               )}
             </div>
             {slide.caption && (
-              <p className={`${styles.caption} ${styles.slideCaption}`}>
+              <p className={`${styles.caption} slideCaption`}>
                 {slide.caption}
               </p>
             )}
             {slide.subtitle && (
-              <p className={`${styles.subtitle} ${styles.slideCaption}`}>
+              <p className={`${styles.subtitle} slideCaption`}>
                 {slide.subtitle}
               </p>
             )}

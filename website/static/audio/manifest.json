@@ -115,5 +115,14 @@
     "chunks": 2,
     "generatedAt": "2025-12-31T15:10:46.451Z",
     "scriptSource": "practical-techniques/lesson-12-spec-driven-development.md"
+  },
+  "practical-techniques/lesson-13-systems-thinking-specs.md": {
+    "audioUrl": "/audio/practical-techniques/lesson-13-systems-thinking-specs.mp3",
+    "size": 10715708,
+    "format": "audio/mp3",
+    "tokenCount": 3484,
+    "chunks": 5,
+    "generatedAt": "2026-02-08T18:50:10.825Z",
+    "scriptSource": "practical-techniques/lesson-13-systems-thinking-specs.md"
   }
 }

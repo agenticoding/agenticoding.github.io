@@ -42,6 +42,11 @@ const sidebars: SidebarsConfig = {
       label: 'Onboarding',
       items: ['onboarding/generate-agents-md'],
     },
+    {
+      type: 'category',
+      label: 'Specifications',
+      items: ['specifications/generate-spec', 'specifications/spec-template'],
+    },
   ],
 };
 

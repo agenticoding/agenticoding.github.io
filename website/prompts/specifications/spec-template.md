@@ -1,0 +1,34 @@
+---
+title: System Specification Template
+sidebar_position: 2
+---
+
+import SpecTemplate from '@site/shared-prompts/_spec-template.mdx';
+
+## System Specification Template
+
+A structured template for writing system specifications from scratch. Use this when
+designing new features, planning architectural changes, or documenting existing systems
+for modification.
+
+For **extracting** specs from an existing codebase automatically, use the
+[Generate System Spec](/prompts/specifications/generate-spec) prompt instead.
+
+### The Template
+
+<SpecTemplate />
+
+### How to Use
+
+1. Copy the sections relevant to your system's complexity
+   (see [Matching Depth to Complexity](/docs/practical-techniques/lesson-13-systems-thinking-specs#matching-depth-to-complexity))
+2. Fill in with your domain specifics — skip sections that don't apply
+3. Use as context for agent implementation or as a design document for team review
+4. Delete after implementation — code is the source of truth
+   ([Lesson 12](/docs/practical-techniques/lesson-12-spec-driven-development))
+
+### Related
+
+- [Lesson 13: Thinking in Systems](/docs/practical-techniques/lesson-13-systems-thinking-specs) — explains the reasoning behind each section
+- [Lesson 12: Spec-Driven Development](/docs/practical-techniques/lesson-12-spec-driven-development) — the spec lifecycle
+- [Generate System Spec](/prompts/specifications/generate-spec) — auto-extract specs from code

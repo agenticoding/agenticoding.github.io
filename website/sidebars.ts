@@ -46,6 +46,7 @@ const sidebars: SidebarsConfig = {
         'practical-techniques/lesson-10-debugging',
         'practical-techniques/lesson-11-agent-friendly-code',
         'practical-techniques/lesson-12-spec-driven-development',
+        'practical-techniques/lesson-13-systems-thinking-specs',
       ],
     },
   ],

@@ -1,0 +1,266 @@
+{
+  "metadata": {
+    "title": "Systems Thinking for Specs",
+    "lessonId": "lesson-13-systems-thinking-specs",
+    "estimatedDuration": "35-45 minutes",
+    "learningObjectives": [
+      "Write precise spec constraints",
+      "Define modules and boundaries",
+      "Model state and transitions",
+      "Match depth to complexity"
+    ]
+  },
+  "slides": [
+    {
+      "type": "title",
+      "title": "Systems Thinking for Specs",
+      "subtitle": "From vague intent to precise blueprints",
+      "content": [],
+      "speakerNotes": {
+        "talkingPoints": "Last lesson established that specs are temporary scaffolding—deleted after implementation. This lesson covers what makes a spec good enough to produce quality code. Think of the spec template not as a form, but as a thinking framework where each section asks a question you might otherwise skip.",
+        "timing": "1 minute",
+        "discussion": "Ask: When was the last time a vague requirement led to code that compiled but missed the point?",
+        "context": "Builds directly on Lesson 12's SDD workflow. Now we go deeper into what the spec artifact actually contains.",
+        "transition": "Let's start with why precision matters when agents execute your specs mechanically."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "The Manufacturing Paradigm",
+      "content": [
+        "AI agents execute specs mechanically",
+        "Your role shifts: writing code → articulating intent",
+        "Vague specs produce vague code",
+        "Each constraint narrows the solution space",
+        "Bottleneck shifted from production to orchestration + verification"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Give an agent a well-structured spec, and it produces code that matches. This changes your role fundamentally: instead of writing code, you articulate intent precisely—defining what the system must do, what it must prevent, and how you'll know it's working. Researchers call this the shift from production to orchestration plus verification.",
+        "timing": "2-3 minutes",
+        "discussion": "Ask: How has your role changed since you started using AI coding assistants? Do you spend more time specifying or implementing?",
+        "context": "Xu et al. (2025) argues software engineering shifts from production to orchestration + verification as AI makes code generation cheap.",
+        "transition": "Let's see what vague versus precise actually looks like in practice."
+      }
+    },
+    {
+      "type": "codeComparison",
+      "title": "Vague vs Precise Constraints",
+      "leftCode": {
+        "label": "Vague",
+        "language": "text",
+        "code": "Handle webhook authentication\n\nStore payment data"
+      },
+      "rightCode": {
+        "label": "Precise",
+        "language": "text",
+        "code": "C-001: NEVER process unsigned webhook\n— Signature validation on line 1 of handler\n\nI-001: SUM(transactions) = account.balance\n— Verified by: generate 1K transactions,\n  check sum after each batch"
+      },
+      "speakerNotes": {
+        "talkingPoints": "The vague version leaves the agent guessing about what 'handle' and 'store' mean. The precise version narrows the solution space—each constraint becomes a barrier the agent won't cross. Notice the precise version includes constraint IDs, specific validation rules, and verification methods.",
+        "timing": "3-4 minutes",
+        "discussion": "Ask students to take a vague requirement from their current project and rewrite it with this level of precision. What did they discover?",
+        "context": "This is the core debugging heuristic: if architecture is sound, fix the code (mechanical error). If the model or boundaries are wrong, fix the spec and regenerate. Code generation is cheap—don't patch around a flawed blueprint.",
+        "transition": "Now let's look at the first major spec section: architecture—modules, boundaries, and contracts."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Architecture: Modules, Boundaries, Contracts",
+      "content": [
+        "Module = unit with single responsibility (one sentence)",
+        "Boundaries = what a module CANNOT import",
+        "Contracts = preconditions + postconditions between modules",
+        "Integration points = doors in the boundary wall"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Every system has internal structure. The architecture section forces you to make that structure explicit. A module isn't 'handles payments'—that's a category. It's 'Processes Stripe webhook events and updates payment state'—a single sentence responsibility. Boundaries define coupling constraints: webhook-handler NEVER imports from notification or order. Contracts define communication: what the caller provides and what the callee guarantees.",
+        "timing": "3-4 minutes",
+        "discussion": "Ask: Can you describe each module in your current system in one sentence? If not, which ones are doing too much?",
+        "context": "Example: webhook-handler publishes events to a queue, consumers decide action. This boundary prevents changes in one module from rippling through the system. Integration points have direction—inbound needs validation and rate limiting; internal pub/sub needs delivery guarantees.",
+        "transition": "Architecture defines the skeleton. Next: what does the system remember?"
+      }
+    },
+    {
+      "type": "comparison",
+      "title": "State Models: Choosing the Right One",
+      "neutral": true,
+      "left": {
+        "label": "Declarative",
+        "content": [
+          "UI rendering, infrastructure, schemas",
+          "desired_state + reconciliation_loop",
+          "Simple reasoning, needs a reconciler",
+          "React, Terraform, SQL, GitOps"
+        ]
+      },
+      "right": {
+        "label": "Event-Driven / State Machine",
+        "content": [
+          "Event: webhooks, messaging, CQRS",
+          "SM: payment lifecycles, approval chains",
+          "Full audit trail vs impossible illegal transitions",
+          "Model shapes code agents generate"
+        ]
+      },
+      "speakerNotes": {
+        "talkingPoints": "Choose one model per entity. Payment lifecycle = state machine (pending → processing → succeeded/failed). Webhook ingestion = event-driven (append-only log, at-least-once delivery). Account balance = declarative (SUM of transactions must converge to account.balance). The model shapes code agents generate: state machines produce switch/case with explicit transitions, event-driven produces handlers and projections, declarative produces diff-and-patch reconcilers.\n\nFull table from source:\n| Model | Use When | Tradeoff | Key Question |\n| Declarative | UI rendering, infrastructure, schema convergence | Simple to reason about; need a reconciler | What should the end state be? |\n| Event-Driven | Webhooks, messaging, event sourcing, CQRS | Full audit trail; eventual consistency | What happened, and in what order? |\n| State Machine | Payment lifecycles, order flows, approval chains | Illegal transitions impossible; every edge enumerated | What transitions are legal from this state? |",
+        "timing": "3-4 minutes",
+        "discussion": "Ask: For your most complex entity, which state model are you using? Is it the right one, or did it evolve organically?",
+        "context": "Declarative is increasingly the default. The core pattern is always: desired_state + reconciliation_loop. When no reconciler exists for your domain, you're building one—that's the cost.",
+        "transition": "State also means handling errors and crashes. Let's look at how specs make recovery explicit."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Error States and Crash Recovery",
+      "content": [
+        "Errors aren't exceptions—they're part of the data model",
+        "Each error code needs explicit recovery path",
+        "Startup ordering determines restart safety",
+        "Every component: 'ready when' + 'on fail' behavior",
+        "Non-idempotent startup = corrupted state on crash"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "When you model error states explicitly, recovery paths become obvious. PAYMENT_PENDING: retry webhook check. PAYMENT_FAILED: notify user, allow retry. WEBHOOK_DUPLICATE: return 200, skip processing. Systems don't start in steady state either—startup ordering and crash recovery determine whether a restart corrupts data or resumes cleanly. Specify what 'ready' means for each component and what happens when readiness fails.",
+        "timing": "2-3 minutes",
+        "discussion": "Ask: What happens to your system right now if the process dies mid-operation? Do you know which state is ephemeral vs persistent?",
+        "context": "The distinction between persistent (database) and ephemeral (Redis lock) state matters for crash recovery. If a ProcessingLock is ephemeral and the process dies, your system must handle the missing lock gracefully.",
+        "transition": "Architecture describes the internals. Now let's flip perspective—what does the system look like from outside?"
+      }
+    },
+    {
+      "type": "visual",
+      "title": "System Boundary Diagram",
+      "component": "SystemBoundaryDiagram",
+      "caption": "The dashed line separates internal architecture from external interfaces.",
+      "speakerNotes": {
+        "talkingPoints": "The dashed line is the key concept here. Everything inside is architecture: modules connected by contracts. Everything crossing it is an interface: data entering as inputs or leaving as outputs. Integration points are the doors in the wall. This visual distinction between internal and external is what makes specs actionable.",
+        "timing": "2-3 minutes",
+        "discussion": "Ask students to draw the boundary for their own system. What surprises them about where the line falls?",
+        "context": "This diagram bridges the architecture section (internal) and the interfaces section (external). Understanding which side of the boundary you're specifying changes what you document.",
+        "transition": "Let's zoom into what crosses that boundary—the interfaces section."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Interfaces: Inputs and Outputs",
+      "content": [
+        "Every input needs: Format, Validation, Rate Limit",
+        "Missing any of the three = bugs waiting to happen",
+        "Outputs need: Destination, Format, SLA",
+        "Observability: logging, SLOs, tracing for production systems"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Every system has a surface area where data enters and exits. Inputs cross the boundary from external sources. The Format column is what you parse, Validation is what you reject, Rate Limit is what you throttle. Example: Stripe webhook is HTTPS POST, StripeEvent JSON format, HMAC-SHA256 signature validation, 100/min rate limit. Outputs define SLAs—the webhook ack must respond within 5 seconds. For production systems, also specify structured logging with correlation IDs, SLOs with burn-rate alerts, and distributed tracing.",
+        "timing": "2-3 minutes",
+        "discussion": "Ask: For your most critical input endpoint, can you name its format, validation rules, and rate limit right now?",
+        "context": "The full template also covers deep observability: structured logging format, PII redaction, correlation IDs, availability/latency targets, tracing propagation standard and sampling strategy.",
+        "transition": "From interfaces to deployment—how the system gets to production."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Deployment and Integration Dependencies",
+      "content": [
+        "Deployment strategy: blue-green, canary, rolling",
+        "Rollback triggers: which metrics cause auto-rollback?",
+        "Each dependency: contract, on-failure behavior, timeout",
+        "Circuit breakers prevent cascade failures",
+        "Without fallback modes, one slow dependency = full outage"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "How a system gets to production and how it behaves when dependencies fail are as much a part of the spec as business logic. Deployment decisions affect code structure: canary deployments require feature flags, rolling updates require backward-compatible APIs. Example: Stripe API dependency has REST contract with idempotency key, queue-for-retry on failure, 5s timeout, circuit breaker at 50% failure rate. These decisions must be explicit in the spec because they change what code agents generate.",
+        "timing": "2 minutes",
+        "discussion": "Ask: What happens in your system when your primary external dependency goes down for 30 seconds? Is that behavior specified anywhere?",
+        "context": "Migration approach matters too—backward-compatible schema changes need a specified duration. This is operational specification that directly impacts code.",
+        "transition": "We've covered a lot of sections. But you don't always need all of them."
+      }
+    },
+    {
+      "type": "codeExecution",
+      "title": "Matching Depth to Complexity",
+      "steps": [
+        {
+          "line": "Simple (isolated, familiar feature)",
+          "highlightType": "human",
+          "annotation": "Architecture + Interfaces + State → Hours of thinking"
+        },
+        {
+          "line": "Medium (cross-module change)",
+          "highlightType": "prediction",
+          "annotation": "+ Constraints + Invariants + Flows → Days of thinking"
+        },
+        {
+          "line": "Complex (architectural change)",
+          "highlightType": "execution",
+          "annotation": "+ Quality Attributes + Security + Observability → Weeks"
+        },
+        {
+          "line": "System-level (new service)",
+          "highlightType": "feedback",
+          "annotation": "Full template: + Deployment + Integration + Initialization"
+        },
+        {
+          "line": "Time is spent thinking, not writing",
+          "highlightType": "summary",
+          "annotation": "Exploration, research, and decisions—the spec is the artifact of that thinking"
+        }
+      ],
+      "speakerNotes": {
+        "talkingPoints": "You don't fill every section. The template prompts systematic consideration—each section is a question you might otherwise skip. Even a simple isolated feature requires hours because you need to trace boundaries, verify assumptions against the existing codebase, and research edge cases before committing to a design. Once the spec is written, validate through the SDD workflow: gap-analyze against the codebase, implement, then delete the spec.",
+        "timing": "2-3 minutes",
+        "discussion": "Ask: For your next feature, which complexity tier does it fall into? Which sections would you actually need?",
+        "context": "The full template also includes sections not covered here: Background, Caching, Endpoints, Cleanup Flows, Code Traceability. Use them when your system's complexity demands them.",
+        "transition": "Let's also cover a key debugging heuristic before we wrap up."
+      }
+    },
+    {
+      "type": "comparison",
+      "title": "When Implementation Diverges from Intent",
+      "left": {
+        "label": "Architecture Problem",
+        "content": [
+          "Model or boundaries are wrong",
+          "Fix the spec, then regenerate code",
+          "Don't patch around a flawed blueprint",
+          "Redesign is cheaper than workarounds"
+        ]
+      },
+      "right": {
+        "label": "Implementation Bug",
+        "content": [
+          "Architecture is sound",
+          "Fix the code—agent made mechanical error",
+          "Code generation is cheap",
+          "Patch and move on"
+        ]
+      },
+      "neutral": true,
+      "speakerNotes": {
+        "talkingPoints": "This is a key debugging heuristic. When implementation diverges from intent, ask: is the architecture sound? If the model or boundaries are wrong, fix the spec and regenerate—don't patch around a flawed blueprint. If the architecture is sound, fix the code; the agent just made a mechanical error. Code generation is cheap, so regeneration is always an option when the problem is structural.",
+        "timing": "2 minutes",
+        "discussion": "Ask: Think of a recent bug. Was it an architecture problem or an implementation bug? How would you have handled it differently with this heuristic?",
+        "context": "This maps directly to the SDD workflow from Lesson 12: gap-analyze, implement, delete. If gap analysis reveals architectural issues, you fix the spec before generating code.",
+        "transition": "Let's wrap up with the key takeaways from today's lesson."
+      }
+    },
+    {
+      "type": "takeaway",
+      "title": "Key Takeaways",
+      "content": [
+        "Precision narrows the solution space",
+        "Architecture makes structure explicit",
+        "State models shape generated code",
+        "Match spec depth to complexity",
+        "Fix specs, not flawed implementations"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Five core insights: First, vague specs produce vague code—each constraint is a barrier agents won't cross. Second, modules need single responsibilities, boundaries prevent coupling, contracts define communication. Third, the state model you choose (declarative, event-driven, state machine) determines how agents generate transition code. Fourth, simple features need three sections, system-level changes use the full template—the template prompts thinking, not bureaucracy. Fifth, when code diverges from intent, determine whether the architecture or the implementation is wrong before fixing anything.",
+        "timing": "2 minutes",
+        "discussion": "Final reflection: Which section of the spec template do you think your team skips most often? What has that cost you?",
+        "context": "Spec time is thinking time. Hours to weeks, mostly spent in exploration and research. The spec itself is just the artifact of that thinking process.",
+        "transition": "Next lesson will cover practical exercises applying these spec sections to real systems."
+      }
+    }
+  ]
+}
