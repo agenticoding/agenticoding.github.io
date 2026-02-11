@@ -20,8 +20,8 @@ For **extracting** specs from an existing codebase automatically, use the
 
 ### How to Use
 
-1. Copy the sections relevant to your system's complexity
-   (see [Matching Depth to Complexity](/docs/practical-techniques/lesson-13-systems-thinking-specs#matching-depth-to-complexity))
+1. Start with Architecture + Interfaces + State, then add sections as the code pulls them
+   (see [Converge, Don't Count Passes](/docs/practical-techniques/lesson-13-systems-thinking-specs#converge-dont-count-passes))
 2. Fill in with your domain specifics — skip sections that don't apply
 3. Use as context for agent implementation or as a design document for team review
 4. Delete after implementation — code is the source of truth

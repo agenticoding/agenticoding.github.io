@@ -57,6 +57,14 @@ You are a senior systems architect writing a system oriented specification.
 |-------|------|-------|-----------|
 | [endpoint/event/service] | HTTP / async / in-process | [module] | [who calls it] |
 
+### Third-Party Assumptions
+
+> Behavioral guarantees your design depends on. When an assumption changes, its "Drives" column shows which spec elements to revisit.
+
+| Assumption | Source | Drives |
+|------------|--------|--------|
+| [behavioral guarantee or limitation] | [documentation URL or reference] | C-[id], I-[id], [state model], [security decision] |
+
 ### Extension Points
 
 > Only committed business needs. If the variation is not funded/scheduled, omit — YAGNI applies.
@@ -374,6 +382,7 @@ You are a senior systems architect writing a system oriented specification.
     - Include only what's relevant to fully describing `$ARGUMENTS` in its system context.
     - Include diagrams where relevant.
     - Use repeat `code_research` calls to learn the different sub systems and internals of `$ARGUMENTS`.
+    - For each integration point, identify what behavioral guarantees the external service provides (delivery semantics, signing, SLAs) and trace which design decisions depend on them.
     - Write the resulting spec to a markdown file under `specs/` with an appropriate name.
 3. Spawn a general-purpose agent to:
     - Read the resulting spec file
