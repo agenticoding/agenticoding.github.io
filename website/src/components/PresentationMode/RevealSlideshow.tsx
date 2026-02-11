@@ -26,6 +26,7 @@ import CompoundQualityVisualization from '../VisualElements/CompoundQualityVisua
 import KnowledgeExpansionDiamond from '../VisualElements/KnowledgeExpansionDiamond';
 import SystemFlowDiagram from '../VisualElements/SystemFlowDiagram';
 import SystemBoundaryDiagram from '../VisualElements/SystemBoundaryDiagram';
+import SpecCodeZoomDiagram from '../VisualElements/SpecCodeZoomDiagram';
 
 interface SpeakerNotes {
   talkingPoints: string;
@@ -98,6 +99,7 @@ const VISUAL_COMPONENTS = {
   KnowledgeExpansionDiamond,
   SystemFlowDiagram,
   SystemBoundaryDiagram,
+  SpecCodeZoomDiagram,
 };
 
 export default function RevealSlideshow({

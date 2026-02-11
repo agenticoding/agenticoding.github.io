@@ -1,0 +1,365 @@
+.container {
+  margin: 2.5rem auto;
+  padding: 1.25rem;
+  border-radius: 8px;
+  background: var(--visual-bg-decision);
+  border: 1px solid var(--visual-decision);
+  max-width: 500px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Compact mode for presentations */
+.container.compact {
+  margin: 0 auto;
+  padding: 0;
+  max-width: 100%;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+.container.compact .layerLabel {
+  font-size: 16px;
+}
+
+.container.compact .codeLabel {
+  font-size: 18px;
+}
+
+.container.compact .arrowLabel,
+.container.compact .arrowLabelExtract {
+  font-size: 14px;
+}
+
+.container.compact .iterateLabel {
+  font-size: 13px;
+}
+
+.container.compact .sourceLabel {
+  font-size: 12px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+/* ===== BOX GROUPS (Staggered fade-in) ===== */
+
+.specGroup {
+  animation: fadeInSlide 0.35s ease-out backwards;
+}
+
+.codeGroup {
+  animation: fadeInScale 0.4s ease-out 0.15s backwards;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== BOX STYLES ===== */
+
+.layerBox {
+  fill: var(--ifm-background-surface-color);
+  stroke: var(--visual-workflow);
+  stroke-width: 1.5;
+}
+
+.layerLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--ifm-font-family-base);
+  letter-spacing: 0.4px;
+}
+
+.subtitleLabel {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--ifm-font-family-base);
+  font-style: italic;
+}
+
+/* ===== CODE BOX (Emphasized) ===== */
+
+.layerBoxCode {
+  fill: var(--ifm-background-surface-color);
+  stroke: url(#sczdCodeGradient);
+  stroke-width: 2.5;
+}
+
+.codeLabel {
+  fill: var(--ifm-font-color-base);
+  font-size: 16px;
+  font-weight: 800;
+  font-family: var(--ifm-font-family-base);
+  letter-spacing: 1.5px;
+}
+
+.sourceLabel {
+  fill: var(--visual-capability);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ===== GENERATE ARROW (Purple — Downward) ===== */
+
+.generateGroup {
+  animation: fadeIn 0.35s ease-out 0.3s backwards;
+}
+
+.arrowGenerate {
+  stroke: var(--visual-workflow);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 180;
+  stroke-dashoffset: 180;
+  animation: drawArrow 0.7s ease-out 0.35s forwards;
+}
+
+@keyframes drawArrow {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.arrowMarkerGenerate polygon {
+  fill: var(--visual-workflow);
+}
+
+.arrowLabel {
+  fill: var(--visual-workflow);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* ===== EXTRACT ARROW (Cyan — Upward) ===== */
+
+.extractGroup {
+  animation: fadeIn 0.35s ease-out 0.55s backwards;
+}
+
+.arrowExtract {
+  stroke: var(--visual-capability);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 180;
+  stroke-dashoffset: 180;
+  animation: drawArrow 0.7s ease-out 0.6s forwards;
+}
+
+.arrowMarkerExtract polygon {
+  fill: var(--visual-capability);
+}
+
+.arrowLabelExtract {
+  fill: var(--visual-capability);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* ===== CENTER TEXT ===== */
+
+.iterateLabel {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-base);
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+/* ===== LEGEND ===== */
+
+.legend {
+  animation: fadeIn 0.3s ease-out 0.85s backwards;
+}
+
+.legendLineGenerate {
+  stroke: var(--visual-workflow);
+  stroke-width: 2;
+}
+
+.legendText {
+  fill: var(--ifm-color-emphasis-600);
+  font-size: 11px;
+  font-family: var(--ifm-font-family-base);
+  font-style: italic;
+}
+
+/* ===== DESCRIPTION ===== */
+
+.description {
+  margin: 1.25rem 0 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ifm-color-emphasis-700);
+  text-align: center;
+  padding: 0 0.75rem;
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+  padding-top: 0.875rem;
+}
+
+.description strong {
+  color: var(--ifm-font-color-base);
+  font-weight: 600;
+}
+
+/* ===== DARK MODE ===== */
+
+[data-theme='dark'] .layerBox,
+[data-theme='dark'] .layerBoxCode {
+  fill: var(--ifm-background-color);
+}
+
+/* Reveal.js presentation dark mode */
+:global(.reveal) .layerBox,
+:global(.reveal) .layerBoxCode {
+  fill: rgba(30, 30, 50, 0.9);
+}
+
+:global(.reveal) .layerLabel,
+:global(.reveal) .codeLabel {
+  fill: #e5e7eb;
+}
+
+:global(.reveal) .subtitleLabel {
+  fill: #9ca3af;
+}
+
+:global(.reveal) .arrowLabel,
+:global(.reveal) .arrowLabelExtract {
+  font-size: 15px;
+}
+
+:global(.reveal) .iterateLabel {
+  fill: #d1d5db;
+  font-size: 14px;
+}
+
+:global(.reveal) .sourceLabel {
+  font-size: 12px;
+}
+
+/* Size diagram for presentation — align to top so it respects h2 margin spacing */
+:global(.reveal) .container {
+  align-self: flex-start;
+  min-height: 280px;
+  max-height: none;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    margin: 2rem auto;
+  }
+
+  .layerLabel {
+    font-size: 12px;
+  }
+
+  .codeLabel {
+    font-size: 14px;
+  }
+
+  .subtitleLabel {
+    font-size: 10px;
+  }
+
+  .arrowLabel,
+  .arrowLabelExtract {
+    font-size: 11px;
+  }
+
+  .description {
+    font-size: 0.8rem;
+    padding: 0 0.5rem;
+    padding-top: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .layerLabel {
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+
+  .codeLabel {
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .subtitleLabel {
+    font-size: 10px;
+  }
+
+  .arrowLabel,
+  .arrowLabelExtract {
+    font-size: 10px;
+  }
+
+  .description {
+    font-size: 0.75rem;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .specGroup,
+  .codeGroup,
+  .generateGroup,
+  .extractGroup,
+  .legend {
+    animation: none;
+  }
+
+  .arrowGenerate,
+  .arrowExtract {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}
