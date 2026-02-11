@@ -74,6 +74,19 @@ Integration points are the doors in the boundary wall—where traffic crosses fr
 
 Direction matters: inbound points need validation and rate limiting; internal pub/sub needs delivery guarantees.
 
+### Extension Points
+
+Not every integration point exists yet. When a specific variation is *committed*—funded, scheduled, required by a known deadline—declare the stable interface now so the current implementation doesn't cement itself.
+
+| Variation | Stable Interface | Current | Planned By |
+|-----------|-----------------|---------|------------|
+| PayPal checkout | `PaymentGateway` interface | Stripe-only implementation | Q3 — committed |
+| Multi-currency | `Amount { value, currency }` | USD-hardcoded | Not committed — omit |
+
+The principle is Protected Variation[^3] (Cockburn/Larman): identify points of predicted variation and create a stable interface around them. The second row stays out—YAGNI gates which variations make it into the spec. Only committed business needs earn an abstraction.
+
+Without this, agents build the simplest correct implementation—a hardcoded Stripe client. When PayPal arrives in Q3, that's a rewrite, not an extension. Declaring the interface now costs one abstraction; omitting it costs a migration.
+
 ## State: What Persists, What Changes, What Recovers
 
 State is where bugs hide. The state section forces you to account for what the system remembers.
@@ -183,6 +196,23 @@ The **Data** and **Stress** columns transform a constraint from a wish into a te
 
 **Manifested By** answers how a test exercises the invariant. Without it, invariants are assertions nobody checks. An invariant violation means your data model is corrupted—make sure you can detect it.
 
+## Verify Behavior: Concrete Scenarios at Boundaries
+
+Constraints say NEVER. Invariants say ALWAYS. Neither answers: what *should* happen when `amount=0`?
+
+Behavioral scenarios fill this gap—concrete Given-When-Then examples at system boundaries, specific enough to become tests without dictating test framework, mocks, or assertion syntax.
+
+| ID | Given | When | Then | Edge Category |
+|----|-------|------|------|---------------|
+| B-001 | PaymentIntent in `pending` state | Webhook delivers `succeeded` with amount=0 | Transition to `succeeded`, balance unchanged | boundary value |
+| B-002 | No matching PaymentIntent | Webhook delivers valid event for unknown intent | Return 200, log warning, no state change | null / missing |
+| B-003 | Stripe API returns 503 | Client submits payment request | Return 502, queue for retry, no charge created | error propagation |
+| B-004 | Two identical webhooks within 10ms | Both pass signature validation | First processes, second returns 200, no state change | concurrency |
+
+Each scenario traces back to a constraint or invariant—B-001 exercises I-003 (balance integrity), B-004 exercises C-001 (no duplicate processing). The **edge category** column is a systematic checklist: boundary values, null/empty, error propagation, concurrency, temporal. Walk each category per interface; errors cluster at boundaries[^2] because agents don't reliably infer them.
+
+The spec captures *what should happen*, not *how to test it*. Framework choices, mock configurations, and assertion syntax belong in implementation—they change with the codebase. Behavioral examples survive refactoring.
+
 ## Quality Attributes: How Good Is Good Enough?
 
 Quality attributes define measurable thresholds across three tiers: target (normal operations), degraded (alerting), and failure (paging).
@@ -194,6 +224,24 @@ Quality attributes define measurable thresholds across three tiers: target (norm
 | Recovery | 15min | 30min | 1h | incident drill |
 
 Target = SLO. Degraded = alerts fire. Failure = on-call gets paged. Three tiers give you an error budget before the first outage and make "good enough" concrete rather than aspirational.
+
+## Performance Budget: Decomposing SLOs
+
+Quality Attributes says "Latency p95: 100ms." But the webhook flow has five steps. Which step gets how many milliseconds?
+
+| Flow Step | Budget | Hot/Cold |
+|-----------|--------|----------|
+| Signature validation | 2ms | hot |
+| Idempotency check (Redis) | 5ms | hot |
+| Parse + validate payload | 3ms | hot |
+| Update payment state (DB) | 15ms | hot |
+| Publish event (queue) | 5ms | cold |
+| **Total** | **30ms** | |
+| **Headroom** | **70ms** | |
+
+The budget forces two decisions agents can't make alone. First, *hot vs. cold path*: signature validation is synchronous and blocking—it gets a tight budget. Event publishing is async—it tolerates more. Second, *headroom*: the total is 30ms against a 100ms SLO, leaving 70ms for future operations on this path. Without decomposition, an agent might spend the entire budget on a single unoptimized query.
+
+Per-operation budgets also surface algorithmic constraints. If "idempotency check" must complete in 5ms, that rules out a full-table scan—the agent knows to use an indexed lookup or bloom filter without being told.
 
 ## Flows: Tracing Execution
 
@@ -258,8 +306,8 @@ You don't fill every section. The template prompts systematic *consideration*—
 | Complexity | Sections | Time |
 |------------|----------|------|
 | Simple (isolated, familiar) | Architecture + Interfaces + State | Hours |
-| Medium (cross-module) | + Constraints + Invariants + Flows | Days |
-| Complex (architectural) | + Quality Attributes + Security + Observability | Weeks |
+| Medium (cross-module) | + Constraints + Invariants + Verify Behavior + Flows | Days |
+| Complex (architectural) | + Quality Attributes + Performance Budget + Security + Observability + Extension Points | Weeks |
 | System-level (new service) | + Deployment + Integration + Initialization | [Full template](/prompts/specifications/spec-template) |
 
 This time is spent *thinking*, not writing. The bottleneck is understanding—researching existing codebase patterns via [exploration planning](/docs/methodology/lesson-3-high-level-methodology#phase-2-plan-strategic-decision) (Lesson 3), investigating best practices and domain knowledge via [ArguSeek](/docs/methodology/lesson-5-grounding#arguseek-isolated-context--state) (Lesson 5), and making architectural decisions. The spec itself is just the artifact of that thinking. Even a simple isolated feature requires hours because you need to trace boundaries, verify assumptions against the existing codebase, and research edge cases before committing to a design.
@@ -290,6 +338,14 @@ The [full spec template](/prompts/specifications/spec-template) includes section
 
 - **Fix specs for architecture, fix code for bugs** — If the architecture is sound, patch the implementation. If the model or boundaries are wrong, fix the spec and regenerate.
 
+- **Performance budgets decompose SLOs into implementation decisions** — A system-level "100ms p95" becomes per-operation allocations that constrain algorithmic choices. Hot/cold path distinction tells agents where latency matters.
+
+- **Behavioral examples at boundaries prevent the gaps agents miss** — Constraints say NEVER, invariants say ALWAYS, but neither specifies what happens at `amount=0`. Concrete Given-When-Then scenarios—not test code—fill the gap where errors cluster.
+
+- **Extension points require committed business needs, not speculation** — Protected Variation: identify predicted change, create a stable interface. YAGNI gates entry—only funded, scheduled variations earn an abstraction.
+
 ---
 
 [^1]: Xu et al. (2025) - "When Code Becomes Abundant: Implications for Software Engineering in a Post-Scarcity AI Era" - Argues software engineering shifts from production to orchestration + verification as AI makes code generation cheap. Source: [arXiv:2602.04830](https://arxiv.org/html/2602.04830v1)
+[^2]: Boundary Value Analysis research consistently shows errors cluster at input extremes (min, max, off-by-one). See Ranorex, "Boundary Value Analysis" and NVIDIA HEPH framework for AI-driven positive/negative test specification.
+[^3]: Cockburn, Alistair / Larman, Craig — "Protected Variation: The Importance of Being Closed" (IEEE Software). Reformulates the Open-Closed Principle as: "Identify points of predicted variation and create a stable interface around them." See also Fowler, Martin — [YAGNI](https://martinfowler.com/bliki/Yagni.html) for the distinction between presumptive and known features.

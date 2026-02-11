@@ -57,6 +57,14 @@ You are a senior systems architect writing a system oriented specification.
 |-------|------|-------|-----------|
 | [endpoint/event/service] | HTTP / async / in-process | [module] | [who calls it] |
 
+### Extension Points
+
+> Only committed business needs. If the variation is not funded/scheduled, omit — YAGNI applies.
+
+| Variation | Stable Interface | Current Implementation | Planned By |
+|-----------|-----------------|----------------------|------------|
+| [predicted change] | [interface/abstraction] | [concrete impl] | [date/milestone] |
+
 ---
 
 ## Define Interfaces
@@ -160,6 +168,36 @@ You are a senior systems architect writing a system oriented specification.
 - **Manifested by:** [test approach - e.g., "generate N rows, verify shard distribution"]
 - **Data:** [synthetic with known properties that must satisfy condition]
 - **Scale:** [row count] | **Stress:** [concurrent rebalance, failure injection]
+
+---
+
+## Verify Behavior
+
+> Behavioral examples at system boundaries. Concrete enough to become tests, abstract enough to survive refactoring. Not test code — no assertions, mocks, or framework syntax.
+
+| ID | Scenario | Given | When | Then | Edge Category |
+|----|----------|-------|------|------|---------------|
+| B-001 | [scenario name] | [precondition + concrete data] | [action] | [expected outcome] | [category] |
+
+### B-001: [Scenario Name]
+
+- **Given:** [setup with concrete values]
+- **When:** [trigger with specific input]
+- **Then:** [observable outcome]
+- **Edge category:** boundary value / null-empty / error propagation / concurrency / temporal
+- **Derived from:** C-[id] / I-[id]
+
+### Edge Categories
+
+> Walk each category per interface. Delete irrelevant rows.
+
+| Category | Question |
+|----------|----------|
+| Boundary values | What happens at min, max, min-1, max+1? |
+| Null / empty | What happens with missing or empty input? |
+| Error propagation | When a dependency fails, what does the caller see? |
+| Concurrency | What happens under simultaneous access? |
+| Temporal | What happens with timing or ordering variations? |
 
 ---
 
@@ -269,6 +307,24 @@ You are a senior systems architect writing a system oriented specification.
 | Latency p95 | 100ms | 200ms | 1s | APM traces |
 | Throughput | 10k rps | 5k rps | 1k rps | load test |
 | Recovery | 15min | 30min | 1h | incident drill |
+
+---
+
+## Budget Performance
+
+> Decompose system-level SLOs from Quality Attributes into per-operation budgets along the critical path.
+
+### Critical Path Budget
+
+| Flow Step | Budget | Complexity | Hot/Cold | Measured By |
+|-----------|--------|------------|----------|-------------|
+| [step from Trace Flows] | [ms] | O([n]) | hot / cold | [metric name] |
+| **Total** | **[ms]** | | | [end-to-end metric] |
+
+- **Total must not exceed:** Quality Attributes latency target
+- **Hot path:** [latency-critical steps — no I/O, no locks, tight budget]
+- **Cold path:** [background/async steps — tolerates higher latency]
+- **Headroom:** [% reserved for future operations on this path]
 
 ---
 
