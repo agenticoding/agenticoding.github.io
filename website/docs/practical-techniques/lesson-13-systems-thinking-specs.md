@@ -6,27 +6,34 @@ title: 'Lesson 13: Thinking in Systems'
 
 import SystemFlowDiagram from '@site/src/components/VisualElements/SystemFlowDiagram';
 import SystemBoundaryDiagram from '@site/src/components/VisualElements/SystemBoundaryDiagram';
+import SpecCodeZoomDiagram from '@site/src/components/VisualElements/SpecCodeZoomDiagram';
 
 [Lesson 12](/docs/practical-techniques/lesson-12-spec-driven-development) established that specs are scaffolding—temporary thinking tools deleted after implementation. But what makes a spec *good enough* to produce quality code?
 
-This lesson covers the spec format section by section, explaining the reasoning behind each. Think of it not as a form to fill out, but as a thinking framework—each section asks a question you might otherwise skip.
+Think of a spec as a zoom lens. Zoomed out, you see architecture—modules, boundaries, invariants. Zoomed in, you see implementation—edge cases, error handling, concurrency. You oscillate between views, and the spec sharpens through contact with implementation[^5].
 
-## The Manufacturing Paradigm
+## Precision Through Iteration
 
-AI agents execute specs mechanically. Give an agent a well-structured spec, and it produces code that matches. This changes your role: instead of *writing code*, you *articulate intent precisely*—defining what the system must do, what it must prevent, and how you'll know it's working.
-
-Why does precision matter? Because vague specs produce vague code:
+Vague specs produce vague code. Precision narrows the solution space:
 
 | Vague | Precise |
 |-------|---------|
 | "Handle webhook authentication" | `C-001: NEVER process unsigned webhook — Signature validation on line 1 of handler` |
 | "Store payment data" | `I-001: SUM(transactions) = account.balance — Verified by: generate 1K transactions, check sum after each batch` |
 
-The vague version leaves the agent guessing. The precise version narrows the solution space—each constraint becomes a barrier the agent won't cross.
+But precision isn't achieved through contemplation alone—it's discovered through iteration[^4]. Each pass through implementation reveals constraints the spec missed: a state transition you didn't anticipate, a concurrency edge case, an unrealistic performance budget. The bottleneck has shifted from "production" to "orchestration + verification"[^1]—you orchestrate what gets built and verify it matches intent.
 
-The bottleneck has shifted. When code was expensive to produce, writing it was the hard problem. Now that agents generate code cheaply, *specifying exactly what you want* becomes the hard problem. Researchers call this the shift from "production" to "orchestration + verification"[^1]—you orchestrate what gets built and verify it matches intent.
+This has a practical consequence for debugging. When implementation diverges from intent, ask: **is the architecture sound?** If yes, fix the code—the agent made a mechanical error. If the model or boundaries are wrong, fix the spec and regenerate.
 
-This has a practical consequence for debugging. When implementation diverges from intent, ask: **is the architecture sound?** If yes, fix the code—the agent made a mechanical error. If the model or boundaries are wrong, fix the spec and regenerate. Code generation is cheap; don't patch around a flawed blueprint.
+## The Iterative Workflow
+
+<SpecCodeZoomDiagram />
+
+Start with three sections: **Architecture**, **Interfaces**, and **State**—enough to generate a first pass. The spec is a hypothesis. The code is an experiment. Implementation reveals what the spec missed: a state transition you didn't anticipate, a concurrency constraint, an unrealistic performance budget. Zoom out—extract the updated understanding from code via [ChunkHound code research](https://chunkhound.github.io/code-research). Fix the architecture. Zoom back in—regenerate. Repeat until convergence, then [delete the spec](/docs/practical-techniques/lesson-12-spec-driven-development).
+
+This is [Lesson 3's four-phase cycle](/docs/methodology/lesson-3-high-level-methodology#the-four-phase-workflow) applied fractally. At the spec level: research the domain, plan architecture, write spec, validate completeness. At the code level: research codebase, plan changes, execute, validate tests. Each zoom transition—spec→code or code→spec—is itself a Research→Plan→Execute→Validate loop. The depth of iteration scales with complexity: a simple feature converges in one pass; a complex architectural change might take five.
+
+The sections below are the questions this process surfaces. You won't answer them all upfront—you'll discover which ones matter because the code reveals gaps there.
 
 ## Architecture: Modules, Boundaries, Contracts
 
@@ -72,7 +79,22 @@ Integration points are the doors in the boundary wall—where traffic crosses fr
 | `/api/v1/payments` | REST API | inbound | payment |
 | `payment-events` | Message queue | internal pub/sub | payment |
 
-Direction matters: inbound points need validation and rate limiting; internal pub/sub needs delivery guarantees.
+Direction matters: inbound points need validation and rate limiting; internal pub/sub needs delivery guarantees. But direction alone doesn't explain *why* a particular validation exists—that requires stating what you believe about the external service.
+
+### Third-Party Assumptions
+
+Integration points tell you *where* external services connect. Third-party assumptions capture *what you believe about those services*—behavioral guarantees your design silently depends on. When you don't make them explicit, design decisions appear arbitrary: an agent sees C-001 (idempotency check) but not the delivery semantic that demands it.
+
+For the Stripe webhook system, the assumptions driving key design decisions are:
+
+| Assumption | Source | Drives |
+|------------|--------|--------|
+| Webhooks deliver at-least-once, not exactly-once | Stripe docs | C-001 (idempotency), Redis lock, event-driven state model |
+| Webhooks may arrive out of order | Stripe docs | State machine with explicit transitions |
+| Payloads signed with HMAC-SHA256 | Stripe docs | C-002 (signature validation) |
+| API availability ~99.99% | Stripe SLA | Circuit breaker, retry queue, manual fallback |
+
+The **Drives** column is the point. It creates traceability from assumption to spec element—so when an assumption changes (you migrate from Stripe to Adyen, or Stripe changes delivery semantics), you know exactly which constraints, state models, and security decisions to revisit. Without it, a provider migration becomes an audit of the entire spec. With it, the audit is scoped to the rows whose assumptions no longer hold.
 
 ### Extension Points
 
@@ -184,7 +206,7 @@ Constraints limit *actions* (NEVER do X). Invariants describe *state* (X is alwa
 | C-002 | NEVER trust unsigned webhook | Signature validation before processing | Valid + tampered payloads | — |
 | C-003 | NEVER log card numbers | PCI compliance scanner in CI | Payloads containing PAN data | — |
 
-The **Data** and **Stress** columns transform a constraint from a wish into a testable requirement. "NEVER process duplicates" is a policy. "NEVER process duplicates, verified with 10K events at 100 concurrent deliveries" is an engineering requirement with a verification plan.
+The **Data** and **Stress** columns transform a constraint from a wish into a testable requirement. "NEVER process duplicates" is a policy. "NEVER process duplicates, verified with 10K events at 100 concurrent deliveries" is an engineering requirement with a verification plan. (Note that C-001 and C-002 trace back to [third-party assumptions](#third-party-assumptions)—they exist *because* of Stripe's delivery semantics and signing behavior, not as arbitrary security choices.)
 
 ### Invariants
 
@@ -297,55 +319,51 @@ Specify the deployment method (blue-green, canary, rolling), rollback triggers (
 |---------|----------|------------|---------|
 | Stripe API | REST, idempotency key | Queue for retry, degrade to manual | 5s, circuit breaker at 50% failure |
 
-Circuit breakers, timeouts, and fallback modes define how your system degrades. Without them, one slow dependency cascades into a full outage.
+Circuit breakers, timeouts, and fallback modes define how your system degrades. Without them, one slow dependency cascades into a full outage. These operational failure modes operationalize the [architectural assumptions](#third-party-assumptions) declared earlier—the circuit breaker exists because you assumed ~99.99% availability, not 100%.
 
-## Matching Depth to Complexity
+## Converge, Don't Count Passes
 
-You don't fill every section. The template prompts systematic *consideration*—each section is a question you might otherwise skip.
+The spec is a hypothesis. The code is an experiment. Verification is observation. This is the scientific method applied to engineering—and it terminates on convergence, not on a prescribed number of passes.
 
-| Complexity | Sections | Time |
-|------------|----------|------|
-| Simple (isolated, familiar) | Architecture + Interfaces + State | Hours |
-| Medium (cross-module) | + Constraints + Invariants + Verify Behavior + Flows | Days |
-| Complex (architectural) | + Quality Attributes + Performance Budget + Security + Observability + Extension Points | Weeks |
-| System-level (new service) | + Deployment + Integration + Initialization | [Full template](/prompts/specifications/spec-template) |
+Always start with three sections: **Architecture**, **Interfaces**, and **State**. Generate a first pass. Then ask one question: **is the architecture sound?**
 
-This time is spent *thinking*, not writing. The bottleneck is understanding—researching existing codebase patterns via [exploration planning](/docs/methodology/lesson-3-high-level-methodology#phase-2-plan-strategic-decision) (Lesson 3), investigating best practices and domain knowledge via [ArguSeek](/docs/methodology/lesson-5-grounding#arguseek-isolated-context--state) (Lesson 5), and making architectural decisions. The spec itself is just the artifact of that thinking. Even a simple isolated feature requires hours because you need to trace boundaries, verify assumptions against the existing codebase, and research edge cases before committing to a design.
+- **Yes** → fix the code. The agent made a mechanical error—patch the implementation.
+- **No** → fix the spec and regenerate. Don't patch around flawed boundaries.
 
-Once the spec is written, validate it through the [SDD workflow](/docs/practical-techniques/lesson-12-spec-driven-development)—gap-analyze against the codebase, implement, then delete the spec. The code is the source of truth.
+Each loop through this cycle reveals what the spec missed. The first pass might expose concurrency constraints—add Constraints. The second might surface a performance bottleneck—add a Performance Budget. The code *pulls* depth from you; you don't push depth onto it by categorizing complexity upfront. You can't know which sections matter before the code shows you where gaps are[^4].
+
+**You're done when the loop produces no new gaps:** the code passes all behavioral scenarios, the spec accounts for all constraints the code revealed, and the last pass surfaces nothing new. That's a testable termination condition. A simple feature converges in one loop. A complex architectural change might take five. But you discover which you're dealing with *by running the loop*, not by predicting it.
+
+**Iteration speed is the multiplier.** Code generation is approaching post-scarcity[^1]—the scarce resource is your judgment about *what* to build. The engineer who runs ten hypothesis→experiment→verify loops per day outperforms the one who runs two with a more thorough upfront spec[^4][^5]. This is the same insight that made Agile outperform Waterfall, compressed from weeks-per-iteration to minutes. Use [exploration planning](/docs/methodology/lesson-3-high-level-methodology#phase-2-plan-strategic-decision) (Lesson 3) and [ArguSeek](/docs/methodology/lesson-5-grounding#arguseek-isolated-context--state) (Lesson 5) to research before each loop. For system-level work, start from the [full template](/prompts/specifications/spec-template). Validate through the [SDD workflow](/docs/practical-techniques/lesson-12-spec-driven-development)—gap-analyze, implement, then delete the spec.
 
 :::info Template Sections Not Covered
-The [full spec template](/prompts/specifications/spec-template) includes sections not taught in this lesson: **Background** (problem statement + baseline metrics), **Caching** (strategy/TTL/invalidation), **Endpoints** (REST contract details), **Cleanup Flows** (teardown/rollback sequences), **Code Traceability** (file:line evidence columns). Use these when your system's complexity demands them.
+The [full spec template](/prompts/specifications/spec-template) includes sections not taught in this lesson: **Background** (problem statement + baseline metrics), **Caching** (strategy/TTL/invalidation), **Endpoints** (REST contract details), **Cleanup Flows** (teardown/rollback sequences), **Code Traceability** (file:line evidence columns). Use these when the code pulls them from you—not before.
 :::
 
 ## Key Takeaways
 
-- **Precision narrows the solution space** — Vague specs produce vague code. Each constraint becomes a barrier the agent won't cross.
+- **Specs are a zoom lens, not a blueprint** — oscillate between bird's-eye architecture and detail-level implementation.
 
-- **Architecture makes structure explicit** — Modules have single responsibilities, boundaries prevent coupling, contracts define communication.
+- **Spec = hypothesis, code = experiment** — each loop through the cycle tests whether your architectural assumptions hold. Converge when the loop produces no new gaps.
 
-- **State modeling determines transition thinking** — Choose declarative, event-driven, or state machine per entity. The model shapes how agents generate transition code.
+- **Precision is discovered, not specified** — each spec↔code pass reveals gaps the previous spec missed. The code pulls depth from you.
 
-- **Constraints and invariants define correctness — with test data and stress** — Data and Stress columns transform constraints from wishes into testable requirements. Manifested By makes invariants verifiable.
+- **Iteration speed is the multiplier** — code is cheap, judgment is scarce. Maximize hypothesis→experiment→verify loops per day, not spec thoroughness per loop.
 
-- **Quality attributes define "good enough" with three thresholds** — Target = SLO. Degraded = alerts. Failure = pages on-call. Three tiers give you an error budget before the first outage.
+- **Architecture makes structure explicit** — modules have single responsibilities, boundaries prevent coupling, contracts define communication.
 
-- **Security and observability are system properties** — They emerge from correct boundaries and instrumentation, not features bolted on after the fact.
+- **Third-party assumptions are architectural drivers** — make them explicit so agents know which decisions to revisit when providers change.
 
-- **Match depth to complexity** — Simple features need three sections. System-level changes use the full template. The template prompts thinking, not bureaucracy.
+- **State modeling shapes transition code** — choose declarative, event-driven, or state machine per entity.
 
-- **Spec time is thinking time** — Hours to weeks, mostly spent in exploration and research, not writing.
+- **Fix specs for architecture, fix code for bugs** — flawed boundaries = regenerate from updated spec; mechanical errors = patch the implementation.
 
-- **Fix specs for architecture, fix code for bugs** — If the architecture is sound, patch the implementation. If the model or boundaries are wrong, fix the spec and regenerate.
-
-- **Performance budgets decompose SLOs into implementation decisions** — A system-level "100ms p95" becomes per-operation allocations that constrain algorithmic choices. Hot/cold path distinction tells agents where latency matters.
-
-- **Behavioral examples at boundaries prevent the gaps agents miss** — Constraints say NEVER, invariants say ALWAYS, but neither specifies what happens at `amount=0`. Concrete Given-When-Then scenarios—not test code—fill the gap where errors cluster.
-
-- **Extension points require committed business needs, not speculation** — Protected Variation: identify predicted change, create a stable interface. YAGNI gates entry—only funded, scheduled variations earn an abstraction.
+- **Delete the spec when done** — code is the source of truth.
 
 ---
 
 [^1]: Xu et al. (2025) - "When Code Becomes Abundant: Implications for Software Engineering in a Post-Scarcity AI Era" - Argues software engineering shifts from production to orchestration + verification as AI makes code generation cheap. Source: [arXiv:2602.04830](https://arxiv.org/html/2602.04830v1)
-[^2]: Boundary Value Analysis research consistently shows errors cluster at input extremes (min, max, off-by-one). See Ranorex, "Boundary Value Analysis" and NVIDIA HEPH framework for AI-driven positive/negative test specification.
+[^2]: Boundary Value Analysis research consistently shows errors cluster at input extremes (min, max, off-by-one). See Ranorex — ["What Is Boundary Value Analysis in Software Testing?"](https://www.ranorex.com/blog/boundary-value-analysis) and NVIDIA — ["Building AI Agents to Automate Software Test Case Creation"](https://developer.nvidia.com/blog/building-ai-agents-to-automate-software-test-case-creation) (HEPH framework for AI-driven positive/negative test specification).
 [^3]: Cockburn, Alistair / Larman, Craig — "Protected Variation: The Importance of Being Closed" (IEEE Software). Reformulates the Open-Closed Principle as: "Identify points of predicted variation and create a stable interface around them." See also Fowler, Martin — [YAGNI](https://martinfowler.com/bliki/Yagni.html) for the distinction between presumptive and known features.
+[^4]: Eberhardt, Colin (2025) — ["Putting Spec Kit Through Its Paces: Radical Idea or Reinvented Waterfall?"](https://blog.scottlogic.com/2025/11/26/putting-spec-kit-through-its-paces-radical-idea-or-reinvented-waterfall.html) — Found iterative prompting ~10x faster than specification-driven development. Li et al. (2025) — "Specine: An AI Agent That Writes Your Spec" ([arXiv:2509.01313](https://arxiv.org/abs/2509.01313)) — confirms LLMs misperceive specification quality, requiring iterative alignment.
+[^5]: Lloyd, Zach (2025) — [First Round Capital interview](https://www.firstround.com/ai/warp) — Compares upfront outcome-based specs to "writing a huge design doc for something up front"; advocates iterative, incremental agent guidance instead. Beck, Kent (2025) — ["Augmented Coding: Beyond the Vibes"](https://tidyfirst.substack.com/p/augmented-coding-beyond-the-vibes) — Demonstrates plans failing on contact with implementation complexity; advocates incremental TDD cycles over upfront specification.
