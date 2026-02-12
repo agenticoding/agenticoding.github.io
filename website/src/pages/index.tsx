@@ -243,6 +243,12 @@ function StarIcon() {
   );
 }
 
+function formatStarCount(count: number): string {
+  if (count < 1000) return count.toString();
+  const formatted = (count / 1000).toFixed(1);
+  return formatted.replace(/\.0$/, '') + 'k';
+}
+
 // Hook to fetch GitHub stars with caching
 function useGitHubStars(repo: string): number | null {
   const [stars, setStars] = useState<number | null>(() => {
@@ -317,7 +323,7 @@ function SocialProofBar() {
                 {courseStars !== null && (
                   <>
                     {' '}
-                    <StarIcon /> {courseStars}
+                    <StarIcon /> {formatStarCount(courseStars)}
                   </>
                 )}
               </a>
@@ -332,7 +338,7 @@ function SocialProofBar() {
                 {chunkHoundStars !== null && (
                   <>
                     {' '}
-                    <StarIcon /> {chunkHoundStars}
+                    <StarIcon /> {formatStarCount(chunkHoundStars)}
                   </>
                 )}
               </a>
@@ -347,7 +353,7 @@ function SocialProofBar() {
                 {arguSeekStars !== null && (
                   <>
                     {' '}
-                    <StarIcon /> {arguSeekStars}
+                    <StarIcon /> {formatStarCount(arguSeekStars)}
                   </>
                 )}
               </a>
