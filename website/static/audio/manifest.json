@@ -118,11 +118,11 @@
   },
   "practical-techniques/lesson-13-systems-thinking-specs.md": {
     "audioUrl": "/audio/practical-techniques/lesson-13-systems-thinking-specs.mp3",
-    "size": 13040972,
+    "size": 11870516,
     "format": "audio/mp3",
-    "tokenCount": 4135,
+    "tokenCount": 4180,
     "chunks": 6,
-    "generatedAt": "2026-02-12T12:39:51.837Z",
+    "generatedAt": "2026-02-12T13:27:15.046Z",
     "scriptSource": "practical-techniques/lesson-13-systems-thinking-specs.md"
   }
 }
