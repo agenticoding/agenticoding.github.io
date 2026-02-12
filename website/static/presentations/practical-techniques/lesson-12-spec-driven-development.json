@@ -4,7 +4,7 @@
     "lessonId": "lesson-12-spec-driven-development",
     "estimatedDuration": "30-40 minutes",
     "learningObjectives": [
-      "Apply SDD knowledge expansion",
+      "Apply DRY to specifications",
       "Delete specs after implementation",
       "Extract specs from code",
       "Use context as spec"
@@ -14,77 +14,90 @@
     {
       "type": "title",
       "title": "Spec Driven Development",
-      "subtitle": "Single source of truth for agentic workflows",
+      "subtitle": "Specs Are Scaffolding, Not Architecture",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "This lesson connects DRY principles to how we work with AI agents. We'll explore why specs should be temporary scaffolding, not permanent artifacts—and how your codebase is already the best specification you have.",
+        "talkingPoints": "DRY and Single Source of Truth aren't methodology buzzwords—they're sanity-preserving engineering practices. When the same information exists in multiple places, it drifts. Your codebase is a knowledge base. Every function, test, and constraint encodes knowledge. Spec Driven Development is a technique for adding or modifying knowledge while respecting these principles.",
         "timing": "1 minute",
-        "discussion": "Ask: How many of you have found outdated documentation that contradicted the actual code?",
-        "context": "Every team has experienced spec-code drift. This lesson provides a principled solution.",
-        "transition": "Let's start with why this matters—the fundamental problem of duplicate knowledge."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "The Single Source of Truth Problem",
-      "content": [
-        "DRY isn't just about code—it applies to knowledge",
-        "Your codebase encodes requirements, rules, and decisions",
-        "When knowledge exists in multiple places, it drifts",
-        "Spec says X, code does Y, design mentions Z"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "DRY and Single Source of Truth aren't methodology buzzwords—they're sanity-preserving practices. Your codebase is a knowledge base. Every function, test, and constraint encodes knowledge. When the same information exists in multiple places, bugs follow.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask students to share examples of spec-code conflicts they've encountered. What was the cost of resolving them?",
-        "context": "The session limits example: spec says 5, code implements 10, design says 'configurable'. Three sources, three truths.",
-        "transition": "Let's look at how knowledge expands during development—and where the duplication problem comes from."
+        "discussion": "How many of you have encountered a spec that contradicts the actual code? What happened?",
+        "context": "This lesson builds on Lesson 11's agent-friendly code and Lesson 5's grounding tools. It reframes specs as temporary artifacts, not permanent documentation.",
+        "transition": "Let's start by understanding how knowledge expands during development."
       }
     },
     {
       "type": "visual",
-      "title": "SDLC Knowledge Expansion",
+      "title": "The SDLC Knowledge Expansion",
       "component": "KnowledgeExpansionDiamond",
-      "caption": "Each development phase expands knowledge from the layer above.",
+      "caption": "Each development phase expands the knowledge from the phase above.",
       "speakerNotes": {
-        "talkingPoints": "Traditional development follows a pattern: high-level spec captures the 'what' and 'why', detailed design explores the 'how'—edge cases, constraints, data flows. Code encodes implementation details and optimizations. With AI agents, this happens in hours, not weeks.",
+        "talkingPoints": "Traditional software development follows a pattern of knowledge expansion. The high-level spec captures the 'what' and 'why.' The detailed design explores the 'how'—edge cases, constraints, error handling, data flows. The code encodes implementation details, performance optimizations, and the full refined understanding. With AI agents, this happens in hours rather than weeks, but the expansion pattern remains the same.",
         "timing": "2-3 minutes",
-        "discussion": "How does this diamond shape differ from how you've thought about the SDLC before?",
-        "context": "The key insight is that each layer is a knowledge expansion of the layer above. The problem comes when all three layers persist after implementation.",
-        "transition": "Once implementation is complete, you have a problem—the same knowledge now exists in three places."
+        "discussion": "Think about a recent feature you built. Can you trace the knowledge expansion from initial requirement to final code?",
+        "context": "This mirrors traditional waterfall but compressed. The key insight is that each layer is a knowledge expansion of the layer above—not a separate artifact.",
+        "transition": "Once implementation is complete, we face a critical problem."
       }
     },
     {
       "type": "concept",
       "title": "The Duplicate Knowledge Problem",
       "content": [
-        "Post-implementation: spec, design, and code all exist",
-        "Which source is correct when they conflict?",
-        "This is the Knowledge Cache Anti-Pattern",
-        "Future agents find conflicting information"
+        "After implementation: spec + design + code",
+        "Three sources = three different truths",
+        "Stale specs mislead future agents",
+        "Knowledge Cache Anti-Pattern from Lesson 11"
       ],
       "speakerNotes": {
-        "talkingPoints": "Once code passes tests and review, you have knowledge in three places. Saved specifications become stale the moment code changes. Future agents researching your codebase find both the outdated spec and current code, leading to confusion and conflicting implementations.",
-        "timing": "2 minutes",
-        "discussion": "Why do teams typically keep spec files around after implementation? What are they trying to preserve?",
-        "context": "Lesson 5's grounding tools already perform knowledge extraction. ChunkHound processing 50k tokens and returning 3k tokens IS a spec—extracted on-demand from the source of truth.",
-        "transition": "The solution is simpler than you might expect—delete the scaffolding when the building is done."
+        "talkingPoints": "Once implementation is complete and the code passes tests and review, the same knowledge exists in three places. The spec says 'users can have at most 5 active sessions.' The code implements a limit of 10. The design document mentions 'configurable session limits.' Three sources, three different truths. This is exactly the Knowledge Cache Anti-Pattern from Lesson 11—saved specifications become stale the moment code changes.",
+        "timing": "2-3 minutes",
+        "discussion": "Has anyone found a design doc that said one thing while the code did something completely different? What was the impact?",
+        "context": "Future agents researching your codebase find both the outdated spec and the current code, leading to confusion and conflicting implementations.",
+        "transition": "So what's the solution? Understanding which spec knowledge matters."
       }
     },
     {
       "type": "comparison",
-      "title": "Mainstream SDD vs Correct Approach",
+      "title": "HOW Knowledge vs WHY Knowledge",
+      "neutral": true,
       "left": {
-        "label": "Mainstream SDD",
+        "label": "HOW Knowledge (Delete)",
         "content": [
-          "Specs as 'permanent living artifacts'",
-          "Bidirectional sync spec ↔ code",
-          "Two sources of truth",
-          "Assumes perfect synchronization"
+          "Implementation details and data flows",
+          "Edge cases and error handling",
+          "Fully encoded in code after implementation",
+          "Redundant once code exists"
         ]
       },
       "right": {
-        "label": "Correct Approach",
+        "label": "WHY Knowledge (Preserve)",
+        "content": [
+          "Rejected alternatives and trade-offs",
+          "Business rationale for constraints",
+          "Compliance mandates and context",
+          "Residual that doesn't migrate to code"
+        ]
+      },
+      "speakerNotes": {
+        "talkingPoints": "Not all spec knowledge is equal. HOW knowledge—implementation details, data flows, edge cases—gets fully encoded in code during implementation. Once the code exists, the spec's HOW is redundant. WHY knowledge—rejected alternatives, business rationale, compliance mandates—can't be expressed in code. A constraint comment tells the agent what to enforce, but not why you chose idempotency-via-database over idempotency-via-cache. That rationale is the residual.",
+        "timing": "3-4 minutes",
+        "discussion": "Think of a constraint in your codebase. Can you articulate WHY it exists, or only WHAT it enforces?",
+        "context": "The solution: delete the HOW spec after implementation. The code is the single source of truth. For the small WHY residual, have the agent diff the original spec against the final code—the residual gets committed as a decision record from Lesson 11.",
+        "transition": "This is where our approach diverges from mainstream SDD tools."
+      }
+    },
+    {
+      "type": "comparison",
+      "title": "Mainstream SDD vs This Approach",
+      "left": {
+        "label": "Living Spec Model",
+        "content": [
+          "Specs as permanent living artifacts",
+          "Bidirectional spec-code sync assumed",
+          "Two sources of truth for same knowledge",
+          "Developers modify code, spec drifts"
+        ]
+      },
+      "right": {
+        "label": "Ephemeral Spec Model",
         "content": [
           "Code is the source of truth—period",
           "Specs are temporary scaffolding",
@@ -93,105 +106,98 @@
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "Tools like GitHub Spec Kit, Amazon Kiro, and Tessl treat specs as permanent artifacts that evolve alongside code. This violates single source of truth. The moment you have two representations of the same knowledge, you have a consistency problem. We eliminated header files for this reason. We generate API docs from code.",
+        "talkingPoints": "Tools like GitHub Spec Kit, Amazon Kiro, and Tessl treat specifications as permanent living artifacts that evolve alongside code. This violates single source of truth. The moment you have two representations of the same knowledge, you have a consistency problem. This isn't new—it's why we eliminated header files where possible, why we generate API docs from code, why we generate OpenAPI specs from code annotations. The living spec model assumes perfect bidirectional sync that never works in practice.",
         "timing": "3-4 minutes",
-        "discussion": "Why do you think the 'living spec' model is so appealing despite being fundamentally broken?",
-        "context": "In practice, developers modify code directly. The spec-code relationship isn't 'drifting'—it's broken because you've created two sources of truth.",
-        "transition": "Let's look at how to extract different spec shapes from the same source code."
+        "discussion": "How many tools or workflows in your organization maintain a 'living spec'? How well does the sync actually work?",
+        "context": "The correct approach: code is the source of truth. Specs are temporary scaffolding for the creation process. Delete them after implementation and regenerate on-demand from code when needed.",
+        "transition": "The key enabler is that grounding tools are actually knowledge extraction engines."
       }
     },
     {
       "type": "concept",
-      "title": "Grounding Tools as Knowledge Extractors",
+      "title": "Code as Compression Source",
       "content": [
-        "Same code → different compression targets",
-        "\"What does this module do?\" → High-level spec",
-        "\"How is auth implemented?\" → Detailed design",
-        "\"What's the API contract?\" → Interface docs"
+        "Grounding tools extract knowledge dynamically",
+        "Same code compresses to different shapes",
+        "No stale caches, no conflicting sources",
+        "Knowledge extraction replaces static docs"
       ],
       "speakerNotes": {
-        "talkingPoints": "Agentic search, semantic search, code research—these aren't just discovery tools. They're knowledge extraction and compression engines. The same 50,000 tokens of code can be compressed into different shapes depending on what you ask. No stale caches, no conflicting sources.",
+        "talkingPoints": "Agentic search, semantic search, code research tools—these aren't just discovery tools. They're knowledge extraction and compression engines. The same 50,000 tokens of code can be compressed into different shapes depending on what you ask: 'What does this module do?' yields a high-level spec. 'How is authentication implemented?' yields detailed design. 'What's the API contract?' yields interface documentation. Same source of truth, different compression targets.",
         "timing": "2-3 minutes",
-        "discussion": "What other 'compression targets' might be useful? Think about different stakeholders who need to understand code.",
-        "context": "This is why maintaining static documentation is often wasteful—you can regenerate the exact view you need, when you need it, from the actual source of truth.",
-        "transition": "Now let's apply this to modifying existing code."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Spec Shapes for Different Audiences",
-      "content": [
-        "Product stakeholders: behavioral specs (what users can do)",
-        "Engineers: systems specs (components, data flows)",
-        "QA: constraint specs (boundaries, edge cases, errors)",
-        "Same source code, different compression targets"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "When modifying existing code, extract specs shaped for whoever needs to approve or understand the change. Product needs 'users can have up to 5 sessions'. Engineers need 'SessionManager enforces via Redis sorted set'. QA needs 'boundary: exactly 5, edge: 6th evicts oldest'.",
-        "timing": "2-3 minutes",
-        "discussion": "How do you currently communicate changes to different stakeholders? Do you use different formats?",
-        "context": "This is the 'extract the spec from code' step. Use grounding techniques to surface current implementation in the shape needed by your audience.",
-        "transition": "Once you have the extracted spec, here's the modification workflow."
+        "discussion": "When was the last time you needed to understand a module? Did you read a doc or read the code? Which was more accurate?",
+        "context": "This connects to Lesson 5's grounding tools. When ChunkHound's code research processes 50,000 tokens of raw code and returns a 3,000-token synthesis, that synthesis IS a spec—extracted on-demand from the source of truth.",
+        "transition": "Now let's apply this to the practical workflow of modifying existing code."
       }
     },
     {
       "type": "codeExecution",
-      "title": "The Modification Workflow",
+      "title": "Modifying Existing Code: The Workflow",
       "steps": [
         {
-          "line": "1. Extract spec from current implementation",
+          "line": "1. Extract spec from code via grounding tools",
           "highlightType": "execution",
-          "annotation": "Use grounding tools to surface knowledge from code"
+          "annotation": "Surface current implementation as a spec shaped for your audience"
         },
         {
-          "line": "2. Shape spec for your audience",
-          "highlightType": "prediction",
-          "annotation": "Product, engineering, or QA perspective"
+          "line": "Product → behavioral specs: what users can do",
+          "highlightType": "feedback",
+          "annotation": "'Users can have up to 5 concurrent sessions'"
         },
         {
-          "line": "3. Modify the spec with desired changes",
+          "line": "Engineers → systems specs: how components interact",
+          "highlightType": "feedback",
+          "annotation": "'SessionManager enforces MAX_SESSIONS=5 via Redis sorted set'"
+        },
+        {
+          "line": "QA → constraint specs: boundaries and edge cases",
+          "highlightType": "feedback",
+          "annotation": "'Boundary: exactly 5 sessions. Edge: 6th login evicts oldest'"
+        },
+        {
+          "line": "2. Modify the spec with desired changes",
           "highlightType": "human",
-          "annotation": "Edit requirements in extracted spec"
+          "annotation": "Edit the extracted spec to reflect new requirements"
         },
         {
-          "line": "4. Gap-analyze: current vs modified spec",
+          "line": "3. Gap-analyze: spec vs current implementation",
           "highlightType": "prediction",
           "annotation": "What exists? What's missing? What conflicts?"
         },
         {
-          "line": "5. Research → Plan → Execute → Validate",
+          "line": "4. Research → Plan → Execute → Validate",
           "highlightType": "execution",
-          "annotation": "Standard four-phase workflow from earlier lessons"
+          "annotation": "Standard four-phase workflow from modified spec"
         },
         {
-          "line": "6. Delete spec files and scaffolding",
+          "line": "5. Delete temporary spec files and scaffolding",
           "highlightType": "summary",
-          "annotation": "Code is now the source of truth again"
+          "annotation": "Code is the source of truth again"
         }
       ],
       "speakerNotes": {
-        "talkingPoints": "This workflow respects single source of truth: extract knowledge, modify it, re-implement, then delete the temporary artifacts. Gap analysis bridges 'where we are' to 'where we want to be'. The modified spec feeds your planning phase.",
+        "talkingPoints": "When modifying existing code, knowledge already lives in the implementation. Extract it, reshape it for whoever needs to approve or understand the change, modify it, then re-implement. The shape of the extracted spec depends on your audience—product stakeholders need behavioral specs, engineers need systems specs, QA needs constraint specs. Same source code, different compression targets.",
         "timing": "3-4 minutes",
-        "discussion": "How does this compare to your current modification workflow? What step is most often skipped?",
-        "context": "Notice step 6—this is where most teams fail. They keep the spec 'for documentation' and create the duplicate knowledge problem.",
-        "transition": "Here's the insight: you've been doing SDD all along if you've followed this course."
+        "discussion": "Who are the different audiences for spec extractions in your organization? What shapes do they need?",
+        "context": "This is the practical application: extract → modify → gap-analyze → implement → delete. The gap analysis bridges 'where we are' to 'where we want to be.'",
+        "transition": "Here's a realization that might surprise you—you've been doing SDD all along."
       }
     },
     {
       "type": "concept",
-      "title": "Context Window as Working Spec",
+      "title": "The Context Window as Working Spec",
       "content": [
-        "Grounding before modifying = extracting the spec",
-        "Requirements in your prompt = updating the spec",
-        "Agent implements = coding from spec",
-        "Closing conversation = spec served its purpose"
+        "Every grounding session extracts a spec",
+        "Every prompt describes requirements (updates spec)",
+        "Implementation runs from those requirements",
+        "Closing the conversation deletes the spec"
       ],
       "speakerNotes": {
-        "talkingPoints": "If you've followed this course, you've been practicing SDD all along. Every time you ground in the codebase, describe requirements, have the agent implement, and close the conversation—that's Spec Driven Development. The spec lives in your context window—RAM, not disk.",
+        "talkingPoints": "If you've followed this course, you've been practicing SDD all along. Every time you grounded in the codebase before modifying it—that's extracting the spec. Every time you described requirements in your prompt—that's updating the spec. Every time the agent implemented from those requirements—that's coding from spec. Every time you closed the conversation—the spec served its purpose. The spec lived in your context window—RAM, not disk.",
         "timing": "2-3 minutes",
-        "discussion": "Does thinking of the context window as a 'spec file' change how you'll structure your prompts?",
-        "context": "The context window is perfect for single-session tasks. No file to delete because no file was created.",
-        "transition": "But what about larger tasks that span multiple sessions?"
+        "discussion": "Does this reframe how you think about your prompting workflow? What changes?",
+        "context": "What makes this safe is constraint migration: during implementation, the agent inlines spec constraints—with their IDs—into code comments. The WHY moves from spec to code. When you close the conversation, nothing is lost.",
+        "transition": "But not every task fits in a single session."
       }
     },
     {
@@ -199,46 +205,46 @@
       "title": "When to Persist Specs",
       "neutral": true,
       "left": {
-        "label": "Persist Specs When",
+        "label": "Persist Specs",
         "content": [
-          "Work spans multiple days/sessions",
+          "Work spans multiple days or sessions",
           "Scope exceeds ~100k token context",
-          "Multiple agents/people coordinate",
-          "Architectural decisions need time"
+          "Multiple agents or people coordinate",
+          "Architectural decisions need maturation"
         ]
       },
       "right": {
-        "label": "Keep Ephemeral When",
+        "label": "Keep Specs Ephemeral",
         "content": [
           "Task completes in one session",
           "Iterating quickly (hours, not days)",
           "Scope fits comfortably in context",
-          "Single agent, single engineer"
+          "Single agent, single developer"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "For single-session tasks, the context window is your spec file. Larger tasks need coordination across sessions. The key distinction: persisted specs are still scaffolding—they get deleted after implementation, just with a longer lifetime.",
+        "talkingPoints": "For single-session tasks, the context window is your spec file. But larger tasks need coordination across sessions. Persist specs when work spans multiple days, scope exceeds comfortable context limits, multiple agents or people need to coordinate, or architectural decisions need time to mature. Keep specs ephemeral when the task completes in one session and you're iterating quickly.",
         "timing": "2-3 minutes",
-        "discussion": "Think of your current project. Which tasks would need persisted specs? Which could stay in context?",
-        "context": "Remember: specs are scaffolding, not architecture. Even persisted specs have a deletion date.",
-        "transition": "Let's summarize the key principles of Spec Driven Development."
+        "discussion": "Think about your current project. Which tasks would benefit from persisted specs vs ephemeral ones?",
+        "context": "Remember: specs are scaffolding, not architecture. Even when you persist them, they should be deleted after implementation completes.",
+        "transition": "Let's wrap up with the key takeaways from this lesson."
       }
     },
     {
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Codebase encodes all knowledge",
+        "Code is the knowledge base",
         "Delete specs after implementation",
         "Extract, modify, implement, delete",
-        "Regenerate specs on-demand"
+        "Regenerate specs on demand"
       ],
       "speakerNotes": {
-        "talkingPoints": "Your codebase is your knowledge base—keep it consistent. SDD adds knowledge systematically through expansion. Specs have a lifecycle: context window for single sessions, files for multi-session, but always deleted after implementation. Code research tools extract knowledge dynamically—no static docs needed.",
+        "talkingPoints": "Four critical insights: First, your codebase is a knowledge base—every line encodes requirements, constraints, and decisions. Second, specs have a lifecycle—they're scaffolding, not permanent artifacts. Delete them after implementation. Third, the modification workflow is extract → modify → implement → delete. Fourth, grounding tools are knowledge extraction engines—regenerate specs on-demand instead of maintaining static documentation.",
         "timing": "2 minutes",
-        "discussion": "Which of these principles will be hardest to adopt in your current team? What resistance do you anticipate?",
-        "context": "The hardest part is often convincing teams to delete spec files. The instinct to 'preserve documentation' is strong but counterproductive.",
-        "transition": "In the next lesson, we'll explore how to scale these practices across larger teams and more complex projects."
+        "discussion": "What's one thing from this lesson that changes how you'll approach your next feature? Will you think differently about maintaining spec documents?",
+        "context": "This lesson fundamentally challenges the 'living spec' model popular in current tooling. The next lesson (Lesson 13) will build on these ideas with systems thinking and iterative spec-code convergence.",
+        "transition": "In Lesson 13, we'll explore how specs and code converge iteratively in complex systems."
       }
     }
   ]

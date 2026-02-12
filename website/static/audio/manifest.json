@@ -100,29 +100,29 @@
   },
   "practical-techniques/lesson-11-agent-friendly-code.md": {
     "audioUrl": "/audio/practical-techniques/lesson-11-agent-friendly-code.mp3",
-    "size": 24139336,
+    "size": 4873292,
     "format": "audio/mp3",
-    "tokenCount": 1619,
+    "tokenCount": 1622,
     "chunks": 2,
-    "generatedAt": "2025-12-12T09:01:32.009Z",
+    "generatedAt": "2026-02-12T08:11:57.545Z",
     "scriptSource": "practical-techniques/lesson-11-agent-friendly-code.md"
   },
   "practical-techniques/lesson-12-spec-driven-development.md": {
     "audioUrl": "/audio/practical-techniques/lesson-12-spec-driven-development.mp3",
-    "size": 4556444,
+    "size": 5543540,
     "format": "audio/mp3",
-    "tokenCount": 1645,
-    "chunks": 2,
-    "generatedAt": "2025-12-31T15:10:46.451Z",
+    "tokenCount": 1863,
+    "chunks": 3,
+    "generatedAt": "2026-02-12T09:08:29.379Z",
     "scriptSource": "practical-techniques/lesson-12-spec-driven-development.md"
   },
   "practical-techniques/lesson-13-systems-thinking-specs.md": {
     "audioUrl": "/audio/practical-techniques/lesson-13-systems-thinking-specs.mp3",
-    "size": 11087924,
+    "size": 13040972,
     "format": "audio/mp3",
-    "tokenCount": 3903,
-    "chunks": 5,
-    "generatedAt": "2026-02-11T17:25:11.016Z",
+    "tokenCount": 4135,
+    "chunks": 6,
+    "generatedAt": "2026-02-12T12:39:51.837Z",
     "scriptSource": "practical-techniques/lesson-13-systems-thinking-specs.md"
   }
 }

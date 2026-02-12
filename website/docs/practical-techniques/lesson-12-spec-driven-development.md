@@ -34,7 +34,9 @@ This is exactly the [Knowledge Cache Anti-Pattern](/docs/practical-techniques/le
 
 Here's the key insight from [Lesson 5](/docs/methodology/lesson-5-grounding): **grounding tools already perform knowledge extraction.** When ChunkHound's [code research](https://chunkhound.github.io/code-research) processes 50,000 tokens of raw code and returns a 3,000-token synthesis, that synthesis IS a spec—extracted on-demand from the source of truth. You don't need to maintain spec files because you can regenerate them from code whenever needed.
 
-**The solution: DELETE spec files after implementation.** The code is now the single source of truth. Specs are temporary scaffolding, not permanent artifacts.
+But not all spec knowledge is equal. **HOW** knowledge—implementation details, data flows, edge cases—gets fully encoded in code during implementation. Once the code exists, the spec's HOW is redundant. **WHY** knowledge—rejected alternatives, business rationale for a constraint, compliance mandates—can't be expressed in code. A constraint comment like `// C-001: NEVER process duplicate webhook` ([Lesson 11](/docs/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents)) tells the agent *what* to enforce, but not *why* you chose idempotency-via-database over idempotency-via-cache. That rationale is the **residual**—the part of the spec that doesn't migrate into code.
+
+**The solution: DELETE the HOW spec after implementation.** The code is the single source of truth for implementation. For the small WHY residual (rejected alternatives, business context that drove constraints), have the agent diff the original spec against the final code—what's expressed in code is now redundant. The residual gets committed as a decision record ([Lesson 11](/docs/practical-techniques/lesson-11-agent-friendly-code#the-knowledge-cache-anti-pattern)). Everything else is regenerable from code via grounding tools.
 
 ## Mainstream SDD vs This Approach
 
@@ -89,6 +91,8 @@ If you've followed this course, you've been practicing SDD all along. Every time
 - Closed the conversation when done (spec served its purpose)
 
 ...you were doing Spec Driven Development. The spec lived in your context window—RAM, not disk.
+
+What makes this safe is [constraint migration](/docs/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents): during implementation, the agent inlines spec constraints—with their IDs—into code comments. The WHY moves from spec to code. When you close the conversation, nothing is lost.
 
 ### When to Persist Specs
 

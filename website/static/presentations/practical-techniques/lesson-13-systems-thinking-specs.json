@@ -4,37 +4,24 @@
     "lessonId": "lesson-13-systems-thinking-specs",
     "estimatedDuration": "35-45 minutes",
     "learningObjectives": [
-      "Write precise iterative specs",
-      "Model architecture and boundaries",
-      "Choose state modeling strategies",
-      "Converge through spec-code loops"
+      "Iterate specs through code",
+      "Define modules and boundaries",
+      "Model state and transitions",
+      "Converge on architectural soundness"
     ]
   },
   "slides": [
     {
       "type": "title",
       "title": "Systems Thinking for Specs",
-      "subtitle": "Oscillate between architecture and implementation until convergence",
+      "subtitle": "Spec = Hypothesis, Code = Experiment",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "Lesson 12 established specs as temporary scaffolding. This lesson answers: what makes a spec good enough to produce quality code? We'll cover the zoom lens metaphor, iterative precision, architecture sections, state modeling, and convergence criteria.",
+        "talkingPoints": "Lesson 12 established that specs are scaffolding—temporary thinking tools deleted after implementation. This lesson answers: what makes a spec good enough to produce quality code? Think of a spec as a zoom lens. Zoomed out, you see architecture—modules, boundaries, invariants. Zoomed in, you see implementation—edge cases, error handling, concurrency. You oscillate between views, and the spec sharpens through contact with implementation.",
         "timing": "1 minute",
-        "discussion": "Ask: When you write a spec, how do you know when it's 'done enough' to start coding?",
-        "context": "This builds directly on Lesson 12's SDD principles. Students should already understand specs as disposable scaffolding.",
-        "transition": "Let's start with the fundamental metaphor for how specs work."
-      }
-    },
-    {
-      "type": "visual",
-      "title": "The Spec as a Zoom Lens",
-      "component": "SpecCodeZoomDiagram",
-      "caption": "Specs sharpen through oscillation between architecture and implementation.",
-      "speakerNotes": {
-        "talkingPoints": "Think of a spec as a zoom lens. Zoomed out, you see architecture—modules, boundaries, invariants. Zoomed in, you see implementation—edge cases, error handling, concurrency. You oscillate between views, and the spec sharpens through contact with implementation. Start with Architecture, Interfaces, and State. Generate a first pass. The spec is a hypothesis. The code is an experiment.",
-        "timing": "2-3 minutes",
-        "discussion": "How many passes through spec→code do you typically do before you feel confident? One? Five?",
-        "context": "This is Lesson 3's four-phase cycle applied fractally. At the spec level: research, plan, write, validate. At the code level: research, plan, execute, validate. Each zoom transition is itself a Research→Plan→Execute→Validate loop.",
-        "transition": "Let's see what precision actually looks like in a spec—and how you discover it through iteration."
+        "discussion": "How do you currently decide when a spec is 'done enough' to start coding?",
+        "context": "This builds directly on Lesson 12's ephemeral spec model and Lesson 3's four-phase cycle. The key shift: specs aren't perfected upfront—they converge through iteration.",
+        "transition": "Let's start with why precision matters and how you actually achieve it."
       }
     },
     {
@@ -51,50 +38,63 @@
         "code": "C-001: NEVER process unsigned webhook\n— Signature validation on line 1 of handler\n\nI-001: SUM(transactions) = account.balance\n— Verified by: generate 1K transactions,\n  check sum after each batch"
       },
       "speakerNotes": {
-        "talkingPoints": "Vague specs produce vague code. Precision narrows the solution space. But precision isn't achieved through contemplation alone—it's discovered through iteration. Each pass through implementation reveals constraints the spec missed: a state transition you didn't anticipate, a concurrency edge case, an unrealistic performance budget.",
+        "talkingPoints": "Vague specs produce vague code. Precision narrows the solution space. But precision isn't achieved through contemplation alone—it's discovered through iteration. Each pass through implementation reveals constraints the spec missed: a state transition you didn't anticipate, a concurrency edge case, an unrealistic performance budget. The bottleneck has shifted from production to orchestration and verification.",
+        "timing": "2-3 minutes",
+        "discussion": "Think about a spec you wrote recently. How many constraints were discovered during implementation rather than upfront?",
+        "context": "When implementation diverges from intent, ask: is the architecture sound? If yes, fix the code. If the model or boundaries are wrong, fix the spec and regenerate.",
+        "transition": "Let's visualize how this iterative workflow actually operates."
+      }
+    },
+    {
+      "type": "visual",
+      "title": "The Iterative Spec-Code Workflow",
+      "component": "SpecCodeZoomDiagram",
+      "caption": "Specs sharpen through repeated contact with implementation.",
+      "speakerNotes": {
+        "talkingPoints": "Start with three sections: Architecture, Interfaces, and State—enough to generate a first pass. The spec is a hypothesis. The code is an experiment. Implementation reveals what the spec missed. Zoom out—extract updated understanding from code. Fix the architecture. Zoom back in—regenerate. Repeat until convergence, then delete the spec. This is Lesson 3's four-phase cycle applied fractally. At the spec level: research domain, plan architecture, write spec, validate completeness. At the code level: research codebase, plan changes, execute, validate tests.",
         "timing": "3-4 minutes",
-        "discussion": "Think of a recent spec you wrote. Was it closer to the left or the right? What would the precise version look like?",
-        "context": "The bottleneck has shifted from 'production' to 'orchestration + verification'. You orchestrate what gets built and verify it matches intent. When implementation diverges from intent, ask: is the architecture sound? If yes, fix the code. If no, fix the spec and regenerate.",
-        "transition": "Now let's break down what goes into the architecture section of a spec."
+        "discussion": "How many spec-code loops does a typical feature take in your experience? What about a complex architectural change?",
+        "context": "The depth of iteration scales with complexity: a simple feature converges in one pass; a complex architectural change might take five. You discover which you're dealing with by running the loop, not by predicting it.",
+        "transition": "Now let's walk through each section the loop surfaces, starting with architecture."
       }
     },
     {
       "type": "concept",
       "title": "Architecture: Modules, Boundaries, Contracts",
       "content": [
-        "Modules: single responsibility, not categories",
+        "Modules: single responsibility, not category",
         "Boundaries: what a module CANNOT import",
         "Contracts: preconditions and postconditions",
         "Integration points: where traffic crosses boundaries"
       ],
       "speakerNotes": {
-        "talkingPoints": "Every system has internal structure. The architecture section forces you to make it explicit. A module isn't 'handles payments'—that's a category. It's 'processes Stripe webhook events and updates payment state'—that's a responsibility. Boundaries define coupling constraints: webhook-handler NEVER imports from notification. Contracts define what the caller provides and what the callee guarantees.",
+        "talkingPoints": "Every system has internal structure. The architecture section forces you to make it explicit. A module has a single responsibility—not 'handles payments' (that's a category), but 'Processes Stripe webhook events and updates payment state.' Boundaries define what a module cannot import—the coupling constraint. Contracts define how modules communicate with preconditions and postconditions. Integration points are the doors in the boundary wall—where traffic crosses from external to internal.\n\nModule table for reference:\n| Module | Responsibility | Boundary |\n| webhook-handler | Process Stripe webhooks, update payment state | src/payment/webhooks/ |\n| notification | Send emails on payment events | src/notification/ |\n\nContract table:\n| Provider | Consumer | Contract |\n| webhook-handler | payment | processEvent(stripeEventId): PaymentIntent — precondition: event not yet processed |\n| payment | notification | PaymentEvent { type, paymentId, amount, timestamp } — postcondition: immutable once published |",
         "timing": "3-4 minutes",
-        "discussion": "Can you articulate what each module in your current project does in one sentence? If not, it's probably doing too much.",
-        "context": "Integration points are the doors in the boundary wall. Direction matters: inbound needs validation and rate limiting; internal pub/sub needs delivery guarantees.",
-        "transition": "Boundaries and contracts prevent coupling—but there's a hidden driver of architectural decisions we often overlook."
+        "discussion": "Can you articulate what each module in your current system does in one sentence? If not, it's probably doing too much.",
+        "context": "Boundaries prevent changes in one module from rippling through the system. For example: webhook-handler NEVER imports from notification or order. It publishes events to a queue; consumers decide action.",
+        "transition": "Architecture also includes something most specs miss: third-party assumptions."
       }
     },
     {
       "type": "concept",
       "title": "Third-Party Assumptions Drive Design",
       "content": [
-        "Assumptions capture behavioral guarantees you depend on",
-        "Each assumption drives specific spec elements",
-        "Traceability: assumption → constraint → code",
-        "Provider migration scoped to changed assumptions"
+        "At-least-once delivery → idempotency checks",
+        "Out-of-order webhooks → state machine transitions",
+        "HMAC-SHA256 signing → signature validation",
+        "~99.99% availability → circuit breaker + retry"
       ],
       "speakerNotes": {
-        "talkingPoints": "Integration points tell you WHERE external services connect. Third-party assumptions capture WHAT you believe about those services. Example: 'Webhooks deliver at-least-once, not exactly-once' drives idempotency checks, Redis locks, and the event-driven state model. The Drives column creates traceability—when an assumption changes (migrating from Stripe to Adyen), you know exactly which constraints to revisit. Without it, a provider migration becomes an audit of the entire spec.",
+        "talkingPoints": "Integration points tell you where external services connect. Third-party assumptions capture what you believe about those services—behavioral guarantees your design silently depends on. When you don't make them explicit, design decisions appear arbitrary: an agent sees a constraint like idempotency check but not the delivery semantic that demands it.\n\nFull assumption table:\n| Assumption | Source | Drives |\n| Webhooks deliver at-least-once, not exactly-once | Stripe docs | C-001 (idempotency), Redis lock, event-driven state model |\n| Webhooks may arrive out of order | Stripe docs | State machine with explicit transitions |\n| Payloads signed with HMAC-SHA256 | Stripe docs | C-002 (signature validation) |\n| API availability ~99.99% | Stripe SLA | Circuit breaker, retry queue, manual fallback |\n\nThe Drives column creates traceability from assumption to spec element—so when a provider changes (Stripe to Adyen), you know exactly which constraints to revisit.",
         "timing": "3-4 minutes",
-        "discussion": "What third-party assumptions does your current system silently depend on? What would break if Stripe changed delivery semantics tomorrow?",
-        "context": "For the Stripe webhook system: at-least-once delivery drives idempotency; out-of-order delivery drives the state machine; HMAC-SHA256 signing drives signature validation; ~99.99% availability drives the circuit breaker.",
-        "transition": "Architecture defines the skeleton. Now let's tackle where bugs actually hide—state."
+        "discussion": "What assumptions does your system make about external services? Are they documented anywhere? What happens when those assumptions break?",
+        "context": "Without the Drives column, a provider migration becomes an audit of the entire spec. With it, the audit is scoped to the rows whose assumptions no longer hold.",
+        "transition": "Architecture also includes extension points—but only for committed variations. Let's move to state modeling."
       }
     },
     {
       "type": "comparison",
-      "title": "State Modeling Strategies",
+      "title": "State Models Shape Generated Code",
       "neutral": true,
       "left": {
         "label": "Declarative",
@@ -102,183 +102,178 @@
           "Declare desired end state",
           "Reconciler diffs and converges",
           "React, Terraform, SQL, GitOps",
-          "Simple reasoning; need a reconciler"
+          "Simple to reason about"
         ]
       },
       "right": {
-        "label": "Event-Driven",
+        "label": "State Machine",
         "content": [
-          "Append-only log of what happened",
-          "Full audit trail and replay",
-          "Webhooks, messaging, event sourcing",
-          "Eventual consistency complexity"
+          "Enumerate legal transitions",
+          "Illegal transitions impossible",
+          "Payment lifecycles, approval chains",
+          "Every edge enumerated upfront"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "State is where bugs hide. Choose one model per entity. Declarative is increasingly the default: desired_state + reconciliation_loop. Event-driven gives full audit trail but adds ordering complexity. State machines (not shown separately) make illegal transitions impossible—payment lifecycle uses pending→processing→succeeded/failed. The model shapes generated code: state machines produce switch/case, event-driven produces handlers and projections, declarative produces diff-and-patch reconcilers.",
+        "talkingPoints": "State is where bugs hide. The state section forces you to account for what the system remembers. How you model state determines how you think about transitions. Choose one model per entity.\n\nThree models:\n| Model | Use When | Key Question |\n| Declarative | UI, infrastructure, schema convergence | What should the end state be? |\n| Event-Driven | Webhooks, messaging, event sourcing | What happened, and in what order? |\n| State Machine | Payment lifecycles, order flows | What transitions are legal from this state? |\n\nThe model shapes the code agents generate: state machines produce switch/case with explicit transitions, event-driven produces handlers and projections, declarative produces diff-and-patch reconcilers. Also specify entities (what persists), error states (part of the data model, not exceptions), and initialization/crash recovery ordering.",
         "timing": "3-4 minutes",
-        "discussion": "For a payment lifecycle, which model would you choose? What about webhook ingestion? Why different models for different entities?",
-        "context": "State machines are the third option: every edge must be enumerated upfront, but illegal transitions become impossible. Payment lifecycle = state machine. Webhook ingestion = event-driven. Account balance = declarative (SUM(transactions) must converge to account.balance).",
-        "transition": "State modeling also means accounting for what happens when things go wrong."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Error States and Crash Recovery",
-      "content": [
-        "Errors are part of your data model, not exceptions",
-        "Each error state has an explicit recovery path",
-        "Startup ordering determines restart safety",
-        "Non-idempotent startup steps corrupt state on crash"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "When you model error states explicitly, recovery paths become obvious. PAYMENT_PENDING → retry webhook check. PAYMENT_FAILED → notify user, allow retry. WEBHOOK_DUPLICATE → return 200, skip processing. For crash recovery, specify startup ordering: database first, then cache, then HTTP server. Each component has a 'ready when' condition and an 'on fail' action. If any startup step is not idempotent, a crash-and-restart can corrupt state.",
-        "timing": "2-3 minutes",
-        "discussion": "Does your system handle restart gracefully? What happens if it crashes between database migration and cache warm-up?",
-        "context": "Ephemeral state (like Redis processing locks) disappears on crash. Your system must handle that—this is why the entity table distinguishes persistent from ephemeral storage.",
-        "transition": "We've covered what's inside the system. Now let's flip perspective—what does the system look like from the outside?"
+        "discussion": "For each entity in your system, can you name which state model it uses? Is it the right one?",
+        "context": "Event-driven is the third option not shown here—full audit trail and replay, eventual consistency. The slide focuses on declarative vs state machine as the most distinct paradigms. Declarative is increasingly the default: the core pattern is always desired_state + reconciliation_loop.",
+        "transition": "Now let's flip the perspective from internal structure to the external surface."
       }
     },
     {
       "type": "visual",
-      "title": "The System Boundary",
+      "title": "System Boundary: Inside vs Outside",
       "component": "SystemBoundaryDiagram",
-      "caption": "Architecture lives inside the boundary; interfaces cross it.",
+      "caption": "Architecture is internal; interfaces are what crosses the boundary.",
       "speakerNotes": {
-        "talkingPoints": "The dashed line is the key. Everything inside it is architecture: modules connected by contracts. Everything crossing it is an interface: data entering (inputs) or leaving (outputs) the system. Integration points are the doors in the wall. This visual distinction helps you think about what needs validation (anything crossing the boundary) versus what you can trust (internal contracts).",
+        "talkingPoints": "The dashed line is the key. Everything inside it is architecture: modules connected by contracts. Everything crossing it is an interface: data entering (inputs) or leaving (outputs) the system. Integration points are the doors in the wall. Every input needs three things: Format (what you parse), Validation (what you reject), Rate Limit (what you throttle). Inputs without all three are bugs waiting to happen.",
         "timing": "2-3 minutes",
-        "discussion": "Draw your current system's boundary. What crosses it? Are all crossing points validated?",
-        "context": "Inputs need format parsing, validation, and rate limiting. Outputs need SLAs. Inputs without all three are bugs waiting to happen.",
-        "transition": "Let's look at the specific inputs and outputs that cross this boundary."
+        "discussion": "Draw the boundary of your current system. Where are the doors? What crosses them?",
+        "context": "This visual separates architectural concerns (modules, boundaries, contracts) from interface concerns (inputs, outputs, SLAs). The distinction matters because architecture is about internal coupling while interfaces are about external contracts.",
+        "transition": "With boundaries clear, let's look at how we constrain what happens inside them."
       }
     },
     {
-      "type": "concept",
-      "title": "Interfaces: Inputs and Outputs",
-      "content": [
-        "Every input: source, format, validation, rate limit",
-        "Every output: destination, format, SLA",
-        "Inputs without all three properties are latent bugs",
-        "Deployment strategy affects code structure"
-      ],
+      "type": "code",
+      "title": "Constraints Migrate from Spec to Code",
+      "language": "typescript",
+      "code": "// C-001: NEVER process duplicate webhook\n// C-002: NEVER process unsigned webhook\nexport async function handleWebhook(req) {\n  verifySignature(req)  // C-002\n  if (await isDuplicate(req.body.id))\n    return new Response(null, { status: 200 })  // C-001\n  // ...\n}",
+      "caption": "Constraint IDs inline in code become the authoritative source after implementation",
       "speakerNotes": {
-        "talkingPoints": "While architecture describes internal structure, interfaces describe the external surface. For inputs: the Format column is what you parse, the Validation column is what you reject, the Rate Limit column is what you throttle. For outputs: define destination and SLA. Deployment strategy matters too—canary deployments require feature flags; rolling updates require backward-compatible APIs. These operational decisions affect code structure.",
-        "timing": "2-3 minutes",
-        "discussion": "Pick one endpoint in your system. Can you name its format, validation rules, and rate limit? If not, that's a gap in your spec.",
-        "context": "For production-critical systems, also specify observability: structured logging with correlation IDs, SLOs with burn-rate alerts, and distributed tracing with sampling strategy.",
-        "transition": "We've covered what goes into a spec. Now the critical question: when are you done iterating?"
+        "talkingPoints": "Constraints are non-negotiable rules—violations mean bugs. Invariants are conditions that must always hold. Both need spec IDs that migrate into code comments. The spec table is the authoritative source during design. The code comments become the authoritative source after implementation. This is what makes deleting the spec safe—the constraints have migrated. Each behavioral scenario traces back to a constraint or invariant. Walk edge categories systematically: boundary values, null/empty, error propagation, concurrency, temporal.",
+        "timing": "3-4 minutes",
+        "discussion": "Do your code comments reference constraint IDs? If not, how do you trace requirements to implementation?",
+        "context": "Invariants answer ALWAYS (SUM(transactions) = account.balance). Constraints answer NEVER (never process unsigned webhook). Behavioral scenarios answer WHAT SHOULD HAPPEN (when amount=0, when unknown intent, when Stripe returns 503). Together they form the verification surface.",
+        "transition": "Beyond correctness, we also need to specify how good is good enough."
       }
     },
     {
       "type": "codeExecution",
-      "title": "The Convergence Loop",
+      "title": "Performance Budget: Decomposing SLOs",
       "steps": [
         {
-          "line": "Start with Architecture, Interfaces, State",
+          "line": "SLO target: Latency p95 < 100ms",
           "highlightType": "human",
-          "annotation": "Three sections are enough for a first pass"
+          "annotation": "Quality attribute defines the overall budget"
+        },
+        {
+          "line": "Signature validation: 2ms (hot path)",
+          "highlightType": "execution",
+          "annotation": "Synchronous, blocking — tight budget"
+        },
+        {
+          "line": "Idempotency check (Redis): 5ms (hot path)",
+          "highlightType": "execution",
+          "annotation": "Rules out full-table scan — must use indexed lookup"
+        },
+        {
+          "line": "Parse + validate payload: 3ms (hot path)",
+          "highlightType": "execution",
+          "annotation": "Parsing overhead, schema validation"
+        },
+        {
+          "line": "Update payment state (DB): 15ms (hot path)",
+          "highlightType": "execution",
+          "annotation": "Largest single operation on the critical path"
+        },
+        {
+          "line": "Publish event (queue): 5ms (cold path)",
+          "highlightType": "execution",
+          "annotation": "Async — tolerates more latency"
+        },
+        {
+          "line": "Total: 30ms — Headroom: 70ms",
+          "highlightType": "summary",
+          "annotation": "70ms reserved for future operations on this path"
+        }
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Quality attributes define measurable thresholds across three tiers: target (normal), degraded (alerting), failure (paging). But saying 'p95 < 100ms' for the whole webhook flow isn't actionable. The budget forces two decisions agents can't make alone. First, hot vs cold path: signature validation is synchronous and blocking—tight budget. Event publishing is async—tolerates more. Second, headroom: total is 30ms against 100ms SLO, leaving 70ms for future operations. Per-operation budgets also surface algorithmic constraints—if idempotency check must complete in 5ms, that rules out a full-table scan.",
+        "timing": "3-4 minutes",
+        "discussion": "Do you decompose your SLOs into per-operation budgets? How do you decide which operations get how much of the budget?",
+        "context": "Without decomposition, an agent might spend the entire budget on a single unoptimized query. The budget makes implicit performance expectations explicit and actionable.",
+        "transition": "Let's see how execution flows trace through the system."
+      }
+    },
+    {
+      "type": "visual",
+      "title": "Flows: Tracing Execution",
+      "component": "SystemFlowDiagram",
+      "caption": "Each step defines success and failure paths—not just happy path.",
+      "speakerNotes": {
+        "talkingPoints": "Flows trace execution from trigger to completion, revealing integration points and error handling gaps. Each step has three parts: what happens, what happens on success, what happens on failure. Flows force you to think through the actual execution path, not an idealized happy-path abstraction. Security, observability, deployment strategy, and integration dependencies are also part of the spec—they're system properties that emerge from correct boundaries and instrumentation.",
+        "timing": "2-3 minutes",
+        "discussion": "Pick a critical flow in your system. Can you trace every step and name what happens on failure at each point?",
+        "context": "Security asks: where does trust end? What can an attacker control? Observability asks: how do you know it's working? Deployment asks: how does it get to production? These aren't bolted on—they emerge from the architecture.",
+        "transition": "Now let's tie everything together with the convergence loop."
+      }
+    },
+    {
+      "type": "codeExecution",
+      "title": "Converge, Don't Count Passes",
+      "steps": [
+        {
+          "line": "Start with: Architecture + Interfaces + State",
+          "highlightType": "human",
+          "annotation": "Three sections — enough to generate a first pass"
         },
         {
           "line": "Generate first implementation pass",
           "highlightType": "execution",
-          "annotation": "The spec is a hypothesis; the code is an experiment"
+          "annotation": "The spec is a hypothesis, the code is an experiment"
         },
         {
-          "line": "Ask: Is the architecture sound?",
+          "line": "Ask: is the architecture sound?",
           "highlightType": "prediction",
-          "annotation": "The single decision point each iteration"
+          "annotation": "The single diagnostic question after each pass"
         },
         {
-          "line": "YES → Fix the code (mechanical error)",
+          "line": "YES → fix the code (mechanical error)",
           "highlightType": "execution",
-          "annotation": "Patch the implementation, boundaries are correct"
+          "annotation": "Patch the implementation, don't touch the spec"
         },
         {
-          "line": "NO → Fix the spec and regenerate",
+          "line": "NO → fix the spec and regenerate",
           "highlightType": "human",
           "annotation": "Don't patch around flawed boundaries"
         },
         {
-          "line": "Code reveals new gaps → add sections",
+          "line": "Loop reveals missing sections (Constraints, Perf Budget...)",
           "highlightType": "feedback",
-          "annotation": "Concurrency constraints, performance budgets emerge"
+          "annotation": "Code pulls depth from you — you don't push it"
         },
         {
           "line": "Done when loop produces no new gaps",
           "highlightType": "summary",
-          "annotation": "Testable termination: code passes, spec accounts for all constraints"
+          "annotation": "Testable termination: code passes scenarios, spec accounts for all constraints"
         }
       ],
       "speakerNotes": {
-        "talkingPoints": "Always start with three sections. Generate a first pass. Then ask one question: is the architecture sound? Yes → fix the code. No → fix the spec and regenerate. Each loop reveals what the spec missed. The first pass might expose concurrency constraints—add Constraints. The second might surface a performance bottleneck—add a Performance Budget. The code pulls depth from you; you don't push depth onto it.",
+        "talkingPoints": "The convergence loop is the core workflow. Always start with Architecture, Interfaces, and State. Generate a first pass. Then ask one question: is the architecture sound? Yes means fix the code—the agent made a mechanical error. No means fix the spec and regenerate—don't patch around flawed boundaries. Each loop reveals what the spec missed. The first pass might expose concurrency constraints. The second might surface a performance bottleneck. The code pulls depth from you; you don't push depth onto it by categorizing complexity upfront.",
         "timing": "3-4 minutes",
-        "discussion": "How do you currently decide between 'fix the code' and 'fix the design'? Is it a conscious decision or gut feel?",
-        "context": "A simple feature converges in one loop. A complex architectural change might take five. You discover which you're dealing with by running the loop, not by predicting it. The engineer who runs ten hypothesis→experiment→verify loops per day outperforms the one who runs two with a more thorough upfront spec.",
-        "transition": "Let's look at how extension points prevent rewrites when known variations arrive."
-      }
-    },
-    {
-      "type": "comparison",
-      "title": "Extension Points: YAGNI Gate",
-      "left": {
-        "label": "Without Extension Points",
-        "content": [
-          "Hardcoded Stripe client",
-          "PayPal arrives in Q3 → full rewrite",
-          "USD-only → multi-currency migration",
-          "Abstractions added reactively under pressure"
-        ]
-      },
-      "right": {
-        "label": "With Extension Points",
-        "content": [
-          "PaymentGateway interface declared now",
-          "PayPal in Q3 → implement interface, extend",
-          "Only committed variations earn abstractions",
-          "YAGNI gates which variations make the spec"
-        ]
-      },
-      "speakerNotes": {
-        "talkingPoints": "Protected Variation from Cockburn and Larman: identify points of predicted variation and create a stable interface around them. But only for committed business needs—funded, scheduled, required by a known deadline. Multi-currency that's 'not committed' stays out. Declaring the interface now costs one abstraction; omitting it costs a migration later. The YAGNI gate ensures you don't over-abstract.",
-        "timing": "2-3 minutes",
-        "discussion": "What committed variations does your current project have? Are there stable interfaces ready for them?",
-        "context": "Without this, agents build the simplest correct implementation. When PayPal arrives, that's a rewrite, not an extension. The key distinction: predicted AND committed = declare the interface. Predicted but not committed = YAGNI, skip it.",
-        "transition": "Let's bring it all together with the key principles to take away."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Iteration Speed is the Multiplier",
-      "content": [
-        "Code generation is approaching post-scarcity",
-        "Scarce resource: your judgment about what to build",
-        "10 loops/day beats 2 with thorough upfront specs",
-        "Same insight that made Agile outperform Waterfall"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "Code is cheap, judgment is scarce. Maximize hypothesis→experiment→verify loops per day, not spec thoroughness per loop. This is the same insight that made Agile outperform Waterfall, compressed from weeks-per-iteration to minutes. Use exploration planning and ArguSeek to research before each loop. For system-level work, start from the full template. Validate through the SDD workflow—gap-analyze, implement, then delete the spec.",
-        "timing": "2-3 minutes",
-        "discussion": "How long does one spec→code→validate loop currently take you? What would double your iteration speed?",
-        "context": "Research found iterative prompting ~10x faster than specification-driven development. LLMs misperceive specification quality, requiring iterative alignment. Plans fail on contact with implementation complexity.",
-        "transition": "Let's capture the key takeaways from this lesson."
+        "discussion": "How do you currently decide whether a bug is in the code or in the design? What's your diagnostic process?",
+        "context": "You're done when the loop produces no new gaps: code passes all behavioral scenarios, spec accounts for all constraints the code revealed, and the last pass surfaces nothing new. A simple feature converges in one loop. A complex change might take five. Iteration speed is the multiplier—ten hypothesis-experiment-verify loops per day outperforms two with a more thorough upfront spec.",
+        "transition": "Let's summarize the key insights from systems thinking for specs."
       }
     },
     {
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Specs are hypotheses, not blueprints",
-        "Precision discovered through iteration",
-        "Architecture makes structure explicit",
-        "Fix specs or fix code",
-        "Maximize loops, not spec depth"
+        "Specs converge through code contact",
+        "Architecture sound? Fix accordingly",
+        "Third-party assumptions drive design",
+        "Iteration speed is the multiplier",
+        "Delete specs when converged"
       ],
       "speakerNotes": {
-        "talkingPoints": "Specs are a zoom lens—oscillate between architecture and implementation. Each spec↔code pass reveals gaps the previous spec missed. Architecture sections force explicit structure: modules, boundaries, contracts. When implementation diverges, ask if the architecture is sound—fix the spec for design flaws, fix the code for mechanical errors. And remember: iteration speed is the multiplier. Delete the spec when done—code is the source of truth.",
+        "talkingPoints": "Five critical insights: First, specs are a zoom lens—oscillate between architecture and implementation detail. Precision is discovered through iteration, not specified upfront. Second, the single diagnostic question: is the architecture sound? Yes means patch code. No means fix spec and regenerate. Third, make third-party assumptions explicit so agents know which decisions to revisit when providers change. Fourth, code generation is approaching post-scarcity—maximize hypothesis-experiment-verify loops per day, not spec thoroughness per loop. Fifth, delete the spec when done. Code is the source of truth. What survives deletion: constraint IDs inlined in code and the small WHY residual committed as decision records.",
         "timing": "2 minutes",
-        "discussion": "Which of these principles challenges your current workflow the most? What's the first thing you'll change?",
-        "context": "This connects back to Lesson 12: specs as scaffolding. The difference is now students know what goes INTO the scaffolding and when to stop building it.",
-        "transition": "In the next lesson, we'll explore how to apply these principles at scale across larger systems and teams."
+        "discussion": "What's one section from this lesson you'll add to your next spec? Which part of the convergence loop do you think your team struggles with most?",
+        "context": "This lesson completes the spec-driven development arc. Lesson 12 established specs as scaffolding. Lesson 13 showed how to make that scaffolding precise enough to generate quality code through iterative convergence.",
+        "transition": "Practice this by writing a spec for a system you know well and running it through the convergence loop."
       }
     }
   ]

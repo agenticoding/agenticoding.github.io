@@ -67,9 +67,9 @@
   },
   "practical-techniques/lesson-11-agent-friendly-code.md": {
     "scriptPath": "practical-techniques/lesson-11-agent-friendly-code.md",
-    "size": 8141,
-    "tokenCount": 1958,
-    "generatedAt": "2025-12-12T08:55:23.116Z"
+    "size": 8262,
+    "tokenCount": 1998,
+    "generatedAt": "2026-02-12T08:05:49.415Z"
   },
   "fundamentals/lesson-2-how-agents-work.md": {
     "scriptPath": "fundamentals/lesson-2-how-agents-work.md",
@@ -85,14 +85,14 @@
   },
   "practical-techniques/lesson-12-spec-driven-development.md": {
     "scriptPath": "practical-techniques/lesson-12-spec-driven-development.md",
-    "size": 8051,
-    "tokenCount": 1931,
-    "generatedAt": "2025-12-31T15:05:31.026Z"
+    "size": 9214,
+    "tokenCount": 2223,
+    "generatedAt": "2026-02-12T09:01:36.118Z"
   },
   "practical-techniques/lesson-13-systems-thinking-specs.md": {
     "scriptPath": "practical-techniques/lesson-13-systems-thinking-specs.md",
-    "size": 19294,
-    "tokenCount": 4727,
-    "generatedAt": "2026-02-11T17:10:39.070Z"
+    "size": 20013,
+    "tokenCount": 4912,
+    "generatedAt": "2026-02-12T12:23:59.537Z"
   }
 }

@@ -124,7 +124,7 @@ function createUser(password: string) {
 
 // Critical section (agent barrier)
 // === CRITICAL SECURITY SECTION ===
-// NEVER store passwords in plain text or weak hashing (MD5, SHA1)
+// C-001: NEVER store passwords in plain text or weak hashing (MD5, SHA1)
 // MUST hash with bcrypt (10+ rounds) BEFORE persistence
 // Do NOT modify hashing algorithm without security review
 // Violations create CVE-level vulnerabilities
@@ -138,6 +138,8 @@ function createUser(password: string) {
 ```
 
 This creates deliberate friction. An agent tasked with "add OAuth login" will work slower around password hashing code with heavy constraints—it must navigate all those NEVER/MUST directives carefully. That's the protection mechanism: forced caution for critical paths. But overuse is counterproductive. Mark too many functions as CRITICAL and agents struggle with routine work, slowing down legitimate changes as much as dangerous ones. Reserve this technique for code where accidental modification genuinely costs more than the development slowdown.
+
+These constraint IDs (C-001, I-001) originate in [spec tables](/docs/practical-techniques/lesson-13-systems-thinking-specs#constraints-and-invariants-defining-correctness) and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the *rule* it enforces. This is what makes it safe to [delete the spec](/docs/practical-techniques/lesson-12-spec-driven-development) after implementation: the WHY has migrated into the codebase.
 
 ## The Knowledge Cache Anti-Pattern
 
@@ -181,7 +183,7 @@ sequenceDiagram
     end
 ```
 
-The moment you commit extracted knowledge, every code change requires documentation updates you'll forget. Source code is your single source of truth—code research tools (ChunkHound, semantic search, Explore) extract architectural knowledge dynamically every time, fresh and accurate. Document decisions and WHY (ADRs, high-level overviews, business domain concepts), not extracted WHAT that code research can regenerate on demand.
+The moment you commit extracted knowledge, every code change requires documentation updates you'll forget. Source code is your single source of truth—code research tools (ChunkHound, semantic search, Explore) extract architectural knowledge dynamically every time, fresh and accurate. The distinction: **HOW** knowledge (implementation details, data flows, component relationships) is redundant with code—code research regenerates it on demand. **WHY** knowledge (rejected alternatives, business rationale, compliance mandates) can't be expressed in code. Commit the WHY as decision records—short documents capturing what was decided, why, and what alternatives were rejected. Let code research handle the HOW.
 
 ## Key Takeaways
 
@@ -190,6 +192,8 @@ The moment you commit extracted knowledge, every code change requires documentat
 - **Co-locate constraints, create semantic bridges when necessary** - Scattered code compounds into harder-to-navigate codebases. When separation is required (DRY), use explicit comments pointing to related files.
 
 - **Comments as agent-critical sections (use sparingly)** - For genuinely high-risk code (authentication, cryptography, payments, PII), write comments as prompts using imperative directives (NEVER, MUST, ALWAYS) to create deliberate friction. This protection mechanism guards sensitive code from accidental modification. **Overuse is counterproductive**—if everything is marked CRITICAL, the signal becomes noise and legitimate work slows down.
+
+- **Constraint IDs migrate from spec to code** — When specs use IDs like C-001 or I-001 ([Lesson 13](/docs/practical-techniques/lesson-13-systems-thinking-specs#constraints-and-invariants-defining-correctness)), agents inline them into code comments during implementation. The code then carries the constraint rule, making it safe to delete the spec ([Lesson 12](/docs/practical-techniques/lesson-12-spec-driven-development)).
 
 - **You are the quality circuit breaker** - Code review ([Lesson 9](/docs/practical-techniques/lesson-9-reviewing-code)) prevents negative compounding. Accepting bad patterns lets them enter pattern context for future agents. Rejecting them breaks the negative feedback loop.
 
