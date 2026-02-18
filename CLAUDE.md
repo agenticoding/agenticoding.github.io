@@ -72,3 +72,7 @@ npm run deploy                       # Deploy to GitHub Pages
 - **URL:** https://agenticoding.ai
 - **Trigger:** Automatic on push to main branch
 - **Base URL:** `/`
+
+## Design System
+
+@DESIGN_SYSTEM.md
