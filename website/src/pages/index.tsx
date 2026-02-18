@@ -8,7 +8,10 @@ import promptsSidebars from '../../sidebarsPrompts';
 
 import styles from './index.module.css';
 
-// Count lessons from sidebar config (filter for lesson-* items)
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
+
 function countLessons(): number {
   let count = 0;
   const traverse = (items: unknown[]) => {
@@ -24,7 +27,6 @@ function countLessons(): number {
   return count;
 }
 
-// Count prompts from sidebar config (exclude index)
 function countPrompts(): number {
   let count = 0;
   const traverse = (items: unknown[]) => {
@@ -40,7 +42,6 @@ function countPrompts(): number {
     }
   };
   const sidebar = promptsSidebars.promptsSidebar as unknown[];
-  // Skip first item (index/overview)
   traverse(sidebar.slice(1));
   return count;
 }
@@ -48,215 +49,18 @@ function countPrompts(): number {
 const LESSON_COUNT = countLessons();
 const PROMPT_COUNT = countPrompts();
 
-// Terminal window for developer aesthetic
-function TerminalWindow() {
-  return (
-    <div className={styles.terminal}>
-      <div className={styles.terminalHeader}>
-        <span className={styles.terminalDot} data-color="red" />
-        <span className={styles.terminalDot} data-color="yellow" />
-        <span className={styles.terminalDot} data-color="green" />
-        <span className={styles.terminalTitle}>methodology.md</span>
-      </div>
-      <div className={styles.terminalBody}>
-        <pre className={styles.terminalCode}>
-          <span className={styles.terminalKeyword}>INVESTIGATE</span>
-          {': Trace the code path\n'}
-          <span className={styles.terminalKeyword}>ANALYZE</span>
-          {': Compare expected vs actual\n'}
-          <span className={styles.terminalKeyword}>EXPLAIN</span>
-          {': File paths, line numbers, root cause'}
-        </pre>
-        <Link to="/prompts" className={styles.terminalLink}>
-          From the Prompt Library →
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function HomepageHeader() {
-  const stars = useGitHubStars('agenticoding/agenticoding.github.io');
-
-  return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <div className={styles.heroContent}>
-          <div className={styles.heroText}>
-            <a
-              href="https://github.com/agenticoding/agenticoding.github.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.heroBadge}
-            >
-              <GitHubIcon />
-              <span>Open Source</span>
-              <span className={styles.badgeSeparator}>·</span>
-              <span>MIT</span>
-              {stars !== null && (
-                <>
-                  <span className={styles.badgeSeparator}>·</span>
-                  <StarIcon />
-                  <span>{stars}</span>
-                </>
-              )}
-            </a>
-            <Heading as="h1" className="hero__title">
-              Master Agentic Coding
-            </Heading>
-            <p className="hero__subtitle">
-              Structured methodology proven on enterprise mono-repos with
-              millions of lines of code
-            </p>
-            <div className={styles.buttons}>
-              <Link className="button button--secondary button--lg" to="/docs">
-                Start Learning
-              </Link>
-              <Link
-                className={clsx('button button--lg', styles.buttonOutline)}
-                to="/prompts"
-              >
-                Browse Prompts
-              </Link>
-            </div>
-            <div className={styles.heroStats}>
-              <Link
-                to="/docs/faq"
-                className={styles.heroStatLink}
-              >
-                FAQ
-              </Link>
-              <span className={styles.statsSeparator}>|</span>
-              <Link to="/docs" className={styles.heroStatLink}>
-                {LESSON_COUNT} Lessons
-              </Link>
-              <span className={styles.statsSeparator}>|</span>
-              <Link to="/prompts" className={styles.heroStatLink}>
-                {PROMPT_COUNT} Production Prompts
-              </Link>
-            </div>
-          </div>
-          <TerminalWindow />
-        </div>
-      </div>
-    </header>
-  );
-}
-
-// GitHub icon (official Invertocat mark)
-function GitHubIcon() {
-  return (
-    <svg
-      className={styles.githubIcon}
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-    </svg>
-  );
-}
-
-function HeadphonesIcon() {
-  return (
-    <svg
-      className={styles.formatIcon}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-      <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-    </svg>
-  );
-}
-
-function PresentationIcon() {
-  return (
-    <svg
-      className={styles.formatIcon}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-      <line x1="8" y1="21" x2="16" y2="21" />
-      <line x1="12" y1="17" x2="12" y2="21" />
-    </svg>
-  );
-}
-
-function BookmarkIcon() {
-  return (
-    <svg
-      className={styles.formatIcon}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
-
-function ToolboxIcon() {
-  return (
-    <svg
-      className={styles.pillarIcon}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-      <line x1="2" y1="11" x2="22" y2="11" />
-    </svg>
-  );
-}
-
-function ExternalLinkIcon() {
-  return (
-    <svg
-      className={styles.externalIcon}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-      <polyline points="15 3 21 3 21 9" />
-      <line x1="10" y1="14" x2="21" y2="3" />
-    </svg>
-  );
-}
-
-// Star icon for GitHub stars
-function StarIcon() {
-  return (
-    <svg className={styles.starIcon} viewBox="0 0 16 16" fill="currentColor">
-      <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z" />
-    </svg>
-  );
-}
-
 function formatStarCount(count: number): string {
   if (count < 1000) return count.toString();
   const formatted = (count / 1000).toFixed(1);
   return formatted.replace(/\.0$/, '') + 'k';
 }
 
-// Hook to fetch GitHub stars with caching
 function useGitHubStars(repo: string): number | null {
   const [stars, setStars] = useState<number | null>(() => {
     if (typeof window === 'undefined') return null;
     const cached = localStorage.getItem(`gh-stars-${repo}`);
     if (cached) {
       const { stars, timestamp } = JSON.parse(cached);
-      // Cache valid for 1 hour
       if (Date.now() - timestamp < 3600000) return stars;
     }
     return null;
@@ -264,7 +68,6 @@ function useGitHubStars(repo: string): number | null {
 
   useEffect(() => {
     if (stars !== null) return;
-
     fetch(`https://api.github.com/repos/${repo}`)
       .then((res) => res.json())
       .then((data) => {
@@ -279,22 +82,535 @@ function useGitHubStars(repo: string): number | null {
           );
         }
       })
-      .catch(() => {
-        // Silently fail, stars will show as null
-      });
+      .catch(() => {});
   }, [repo, stars]);
 
   return stars;
 }
 
-// Social Proof Bar with GitHub stars and testimonial
-function SocialProofBar() {
+// ---------------------------------------------------------------------------
+// Icons
+// ---------------------------------------------------------------------------
+
+function GitHubIcon() {
+  return (
+    <svg
+      className={styles.githubIcon}
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+    </svg>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg
+      className={styles.starIcon}
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Parametric shapes
+// ---------------------------------------------------------------------------
+
+/** Compute a closed superellipse SVG path via Lamé's formula. */
+function superellipsePath(
+  cx: number,
+  cy: number,
+  rx: number,
+  ry: number,
+  n: number,
+  segments = 64
+): string {
+  const pts: string[] = [];
+  for (let i = 0; i <= segments; i++) {
+    const t = (i / segments) * 2 * Math.PI;
+    const c = Math.cos(t);
+    const s = Math.sin(t);
+    const x = cx + rx * Math.sign(c) * Math.abs(c) ** (2 / n);
+    const y = cy + ry * Math.sign(s) * Math.abs(s) ** (2 / n);
+    pts.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`);
+  }
+  return pts.join(' ') + 'Z';
+}
+
+/**
+ * Cascading squircle "cards" — Smooth Circuit family (n=3.5).
+ * Three overlapping squircle outlines fan rightward, front card has
+ * abstract text lines inside. Magenta accent on the front shape.
+ */
+function PromptIllustration() {
+  const n = 3.5;
+  const rx = 34,
+    ry = 24;
+  return (
+    <svg
+      viewBox="0 0 160 80"
+      role="img"
+      aria-label="Stacked prompt cards"
+      className={styles.resourceIllustration}
+    >
+      <path
+        d={superellipsePath(68, 44, rx, ry, n)}
+        fill="var(--surface-raised)"
+        stroke="var(--border-subtle)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d={superellipsePath(78, 42, rx, ry, n)}
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d={superellipsePath(88, 40, rx, ry, n)}
+        fill="var(--surface-raised)"
+        stroke="var(--visual-magenta)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Abstract text lines inside front card */}
+      <line
+        x1="72"
+        y1="34"
+        x2="104"
+        y2="34"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <line
+        x1="72"
+        y1="40"
+        x2="108"
+        y2="40"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <line
+        x1="72"
+        y1="46"
+        x2="96"
+        y2="46"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Terminal window — Terminal Geometry family.
+ * Sharp-cornered frame with title-bar dots, chevron prompt,
+ * cursor line, and abstract output. Cyan accent on frame stroke.
+ */
+function ToolboxIllustration() {
+  return (
+    <svg
+      viewBox="0 0 160 80"
+      role="img"
+      aria-label="Terminal toolbox"
+      className={styles.resourceIllustration}
+    >
+      <rect
+        x="32"
+        y="10"
+        width="96"
+        height="60"
+        rx="2"
+        fill="var(--surface-raised)"
+        stroke="var(--visual-cyan)"
+        strokeWidth="2"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+      />
+      <line
+        x1="33"
+        y1="24"
+        x2="127"
+        y2="24"
+        stroke="var(--border-default)"
+        strokeWidth="1"
+      />
+      <circle cx="42" cy="17" r="2" fill="var(--border-default)" />
+      <circle cx="50" cy="17" r="2" fill="var(--border-default)" />
+      <circle cx="58" cy="17" r="2" fill="var(--border-default)" />
+      {/* Chevron prompt */}
+      <polyline
+        points="44,36 52,42 44,48"
+        fill="none"
+        stroke="var(--visual-cyan)"
+        strokeWidth="2"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+      />
+      <line
+        x1="56"
+        y1="48"
+        x2="68"
+        y2="48"
+        stroke="var(--text-muted)"
+        strokeWidth="2"
+        strokeLinecap="square"
+      />
+      {/* Abstract output */}
+      <line
+        x1="44"
+        y1="56"
+        x2="80"
+        y2="56"
+        stroke="var(--border-default)"
+        strokeWidth="1"
+        strokeLinecap="square"
+      />
+      <line
+        x1="44"
+        y1="62"
+        x2="72"
+        y2="62"
+        stroke="var(--border-subtle)"
+        strokeWidth="1"
+        strokeLinecap="square"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Code research — Smooth Circuit family.
+ * Layered code blocks with match highlights, dashed connectors
+ * leading to a magnifying glass. Indigo accent.
+ */
+function ChunkHoundIllustration() {
+  const n = 3.5;
+  return (
+    <svg
+      viewBox="0 0 160 80"
+      role="img"
+      aria-label="Code search with match highlighting"
+      className={styles.resourceIllustration}
+    >
+      <path
+        d={superellipsePath(48, 42, 28, 22, n)}
+        fill="var(--surface-raised)"
+        stroke="var(--border-subtle)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d={superellipsePath(56, 40, 28, 22, n)}
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Abstract text lines */}
+      <line
+        x1="38"
+        y1="33"
+        x2="70"
+        y2="33"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <line
+        x1="38"
+        y1="40"
+        x2="74"
+        y2="40"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <line
+        x1="38"
+        y1="47"
+        x2="62"
+        y2="47"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* Match highlights */}
+      <circle
+        cx="72"
+        cy="33"
+        r="3"
+        fill="var(--visual-bg-indigo)"
+        stroke="var(--visual-indigo)"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="64"
+        cy="47"
+        r="3"
+        fill="var(--visual-bg-indigo)"
+        stroke="var(--visual-indigo)"
+        strokeWidth="1.5"
+      />
+      {/* Dashed connectors to magnifying glass */}
+      <path
+        d="M75,33 C90,33 100,34 108,36"
+        fill="none"
+        stroke="var(--visual-indigo)"
+        strokeWidth="1.5"
+        strokeDasharray="4 3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M67,47 C85,47 100,44 108,40"
+        fill="none"
+        stroke="var(--visual-indigo)"
+        strokeWidth="1.5"
+        strokeDasharray="4 3"
+        strokeLinecap="round"
+      />
+      {/* Magnifying glass */}
+      <circle
+        cx="124"
+        cy="36"
+        r="16"
+        fill="var(--visual-bg-indigo)"
+        stroke="var(--visual-indigo)"
+        strokeWidth="2"
+      />
+      <line
+        x1="136"
+        y1="48"
+        x2="146"
+        y2="58"
+        stroke="var(--visual-indigo)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      {/* Abstract text inside lens */}
+      <line
+        x1="116"
+        y1="33"
+        x2="132"
+        y2="33"
+        stroke="var(--visual-indigo)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <line
+        x1="116"
+        y1="39"
+        x2="128"
+        y2="39"
+        stroke="var(--visual-indigo)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Converging research — Smooth Circuit family.
+ * Scattered source nodes with Bezier curves converging to a
+ * synthesis circle, then output arrow. Success accent.
+ */
+function ArguSeekIllustration() {
+  return (
+    <svg
+      viewBox="0 0 160 80"
+      role="img"
+      aria-label="Research from multiple sources converging to synthesis"
+      className={styles.resourceIllustration}
+    >
+      {/* Search wave arcs */}
+      <path
+        d="M72,20 A30,30 0 0,1 72,60"
+        fill="none"
+        stroke="var(--border-subtle)"
+        strokeWidth="1"
+      />
+      <path
+        d="M66,16 A36,36 0 0,1 66,64"
+        fill="none"
+        stroke="var(--border-subtle)"
+        strokeWidth="1"
+      />
+      {/* Source node circles */}
+      <circle
+        cx="20"
+        cy="20"
+        r="6"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="16"
+        cy="48"
+        r="6"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="32"
+        cy="66"
+        r="6"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="40"
+        cy="14"
+        r="6"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="28"
+        cy="38"
+        r="6"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+      />
+      {/* Bezier curves to synthesis */}
+      <path
+        d="M26,20 C50,22 65,30 77,36"
+        fill="none"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M22,48 C45,46 65,42 76,40"
+        fill="none"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M38,66 C55,60 70,50 77,44"
+        fill="none"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M46,14 C58,18 70,28 77,36"
+        fill="none"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M34,38 C50,38 65,38 76,40"
+        fill="none"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* Central synthesis circle */}
+      <circle
+        cx="90"
+        cy="40"
+        r="14"
+        fill="var(--visual-bg-success)"
+        stroke="var(--visual-success)"
+        strokeWidth="2"
+      />
+      {/* Abstract text inside synthesis */}
+      <line
+        x1="82"
+        y1="37"
+        x2="98"
+        y2="37"
+        stroke="var(--visual-success)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <line
+        x1="82"
+        y1="43"
+        x2="94"
+        y2="43"
+        stroke="var(--visual-success)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      {/* Output arrow */}
+      <line
+        x1="104"
+        y1="40"
+        x2="142"
+        y2="40"
+        stroke="var(--visual-success)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <polygon points="142,40 136,36 136,44" fill="var(--visual-success)" />
+      {/* Result lines */}
+      <line
+        x1="148"
+        y1="36"
+        x2="156"
+        y2="36"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <line
+        x1="148"
+        y1="40"
+        x2="156"
+        y2="40"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <line
+        x1="148"
+        y1="44"
+        x2="156"
+        y2="44"
+        stroke="var(--border-default)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section 1: Hero
+// ---------------------------------------------------------------------------
+
+function Hero() {
   const courseStars = useGitHubStars('agenticoding/agenticoding.github.io');
   const chunkHoundStars = useGitHubStars('chunkhound/chunkhound');
   const arguSeekStars = useGitHubStars('ArguSeek/arguseek');
-
-  const hasStars =
-    courseStars !== null || chunkHoundStars !== null || arguSeekStars !== null;
 
   const testimonials = [
     '"I just finished studying this. Very useful and well organized"',
@@ -308,339 +624,173 @@ function SocialProofBar() {
   );
 
   return (
-    <section className={styles.socialProofBar}>
+    <header className={styles.hero}>
       <div className="container">
-        <div className={styles.socialProofContent}>
-          {hasStars && (
-            <div className={styles.starsRow}>
-              <a
-                href="https://github.com/agenticoding/agenticoding.github.io"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.repoLink}
-              >
-                <GitHubIcon /> Agentic Coding
-                {courseStars !== null && (
-                  <>
-                    {' '}
-                    <StarIcon /> {formatStarCount(courseStars)}
-                  </>
-                )}
-              </a>
-              <span className={styles.starsSeparator}>·</span>
-              <a
-                href="https://github.com/chunkhound/chunkhound"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.repoLink}
-              >
-                <GitHubIcon /> ChunkHound
-                {chunkHoundStars !== null && (
-                  <>
-                    {' '}
-                    <StarIcon /> {formatStarCount(chunkHoundStars)}
-                  </>
-                )}
-              </a>
-              <span className={styles.starsSeparator}>·</span>
-              <a
-                href="https://github.com/ArguSeek/arguseek"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.repoLink}
-              >
-                <GitHubIcon /> ArguSeek
-                {arguSeekStars !== null && (
-                  <>
-                    {' '}
-                    <StarIcon /> {formatStarCount(arguSeekStars)}
-                  </>
-                )}
-              </a>
+        <div className={styles.heroInner}>
+          <Heading as="h1" className={styles.heroTitle}>
+            Master Agentic Coding
+          </Heading>
+          <p className={styles.heroSubtitle}>
+            Structured methodology proven on enterprise mono-repos with millions
+            of lines of code
+          </p>
+          <div className={styles.heroCtas}>
+            <Link className={styles.buttonPrimary} to="/docs">
+              Start Learning
+            </Link>
+          </div>
+
+          <hr className={styles.heroDivider} />
+
+          <div className={styles.heroProof}>
+            <a
+              href="https://github.com/agenticoding/agenticoding.github.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.repoBadge}
+            >
+              <GitHubIcon />
+              <span>Open Source</span>
+              <span className={styles.badgeSep}>&middot;</span>
+              <span>MIT</span>
+              {courseStars !== null && (
+                <>
+                  <span className={styles.badgeSep}>&middot;</span>
+                  <StarIcon />
+                  <span>{formatStarCount(courseStars)}</span>
+                </>
+              )}
+            </a>
+
+            <div className={styles.testimonial}>
+              <span className={styles.testimonialText}>
+                {testimonials[testimonialIndex]}
+              </span>
+              <span className={styles.testimonialSource}>&mdash; Reddit</span>
             </div>
-          )}
-          <div className={styles.testimonial}>
-            <span className={styles.testimonialText}>
-              {testimonials[testimonialIndex]}
-            </span>
-            <span className={styles.testimonialSource}>— Reddit</span>
+
+            <div className={styles.repoLinks}>
+              {chunkHoundStars !== null && (
+                <a
+                  href="https://github.com/chunkhound/chunkhound"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.repoLink}
+                >
+                  ChunkHound <StarIcon /> {formatStarCount(chunkHoundStars)}
+                </a>
+              )}
+              {chunkHoundStars !== null && arguSeekStars !== null && (
+                <span className={styles.badgeSep}>&middot;</span>
+              )}
+              {arguSeekStars !== null && (
+                <a
+                  href="https://github.com/ArguSeek/arguseek"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.repoLink}
+                >
+                  ArguSeek <StarIcon /> {formatStarCount(arguSeekStars)}
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </section>
+    </header>
   );
 }
 
-// ChunkHound wordmark with theme support
-function ChunkHoundWordmark({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 220 40"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Hound logo */}
-      <g
-        transform="translate(5, 37) scale(0.01, -0.01)"
-        className={styles.chunkHoundAccent}
-      >
-        <path
-          d="M1755 3604 c-84 -16 -209 -77 -287 -139 -127 -100 -200 -212 -404
-        -615 l-129 -254 0 -101 c0 -92 3 -105 33 -170 l33 -71 -41 -89 c-57 -125 -198
-        -358 -341 -563 -135 -194 -147 -225 -106 -266 34 -34 95 -36 124 -4 22 25 126
-        182 265 403 49 77 121 203 160 280 39 77 71 141 73 142 1 2 53 -20 116 -48
-        141 -62 223 -83 309 -76 143 10 260 84 320 201 l35 69 3 403 3 404 -25 25
-        c-31 31 -84 33 -117 6 l-24 -19 0 -389 c0 -384 0 -388 -23 -430 -51 -96 -170
-        -128 -309 -83 -95 31 -242 105 -280 142 -61 59 -69 148 -21 243 160 316 282
-        544 321 598 54 75 144 155 216 192 101 51 149 56 460 53 l286 -3 46 -27 c61
-        -36 94 -75 153 -181 34 -61 70 -107 117 -151 92 -88 146 -108 306 -114 l122
-        -4 17 -56 c20 -72 73 -126 137 -144 26 -6 48 -17 51 -24 7 -18 -12 -142 -30
-        -196 -37 -113 -139 -227 -251 -280 -79 -38 -151 -48 -345 -48 -132 0 -166 -3
-        -210 -20 -71 -26 -123 -71 -156 -134 l-27 -51 -3 -548 -3 -547 26 -26 c23 -23
-        33 -26 68 -21 23 3 47 14 54 23 10 14 13 130 13 538 0 669 -25 613 280 620
-        133 3 214 10 255 20 178 47 333 174 418 341 54 107 69 180 75 346 7 228 -14
-        300 -103 351 -37 22 -54 23 -260 29 -212 5 -222 6 -271 32 -63 32 -98 71 -153
-        172 -78 141 -178 224 -316 260 -79 20 -555 20 -660 -1z"
-        />
-        <path
-          d="M2334 3071 c-39 -24 -58 -70 -51 -122 18 -139 219 -136 234 3 12 107
-        -92 174 -183 119z"
-        />
-      </g>
-      {/* Text */}
-      <g
-        fontFamily="'Inter', system-ui, -apple-system, sans-serif"
-        fontWeight="600"
-      >
-        <text x="42" y="26" fontSize="18" className={styles.chunkHoundText}>
-          Chunk
-        </text>
-        <text x="98" y="26" fontSize="18" className={styles.chunkHoundAccent}>
-          Hound
-        </text>
-      </g>
-    </svg>
-  );
-}
-
-// ArguSeek wordmark with magnifying glass icon
-function ArguSeekWordmark({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 185 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        <linearGradient
-          id="arguseek-gradient"
-          x1="0%"
-          y1="0%"
-          x2="100%"
-          y2="100%"
-        >
-          <stop offset="0%" stopColor="#10B981" />
-          <stop offset="100%" stopColor="#14B8A6" />
-        </linearGradient>
-      </defs>
-      {/* Magnifying glass icon scaled to match text */}
-      <g transform="translate(0, 4)">
-        <circle
-          cx="14"
-          cy="14"
-          r="12"
-          fill="url(#arguseek-gradient)"
-          opacity="0.1"
-        />
-        <path
-          d="M 20 20 L 26 26"
-          stroke="url(#arguseek-gradient)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-        <circle
-          cx="14"
-          cy="14"
-          r="8"
-          stroke="url(#arguseek-gradient)"
-          strokeWidth="2.5"
-          fill="none"
-        />
-        <circle cx="11" cy="12.5" r="1" fill="#14B8A6" />
-        <circle cx="14" cy="14" r="1" fill="#14B8A6" />
-        <circle cx="17" cy="15.5" r="1" fill="#14B8A6" />
-      </g>
-      {/* Wordmark text */}
-      <text
-        x="34"
-        y="29"
-        fontFamily="system-ui, -apple-system, sans-serif"
-        fontWeight="700"
-        fontSize="24"
-      >
-        <tspan fill="#10B981">Argu</tspan>
-        <tspan fill="#14B8A6">Seek</tspan>
-      </text>
-    </svg>
-  );
-}
-
-// Ecosystem Tools Section
-function EcosystemTools() {
-  return (
-    <section id="ecosystem" className={styles.companionSection}>
-      <div className="container">
-        <Heading as="h2" className={styles.sectionTitle}>
-          Open Source Ecosystem
-        </Heading>
-        <p className={styles.sectionSubtitle}>
-          Production-ready tools that apply course methodology
-        </p>
-        <div className={styles.ecosystemGrid}>
-          <a
-            href="https://chunkhound.github.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.projectCard}
-          >
-            <div className={styles.projectHeader}>
-              <ChunkHoundWordmark className={styles.projectWordmark} />
-              <ExternalLinkIcon />
-            </div>
-            <p className={styles.projectTagline}>
-              Don&apos;t search your code. Research it.
-            </p>
-            <span className={styles.projectScale}>10K–1M+ LOC</span>
-          </a>
-
-          <a
-            href="https://github.com/ArguSeek/arguseek"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.projectCard}
-          >
-            <div className={styles.projectHeader}>
-              <ArguSeekWordmark className={styles.projectWordmark} />
-              <ExternalLinkIcon />
-            </div>
-            <p className={styles.projectTagline}>
-              Wide research, not deep reports
-            </p>
-            <span className={styles.projectScale}>
-              12–100+ sources per query
-            </span>
-          </a>
-
-          <Link
-            to="/developer-tools/cli-coding-agents"
-            className={styles.projectCard}
-          >
-            <div className={styles.projectHeader}>
-              <div className={styles.toolboxTitle}>
-                <ToolboxIcon />
-                <span>Curated Toolbox</span>
-              </div>
-            </div>
-            <p className={styles.projectTagline}>
-              Modern CLI tools for AI-first development
-            </p>
-            <span className={styles.projectScale}>
-              ripgrep, fzf, lazygit...
-            </span>
-          </Link>
-        </div>
-        <p className={styles.integrationNote}>
-          The research layer that anchors your agents in reality
-        </p>
-        <p className={styles.disclosureNote}>
-          <em>ChunkHound and ArguSeek are created by the course author.</em>
-        </p>
-      </div>
-    </section>
-  );
-}
+// ---------------------------------------------------------------------------
+// Section 2: Curriculum
+// ---------------------------------------------------------------------------
 
 interface ModuleCardProps {
   number: number;
   title: string;
+  lessonCount: number;
   topics: string[];
   link: string;
+  hue: 'indigo' | 'violet' | 'magenta' | 'rose';
 }
 
-function ModuleCard({ number, title, topics, link }: ModuleCardProps) {
+function ModuleCard({
+  number,
+  title,
+  lessonCount,
+  topics,
+  link,
+  hue,
+}: ModuleCardProps) {
   return (
-    <Link to={link} className={styles.moduleCard}>
-      <div className={styles.moduleHeader}>
-        <div className={styles.moduleNumber}>Module {number}</div>
-        <div className={styles.formatBadges}>
-          <span className={styles.formatBadge} title="Podcast available">
-            <HeadphonesIcon />
-          </span>
-          <span className={styles.formatBadge} title="Slides available">
-            <PresentationIcon />
-          </span>
-        </div>
-      </div>
+    <Link
+      to={link}
+      className={clsx(styles.moduleCard, styles[`module-${hue}`])}
+    >
+      <span className={styles.moduleLabel}>Module {number}</span>
       <Heading as="h3" className={styles.moduleTitle}>
         {title}
       </Heading>
-      <ul className={styles.moduleTopics}>
-        {topics.map((topic, index) => (
-          <li key={index}>{topic}</li>
+      <span className={styles.moduleMeta}>{lessonCount} lessons</span>
+      <div className={styles.moduleTopics}>
+        {topics.map((t, i) => (
+          <span key={i} className={styles.moduleTopic}>
+            &rarr; {t}
+          </span>
         ))}
-      </ul>
+      </div>
     </Link>
   );
 }
 
-function CourseModules() {
-  const modules = [
+function Curriculum() {
+  const modules: ModuleCardProps[] = [
     {
       number: 1,
       title: 'Fundamentals',
-      topics: [
-        'LLM internals: context, attention, token limits',
-        'What breaks: hallucinations, code drift, refactoring',
-        'Context management and RAG integration',
-      ],
+      lessonCount: 2,
+      hue: 'indigo',
+      topics: ['LLM internals', 'How agents work'],
       link: '/docs/fundamentals/lesson-1-how-llms-work',
     },
     {
       number: 2,
       title: 'Methodology',
-      topics: [
-        'Prompt structure: constraints, examples, chain-of-thought',
-        'Grounding: embedding context that persists',
-        'Iteration patterns: plan, execute, verify',
-      ],
+      lessonCount: 3,
+      hue: 'violet',
+      topics: ['Prompt structure', 'Grounding', 'Iteration patterns'],
       link: '/docs/methodology/lesson-3-high-level-methodology',
     },
     {
       number: 3,
       title: 'Practical Techniques',
-      topics: [
-        'CI integration and automated review patterns',
-        'Test generation and coverage strategies',
-        'Debugging sessions: when AI makes it worse',
-      ],
+      lessonCount: 8,
+      hue: 'magenta',
+      topics: ['CI integration', 'Test generation', 'Spec-driven development'],
       link: '/docs/practical-techniques/lesson-6-project-onboarding',
+    },
+    {
+      number: 4,
+      title: 'Experience Engineering',
+      lessonCount: 4,
+      hue: 'rose',
+      topics: ['Design tokens', 'UI specs', 'Accessibility'],
+      link: '/docs/experience-engineering/lesson-14-design-tokens',
     },
   ];
 
   return (
-    <section className={styles.modulesSection}>
+    <section className={styles.curriculum}>
       <div className="container">
         <Heading as="h2" className={styles.sectionTitle}>
           What You&apos;ll Learn
         </Heading>
         <p className={styles.sectionSubtitle}>
-          {LESSON_COUNT} lessons covering research, planning, execution, and
-          validation patterns
+          {LESSON_COUNT} lessons &middot; Docs &middot; Podcasts &middot; Slides
         </p>
-        <div className={styles.modulesGrid}>
-          {modules.map((module) => (
-            <ModuleCard key={module.number} {...module} />
+        <div className={styles.moduleGrid}>
+          {modules.map((m) => (
+            <ModuleCard key={m.number} {...m} />
           ))}
         </div>
       </div>
@@ -648,46 +798,128 @@ function CourseModules() {
   );
 }
 
-// Learning Formats - Three ways to consume each lesson
-function LearningFormats() {
+// ---------------------------------------------------------------------------
+// Section 3: Resources
+// ---------------------------------------------------------------------------
+
+function Resources() {
   return (
-    <section className={styles.formatsSection}>
+    <section className={styles.resources}>
       <div className="container">
         <Heading as="h2" className={styles.sectionTitle}>
-          Learn Your Way
+          Resources
         </Heading>
-        <p className={styles.sectionSubtitle}>Every lesson, three formats</p>
-        <div className={styles.formatsGrid}>
-          <div className={styles.formatCard}>
-            <BookmarkIcon />
-            <Heading as="h3" className={styles.formatTitle}>
-              Reference Docs
+        <p className={styles.sectionSubtitle}>
+          {PROMPT_COUNT} prompts + tools + open source projects
+        </p>
+        <div className={styles.resourceGrid}>
+          <Link
+            to="/prompts"
+            className={clsx(styles.resourceCard, styles['resource-magenta'])}
+          >
+            <PromptIllustration />
+            <Heading as="h3" className={styles.resourceTitle}>
+              Prompt Library
             </Heading>
-            <p className={styles.formatDescription}>
-              Bookmark it. Jump back in when you need it.
+            <p className={styles.resourceDesc}>
+              Production-ready prompts for testing, debugging, code review, and
+              specifications
             </p>
-          </div>
-          <div className={styles.formatCard}>
-            <HeadphonesIcon />
-            <Heading as="h3" className={styles.formatTitle}>
-              Podcasts
+            <div className={styles.resourceFooter}>
+              <span className={styles.resourceCount}>
+                {PROMPT_COUNT} prompts
+              </span>
+              <span className={styles.ghostLink}>Browse Prompts &rarr;</span>
+            </div>
+          </Link>
+
+          <Link
+            to="/developer-tools/cli-coding-agents"
+            className={clsx(styles.resourceCard, styles['resource-cyan'])}
+          >
+            <ToolboxIllustration />
+            <Heading as="h3" className={styles.resourceTitle}>
+              Developer Toolbox
             </Heading>
-            <p className={styles.formatDescription}>
-              Commute, gym, walking the dog.
+            <p className={styles.resourceDesc}>
+              Curated CLI tools, coding agents, terminals, and MCP servers for
+              AI-first development
             </p>
-          </div>
-          <div className={styles.formatCard}>
-            <PresentationIcon />
-            <Heading as="h3" className={styles.formatTitle}>
-              Presentations
+            <div className={styles.resourceFooter}>
+              <span className={styles.resourceCount}>4 guides</span>
+              <span className={styles.ghostLink}>Explore Tools &rarr;</span>
+            </div>
+          </Link>
+
+          <a
+            href="https://chunkhound.github.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={clsx(styles.resourceCard, styles['resource-indigo'])}
+          >
+            <ChunkHoundIllustration />
+            <Heading as="h3" className={styles.resourceTitle}>
+              ChunkHound
             </Heading>
-            <p className={styles.formatDescription}>Share with your team.</p>
-          </div>
+            <p className={styles.resourceDesc}>
+              Semantic code research for large codebases. Don&apos;t search your
+              code&nbsp;&mdash; research it.
+            </p>
+            <div className={styles.resourceFooter}>
+              <span className={styles.resourceCount}>10K&ndash;1M+ LOC</span>
+              <span className={styles.ghostLink}>Visit Site &#8599;</span>
+            </div>
+          </a>
+
+          <a
+            href="https://github.com/ArguSeek/arguseek"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={clsx(styles.resourceCard, styles['resource-success'])}
+          >
+            <ArguSeekIllustration />
+            <Heading as="h3" className={styles.resourceTitle}>
+              ArguSeek
+            </Heading>
+            <p className={styles.resourceDesc}>
+              Wide iterative research using search and LLM synthesis. Multiple
+              sources per query.
+            </p>
+            <div className={styles.resourceFooter}>
+              <span className={styles.resourceCount}>
+                12&ndash;100+ sources
+              </span>
+              <span className={styles.ghostLink}>View Project &#8599;</span>
+            </div>
+          </a>
         </div>
       </div>
     </section>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Closing CTA
+// ---------------------------------------------------------------------------
+
+function ClosingCta() {
+  return (
+    <section className={styles.closingCta}>
+      <div className="container">
+        <p className={styles.closingText}>
+          {LESSON_COUNT} lessons. {PROMPT_COUNT} prompts. Free and open source.
+        </p>
+        <Link className={styles.buttonPrimary} to="/docs">
+          Start Learning
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 export default function Home(): ReactNode {
   return (
@@ -695,12 +927,11 @@ export default function Home(): ReactNode {
       title="Master Agentic Coding"
       description="Master agentic coding with a structured methodology proven on enterprise mono-repos. Free, MIT licensed, with podcasts, slides, and production-ready prompts."
     >
-      <HomepageHeader />
+      <Hero />
       <main>
-        <SocialProofBar />
-        <CourseModules />
-        <LearningFormats />
-        <EcosystemTools />
+        <Curriculum />
+        <Resources />
+        <ClosingCta />
       </main>
     </Layout>
   );
