@@ -2,8 +2,8 @@
   margin: 2rem 0;
   padding: 2rem 1.5rem;
   border-radius: 8px;
-  background: var(--visual-bg-decision);
-  border: 1px solid var(--visual-decision);
+  background: var(--visual-bg-indigo);
+  border: 1px solid var(--visual-indigo);
 }
 
 .container.compact {
@@ -52,14 +52,14 @@
   font-size: 2.5rem;
   line-height: 1;
   letter-spacing: 0.3rem;
-  color: var(--visual-limitation);
+  color: var(--visual-warning);
   font-weight: 300;
 }
 
 .cleanShape {
   font-size: 4rem;
   line-height: 1;
-  color: var(--visual-capability);
+  color: var(--visual-success);
   font-weight: 300;
 }
 

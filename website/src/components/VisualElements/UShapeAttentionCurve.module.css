@@ -2,8 +2,8 @@
   margin: 2rem 0;
   padding: 1.5rem;
   border-radius: 8px;
-  background: var(--visual-bg-workflow);
-  border: 1px solid var(--visual-workflow);
+  background: var(--visual-bg-cyan);
+  border: 1px solid var(--visual-cyan);
 }
 
 /* Compact mode for presentations - maximize diagram size */
@@ -160,41 +160,36 @@
 }
 
 .button {
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--target-sm);
+  padding: 0 var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 500;
-  border: 1px solid var(--visual-workflow);
-  background: var(--ifm-background-surface-color);
-  color: var(--visual-workflow);
-  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-heading);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.15s ease, background 0.15s ease;
   min-width: 70px;
 }
 
 .button:hover {
-  background: var(--visual-workflow);
-  color: white;
-  transform: translateY(-1px);
-  /* Shadow uses --brand-primary with alpha - updates automatically in dark mode */
-  box-shadow: 0 2px 8px
-    color-mix(in srgb, var(--brand-primary) 30%, transparent);
+  border-color: var(--neutral-400);
 }
 
 .buttonActive {
-  background: var(--visual-workflow);
-  color: white;
+  background: var(--text-heading);
+  color: var(--surface-page);
+  border-color: var(--text-heading);
   font-weight: 600;
-  /* Shadow uses --brand-primary with alpha - updates automatically in dark mode */
-  box-shadow: 0 2px 4px
-    color-mix(in srgb, var(--brand-primary) 20%, transparent);
 }
 
 .buttonActive:hover {
-  transform: translateY(0);
-  /* Shadow uses --brand-primary with alpha - updates automatically in dark mode */
-  box-shadow: 0 2px 4px
-    color-mix(in srgb, var(--brand-primary) 20%, transparent);
+  border-color: var(--neutral-400);
 }
 
 /* Explanation text */
@@ -204,8 +199,7 @@
   color: var(--ifm-color-emphasis-700);
   padding: 1rem;
   background: var(--ifm-background-surface-color);
-  border-radius: 6px;
-  border-left: 3px solid var(--visual-workflow);
+  border-left: 3px solid var(--visual-cyan);
 }
 
 .explanation strong {
@@ -258,5 +252,5 @@
   );
 }
 
-/* Note: button shadows now use color-mix with --brand-primary,
+/* Button shadows use color-mix with --visual-cyan,
    which automatically adapts to light/dark mode */

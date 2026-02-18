@@ -46,7 +46,7 @@ export default function SpecCodeZoomDiagram({
     return `M ${startX} ${startY} Q ${curveX} ${midPointY} ${endX} ${endY}`;
   };
 
-  // Left arrow (downward, purple) — Generate: spec→code
+  // Left arrow (downward, cyan) — Generate: spec→code
   const leftArrow = createArrowPath(
     centerX - specBoxWidth / 2 + 8,
     specY + specBoxHeight,
@@ -93,17 +93,17 @@ export default function SpecCodeZoomDiagram({
           >
             <stop
               offset="0%"
-              stopColor="var(--visual-workflow)"
+              stopColor="var(--visual-cyan)"
               stopOpacity="0.7"
             />
             <stop
               offset="50%"
-              stopColor="var(--visual-capability)"
+              stopColor="var(--visual-success)"
               stopOpacity="1"
             />
             <stop
               offset="100%"
-              stopColor="var(--visual-workflow)"
+              stopColor="var(--visual-cyan)"
               stopOpacity="0.7"
             />
           </linearGradient>
@@ -120,7 +120,7 @@ export default function SpecCodeZoomDiagram({
               dx="0"
               dy="2"
               stdDeviation="4"
-              floodColor="var(--visual-workflow)"
+              floodColor="var(--visual-cyan)"
               floodOpacity="0.15"
             />
           </filter>

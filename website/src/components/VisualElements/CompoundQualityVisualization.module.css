@@ -5,8 +5,8 @@
 .container {
   margin: 2rem 0;
   border-radius: 8px;
-  background: var(--visual-bg-workflow);
-  border: 1px solid var(--visual-workflow);
+  background: var(--visual-bg-cyan);
+  border: 1px solid var(--visual-cyan);
   overflow: hidden;
   opacity: 0;
   animation: fadeInContainer 0.6s ease-out forwards;
@@ -98,7 +98,7 @@
 }
 
 .sideLabelPositive {
-  color: var(--visual-capability);
+  color: var(--visual-success);
 }
 
 .sideLabelNegative {
@@ -156,7 +156,7 @@
 
 /* Arrow markers */
 .arrowMarkerPositive polygon {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
 }
 
 .arrowMarkerNegative polygon {
@@ -196,7 +196,7 @@
 }
 
 .iterationMarkerPositive {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
   stroke: var(--ifm-background-color);
   stroke-width: 2;
 }
@@ -250,27 +250,26 @@
 .circuitBreakerBox {
   margin: 0.5rem 1.5rem 1.5rem 1.5rem;
   padding: 1rem 1.25rem;
-  background: rgba(124, 58, 237, 0.05);
-  border-left: 4px solid var(--visual-workflow);
-  border-radius: 6px;
+  background: color-mix(in srgb, var(--visual-cyan) 5%, transparent);
+  border-left: 4px solid var(--visual-cyan);
   font-size: 0.9rem;
   line-height: 1.6;
   color: var(--ifm-color-emphasis-800);
 }
 
 .circuitBreakerBox strong {
-  color: var(--visual-workflow);
+  color: var(--visual-cyan);
   font-weight: 700;
 }
 
 .circuitBreakerBox a {
-  color: var(--visual-workflow);
+  color: var(--visual-cyan);
   text-decoration: underline;
   font-weight: 500;
 }
 
 .circuitBreakerBox a:hover {
-  color: var(--brand-primary-dark);
+  color: var(--visual-cyan);
 }
 
 /* ========================================================================
@@ -310,16 +309,16 @@
    ======================================================================== */
 
 [data-theme='dark'] .circuitBreakerBox {
-  background: rgba(167, 139, 250, 0.08);
+  background: color-mix(in srgb, var(--visual-cyan) 8%, transparent);
   color: var(--ifm-color-emphasis-700);
 }
 
 [data-theme='dark'] .circuitBreakerBox a {
-  color: var(--brand-primary-light);
+  color: var(--visual-cyan);
 }
 
 [data-theme='dark'] .circuitBreakerBox a:hover {
-  color: var(--brand-primary-lighter);
+  color: var(--visual-cyan);
 }
 
 /* ========================================================================

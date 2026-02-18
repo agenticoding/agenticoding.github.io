@@ -2,8 +2,8 @@
   margin: 2.5rem auto;
   padding: 1.25rem;
   border-radius: 8px;
-  background: var(--visual-bg-decision);
-  border: 1px solid var(--visual-decision);
+  background: var(--visual-bg-indigo);
+  border: 1px solid var(--visual-indigo);
   max-width: 500px;
   animation: fadeIn 0.5s ease-out;
 }
@@ -94,7 +94,7 @@
 
 .layerBox {
   fill: var(--ifm-background-surface-color);
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 1.5;
 }
 
@@ -131,7 +131,7 @@
 }
 
 .sourceLabel {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
   font-size: 10px;
   font-weight: 600;
   font-family: var(--ifm-font-family-base);
@@ -146,7 +146,7 @@
 }
 
 .arrowGenerate {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-dasharray: 180;
@@ -161,11 +161,11 @@
 }
 
 .arrowMarkerGenerate polygon {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
 }
 
 .arrowLabel {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
   font-size: 12px;
   font-weight: 600;
   font-family: var(--ifm-font-family-base);
@@ -178,7 +178,7 @@
 }
 
 .arrowExtract {
-  stroke: var(--visual-capability);
+  stroke: var(--visual-success);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-dasharray: 180;
@@ -187,11 +187,11 @@
 }
 
 .arrowMarkerExtract polygon {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
 }
 
 .arrowLabelExtract {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
   font-size: 12px;
   font-weight: 600;
   font-family: var(--ifm-font-family-base);
@@ -215,7 +215,7 @@
 }
 
 .legendLineGenerate {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 2;
 }
 
@@ -259,11 +259,11 @@
 
 :global(.reveal) .layerLabel,
 :global(.reveal) .codeLabel {
-  fill: #e5e7eb;
+  fill: var(--neutral-100);
 }
 
 :global(.reveal) .subtitleLabel {
-  fill: #9ca3af;
+  fill: var(--neutral-400);
 }
 
 :global(.reveal) .arrowLabel,
@@ -272,7 +272,7 @@
 }
 
 :global(.reveal) .iterateLabel {
-  fill: #d1d5db;
+  fill: var(--neutral-200);
   font-size: 14px;
 }
 

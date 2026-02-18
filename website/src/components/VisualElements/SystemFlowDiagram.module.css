@@ -53,15 +53,15 @@
 
 /* Main flow step boxes */
 .stepBox {
-  fill: var(--visual-bg-workflow);
-  stroke: var(--visual-workflow);
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
   stroke-width: 2.5;
   transition: all 0.2s ease;
 }
 
 .stepBox:hover {
-  fill: var(--visual-bg-decision);
-  stroke: var(--visual-decision);
+  fill: var(--visual-bg-indigo);
+  stroke: var(--visual-indigo);
 }
 
 /* Step labels */
@@ -74,7 +74,7 @@
 
 /* Main flow arrows */
 .mainArrow {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 3;
   fill: none;
   stroke-linecap: round;
@@ -83,19 +83,19 @@
 /* Fork/Join paths for concurrent phases */
 .forkPath,
 .joinPath {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 3;
   fill: none;
   stroke-linecap: round;
 }
 
 .arrowMarker {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
 }
 
 /* Concurrent phase bracket */
 .concurrentBracket {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 2;
   stroke-dasharray: 4 2;
   fill: none;
@@ -103,13 +103,13 @@
 
 /* Success terminal */
 .successTerminal {
-  fill: var(--visual-bg-capability);
-  stroke: var(--visual-capability);
+  fill: var(--visual-bg-success);
+  stroke: var(--visual-success);
   stroke-width: 2.5;
 }
 
 .checkmark {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
   font-size: 22px;
   font-weight: bold;
 }
@@ -131,8 +131,8 @@
 }
 
 .exitMarkerSuccess {
-  fill: var(--visual-bg-capability);
-  stroke: var(--visual-capability);
+  fill: var(--visual-bg-success);
+  stroke: var(--visual-success);
   stroke-width: 1.5;
 }
 
@@ -165,62 +165,62 @@
 
 /* Dark mode specific adjustments for presentations */
 :global(.reveal) .stepBox {
-  fill: rgba(167, 139, 250, 0.2);
-  stroke: #a78bfa;
+  fill: color-mix(in srgb, var(--visual-cyan) 20%, transparent);
+  stroke: var(--visual-cyan);
   stroke-width: 3;
 }
 
 :global(.reveal) .mainArrow,
 :global(.reveal) .forkPath,
 :global(.reveal) .joinPath {
-  stroke: #a78bfa;
+  stroke: var(--visual-cyan);
   stroke-width: 4;
   stroke-linecap: round;
 }
 
 :global(.reveal) .arrowMarker {
-  fill: #a78bfa;
+  fill: var(--visual-cyan);
 }
 
 :global(.reveal) .concurrentBracket {
-  stroke: #a78bfa;
+  stroke: var(--visual-cyan);
   stroke-width: 3;
 }
 
 :global(.reveal) .stepLabel {
-  fill: #e5e7eb;
+  fill: var(--neutral-100);
   font-size: 22px;
 }
 
 :global(.reveal) .successTerminal {
-  fill: rgba(34, 197, 94, 0.2);
-  stroke: #22c55e;
+  fill: color-mix(in srgb, var(--semantic-success) 20%, transparent);
+  stroke: var(--semantic-success);
   stroke-width: 3;
 }
 
 :global(.reveal) .checkmark {
-  fill: #22c55e;
+  fill: var(--semantic-success);
   font-size: 26px;
 }
 
 :global(.reveal) .exitPath {
-  stroke: #9ca3af;
+  stroke: var(--neutral-400);
   stroke-width: 2.5;
 }
 
 :global(.reveal) .exitMarkerError {
-  fill: rgba(239, 68, 68, 0.2);
-  stroke: #ef4444;
+  fill: color-mix(in srgb, var(--semantic-error) 20%, transparent);
+  stroke: var(--semantic-error);
   stroke-width: 2;
 }
 
 :global(.reveal) .exitMarkerSuccess {
-  fill: rgba(34, 197, 94, 0.2);
-  stroke: #22c55e;
+  fill: color-mix(in srgb, var(--semantic-success) 20%, transparent);
+  stroke: var(--semantic-success);
   stroke-width: 2;
 }
 
 :global(.reveal) .exitCode {
-  fill: #e5e7eb;
+  fill: var(--neutral-100);
   font-size: 16px;
 }

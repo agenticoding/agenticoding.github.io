@@ -111,17 +111,17 @@ export default function KnowledgeExpansionDiamond({
           >
             <stop
               offset="0%"
-              stopColor="var(--visual-workflow)"
+              stopColor="var(--visual-cyan)"
               stopOpacity="0.7"
             />
             <stop
               offset="50%"
-              stopColor="var(--visual-capability)"
+              stopColor="var(--visual-success)"
               stopOpacity="1"
             />
             <stop
               offset="100%"
-              stopColor="var(--visual-workflow)"
+              stopColor="var(--visual-cyan)"
               stopOpacity="0.7"
             />
           </linearGradient>
@@ -132,7 +132,7 @@ export default function KnowledgeExpansionDiamond({
               dx="0"
               dy="2"
               stdDeviation="4"
-              floodColor="var(--visual-workflow)"
+              floodColor="var(--visual-cyan)"
               floodOpacity="0.15"
             />
           </filter>

@@ -46,15 +46,15 @@
 
 /* Context Boxes */
 .contextBox {
-  fill: var(--visual-bg-workflow);
-  stroke: var(--visual-workflow);
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
   stroke-width: 3;
   transition: all 0.3s ease;
 }
 
 .contextBox:hover {
-  fill: var(--visual-bg-decision);
-  stroke: var(--visual-decision);
+  fill: var(--visual-bg-indigo);
+  stroke: var(--visual-indigo);
 }
 
 /* Text Styles */
@@ -80,18 +80,18 @@
 
 /* Arrows */
 .arrow {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 4;
   fill: none;
 }
 
 .arrowMarker {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
 }
 
 /* Separation Barriers */
 .barrier {
-  stroke: var(--visual-decision);
+  stroke: var(--visual-indigo);
   stroke-width: 2;
   opacity: 0.3;
 }
@@ -162,27 +162,27 @@
 
 /* Dark mode specific adjustments for presentations */
 :global(.reveal) .contextBox {
-  fill: rgba(167, 139, 250, 0.2);
-  stroke: #a78bfa;
+  fill: color-mix(in srgb, var(--visual-cyan) 20%, transparent);
+  stroke: var(--visual-cyan);
   stroke-width: 3;
 }
 
 :global(.reveal) .arrow {
-  stroke: #a78bfa;
+  stroke: var(--visual-cyan);
   stroke-width: 5;
 }
 
 :global(.reveal) .arrowMarker {
-  fill: #a78bfa;
+  fill: var(--visual-cyan);
 }
 
 :global(.reveal) .barrier {
-  stroke: #c4b5fd;
+  stroke: var(--visual-indigo);
   opacity: 0.4;
 }
 
 :global(.reveal) .contextTitle,
 :global(.reveal) .contextLabel,
 :global(.reveal) .contextDescription {
-  fill: #e5e7eb;
+  fill: var(--neutral-100);
 }

@@ -2,8 +2,8 @@
   margin: 2rem 0;
   padding: 1.5rem;
   border-radius: 8px;
-  background: var(--visual-bg-capability);
-  border: 1px solid var(--visual-capability);
+  background: var(--visual-bg-success);
+  border: 1px solid var(--visual-success);
 }
 
 /* Compact mode for presentations - maximize table size */
@@ -36,11 +36,11 @@
 }
 
 .compactBadge.high {
-  border-color: var(--visual-capability);
+  border-color: var(--visual-success);
 }
 
 .compactBadge.medium {
-  border-color: var(--visual-limitation);
+  border-color: var(--visual-warning);
 }
 
 .compactBadge.low {
@@ -58,11 +58,11 @@
 }
 
 .compactBadge.high .compactLabel {
-  color: var(--visual-capability);
+  color: var(--visual-success);
 }
 
 .compactBadge.medium .compactLabel {
-  color: var(--visual-limitation);
+  color: var(--visual-warning);
 }
 
 .compactBadge.low .compactLabel {

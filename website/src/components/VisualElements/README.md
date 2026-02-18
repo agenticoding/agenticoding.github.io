@@ -130,8 +130,8 @@ export default function MyNewComponent({ compact = false }: PresentationAwarePro
   margin: 2rem 0;
   padding: 1.5rem;
   border-radius: 8px;
-  background: var(--visual-bg-workflow);
-  border: 1px solid var(--visual-workflow);
+  background: var(--visual-bg-cyan);
+  border: 1px solid var(--visual-cyan);
 }
 
 /* Compact mode for presentations - maximize content area */
@@ -147,14 +147,14 @@ export default function MyNewComponent({ compact = false }: PresentationAwarePro
 ```css
 /* ❌ BAD - Hardcoded colors won't adapt to light/dark mode */
 .element {
-  color: #7c3aed;
-  background: rgba(124, 58, 237, 0.1);
+  color: #007576;
+  background: rgba(0, 117, 118, 0.1);
 }
 
 /* ✅ GOOD - CSS variables adapt automatically */
 .element {
-  color: var(--visual-workflow);
-  background: var(--visual-bg-workflow);
+  color: var(--visual-cyan);
+  background: var(--visual-bg-cyan);
 }
 ```
 
@@ -232,10 +232,10 @@ All visual components must use CSS variables from `/website/src/css/custom.css`:
 #### Semantic Colors
 
 ```css
---visual-workflow       /* Purple - AI workflows/agents */
---visual-capability     /* Cyan - capabilities/success */
---visual-limitation     /* Orange - limitations/warnings */
---visual-decision       /* Light purple - decision points */
+--visual-cyan       /* Cyan - AI workflows/agents */
+--visual-success     /* Cyan - capabilities/success */
+--visual-warning     /* Orange - limitations/warnings */
+--visual-indigo       /* Light cyan - decision points */
 --visual-error          /* Rose - errors/critical */
 --visual-neutral        /* Slate - neutral states */
 ```
@@ -243,10 +243,10 @@ All visual components must use CSS variables from `/website/src/css/custom.css`:
 #### Transparent Backgrounds
 
 ```css
---visual-bg-workflow    /* rgba(167, 139, 250, 0.15) */
---visual-bg-capability  /* rgba(34, 211, 238, 0.15) */
---visual-bg-limitation  /* rgba(251, 146, 60, 0.15) */
---visual-bg-decision    /* rgba(196, 181, 253, 0.15) */
+--visual-bg-cyan    /* rgba(167, 139, 250, 0.15) */
+--visual-bg-success  /* rgba(34, 211, 238, 0.15) */
+--visual-bg-warning  /* rgba(251, 146, 60, 0.15) */
+--visual-bg-indigo    /* rgba(196, 181, 253, 0.15) */
 --visual-bg-error       /* rgba(251, 113, 133, 0.15) */
 ```
 
@@ -270,17 +270,17 @@ All visual components must use CSS variables from `/website/src/css/custom.css`:
 ```css
 /* Light mode */
 :root {
-  --visual-workflow: #7c3aed; /* Medium purple */
+  --visual-cyan: #007576; /* Cyan-600 */
 }
 
 /* Dark mode */
 [data-theme='dark'] {
-  --visual-workflow: #a78bfa; /* Brighter purple */
+  --visual-cyan: #00b2b2; /* Brighter cyan */
 }
 
 /* Presentations (always dark) */
 :global(.reveal) {
-  --visual-workflow: #a78bfa; /* Same as dark mode */
+  --visual-cyan: #00b2b2; /* Same as dark mode */
 }
 ```
 
@@ -306,7 +306,7 @@ Components don't need mode-specific CSS - the variables handle it.
 
 ```css
 /* Use color-mix() to derive shadow from theme color */
-box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-primary) 30%, transparent);
+box-shadow: 0 2px 8px color-mix(in srgb, var(--visual-cyan) 30%, transparent);
 ```
 
 ---

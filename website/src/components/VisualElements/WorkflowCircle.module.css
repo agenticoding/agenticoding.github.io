@@ -2,8 +2,8 @@
   margin: 2rem auto;
   padding: 1.5rem;
   border-radius: 8px;
-  background: var(--visual-bg-workflow);
-  border: 1px solid var(--visual-workflow);
+  background: var(--visual-bg-cyan);
+  border: 1px solid var(--visual-cyan);
   max-width: 600px;
   animation: fadeIn 0.6s ease-in-out;
 }
@@ -46,7 +46,7 @@
 /* Phase circle nodes */
 .phaseCircle {
   fill: var(--ifm-background-surface-color);
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 3;
   transition: all 0.3s ease;
 }
@@ -96,7 +96,7 @@
 
 /* Arrow paths - solid for forward flow */
 .arrowPath {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 2.5;
   fill: none;
   stroke-linecap: round;
@@ -107,7 +107,7 @@
 
 /* Dashed arrow for iteration (Validate -> Research) */
 .arrowPathDashed {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 2.5;
   fill: none;
   stroke-linecap: round;
@@ -124,11 +124,11 @@
 
 /* Arrow markers */
 .arrowMarker polygon {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
 }
 
 .arrowMarkerDashed polygon {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
   opacity: 0.7;
 }
 

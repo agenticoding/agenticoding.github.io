@@ -2,8 +2,8 @@
   margin: 2rem 0;
   padding: 1.5rem;
   border-radius: 8px;
-  background: var(--visual-bg-workflow);
-  border: 1px solid var(--visual-workflow);
+  background: var(--visual-bg-cyan);
+  border: 1px solid var(--visual-cyan);
 }
 
 /* Compact mode for presentations - maximize content area */
@@ -31,7 +31,7 @@
   font-size: 0.9rem;
   font-weight: 500;
   font-family: var(--ifm-font-family-monospace);
-  color: var(--visual-workflow);
+  color: var(--visual-cyan);
 }
 
 .meterContainer {
@@ -57,15 +57,15 @@
 .meterFillNormal {
   background: linear-gradient(
     90deg,
-    var(--visual-capability),
-    var(--visual-workflow)
+    var(--visual-success),
+    var(--visual-cyan)
   );
 }
 
 .meterFillWarning {
   background: linear-gradient(
     90deg,
-    var(--visual-limitation),
+    var(--visual-warning),
     var(--gradient-warning-end)
   );
 }
@@ -106,22 +106,24 @@
 .button {
   flex: 1;
   min-width: 140px;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--target-sm);
+  padding: 0 var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 500;
-  border: 1px solid var(--visual-workflow);
-  background: var(--ifm-background-surface-color);
-  color: var(--visual-workflow);
-  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-heading);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .button:hover:not(:disabled) {
-  background: var(--visual-workflow);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+  border-color: var(--neutral-400);
 }
 
 .button:disabled {
@@ -130,14 +132,12 @@
 }
 
 .buttonReset {
-  border-color: var(--visual-neutral);
-  color: var(--visual-neutral);
+  border-color: var(--neutral-400);
+  color: var(--text-muted);
 }
 
 .buttonReset:hover:not(:disabled) {
-  background: var(--visual-neutral);
-  color: white;
-  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
+  border-color: var(--neutral-500);
 }
 
 .statusMessage {
@@ -154,19 +154,19 @@
 }
 
 .alertInfo {
-  background: var(--visual-bg-capability);
-  border: 1px solid var(--visual-capability);
-  color: var(--visual-capability);
+  background: var(--visual-bg-success);
+  border: 1px solid var(--visual-success);
+  color: var(--visual-success);
 }
 
 .alertWarning {
-  background: var(--visual-bg-limitation);
-  border: 1px solid var(--visual-limitation);
-  color: var(--visual-limitation);
+  background: var(--visual-bg-warning);
+  border: 1px solid var(--visual-warning);
+  color: var(--visual-warning);
 }
 
 .alertCritical {
-  background: var(--visual-bg-error, rgba(225, 29, 72, 0.1));
+  background: var(--visual-bg-error);
   border: 1px solid var(--visual-error);
   color: var(--visual-error);
 }

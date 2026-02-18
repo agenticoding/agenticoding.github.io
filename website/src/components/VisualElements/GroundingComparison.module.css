@@ -52,31 +52,32 @@
 }
 
 .expandCollapseButton {
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--target-sm);
+  padding: 0 var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--visual-workflow);
-  background: rgba(124, 58, 237, 0.1);
-  border: 1px solid var(--visual-workflow);
-  border-radius: 6px;
+  color: var(--text-heading);
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .expandCollapseButton:hover {
-  background: var(--visual-workflow);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+  border-color: var(--neutral-400);
 }
 
 .expandCollapseButton:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 4px rgba(124, 58, 237, 0.2);
+  background: var(--surface-muted);
 }
 
 .expandCollapseButton:focus {
-  outline: 2px solid var(--visual-workflow);
+  outline: 2px solid var(--text-heading);
   outline-offset: 2px;
 }
 
@@ -100,8 +101,8 @@
 .sideWithout {
   background: linear-gradient(
     180deg,
-    rgba(225, 29, 72, 0.03) 0%,
-    rgba(225, 29, 72, 0.01) 100%
+    color-mix(in srgb, var(--visual-error) 3%, transparent) 0%,
+    color-mix(in srgb, var(--visual-error) 1%, transparent) 100%
   );
   border-right: 1px solid var(--ifm-color-emphasis-300);
   opacity: 0;
@@ -112,8 +113,8 @@
 .sideWith {
   background: linear-gradient(
     180deg,
-    rgba(6, 182, 212, 0.03) 0%,
-    rgba(6, 182, 212, 0.01) 100%
+    color-mix(in srgb, var(--visual-success) 3%, transparent) 0%,
+    color-mix(in srgb, var(--visual-success) 1%, transparent) 100%
   );
   opacity: 0;
   transform: translateX(20px);
@@ -153,7 +154,7 @@
 }
 
 .sideWith .sideLabel {
-  color: var(--visual-capability);
+  color: var(--visual-success);
 }
 
 .phases {
@@ -206,18 +207,18 @@
 }
 
 .phaseCardWithout:hover {
-  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
-  border-color: var(--visual-workflow);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--visual-error) 25%, transparent);
+  border-color: var(--visual-cyan);
   transform: translateY(-2px);
 }
 
 .phaseCardWith {
-  border-color: var(--visual-capability);
+  border-color: var(--visual-success);
 }
 
 .phaseCardWith:hover {
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
-  border-color: var(--visual-workflow);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--visual-cyan) 15%, transparent);
+  border-color: var(--visual-cyan);
   transform: translateY(-1px);
 }
 
@@ -248,7 +249,7 @@
 }
 
 .phaseCardWith .phaseIcon {
-  color: var(--visual-capability);
+  color: var(--visual-success);
 }
 
 .phaseTitle {
@@ -323,10 +324,10 @@
   padding: 4px 8px;
   font-size: 0.75rem;
   font-family: var(--ifm-font-family-monospace);
-  background: rgba(124, 58, 237, 0.1);
-  border: 1px solid var(--visual-workflow);
+  background: var(--visual-bg-cyan);
+  border: 1px solid var(--visual-cyan);
   border-radius: 4px;
-  color: var(--visual-workflow);
+  color: var(--visual-cyan);
 }
 
 /* ========================================================================
@@ -336,21 +337,20 @@
 .tokenEfficiencyBox {
   margin: 0.5rem 1.5rem 1.5rem 1.5rem;
   padding: 1rem 1.25rem;
-  background: rgba(124, 58, 237, 0.05);
-  border-left: 4px solid var(--visual-workflow);
-  border-radius: 6px;
+  background: color-mix(in srgb, var(--visual-cyan) 5%, transparent);
+  border-left: 4px solid var(--visual-cyan);
   font-size: 0.9rem;
   line-height: 1.6;
   color: var(--ifm-color-emphasis-800);
 }
 
 .tokenEfficiencyBox strong {
-  color: var(--visual-workflow);
+  color: var(--visual-cyan);
   font-weight: 700;
 }
 
 [data-theme='dark'] .tokenEfficiencyBox {
-  background: rgba(167, 139, 250, 0.08);
+  background: color-mix(in srgb, var(--visual-cyan) 8%, transparent);
   color: var(--ifm-color-emphasis-700);
 }
 
@@ -427,33 +427,33 @@
 [data-theme='dark'] .sideWithout {
   background: linear-gradient(
     180deg,
-    rgba(251, 113, 133, 0.08) 0%,
-    rgba(251, 113, 133, 0.02) 100%
+    color-mix(in srgb, var(--visual-error) 8%, transparent) 0%,
+    color-mix(in srgb, var(--visual-error) 2%, transparent) 100%
   );
 }
 
 [data-theme='dark'] .sideWith {
   background: linear-gradient(
     180deg,
-    rgba(34, 211, 238, 0.08) 0%,
-    rgba(34, 211, 238, 0.02) 100%
+    color-mix(in srgb, var(--visual-success) 8%, transparent) 0%,
+    color-mix(in srgb, var(--visual-success) 2%, transparent) 100%
   );
 }
 
 [data-theme='dark'] .phaseCardWithout:hover {
-  box-shadow: 0 4px 12px rgba(251, 113, 133, 0.35);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--visual-error) 35%, transparent);
 }
 
 [data-theme='dark'] .phaseCardWith:hover {
-  box-shadow: 0 2px 8px rgba(167, 139, 250, 0.25);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--visual-cyan) 25%, transparent);
 }
 
 [data-theme='dark'] .toolBadge {
-  background: rgba(167, 139, 250, 0.15);
+  background: var(--visual-bg-cyan);
 }
 
 [data-theme='dark'] .footer {
-  background: rgba(22, 27, 34, 0.5);
+  background: color-mix(in srgb, var(--ifm-background-surface-color) 50%, transparent);
 }
 
 /* ========================================================================

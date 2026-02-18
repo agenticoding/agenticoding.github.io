@@ -119,12 +119,12 @@ export default function CompoundQualityVisualization({
             >
               <stop
                 offset="0%"
-                stopColor="var(--visual-capability)"
+                stopColor="var(--visual-success)"
                 stopOpacity="0.3"
               />
               <stop
                 offset="100%"
-                stopColor="var(--visual-capability)"
+                stopColor="var(--visual-success)"
                 stopOpacity="1"
               />
             </linearGradient>
@@ -149,12 +149,12 @@ export default function CompoundQualityVisualization({
             <linearGradient id="positiveFill" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop
                 offset="0%"
-                stopColor="var(--visual-capability)"
+                stopColor="var(--visual-success)"
                 stopOpacity="0.1"
               />
               <stop
                 offset="100%"
-                stopColor="var(--visual-capability)"
+                stopColor="var(--visual-success)"
                 stopOpacity="0.2"
               />
             </linearGradient>
@@ -180,7 +180,7 @@ export default function CompoundQualityVisualization({
             >
               <polygon
                 points="0 0, 10 3, 0 6"
-                fill="var(--visual-capability)"
+                fill="var(--visual-success)"
               />
             </marker>
             <marker
@@ -293,7 +293,7 @@ export default function CompoundQualityVisualization({
             className={`${styles.sideLabel} ${styles.sideLabelPositive} ${homepageMode ? styles.sideLabelHomepage : ''}`}
             textAnchor="middle"
             fontWeight="600"
-            fill="var(--visual-capability)"
+            fill="var(--visual-success)"
           >
             POSITIVE FEEDBACK
           </text>
@@ -318,7 +318,7 @@ export default function CompoundQualityVisualization({
                 cy={iter.y}
                 r="6"
                 className={styles.iterationMarkerPositive}
-                fill="var(--visual-capability)"
+                fill="var(--visual-success)"
               />
               <text
                 x={iter.x}
@@ -379,7 +379,7 @@ export default function CompoundQualityVisualization({
           {/* Arrow at positive end - pointing upward-right */}
           <path
             d={`M ${endX - 7} ${centerY - 145} L ${endX + 13} ${centerY - 160}`}
-            stroke="var(--visual-capability)"
+            stroke="var(--visual-success)"
             strokeWidth="2"
             fill="none"
             markerEnd="url(#arrowPositive)"

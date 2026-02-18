@@ -49,9 +49,9 @@ const DEFAULT_OUTPUTS: ArrowDef[] = [
 
 const DEFAULT_LEGEND_Y = 440;
 const DEFAULT_LEGEND_ENTRIES = [
-  { x1: 40, x2: 70, textX: 77, label: 'Contract (internal)', arrowId: 'arrow-contract', strokeVar: 'var(--visual-workflow)' },
-  { x1: 210, x2: 240, textX: 247, label: 'Input (external)', arrowId: 'arrow-input', strokeVar: 'var(--visual-capability)' },
-  { x1: 375, x2: 405, textX: 412, label: 'Output (external)', arrowId: 'arrow-output', strokeVar: 'var(--visual-limitation)' },
+  { x1: 40, x2: 70, textX: 77, label: 'Contract (internal)', arrowId: 'arrow-contract', strokeVar: 'var(--visual-cyan)' },
+  { x1: 210, x2: 240, textX: 247, label: 'Input (external)', arrowId: 'arrow-input', strokeVar: 'var(--visual-success)' },
+  { x1: 375, x2: 405, textX: 412, label: 'Output (external)', arrowId: 'arrow-output', strokeVar: 'var(--visual-warning)' },
 ];
 
 const DEFAULT_VIEWBOX = { x: -47, y: -15, w: 587, h: 463 };
@@ -93,9 +93,9 @@ const COMPACT_OUTPUTS: ArrowDef[] = [
 
 const COMPACT_LEGEND_Y = 272;
 const COMPACT_LEGEND_ENTRIES = [
-  { x1: 240, x2: 270, textX: 277, label: 'Contract (internal)', arrowId: 'arrow-contract', strokeVar: 'var(--visual-workflow)' },
-  { x1: 420, x2: 450, textX: 457, label: 'Input (external)', arrowId: 'arrow-input', strokeVar: 'var(--visual-capability)' },
-  { x1: 600, x2: 630, textX: 637, label: 'Output (external)', arrowId: 'arrow-output', strokeVar: 'var(--visual-limitation)' },
+  { x1: 240, x2: 270, textX: 277, label: 'Contract (internal)', arrowId: 'arrow-contract', strokeVar: 'var(--visual-cyan)' },
+  { x1: 420, x2: 450, textX: 457, label: 'Input (external)', arrowId: 'arrow-input', strokeVar: 'var(--visual-success)' },
+  { x1: 600, x2: 630, textX: 637, label: 'Output (external)', arrowId: 'arrow-output', strokeVar: 'var(--visual-warning)' },
 ];
 
 const COMPACT_VIEWBOX = { x: -25, y: -20, w: 970, h: 300 };

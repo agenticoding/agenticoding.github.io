@@ -2,8 +2,8 @@
   margin: 2.5rem auto;
   padding: 1.25rem;
   border-radius: 8px;
-  background: var(--visual-bg-decision);
-  border: 1px solid var(--visual-decision);
+  background: var(--visual-bg-indigo);
+  border: 1px solid var(--visual-indigo);
   max-width: 480px;
   animation: fadeIn 0.5s ease-out;
 }
@@ -90,7 +90,7 @@
 
 .layerBox {
   fill: var(--ifm-background-surface-color);
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 1.5;
 }
 
@@ -126,7 +126,7 @@
 }
 
 .codeSubtitle {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
   font-size: 9px;
   font-weight: 600;
   font-family: var(--ifm-font-family-base);
@@ -141,7 +141,7 @@
 }
 
 .arrowTraditional {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-dasharray: 120;
@@ -156,7 +156,7 @@
 }
 
 .arrowMarkerTraditional polygon {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
 }
 
 .annotation {
@@ -173,7 +173,7 @@
 }
 
 .arrowAI {
-  stroke: var(--visual-capability);
+  stroke: var(--visual-success);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-dasharray: 120;
@@ -182,11 +182,11 @@
 }
 
 .arrowMarkerAI polygon {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
 }
 
 .annotationAI {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
   font-size: 9px;
   font-style: italic;
   font-family: var(--ifm-font-family-base);
@@ -200,11 +200,11 @@
 }
 
 .legendDotTraditional {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
 }
 
 .legendDotAI {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
 }
 
 .legendText {
@@ -246,11 +246,11 @@
 
 :global(.reveal) .layerLabel,
 :global(.reveal) .codeLabel {
-  fill: #e5e7eb;
+  fill: var(--neutral-100);
 }
 
 :global(.reveal) .sizeLabel {
-  fill: #9ca3af;
+  fill: var(--neutral-400);
 }
 
 /* ===== RESPONSIVE ===== */

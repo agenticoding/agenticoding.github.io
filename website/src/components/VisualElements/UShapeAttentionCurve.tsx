@@ -207,7 +207,7 @@ export default function UShapeAttentionCurve({
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop
               offset="0%"
-              stopColor="var(--visual-capability)"
+              stopColor="var(--visual-success)"
               stopOpacity="0.8"
             />
             <stop
@@ -217,7 +217,7 @@ export default function UShapeAttentionCurve({
             />
             <stop
               offset="100%"
-              stopColor="var(--visual-capability)"
+              stopColor="var(--visual-success)"
               stopOpacity="0.8"
             />
           </linearGradient>
@@ -226,12 +226,12 @@ export default function UShapeAttentionCurve({
           <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop
               offset="0%"
-              stopColor="var(--visual-workflow)"
+              stopColor="var(--visual-cyan)"
               stopOpacity="0.3"
             />
             <stop
               offset="100%"
-              stopColor="var(--visual-workflow)"
+              stopColor="var(--visual-cyan)"
               stopOpacity="0.05"
             />
           </linearGradient>
@@ -283,7 +283,7 @@ export default function UShapeAttentionCurve({
           cx={startX}
           cy={startY}
           r="8"
-          fill="var(--visual-capability)"
+          fill="var(--visual-success)"
           className={styles.marker}
         />
 
@@ -301,7 +301,7 @@ export default function UShapeAttentionCurve({
           cx={endX}
           cy={endY}
           r="8"
-          fill="var(--visual-capability)"
+          fill="var(--visual-success)"
           className={styles.marker}
         />
 

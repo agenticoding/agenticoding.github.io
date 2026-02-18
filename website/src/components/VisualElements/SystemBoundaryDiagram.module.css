@@ -66,15 +66,15 @@
 
 /* Internal module boxes (purple) */
 .moduleBox {
-  fill: var(--visual-bg-workflow);
-  stroke: var(--visual-workflow);
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
   stroke-width: 2.5;
   transition: all 0.2s ease;
 }
 
 .moduleBox:hover {
-  fill: var(--visual-bg-decision);
-  stroke: var(--visual-decision);
+  fill: var(--visual-bg-indigo);
+  stroke: var(--visual-indigo);
 }
 
 .moduleLabel {
@@ -86,15 +86,15 @@
 
 /* External actor boxes (gray) */
 .actorBox {
-  fill: var(--visual-bg-decision);
+  fill: var(--visual-bg-indigo);
   stroke: var(--visual-neutral);
   stroke-width: 2.5;
   transition: all 0.2s ease;
 }
 
 .actorBox:hover {
-  fill: var(--visual-bg-workflow);
-  stroke: var(--visual-workflow);
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
 }
 
 .actorLabel {
@@ -117,38 +117,38 @@
 
 /* Contract arrows (purple, internal) */
 .contractArrow {
-  stroke: var(--visual-workflow);
+  stroke: var(--visual-cyan);
   stroke-width: 3;
   fill: none;
   stroke-linecap: round;
 }
 
 .contractMarker {
-  fill: var(--visual-workflow);
+  fill: var(--visual-cyan);
 }
 
 /* Input arrows (cyan, external → internal) */
 .inputArrow {
-  stroke: var(--visual-capability);
+  stroke: var(--visual-success);
   stroke-width: 3;
   fill: none;
   stroke-linecap: round;
 }
 
 .inputMarker {
-  fill: var(--visual-capability);
+  fill: var(--visual-success);
 }
 
 /* Output arrows (orange, internal → external) */
 .outputArrow {
-  stroke: var(--visual-limitation);
+  stroke: var(--visual-warning);
   stroke-width: 3;
   fill: none;
   stroke-linecap: round;
 }
 
 .outputMarker {
-  fill: var(--visual-limitation);
+  fill: var(--visual-warning);
 }
 
 /* Legend */
@@ -192,69 +192,69 @@
 
 /* Presentation overrides */
 :global(.reveal) .moduleBox {
-  fill: rgba(167, 139, 250, 0.2);
-  stroke: #a78bfa;
+  fill: color-mix(in srgb, var(--visual-cyan) 20%, transparent);
+  stroke: var(--visual-cyan);
   stroke-width: 3;
 }
 
 :global(.reveal) .actorBox {
-  fill: rgba(156, 163, 175, 0.15);
-  stroke: #9ca3af;
+  fill: color-mix(in srgb, var(--neutral-400) 15%, transparent);
+  stroke: var(--neutral-400);
   stroke-width: 3;
 }
 
 :global(.reveal) .boundary {
-  stroke: #6b7280;
+  stroke: var(--neutral-500);
   stroke-width: 3;
 }
 
 :global(.reveal) .boundaryLabel {
-  fill: #9ca3af;
+  fill: var(--neutral-400);
   font-size: 18px;
 }
 
 :global(.reveal) .moduleLabel {
-  fill: #e5e7eb;
+  fill: var(--neutral-100);
   font-size: 22px;
 }
 
 :global(.reveal) .actorLabel {
-  fill: #e5e7eb;
+  fill: var(--neutral-100);
   font-size: 20px;
 }
 
 :global(.reveal) .arrowLabel {
-  fill: #d1d5db;
+  fill: var(--neutral-200);
   font-size: 16px;
-  stroke: #000;
+  stroke: var(--ifm-background-color);
   stroke-width: 6px;
 }
 
 :global(.reveal) .contractArrow {
-  stroke: #a78bfa;
+  stroke: var(--visual-cyan);
   stroke-width: 4;
 }
 
 :global(.reveal) .contractMarker {
-  fill: #a78bfa;
+  fill: var(--visual-cyan);
 }
 
 :global(.reveal) .inputArrow {
-  stroke: #22d3ee;
+  stroke: var(--visual-success);
   stroke-width: 4;
 }
 
 :global(.reveal) .inputMarker {
-  fill: #22d3ee;
+  fill: var(--visual-success);
 }
 
 :global(.reveal) .outputArrow {
-  stroke: #fb923c;
+  stroke: var(--visual-warning);
   stroke-width: 4;
 }
 
 :global(.reveal) .outputMarker {
-  fill: #fb923c;
+  fill: var(--visual-warning);
 }
 
 :global(.reveal) .legendLine {
@@ -262,7 +262,7 @@
 }
 
 :global(.reveal) .legendLabel {
-  fill: #e5e7eb;
+  fill: var(--neutral-100);
   font-size: 16px;
 }
 

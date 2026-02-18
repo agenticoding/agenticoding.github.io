@@ -52,10 +52,10 @@ function getTrustIndicator(level: 'high' | 'medium' | 'low'): {
       return {
         icon: '✅',
         label: 'Reliable',
-        color: 'var(--visual-capability)',
+        color: 'var(--visual-success)',
       };
     case 'medium':
-      return { icon: '⚠️', label: 'Verify', color: 'var(--visual-limitation)' };
+      return { icon: '⚠️', label: 'Verify', color: 'var(--visual-warning)' };
     case 'low':
       return { icon: '❌', label: 'Check docs', color: 'var(--visual-error)' };
   }
