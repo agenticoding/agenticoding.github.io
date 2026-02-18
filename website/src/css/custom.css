@@ -544,14 +544,25 @@
   border-color: var(--neutral-400);
 }
 
-/* Color mode toggle — neutral styling */
-.navbar [class*='colorModeToggle'] button {
+/* Color mode toggle — stable selector via swizzled Navbar/ColorModeToggle wrapper */
+.color-mode-toggle button {
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm);    /* 4px — input radius */
+  width: var(--target-sm);            /* 32px — tertiary action */
+  height: var(--target-sm);
 }
 
-.navbar [class*='colorModeToggle'] button:hover {
+.color-mode-toggle button:hover {
   background: var(--surface-muted);
+}
+
+.color-mode-toggle button:focus-visible {
+  border-color: var(--neutral-600);
+  outline: none;
+}
+
+[data-theme='dark'] .color-mode-toggle button:focus-visible {
+  border-color: var(--neutral-400);
 }
 
 /* Mobile hamburger toggle */
