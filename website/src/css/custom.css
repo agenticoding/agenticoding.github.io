@@ -235,6 +235,25 @@
   /* === CODE BLOCK BACKGROUNDS === */
   --code-bg-light: #f5f5f5; /* neutral-50 */
 
+  /* === SEARCH PLUGIN — Design system overrides ===
+     @easyops-cn/docusaurus-search-local CSS custom properties.
+     Flat construction: no shadows. Design tokens for all colors.
+     Contrast verified: active suggestion 14.16:1 light, 11.56:1 dark. */
+  --search-local-modal-background: var(--surface-raised);
+  --search-local-modal-shadow: none;
+  --search-local-hit-background: var(--surface-page);
+  --search-local-hit-shadow: none;
+  --search-local-hit-color: var(--text-body);
+  --search-local-highlight-color: var(--neutral-900);
+  --search-local-hit-active-color: var(--surface-page);
+  --search-local-muted-color: var(--text-muted);
+  --search-local-input-active-border-color: transparent;
+  --search-local-spacing: var(--space-2);
+  --search-local-icon-stroke-width: 2;
+
+  /* Search icon — stroke-based magnifying glass (light: #808080, 3.95:1 on white) */
+  --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="%23808080" stroke-width="1.5"/><line x1="9.68" y1="9.68" x2="14" y2="14" stroke="%23808080" stroke-width="1.5" stroke-linecap="round"/></svg>');
+
   /* === ANNOUNCEMENT BAR === */
   --announcement-bg: #ffe3c3;  /* warning-100 */
   --announcement-text: #402400; /* warning-900 */
@@ -322,6 +341,14 @@
   --ifm-navbar-background-color: var(--surface-page);
   --ifm-navbar-link-color: var(--text-body);
   --ifm-navbar-link-hover-color: var(--text-heading);
+
+  /* === SEARCH PLUGIN — Dark mode overrides ===
+     Active suggestion: light bg (#e8e8e8) with dark text (#2b2b2b), 11.56:1 contrast. */
+  --search-local-highlight-color: var(--neutral-100);
+  --search-local-hit-active-color: var(--neutral-900);
+
+  /* Search icon — stroke-based magnifying glass (dark: #9b9b9b, 6.81:1 on #0d1117) */
+  --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="%239b9b9b" stroke-width="1.5"/><line x1="9.68" y1="9.68" x2="14" y2="14" stroke="%239b9b9b" stroke-width="1.5" stroke-linecap="round"/></svg>');
 
   /* === ANNOUNCEMENT BAR === */
   --announcement-bg: #8e5900;  /* warning-600 */
@@ -586,6 +613,31 @@
 
 [data-theme='dark'] .color-mode-toggle button:focus-visible {
   border-color: var(--neutral-400);
+}
+
+/* Search dropdown — flat border replaces shadow (design system: flat construction) */
+.navbar [class*='dropdownMenu'] {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);    /* 8px — container radius */
+}
+
+/* Search hint badge (⌘K) — flat, design system tokens
+   Light: #666666 on #f5f5f5 = 5.27:1 (WCAG AA). Dark: #9b9b9b on #161b22 = 6.22:1. */
+.navbar [class*='searchHint'] {
+  box-shadow: none;
+  border: 1px solid var(--neutral-400);
+  background-color: var(--surface-raised);
+  color: var(--neutral-600);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  padding: 0 var(--space-0h);
+}
+
+[data-theme='dark'] .navbar [class*='searchHint'] {
+  border-color: var(--neutral-600);
+  background-color: var(--surface-raised);
+  color: var(--neutral-400);
 }
 
 /* Mobile hamburger toggle */
