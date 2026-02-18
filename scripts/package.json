@@ -8,10 +8,15 @@
     "generate-podcast": "node generate-podcast.js",
     "generate-podcast-batch": "node generate-podcast.js --all",
     "generate-podcast-script-only": "node generate-podcast.js --script-only",
-    "generate-podcast-audio-only": "node generate-podcast.js --audio-only"
+    "generate-podcast-audio-only": "node generate-podcast.js --audio-only",
+    "generate-social-card": "node generate-social-card.js",
+    "generate-favicons": "node generate-favicons.js",
+    "generate-brand-assets": "node generate-social-card.js && node generate-favicons.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "canvas": "^3.2.0"
+    "canvas": "^3.2.0",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.33.0"
   }
 }
