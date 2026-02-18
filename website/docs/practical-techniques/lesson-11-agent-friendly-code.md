@@ -150,7 +150,7 @@ sequenceDiagram
     participant KB as 🗄️ Codebase<br/>(Persistent)
     participant Agent as ⚡ Agent<br/>(Stateless)
 
-    rect rgb(167, 139, 250, 0.1)
+    rect rgb(147, 142, 235, 0.1)
         Note over Agent: 1. RESEARCH
         Agent->>KB: Read source code
         KB->>Agent: Knowledge extracted
@@ -158,7 +158,7 @@ sequenceDiagram
 
     alt ✅ Good Path
         Note over Agent: Knowledge stays in context
-        rect rgb(167, 139, 250, 0.1)
+        rect rgb(147, 142, 235, 0.1)
             Note over Agent: 2. PLAN
             Note over Agent: 3. EXECUTE
             Agent->>KB: Edit code
@@ -169,7 +169,7 @@ sequenceDiagram
     else ❌ Bad Path: Cache Research
         Agent->>KB: Save ARCHITECTURE.md
         Note over KB: Cache committed
-        rect rgb(167, 139, 250, 0.1)
+        rect rgb(147, 142, 235, 0.1)
             Note over Agent: 2. PLAN
             Note over Agent: 3. EXECUTE
             Agent->>KB: Edit code

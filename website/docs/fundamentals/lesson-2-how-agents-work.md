@@ -25,9 +25,9 @@ flowchart TD
     Iterate --> Perceive
     Verify -->|Yes| Complete([Complete])
 
-    classDef workflow fill:#a78bfa,stroke:#7c3aed,stroke-width:2px,color:#fff
-    classDef decision fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    classDef endpoint fill:#7c3aed,stroke:#6d28d9,stroke-width:3px,color:#fff
+    classDef workflow fill:#00b2b2,stroke:#007576,stroke-width:2px,color:#fff
+    classDef decision fill:#009393,stroke:#007576,stroke-width:2px,color:#fff
+    classDef endpoint fill:#007576,stroke:#005c5c,stroke-width:3px,color:#fff
 
     class Perceive,Reason,Act,Observe,Iterate workflow
     class Verify decision
