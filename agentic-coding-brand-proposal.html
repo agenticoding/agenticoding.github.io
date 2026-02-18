@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Coding — Monochrome Brand System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: 'Monaspace Neon'; src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@v1.101/fonts/webfonts/MonaspaceNeon-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Monaspace Neon'; src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@v1.101/fonts/webfonts/MonaspaceNeon-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+  @font-face { font-family: 'Monaspace Neon'; src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@v1.101/fonts/webfonts/MonaspaceNeon-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+  @font-face { font-family: 'Monaspace Neon'; src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@v1.101/fonts/webfonts/MonaspaceNeon-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-page: #f5f5f5;
+    --bg-surface: #ffffff;
+    --bg-muted: #e8e8e8;
+    --text-primary: #2b2b2b;
+    --text-secondary: #808080;
+    --border: #d4d4d4;
+    /* Typography tokens */
+    --font-display: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'Monaspace Neon', monospace;
+    --font-mono-features: 'calt' 1, 'liga' 0;
+    /* Spacing (8px base, hybrid progression) */
+    --space-0: 0px;
+    --space-px: 1px;
+    --space-0h: 4px;
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 48px;
+    --space-6: 64px;
+    --space-7: 80px;
+    --space-8: 96px;
+    /* Type scale (Minor Third 1.200, base 16px) */
+    --type-xs: 11px;
+    --type-sm: 13px;
+    --type-base: 16px;
+    --type-lg: 19px;
+    --type-xl: 23px;
+    --type-2xl: 28px;
+    --type-3xl: 33px;
+    --type-4xl: 40px;
+    /* Line-heights (8px grid-snapped) */
+    --lh-tight: 16px;
+    --lh-sm: 24px;
+    --lh-lg: 32px;
+    --lh-2xl: 40px;
+    --lh-3xl: 48px;
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+  }
+
+  .dark {
+    --bg: #0d1117;
+    --bg-page: #0d1117;
+    --bg-surface: #161b22;
+    --bg-muted: #505050;
+    --text-primary: #e8e8e8;
+    --text-secondary: #9b9b9b;
+    --border: #505050;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #0a0a0a; color: #e0e0e0; }
+
+  /* Heading font */
+  h1, h2 { font-family: var(--font-display); }
+
+  /* Swatch — absorbs shared inline styles from palette swatch divs */
+  .swatch {
+    padding: var(--space-1) 12px;
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+    min-width: 90px;
+    text-align: center;
+  }
+
+  /* Mono label — for annotation/diagram labels */
+  .mono {
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+  }
+
+  .proposal-header {
+    text-align: center;
+    padding: var(--space-6) var(--space-3) var(--space-5);
+    background: #0d1117;
+  }
+  .proposal-header h1 {
+    font-size: var(--type-4xl);
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+  .proposal-header p { color: #888; font-size: var(--type-base); }
+
+  .section { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+  .section h2 {
+    font-size: var(--type-xl); font-weight: 700; color: #fff; margin-bottom: var(--space-3);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section h2::before { content: ''; width: 4px; height: 24px; background: #808080; border-radius: var(--radius-sm); }
+
+  /* Competitor Map */
+  .competitor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .competitor-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    font-size: var(--type-sm);
+  }
+  .competitor-swatch {
+    width: 32px; height: 32px; border-radius: var(--radius-sm); flex-shrink: 0;
+  }
+  .competitor-name { font-weight: 600; color: #e0e0e0; }
+  .competitor-hue { color: #888; font-size: var(--type-xs); }
+
+  /* Palette Display */
+  .palette-row {
+    margin-bottom: var(--space-3);
+  }
+  .palette-label {
+    font-size: var(--type-sm); font-weight: 600; color: #aaa; margin-bottom: var(--space-1);
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+  }
+  .palette-swatches {
+    display: flex; gap: 4px; flex-wrap: wrap;
+  }
+
+  /* Homepage mockups */
+  .mockup-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: var(--space-3);
+  }
+  .mockup-frame {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid #30363d;
+  }
+  .mockup-titlebar {
+    display: flex; align-items: center; gap: 8px;
+    padding: var(--space-1) var(--space-2);
+    background: #1e1e1e;
+    border-bottom: 1px solid #30363d;
+  }
+  .mockup-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .mockup-dot.red { background: #ff5f56; }
+  .mockup-dot.yellow { background: #ffbd2e; }
+  .mockup-dot.green { background: #27c93f; }
+  .mockup-url {
+    margin-left: auto; font-size: var(--type-xs); color: #888;
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+  }
+
+  /* Light mode mockup content */
+  .light-mockup {
+    background: var(--bg);
+    color: var(--text-primary);
+    padding: 0;
+  }
+  .light-mockup .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-surface);
+  }
+  .light-mockup .nav-brand {
+    font-weight: 700; font-size: var(--type-base); color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+  }
+  .light-mockup .nav-brand span { color: var(--text-primary); }
+  .light-mockup .nav-links { display: flex; gap: var(--space-2); font-size: var(--type-sm); color: var(--text-secondary); }
+
+  .light-mockup .hero {
+    padding: 48px 24px 40px;
+    text-align: center;
+    background: var(--bg);
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: var(--space-1);
+    padding: var(--space-0h) 12px; border-radius: var(--radius-full); font-size: var(--type-xs);
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+    margin-bottom: 16px;
+  }
+  .light-mockup .badge {
+    background: var(--bg-muted);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+
+  .hero h1 { font-size: var(--type-2xl); font-weight: 800; margin-bottom: var(--space-1); line-height: var(--lh-2xl); }
+  .hero p { font-size: var(--type-sm); color: var(--text-secondary); margin-bottom: var(--space-3); }
+
+  .btn-group { display: flex; gap: var(--space-1); justify-content: center; }
+  .btn-primary {
+    padding: var(--space-1) var(--space-3); border-radius: var(--radius-md); font-weight: 600; font-size: var(--type-sm);
+    border: none; cursor: pointer; text-decoration: none;
+    transition: background-color 0.15s;
+  }
+  .light-mockup .btn-primary {
+    background: #2b2b2b;
+    color: #ffffff;
+  }
+  .btn-secondary {
+    padding: var(--space-1) var(--space-3); border-radius: var(--radius-md); font-weight: 600; font-size: var(--type-sm);
+    cursor: pointer; text-decoration: none;
+    transition: background-color 0.15s;
+  }
+  .light-mockup .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  .stats-bar {
+    display: flex; align-items: center; justify-content: center; gap: var(--space-1);
+    margin-top: var(--space-2); font-size: var(--type-xs); color: var(--text-secondary);
+  }
+  .stats-bar .sep { color: var(--border); }
+
+  /* Social proof */
+  .social-bar {
+    padding: 12px 24px;
+    background: var(--bg-muted);
+    text-align: center;
+    font-size: var(--type-xs);
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .social-bar .stars { color: #e2ac6b; }
+
+  /* Module cards */
+  .modules {
+    padding: 32px 24px;
+    background: var(--bg);
+  }
+  .modules h2 { font-size: var(--type-lg); font-weight: 700; text-align: center; margin-bottom: var(--space-3); }
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .module-card {
+    padding: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.15s;
+  }
+  .module-card:hover {
+    border-color: #9b9b9b;
+  }
+  .module-badge {
+    display: inline-block;
+    font-size: var(--type-xs); font-weight: 700; text-transform: uppercase;
+    padding: var(--space-0h) var(--space-1); border-radius: var(--radius-sm);
+    margin-bottom: var(--space-1);
+  }
+  .light-mockup .module-badge {
+    background: transparent;
+    color: #666666;
+  }
+  .module-card h3 { font-size: var(--type-sm); font-weight: 700; margin-bottom: var(--space-1); }
+  .module-card ul { list-style: none; font-size: var(--type-xs); color: var(--text-secondary); }
+  .module-card ul li { padding: var(--space-0h) 0; padding-left: var(--space-2); position: relative; }
+  .module-card ul li::before {
+    content: '-->'; position: absolute; left: 0; color: #808080; font-weight: 700; font-size: var(--type-xs);
+  }
+
+  /* Formats */
+  .formats {
+    padding: 32px 24px;
+    background: var(--bg-muted);
+  }
+  .formats h2 { font-size: var(--type-lg); font-weight: 700; text-align: center; margin-bottom: var(--space-3); }
+  .formats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .format-card {
+    text-align: center;
+    padding: var(--space-3) 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .format-icon {
+    width: 32px; height: 32px; margin: 0 auto var(--space-1);
+    color: var(--text-secondary);
+  }
+  .format-card h3 { font-size: var(--type-sm); font-weight: 600; margin-bottom: var(--space-0h); }
+  .format-card p { font-size: var(--type-xs); color: var(--text-secondary); }
+
+  /* Terminal preview */
+  .terminal-preview {
+    margin: var(--space-3) var(--space-3);
+    background: #0d1117;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid #30363d;
+  }
+  .terminal-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px;
+    background: #161b22;
+  }
+  .terminal-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .terminal-header .title {
+    margin-left: auto; font-size: var(--type-xs); color: #555;
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+  }
+  .terminal-body {
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+    font-size: var(--type-sm);
+    color: #c9d1d9;
+    line-height: var(--lh-sm);
+  }
+  .terminal-body .kw { color: #874895; font-weight: 600; }
+  .terminal-body .link { color: #c9d1d9; text-decoration: underline; font-size: var(--type-xs); margin-top: 8px; display: block; }
+
+  /* Dark mode mockup */
+  .dark-mockup {
+    background: #0d1117;
+    color: #e8e8e8;
+    --bg: #0d1117;
+    --bg-page: #0d1117;
+    --bg-surface: #161b22;
+    --bg-muted: #1c2128;
+    --text-primary: #e8e8e8;
+    --text-secondary: #9b9b9b;
+    --border: #505050;
+  }
+  .dark-mockup .badge {
+    background: transparent;
+    color: #9b9b9b;
+    border: 1px solid #505050;
+  }
+  .dark-mockup .btn-primary {
+    background: #e8e8e8;
+    color: #0d1117;
+  }
+  .dark-mockup .btn-secondary {
+    background: transparent;
+    color: #e8e8e8;
+    border: 1px solid #505050;
+  }
+  .dark-mockup .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-surface);
+  }
+  .dark-mockup .nav-brand {
+    font-weight: 700; font-size: var(--type-base); color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+  }
+  .dark-mockup .nav-brand span { color: var(--text-primary); }
+  .dark-mockup .nav-links { display: flex; gap: var(--space-2); font-size: var(--type-sm); color: var(--text-secondary); }
+  .dark-mockup .hero {
+    padding: 48px 24px 40px;
+    text-align: center;
+    background: var(--bg);
+  }
+  .dark-mockup .hero h1 {
+    color: #e8e8e8;
+  }
+  .dark-mockup .module-badge {
+    background: transparent;
+    color: #9b9b9b;
+  }
+
+  /* UI Elements showcase */
+  .ui-showcase {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+  .ui-item {
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    border: 1px solid #30363d;
+    background: #161b22;
+  }
+  .ui-item h4 { font-size: var(--type-sm); color: #aaa; margin-bottom: var(--space-2); font-weight: 600; }
+
+  /* Flat buttons */
+  .flat-btn {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--type-sm);
+    border: none;
+    margin-bottom: 8px;
+  }
+  .flat-btn-primary {
+    background: #2b2b2b;
+    color: #ffffff;
+  }
+  .flat-btn-outline {
+    background: transparent;
+    color: #2b2b2b;
+    border: 1px solid #2b2b2b;
+  }
+  .flat-btn-ghost {
+    background: transparent;
+    color: #2b2b2b;
+    padding: 8px 12px;
+    text-decoration: underline;
+  }
+
+  /* Flat badges/tags */
+  .flat-badge {
+    display: inline-block;
+    padding: var(--space-0h) var(--space-1);
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    font-weight: 600;
+    margin: 0 4px 8px 0;
+  }
+  .flat-badge-neutral {
+    background: #30363d;
+    color: #c9d1d9;
+  }
+
+  /* Flat card */
+  .flat-card-demo {
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #0d1117;
+  }
+  .flat-card-demo-header {
+    padding: 12px;
+    border-bottom: 1px solid #30363d;
+    font-size: var(--type-sm);
+    font-weight: 600;
+    color: #e0e0e0;
+  }
+  .flat-card-demo-body {
+    padding: 12px;
+    font-size: var(--type-xs);
+    color: #888;
+    line-height: var(--lh-sm);
+  }
+
+  /* Flat input */
+  .flat-input-demo {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #30363d;
+    background: #0d1117;
+    color: #c9d1d9;
+    font-size: var(--type-sm);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    margin-bottom: 8px;
+  }
+  .flat-input-demo:focus {
+    border-color: #2b2b2b;
+  }
+  .flat-input-demo:hover {
+    border-color: #505050;
+  }
+
+  /* Hover interaction demo */
+  .interaction-card {
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    background: #0d1117;
+    font-size: var(--type-sm);
+    color: #c9d1d9;
+    transition: border-color 0.15s;
+    cursor: pointer;
+  }
+  .interaction-card:hover {
+    border-color: #9b9b9b;
+  }
+  .interaction-card .label {
+    font-size: var(--type-xs);
+    color: #505050;
+    margin-top: 8px;
+    transition: color 0.15s;
+  }
+  .interaction-card:hover .label {
+    color: #9b9b9b;
+  }
+
+  /* Nav active link underline */
+  .nav-link-active {
+    color: var(--text-primary) !important;
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 2px;
+  }
+  .flat-input-demo::placeholder {
+    color: #484f58;
+  }
+  .flat-input-label {
+    display: block;
+    font-size: var(--type-xs);
+    color: #888;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  /* Flat border accents */
+  .flat-border-demo {
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #2b2b2b;
+    font-size: var(--type-sm);
+    color: #2b2b2b;
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+    background: transparent;
+  }
+  .flat-border-left-demo {
+    padding: 12px var(--space-2);
+    border-left: 3px solid #1369b0;
+    font-size: var(--type-sm);
+    color: #c9d1d9;
+    background: #0d1117;
+    margin-top: 12px;
+  }
+
+  /* Token table */
+  .token-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-sm);
+    font-family: var(--font-mono);
+    font-feature-settings: var(--font-mono-features);
+  }
+  .token-table th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid #30363d;
+    color: #888;
+    font-weight: 500;
+  }
+  .token-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1e2228;
+    color: #c9d1d9;
+  }
+  .token-swatch {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  @media (max-width: 1100px) {
+    .ui-showcase { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .mockup-container { grid-template-columns: 1fr; }
+    .ui-showcase { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ==========================================================
+     PRINT STYLES — Clean PDF output in Chrome + Safari
+     ==========================================================
+     Key constraints:
+     - Safari ignores @page margins (known bug, mdn/browser-compat-data#23178)
+     - Flex/Grid fragmentation is patchy in both browsers
+     - print-color-adjust is a hint, not a guarantee — Chrome still
+       requires "Background graphics" checkbox in print dialog
+     - Safari "Export as PDF" ignores @media print entirely;
+       users must use File > Print > Save as PDF
+     ========================================================== */
+  @media print {
+
+    /* --- Force backgrounds to render (swatches ARE the content) --- */
+    * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      transition: none !important;
+    }
+
+    /* --- Page setup --- */
+    @page {
+      size: A4 portrait;
+      margin: 1.5cm;
+    }
+    @page :first {
+      margin-top: 2.5cm;
+    }
+
+    /* --- Light page chrome --- */
+    body {
+      background: #ffffff !important;
+      color: #2b2b2b !important;
+      font-size: 10pt;
+    }
+
+    .proposal-header {
+      background: #ffffff !important;
+      padding: 16pt 0;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+    .proposal-header h1 { font-size: 20pt; }
+    .proposal-header p { color: #505050 !important; font-size: 10pt; }
+
+    .section {
+      padding: 16pt 0;
+      max-width: none;
+    }
+    .section h2 {
+      color: #2b2b2b !important;
+      font-size: 14pt;
+    }
+    .section > p {
+      color: #505050 !important;
+    }
+
+    /* --- Competitor cards: light background --- */
+    .competitor-card {
+      background: #f5f5f5 !important;
+      border-color: #d4d4d4 !important;
+    }
+    .competitor-name { color: #2b2b2b !important; }
+    .competitor-hue { color: #808080 !important; }
+
+    /* --- UI showcase items: light background --- */
+    .ui-item {
+      background: #f5f5f5 !important;
+      border-color: #d4d4d4 !important;
+    }
+    .ui-item h4 { color: #505050 !important; }
+
+    /* --- Form elements --- */
+    .flat-input-demo {
+      background: #ffffff !important;
+      border-color: #d4d4d4 !important;
+      color: #2b2b2b !important;
+    }
+    .flat-input-label { color: #505050 !important; }
+
+    /* --- Card demos --- */
+    .flat-card-demo {
+      background: #ffffff !important;
+      border-color: #d4d4d4 !important;
+    }
+    .flat-card-demo-header {
+      color: #2b2b2b !important;
+      border-bottom-color: #d4d4d4 !important;
+    }
+    .flat-card-demo-body { color: #505050 !important; }
+
+    /* --- Border demos --- */
+    .flat-border-left-demo {
+      background: #f5f5f5 !important;
+      color: #2b2b2b !important;
+    }
+
+    /* --- Interaction card --- */
+    .interaction-card {
+      background: #f5f5f5 !important;
+      border-color: #d4d4d4 !important;
+      color: #2b2b2b !important;
+    }
+    .interaction-card .label { color: #808080 !important; }
+
+    /* --- Token tables --- */
+    .token-table th { color: #505050 !important; }
+    .token-table td {
+      color: #2b2b2b !important;
+      border-bottom-color: #e8e8e8 !important;
+    }
+    .token-swatch { border-color: rgba(0,0,0,0.15) !important; }
+
+    /* --- Palette labels --- */
+    .palette-label { font-size: 8pt; }
+
+    /* --- Terminal preview: keep dark (it's showing terminal UI) --- */
+    .terminal-preview {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* --- Mockup titlebar dots: ensure visible on white --- */
+    .mockup-titlebar {
+      background: #f5f5f5 !important;
+      border-bottom-color: #d4d4d4 !important;
+    }
+    .mockup-url { color: #505050 !important; }
+
+    /* --- Layout: flatten 2-col mockups to single column (too wide for A4) --- */
+    .mockup-container {
+      display: block !important;
+    }
+    .mockup-frame {
+      margin-bottom: 16pt;
+    }
+
+    /* --- Layout: 5-col UI showcase → 3 cols for print --- */
+    .ui-showcase {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 10pt !important;
+    }
+
+    /* --- Layout: tighten competitor grid --- */
+    .competitor-grid {
+      gap: 6pt !important;
+    }
+
+    /* --- Page break control --- */
+    .section {
+      break-before: page;
+      page-break-before: always;
+    }
+    /* Don't break before the very first section */
+    .proposal-header + .section {
+      break-before: auto;
+      page-break-before: auto;
+    }
+
+    h2, h3, h4 {
+      break-after: avoid-page;
+      page-break-after: avoid;
+    }
+
+    .competitor-card,
+    .ui-item,
+    .palette-row,
+    .mockup-frame,
+    .flat-card-demo,
+    table {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+
+    /* Keep illustration boxes together on one page when possible */
+    .section > div[style] {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* --- Word wrapping safety --- */
+    td, th, li {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="proposal-header">
+  <h1>Agentic Coding — Monochrome Brand System</h1>
+  <p>Monochrome-first identity &middot; 9 semantic accent colors &middot; OKLCH-computed &middot; WCAG AA validated &middot; Geometry as brand</p>
+</div>
+
+<!-- COMPETITOR LANDSCAPE -->
+<div class="section">
+  <h2>Competitor Color Landscape</h2>
+  <div class="competitor-grid">
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(270, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">GitHub Copilot</div>
+        <div class="competitor-hue">270°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(280, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">Cursor</div>
+        <div class="competitor-hue">280°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(170, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">Windsurf/Codeium</div>
+        <div class="competitor-hue">170°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(30, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">Replit</div>
+        <div class="competitor-hue">30°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(160, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">OpenAI/ChatGPT</div>
+        <div class="competitor-hue">160°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(30, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">Anthropic/Claude</div>
+        <div class="competitor-hue">30°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(280, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">JetBrains AI</div>
+        <div class="competitor-hue">280°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(260, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">Tabnine</div>
+        <div class="competitor-hue">260°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(280, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">Sourcegraph Cody</div>
+        <div class="competitor-hue">280°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(330, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">Pluralsight</div>
+        <div class="competitor-hue">330°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(10, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">DeepLearning.AI</div>
+        <div class="competitor-hue">10°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card">
+      <div class="competitor-swatch" style="background:hsl(0, 70%, 50%)"></div>
+      <div>
+        <div class="competitor-name">Frontend Masters</div>
+        <div class="competitor-hue">0°</div>
+      </div>
+    </div>
+    
+    <div class="competitor-card" style="border-color:#808080;">
+      <div class="competitor-swatch" style="background:linear-gradient(135deg, #2b2b2b 50%, #f5f5f5 50%); border:1px solid #505050;"></div>
+      <div>
+        <div class="competitor-name" style="color:#e0e0e0;">Agentic Coding (Ours)</div>
+        <div class="competitor-hue">Monochrome — No primary hue</div>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:16px; font-size:13px; color:#888;">
+    Every competitor owns a hue — we own the absence of one. <strong>Monochrome IS the most distinctive position on this map.</strong>
+    Per Sharp's framework, when every brand shouts color, restraint is the signal. Purple (260-290°) is particularly crowded — Copilot, Cursor, JetBrains, Tabnine, Sourcegraph all share it. Rather than compete for hue territory, we vacate it entirely.
+  </p>
+</div>
+
+<!-- SEMANTIC COLOR PALETTE -->
+<div class="section">
+  <h2>Semantic Color Palette (OKLCH)</h2>
+  <p style="font-size:13px; color:#888; margin-bottom:24px;">
+    One achromatic neutral scale plus 9 chromatic hues at equal standing. No "primary" or "accent" hierarchy — each hue serves a semantic role in illustrations, diagrams, and callouts. All computed via OKLCH with WCAG AA validation.
+  </p>
+
+  <div class="palette-row">
+    <div class="palette-label">Neutral — Achromatic (C:0.000)</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#f5f5f5;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#f5f5f5</div>
+    </div>
+    <div class="swatch" style="background:#e8e8e8;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#e8e8e8</div>
+    </div>
+    <div class="swatch" style="background:#d4d4d4;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#d4d4d4</div>
+    </div>
+    <div class="swatch" style="background:#b7b7b7;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#b7b7b7</div>
+    </div>
+    <div class="swatch" style="background:#9b9b9b;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#9b9b9b</div>
+    </div>
+    <div class="swatch" style="background:#808080;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#808080</div>
+    </div>
+    <div class="swatch" style="background:#666666;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#666666</div>
+    </div>
+    <div class="swatch" style="background:#505050;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#505050</div>
+    </div>
+    <div class="swatch" style="background:#3d3d3d;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#3d3d3d</div>
+    </div>
+    <div class="swatch" style="background:#2b2b2b;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#2b2b2b</div>
+    </div>
+    <div class="swatch" style="background:#222222;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#222222</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Error — H:25° C:0.16 · Danger / Critical / Destructive</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#fff2f0;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#fff2f0</div>
+    </div>
+    <div class="swatch" style="background:#ffdfdc;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#ffdfdc</div>
+    </div>
+    <div class="swatch" style="background:#ffc3bd;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#ffc3bd</div>
+    </div>
+    <div class="swatch" style="background:#ff958d;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#ff958d</div>
+    </div>
+    <div class="swatch" style="background:#ec7069;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#ec7069</div>
+    </div>
+    <div class="swatch" style="background:#ce514d;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#ce514d</div>
+    </div>
+    <div class="swatch" style="background:#ad3735;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#ad3735</div>
+    </div>
+    <div class="swatch" style="background:#8d2324;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#8d2324</div>
+    </div>
+    <div class="swatch" style="background:#701719;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#701719</div>
+    </div>
+    <div class="swatch" style="background:#520e10;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#520e10</div>
+    </div>
+    <div class="swatch" style="background:#410b0c;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#410b0c</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Warning — H:70° C:0.13 · Caution / Attention / Deprecation</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#fff3e6;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#fff3e6</div>
+    </div>
+    <div class="swatch" style="background:#ffe3c3;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#ffe3c3</div>
+    </div>
+    <div class="swatch" style="background:#fcca91;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#fcca91</div>
+    </div>
+    <div class="swatch" style="background:#e6aa63;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#e6aa63</div>
+    </div>
+    <div class="swatch" style="background:#cd8c37;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#cd8c37</div>
+    </div>
+    <div class="swatch" style="background:#b17000;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#b17000</div>
+    </div>
+    <div class="swatch" style="background:#8e5900;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#8e5900</div>
+    </div>
+    <div class="swatch" style="background:#704500;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#704500</div>
+    </div>
+    <div class="swatch" style="background:#573400;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#573400</div>
+    </div>
+    <div class="swatch" style="background:#402400;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#402400</div>
+    </div>
+    <div class="swatch" style="background:#331b00;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#331b00</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Lime — H:110° C:0.14 · Progress / Growth / Output</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#f7fac9;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#f7fac9</div>
+    </div>
+    <div class="swatch" style="background:#eaedb0;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#eaedb0</div>
+    </div>
+    <div class="swatch" style="background:#d8da8d;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#d8da8d</div>
+    </div>
+    <div class="swatch" style="background:#bcbe5c;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#bcbe5c</div>
+    </div>
+    <div class="swatch" style="background:#a1a22b;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#a1a22b</div>
+    </div>
+    <div class="swatch" style="background:#868600;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#868600</div>
+    </div>
+    <div class="swatch" style="background:#6b6b00;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#6b6b00</div>
+    </div>
+    <div class="swatch" style="background:#535400;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#535400</div>
+    </div>
+    <div class="swatch" style="background:#404000;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#404000</div>
+    </div>
+    <div class="swatch" style="background:#2e2e00;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#2e2e00</div>
+    </div>
+    <div class="swatch" style="background:#242400;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#242400</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Success — H:155° C:0.14 · Active / Validated / Complete</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#ddffe8;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#ddffe8</div>
+    </div>
+    <div class="swatch" style="background:#bef8d1;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#bef8d1</div>
+    </div>
+    <div class="swatch" style="background:#9fe8b8;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#9fe8b8</div>
+    </div>
+    <div class="swatch" style="background:#72ce95;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#72ce95</div>
+    </div>
+    <div class="swatch" style="background:#48b475;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#48b475</div>
+    </div>
+    <div class="swatch" style="background:#1c985a;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#1c985a</div>
+    </div>
+    <div class="swatch" style="background:#007a44;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#007a44</div>
+    </div>
+    <div class="swatch" style="background:#006034;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#006034</div>
+    </div>
+    <div class="swatch" style="background:#004a27;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#004a27</div>
+    </div>
+    <div class="swatch" style="background:#00361a;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#00361a</div>
+    </div>
+    <div class="swatch" style="background:#002a13;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#002a13</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Cyan — H:195° C:0.145 · Interactive / System / Code</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#d4fffe;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#d4fffe</div>
+    </div>
+    <div class="swatch" style="background:#a5faf9;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#a5faf9</div>
+    </div>
+    <div class="swatch" style="background:#7aeae9;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#7aeae9</div>
+    </div>
+    <div class="swatch" style="background:#2ad0d0;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#2ad0d0</div>
+    </div>
+    <div class="swatch" style="background:#00b2b2;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#00b2b2</div>
+    </div>
+    <div class="swatch" style="background:#009393;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#009393</div>
+    </div>
+    <div class="swatch" style="background:#007576;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#007576</div>
+    </div>
+    <div class="swatch" style="background:#005c5c;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#005c5c</div>
+    </div>
+    <div class="swatch" style="background:#004747;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#004747</div>
+    </div>
+    <div class="swatch" style="background:#003333;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#003333</div>
+    </div>
+    <div class="swatch" style="background:#002828;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#002828</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Indigo — H:250° C:0.14 · Knowledge / Reference / Data</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#eef6ff;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#eef6ff</div>
+    </div>
+    <div class="swatch" style="background:#d7eaff;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#d7eaff</div>
+    </div>
+    <div class="swatch" style="background:#b4d8ff;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#b4d8ff</div>
+    </div>
+    <div class="swatch" style="background:#7cbdff;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#7cbdff</div>
+    </div>
+    <div class="swatch" style="background:#53a0ec;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#53a0ec</div>
+    </div>
+    <div class="swatch" style="background:#3284d0;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#3284d0</div>
+    </div>
+    <div class="swatch" style="background:#1369b0;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#1369b0</div>
+    </div>
+    <div class="swatch" style="background:#005190;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#005190</div>
+    </div>
+    <div class="swatch" style="background:#003e71;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#003e71</div>
+    </div>
+    <div class="swatch" style="background:#002c54;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#002c54</div>
+    </div>
+    <div class="swatch" style="background:#002242;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#002242</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Violet — H:285° C:0.14 · AI / Transformation / Synthesis</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#f4f4ff;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#f4f4ff</div>
+    </div>
+    <div class="swatch" style="background:#e5e5ff;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#e5e5ff</div>
+    </div>
+    <div class="swatch" style="background:#cfcfff;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#cfcfff</div>
+    </div>
+    <div class="swatch" style="background:#b0adff;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#b0adff</div>
+    </div>
+    <div class="swatch" style="background:#938eeb;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#938eeb</div>
+    </div>
+    <div class="swatch" style="background:#7971d0;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#7971d0</div>
+    </div>
+    <div class="swatch" style="background:#6057af;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#6057af</div>
+    </div>
+    <div class="swatch" style="background:#4b4290;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#4b4290</div>
+    </div>
+    <div class="swatch" style="background:#393172;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#393172</div>
+    </div>
+    <div class="swatch" style="background:#282254;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#282254</div>
+    </div>
+    <div class="swatch" style="background:#1f1b42;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#1f1b42</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Magenta — H:320° C:0.14 · AI / Creative / Highlight</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#fcf0ff;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#fcf0ff</div>
+    </div>
+    <div class="swatch" style="background:#f9ddff;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#f9ddff</div>
+    </div>
+    <div class="swatch" style="background:#f2bffd;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#f2bffd</div>
+    </div>
+    <div class="swatch" style="background:#da9de8;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#da9de8</div>
+    </div>
+    <div class="swatch" style="background:#c07ecf;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#c07ecf</div>
+    </div>
+    <div class="swatch" style="background:#a462b4;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#a462b4</div>
+    </div>
+    <div class="swatch" style="background:#874895;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#874895</div>
+    </div>
+    <div class="swatch" style="background:#6d3579;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#6d3579</div>
+    </div>
+    <div class="swatch" style="background:#55265f;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#55265f</div>
+    </div>
+    <div class="swatch" style="background:#3d1a45;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#3d1a45</div>
+    </div>
+    <div class="swatch" style="background:#301436;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#301436</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <div class="palette-label">Rose — H:355° C:0.13 · Emphasis / Priority / Human Actor</div>
+    <div class="palette-swatches">
+    <div class="swatch" style="background:#fff1f6;color:#000000;">
+      <div style="font-weight:700;">50</div>
+      <div>#fff1f6</div>
+    </div>
+    <div class="swatch" style="background:#ffdde9;color:#000000;">
+      <div style="font-weight:700;">100</div>
+      <div>#ffdde9</div>
+    </div>
+    <div class="swatch" style="background:#ffbfd7;color:#000000;">
+      <div style="font-weight:700;">200</div>
+      <div>#ffbfd7</div>
+    </div>
+    <div class="swatch" style="background:#f198bb;color:#000000;">
+      <div style="font-weight:700;">300</div>
+      <div>#f198bb</div>
+    </div>
+    <div class="swatch" style="background:#d7799f;color:#000000;">
+      <div style="font-weight:700;">400</div>
+      <div>#d7799f</div>
+    </div>
+    <div class="swatch" style="background:#bb5c84;color:#000000;">
+      <div style="font-weight:700;">500</div>
+      <div>#bb5c84</div>
+    </div>
+    <div class="swatch" style="background:#9b436a;color:#ffffff;">
+      <div style="font-weight:700;">600</div>
+      <div>#9b436a</div>
+    </div>
+    <div class="swatch" style="background:#7e3053;color:#ffffff;">
+      <div style="font-weight:700;">700</div>
+      <div>#7e3053</div>
+    </div>
+    <div class="swatch" style="background:#632240;color:#ffffff;">
+      <div style="font-weight:700;">800</div>
+      <div>#632240</div>
+    </div>
+    <div class="swatch" style="background:#48172d;color:#ffffff;">
+      <div style="font-weight:700;">900</div>
+      <div>#48172d</div>
+    </div>
+    <div class="swatch" style="background:#391223;color:#ffffff;">
+      <div style="font-weight:700;">950</div>
+      <div>#391223</div>
+    </div>
+    </div>
+  </div>
+
+  <h3>Hue Wheel Summary</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#ad3735;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Error</div><div style="font-size:11px;color:#888;">25° — Danger</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#8e5900;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Warning</div><div style="font-size:11px;color:#888;">70° — Caution</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#6b6b00;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Lime</div><div style="font-size:11px;color:#888;">110° — Progress</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#007a44;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Success</div><div style="font-size:11px;color:#888;">155° — Validation</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#007576;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Cyan</div><div style="font-size:11px;color:#888;">195° — System</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#1369b0;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Indigo</div><div style="font-size:11px;color:#888;">250° — Reference</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#6057af;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Violet</div><div style="font-size:11px;color:#888;">285° — Synthesis</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#874895;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Magenta</div><div style="font-size:11px;color:#888;">320° — Creative</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid #30363d;background:#161b22;">
+      <div style="width:16px;height:16px;border-radius:4px;background:#9b436a;"></div>
+      <div><div style="font-size:11px;font-weight:600;color:#e0e0e0;">Rose</div><div style="font-size:11px;color:#888;">355° — Emphasis</div></div>
+    </div>
+  </div>
+  <p style="margin-top:12px; font-size:11px; color:#666;">
+    Shade 600 = light mode semantic &middot; Shade 400 = dark mode semantic &middot;
+    Min pairwise distance: 30° (Rose↔Error) &middot; Avg: 41°
+  </p>
+</div>
+
+<!-- DESIGN PHILOSOPHY -->
+<div class="section">
+  <h2>Brand Identity Through Restraint</h2>
+  <p style="font-size:16px; color:#e0e0e0; margin-bottom:24px; font-weight:500; line-height:24px;">
+    Most brands differentiate by choosing a color. We differentiate by choosing not to. The brand IS the geometry: the agent-loop logo mark, Space Grotesk + Inter + Monaspace Neon typography, disciplined whitespace, and flat construction. Color serves a single purpose: semantic meaning.
+  </p>
+
+  <!-- The Monochrome Principle -->
+  <div style="border-radius:12px; border:1px solid #30363d; overflow:hidden; margin-bottom:32px;">
+    <div style="padding:8px 16px; background:#161b22; border-bottom:1px solid #30363d; font-size:11px; font-weight:600; color:#e0e0e0;">The Monochrome Principle in Practice</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0;">
+      <div style="padding:24px; background:#161b22; border-right:1px solid #30363d;">
+        <div class="mono" style="font-size:11px; color:#666; margin-bottom:8px;">achromatic surface</div>
+        <div style="padding:12px; border-radius:8px; background:#0d1117; border:1px solid #505050; color:#e8e8e8; font-size:13px; font-weight:600; text-align:center;">Neutral container</div>
+      </div>
+      <div style="padding:24px; background:#161b22; border-right:1px solid #30363d;">
+        <div class="mono" style="font-size:11px; color:#666; margin-bottom:8px;">color = semantic label</div>
+        <div style="padding:8px; border-radius:8px; background:#0d1117; border:1px solid #3d3d3d; font-size:11px; color:#9b9b9b;">
+          <span style="color:#53a0ec; font-weight:600;">MODULE 1</span> — Hue carries meaning
+        </div>
+      </div>
+      <div style="padding:24px; background:#161b22;">
+        <div class="mono" style="font-size:11px; color:#666; margin-bottom:8px;">typographic interaction</div>
+        <div style="padding:8px 24px; border-radius:8px; background:#e8e8e8; color:#0d1117; font-size:11px; font-weight:600; display:inline-block;">Start Learning</div>
+        <div style="font-size:11px; color:#505050; margin-top:8px;">Dark fill, no hue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6 Core Rules -->
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
+    <div style="padding:16px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:19px; font-weight:800; color:#505050; margin-bottom:8px;">1</div>
+      <div style="font-size:13px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Achromatic Base</div>
+      <div style="font-size:11px; color:#888;">Surfaces, borders, text are pure gray (chroma 0). No tinted neutrals.</div>
+    </div>
+    <div style="padding:16px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:19px; font-weight:800; color:#505050; margin-bottom:8px;">2</div>
+      <div style="font-size:13px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">No Privileged Hue</div>
+      <div style="font-size:11px; color:#888;">All 9 chromatic colors have equal standing. None is "the brand color."</div>
+    </div>
+    <div style="padding:16px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:19px; font-weight:800; color:#505050; margin-bottom:8px;">3</div>
+      <div style="font-size:13px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Color = Meaning</div>
+      <div style="font-size:11px; color:#888;">Color appears only in semantic callouts, diagrams, status indicators, and data viz. Every color use must answer: "what does this hue mean here?"</div>
+    </div>
+    <div style="padding:16px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:19px; font-weight:800; color:#505050; margin-bottom:8px;">4</div>
+      <div style="font-size:13px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Typographic Interaction</div>
+      <div style="font-size:11px; color:#888;">Links use underlines + weight, buttons use dark/light fills. Interactive elements identified by typography and shape, not color.</div>
+    </div>
+    <div style="padding:16px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:19px; font-weight:800; color:#505050; margin-bottom:8px;">5</div>
+      <div style="font-size:13px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Geometry as Brand</div>
+      <div style="font-size:11px; color:#888;">The logo mark, monospace type, whitespace rhythm, and flat construction are the Distinctive Brand Assets.</div>
+    </div>
+    <div style="padding:16px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:19px; font-weight:800; color:#505050; margin-bottom:8px;">6</div>
+      <div style="font-size:13px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">60-30-10 Color Budget</div>
+      <div style="font-size:11px; color:#888;">60% achromatic surfaces, 30% elevated gray, 10% semantic color. In practice most pages will be closer to 95/5.</div>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND IDENTITY ASSETS -->
+<div class="section">
+  <h2>Brand Identity Assets</h2>
+  <p style="font-size:13px; color:#aaa; margin-bottom:24px; line-height:24px;">
+    These are the Distinctive Brand Assets per Romaniuk's framework. They are geometry and typography, not color.
+  </p>
+
+  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:24px;">
+    <!-- Logo on white -->
+    <div style="padding:24px; border-radius:8px; background:#ffffff; border:1px solid #d4d4d4; text-align:center;">
+      <div style="font-family:var(--font-mono);font-feature-settings:var(--font-mono-features); font-size:23px; font-weight:700; color:#2b2b2b;">&lt;/&gt;</div>
+      <div style="font-size:11px; color:#808080; margin-top:8px;">On white</div>
+    </div>
+    <!-- Logo on dark -->
+    <div style="padding:24px; border-radius:8px; background:#0d1117; border:1px solid #30363d; text-align:center;">
+      <div style="font-family:var(--font-mono);font-feature-settings:var(--font-mono-features); font-size:23px; font-weight:700; color:#e8e8e8;">&lt;/&gt;</div>
+      <div style="font-size:11px; color:#666; margin-top:8px;">On dark</div>
+    </div>
+    <!-- Favicon 16px -->
+    <div style="padding:24px; border-radius:8px; background:#f5f5f5; border:1px solid #d4d4d4; text-align:center;">
+      <div style="width:16px; height:16px; margin:4px auto; background:#2b2b2b; border-radius:4px; display:flex; align-items:center; justify-content:center;">
+        <span style="font-family:var(--font-mono);font-feature-settings:var(--font-mono-features); font-size:8px; font-weight:700; color:#ffffff;">/</span>
+      </div>
+      <div style="font-size:11px; color:#808080; margin-top:8px;">Favicon 16px</div>
+    </div>
+    <!-- Social card scale -->
+    <div style="padding:24px; border-radius:8px; background:#111111; border:1px solid #30363d; text-align:center;">
+      <div style="font-family:var(--font-mono);font-feature-settings:var(--font-mono-features); font-size:13px; font-weight:700; color:#e8e8e8;">&lt;/&gt; Agentic Coding</div>
+      <div style="font-size:11px; color:#666; margin-top:8px;">Social card</div>
+    </div>
+  </div>
+
+  <!-- Typography -->
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px;">
+    <div style="padding:24px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div class="mono" style="font-size:11px; color:#666; margin-bottom:12px;">DISPLAY</div>
+      <div style="font-family:var(--font-display); font-size:23px; font-weight:700; color:#e0e0e0; margin-bottom:4px;">Space Grotesk</div>
+      <div style="font-family:var(--font-display); font-size:13px; color:#888; line-height:24px;">The quick brown fox jumps over the lazy dog. ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</div>
+    </div>
+    <div style="padding:24px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div class="mono" style="font-size:11px; color:#666; margin-bottom:12px;">BODY</div>
+      <div style="font-family:var(--font-body); font-size:23px; font-weight:800; color:#e0e0e0; margin-bottom:4px;">Inter</div>
+      <div style="font-family:var(--font-body); font-size:13px; color:#888; line-height:24px;">The quick brown fox jumps over the lazy dog. ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</div>
+    </div>
+    <div style="padding:24px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div class="mono" style="font-size:11px; color:#666; margin-bottom:12px;">CODE</div>
+      <div style="font-family:var(--font-mono); font-feature-settings:var(--font-mono-features); font-size:19px; font-weight:700; color:#e0e0e0; margin-bottom:4px;">Monaspace Neon</div>
+      <div style="font-family:var(--font-mono); font-feature-settings:var(--font-mono-features); font-size:13px; color:#888; line-height:24px;">const agent = new Agent(); // 0O 1lI {[()]}</div>
+    </div>
+  </div>
+
+  <!-- Favicon strategy -->
+  <div style="padding:24px; border-radius:8px; border:1px solid #30363d; background:#161b22; margin-bottom:24px;">
+    <h4 style="font-size:13px; color:#aaa; margin-bottom:12px; font-weight:600;">Favicon Strategy</h4>
+    <div style="font-size:13px; color:#888; line-height:24px;">
+      <div style="margin-bottom:4px;">&bull; SVG favicon with embedded <code style="color:#c9d1d9;">@media (prefers-color-scheme: dark)</code> for light/dark adaptation</div>
+      <div style="margin-bottom:4px;">&bull; Pure monochrome mark — dark fill on light tab, light fill on dark tab</div>
+      <div style="margin-bottom:4px;">&bull; <code style="color:#c9d1d9;">.ico</code> fallback at 32&times;32</div>
+      <div>&bull; <code style="color:#c9d1d9;">apple-touch-icon.png</code> at 180&times;180 with solid background</div>
+    </div>
+  </div>
+
+  <p style="font-size:13px; color:#888; padding:12px 16px; border-left:3px solid #505050; background:#161b22; border-radius:0 6px 6px 0;">
+    <strong style="color:#e0e0e0;">Design action item:</strong> If the current logo geometry doesn't read at 16px in pure monochrome, the geometry needs simplification. Test and iterate.
+  </p>
+</div>
+
+<!-- UI ELEMENTS -->
+<div class="section">
+  <h2>Design System Elements</h2>
+  <div class="ui-showcase">
+    <div class="ui-item">
+      <h4>Buttons</h4>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="flat-btn flat-btn-primary">Primary</div>
+        <div class="flat-btn flat-btn-outline">Outline</div>
+        <div class="flat-btn flat-btn-ghost">Ghost Link</div>
+      </div>
+      <div style="font-size:11px; color:#505050; margin-top:8px;">Dark fill, dark border, or underline — no color</div>
+    </div>
+    <div class="ui-item">
+      <h4>9 Semantic Badges</h4>
+      <div>
+        <span class="flat-badge" style="background:#ad3735;color:#fff;">Error</span>
+        <span class="flat-badge" style="background:#8e5900;color:#fff;">Warning</span>
+        <span class="flat-badge" style="background:#6b6b00;color:#fff;">Lime</span>
+        <span class="flat-badge" style="background:#007a44;color:#fff;">Success</span>
+        <span class="flat-badge" style="background:#007576;color:#fff;">Cyan</span>
+        <span class="flat-badge" style="background:#1369b0;color:#fff;">Indigo</span>
+        <span class="flat-badge" style="background:#6057af;color:#fff;">Violet</span>
+        <span class="flat-badge" style="background:#874895;color:#fff;">Magenta</span>
+        <span class="flat-badge" style="background:#9b436a;color:#fff;">Rose</span>
+      </div>
+      <div style="font-size:11px; color:#505050; margin-top:8px;">All 9 hues at equal standing</div>
+    </div>
+    <div class="ui-item">
+      <h4>Cards</h4>
+      <div class="flat-card-demo">
+        <div class="flat-card-demo-header">Module 1: Fundamentals</div>
+        <div class="flat-card-demo-body">LLM internals, context windows, and hallucination management.</div>
+      </div>
+      <div class="flat-border-left-demo" style="margin-top:12px;">
+        <span style="color:#1369b0; font-weight:600; font-size:11px;">TIP</span> — Always verify agent output against source.
+      </div>
+      <div style="font-size:11px; color:#505050; margin-top:8px;">Semantic color on callout border + label only</div>
+    </div>
+    <div class="ui-item">
+      <h4>Inputs &amp; Fields</h4>
+      <label class="flat-input-label">Search docs</label>
+      <input class="flat-input-demo" type="text" placeholder="Search documentation..." readonly>
+      <label class="flat-input-label" style="margin-top:8px;">Prompt name</label>
+      <input class="flat-input-demo" type="text" placeholder="e.g. debug-investigator" readonly>
+      <div style="font-size:11px; color:#505050; margin-top:4px;">Focus &rarr; darker border (contrast shift, not color)</div>
+    </div>
+    <div class="ui-item">
+      <h4>Neutral Interaction</h4>
+      <div class="interaction-card">
+        <div style="font-weight:600;">Lesson 3: Grounding</div>
+        <div style="font-size:11px; color:#888; margin-top:4px;">File paths, line numbers, root cause analysis</div>
+        <div class="label">Hover to see shift &rarr;</div>
+      </div>
+      <div style="font-size:11px; color:#505050; margin-top:8px;">Neutral at rest. Border lightens on hover/focus/active.</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOMEPAGE MOCKUPS -->
+<div class="section">
+  <h2>Homepage — Light &amp; Dark Mode</h2>
+  <div class="mockup-container">
+    <!-- LIGHT MODE -->
+    <div class="mockup-frame">
+      <div class="mockup-titlebar">
+        <div class="mockup-dot red"></div>
+        <div class="mockup-dot yellow"></div>
+        <div class="mockup-dot green"></div>
+        <div class="mockup-url">agenticoding.ai</div>
+      </div>
+      <div class="light-mockup">
+        <div class="nav">
+          <div class="nav-brand"><span>&lt;/&gt;</span> Agentic Coding</div>
+          <div class="nav-links">
+            <span class="nav-link-active">Docs</span>
+            <span>Prompts</span>
+            <span>Tools</span>
+          </div>
+        </div>
+        <div class="hero">
+          <div class="badge">
+            Open Source &middot; MIT &middot; <span style="color:#e2ac6b;">★</span> 2.1k
+          </div>
+          <h1>Master Agentic Coding</h1>
+          <p>Structured methodology for enterprise codebases</p>
+          <div class="btn-group">
+            <div class="btn-primary">Start Learning</div>
+            <div class="btn-secondary">Browse Prompts</div>
+          </div>
+        </div>
+
+        <!-- Terminal inline on white page -->
+        <div class="terminal-preview">
+          <div class="terminal-header">
+            <div class="dot" style="background:#ff5f56;"></div>
+            <div class="dot" style="background:#ffbd2e;"></div>
+            <div class="dot" style="background:#27c93f;"></div>
+            <div class="title">methodology.md</div>
+          </div>
+          <div class="terminal-body">
+            <span class="kw">INVESTIGATE</span>: Trace the code path<br>
+            <span class="kw">ANALYZE</span>: Compare expected vs actual<br>
+            <span class="kw">EXPLAIN</span>: File paths, line numbers, root cause
+            <span class="link">From the Prompt Library →</span>
+          </div>
+        </div>
+
+        <div class="modules">
+          <h2 style="color:var(--text-primary);">What You'll Learn</h2>
+          <div class="modules-grid">
+            <div class="module-card">
+              <div class="module-badge" style="color:#1369b0;">Module 1</div>
+              <h3>Fundamentals</h3>
+              <ul>
+                <li>LLM internals &amp; context</li>
+                <li>Hallucinations &amp; drift</li>
+                <li>RAG integration</li>
+              </ul>
+            </div>
+            <div class="module-card">
+              <div class="module-badge" style="color:#6057af;">Module 2</div>
+              <h3>Methodology</h3>
+              <ul>
+                <li>Prompt structure</li>
+                <li>Grounding patterns</li>
+                <li>Plan &rarr; Execute &rarr; Verify</li>
+              </ul>
+            </div>
+            <div class="module-card">
+              <div class="module-badge" style="color:#874895;">Module 3</div>
+              <h3>Practical Techniques</h3>
+              <ul>
+                <li>CI integration</li>
+                <li>Test generation</li>
+                <li>Debugging sessions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="formats" style="background:var(--bg-page);">
+          <h2 style="color:var(--text-primary);">Learn Your Way</h2>
+          <div class="formats-grid">
+            <div class="format-card">
+              <svg class="format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              <h3>Reference Docs</h3>
+              <p>Bookmark it. Jump back in.</p>
+            </div>
+            <div class="format-card">
+              <svg class="format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+              <h3>Podcasts</h3>
+              <p>Commute, gym, walking the dog.</p>
+            </div>
+            <div class="format-card">
+              <svg class="format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <h3>Presentations</h3>
+              <p>Share with your team.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DARK MODE -->
+    <div class="mockup-frame">
+      <div class="mockup-titlebar">
+        <div class="mockup-dot red"></div>
+        <div class="mockup-dot yellow"></div>
+        <div class="mockup-dot green"></div>
+        <div class="mockup-url">agenticoding.ai (dark)</div>
+      </div>
+      <div class="dark-mockup">
+        <div class="nav">
+          <div class="nav-brand"><span>&lt;/&gt;</span> Agentic Coding</div>
+          <div class="nav-links">
+            <span class="nav-link-active">Docs</span>
+            <span>Prompts</span>
+            <span>Tools</span>
+          </div>
+        </div>
+        <div class="hero">
+          <div class="badge">
+            Open Source &middot; MIT &middot; <span style="color:#e2ac6b;">★</span> 2.1k
+          </div>
+          <h1>Master Agentic Coding</h1>
+          <p style="color:var(--text-secondary);">Structured methodology for enterprise codebases</p>
+          <div class="btn-group">
+            <div class="btn-primary">Start Learning</div>
+            <div class="btn-secondary">Browse Prompts</div>
+          </div>
+        </div>
+
+        <!-- Terminal blends into dark page -->
+        <div class="terminal-preview" style="border-color:#3d3d3d;">
+          <div class="terminal-header">
+            <div class="dot" style="background:#ff5f56;"></div>
+            <div class="dot" style="background:#ffbd2e;"></div>
+            <div class="dot" style="background:#27c93f;"></div>
+            <div class="title">methodology.md</div>
+          </div>
+          <div class="terminal-body">
+            <span class="kw">INVESTIGATE</span>: Trace the code path<br>
+            <span class="kw">ANALYZE</span>: Compare expected vs actual<br>
+            <span class="kw">EXPLAIN</span>: File paths, line numbers, root cause
+            <span class="link">From the Prompt Library &rarr;</span>
+          </div>
+        </div>
+
+        <div class="modules">
+          <h2 style="color:var(--text-primary);">What You'll Learn</h2>
+          <div class="modules-grid">
+            <div class="module-card">
+              <div class="module-badge" style="color:#53a0ec;">Module 1</div>
+              <h3>Fundamentals</h3>
+              <ul>
+                <li>LLM internals &amp; context</li>
+                <li>Hallucinations &amp; drift</li>
+                <li>RAG integration</li>
+              </ul>
+            </div>
+            <div class="module-card">
+              <div class="module-badge" style="color:#938eeb;">Module 2</div>
+              <h3>Methodology</h3>
+              <ul>
+                <li>Prompt structure</li>
+                <li>Grounding patterns</li>
+                <li>Plan &rarr; Execute &rarr; Verify</li>
+              </ul>
+            </div>
+            <div class="module-card">
+              <div class="module-badge" style="color:#c07ecf;">Module 3</div>
+              <h3>Practical Techniques</h3>
+              <ul>
+                <li>CI integration</li>
+                <li>Test generation</li>
+                <li>Debugging sessions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="formats" style="background:var(--bg-surface);">
+          <h2 style="color:var(--text-primary);">Learn Your Way</h2>
+          <div class="formats-grid">
+            <div class="format-card" style="background:var(--bg-muted); border-color:var(--border);">
+              <svg class="format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              <h3>Reference Docs</h3>
+              <p>Bookmark it. Jump back in.</p>
+            </div>
+            <div class="format-card" style="background:var(--bg-muted); border-color:var(--border);">
+              <svg class="format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+              <h3>Podcasts</h3>
+              <p>Commute, gym, walking the dog.</p>
+            </div>
+            <div class="format-card" style="background:var(--bg-muted); border-color:var(--border);">
+              <svg class="format-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <h3>Presentations</h3>
+              <p>Share with your team.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL CARD & OG IMAGE -->
+<div class="section">
+  <h2>Social Card &amp; OG Image</h2>
+  <p style="font-size:13px; color:#888; margin-bottom:24px;">
+    Template: dark background (#111111), large white title, small monochrome logo mark, optional single semantic accent line chosen per content context. Variety without brand-color dependency.
+  </p>
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;">
+    <!-- Card 1: success accent -->
+    <div style="padding:32px 24px; border-radius:12px; background:#111111; border:1px solid #30363d; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:0; left:0; right:0; height:3px; background:#007a44;"></div>
+      <div style="font-family:var(--font-mono);font-feature-settings:var(--font-mono-features); font-size:11px; color:#666; margin-bottom:12px;">&lt;/&gt; Agentic Coding</div>
+      <div style="font-size:16px; font-weight:700; color:#ffffff; line-height:24px;">Lesson 5: Grounding &amp; Validation</div>
+      <div style="font-size:11px; color:#808080; margin-top:8px;">success accent — validated content</div>
+    </div>
+    <!-- Card 2: violet accent -->
+    <div style="padding:32px 24px; border-radius:12px; background:#111111; border:1px solid #30363d; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:0; left:0; right:0; height:3px; background:#6057af;"></div>
+      <div style="font-family:var(--font-mono);font-feature-settings:var(--font-mono-features); font-size:11px; color:#666; margin-bottom:12px;">&lt;/&gt; Agentic Coding</div>
+      <div style="font-size:16px; font-weight:700; color:#ffffff; line-height:24px;">Lesson 9: AI Agent Patterns</div>
+      <div style="font-size:11px; color:#808080; margin-top:8px;">violet accent — AI/transformation</div>
+    </div>
+    <!-- Card 3: no accent -->
+    <div style="padding:32px 24px; border-radius:12px; background:#111111; border:1px solid #30363d; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:0; left:0; right:0; height:3px; background:#505050;"></div>
+      <div style="font-family:var(--font-mono);font-feature-settings:var(--font-mono-features); font-size:11px; color:#666; margin-bottom:12px;">&lt;/&gt; Agentic Coding</div>
+      <div style="font-size:16px; font-weight:700; color:#ffffff; line-height:24px;">Master Agentic Coding</div>
+      <div style="font-size:11px; color:#808080; margin-top:8px;">neutral — default/homepage</div>
+    </div>
+  </div>
+</div>
+
+<!-- ILLUSTRATION EXAMPLES -->
+<div class="section">
+  <h2>Illustration Examples — 9-Color System</h2>
+  <p style="font-size:13px; color:#888; margin-bottom:24px;">
+    The illustration system demonstrates monochrome-first at full capacity. These diagrams use all 9 semantic hues equally. No single color dominates. The achromatic base makes every accent equally prominent.
+  </p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+
+    <!-- Example 1: Architecture Diagram -->
+    <div style="padding:24px; border-radius:12px; border:1px solid #30363d; background:#161b22;">
+      <h4 style="font-size:13px; color:#aaa; margin-bottom:16px; font-weight:600;">Architecture Diagram — 9 Entity Types</h4>
+      <div style="position:relative; min-height:280px;">
+        <!-- Top row: User → API Gateway → Auth -->
+        <div style="display:flex; gap:12px; margin-bottom:8px;">
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#9b436a;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>User</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">rose — human actor</div>
+          </div>
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#1369b0;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>API Gateway</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">indigo — reference</div>
+          </div>
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#6057af;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>Auth</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">violet — transform</div>
+          </div>
+        </div>
+        <!-- Arrow row -->
+        <div style="text-align:center;color:#485252;font-size:16px;margin:4px 0;">↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓</div>
+        <!-- Middle row: LLM Agent → Cache → Database -->
+        <div style="display:flex; gap:12px; margin-bottom:8px;">
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#874895;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>LLM Agent</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">magenta — AI</div>
+          </div>
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#6b6b00;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>Cache</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">lime — intermediate</div>
+          </div>
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#007576;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>Database</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">cyan — system</div>
+          </div>
+        </div>
+        <!-- Arrow row -->
+        <div style="text-align:center;color:#485252;font-size:16px;margin:4px 0;">↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓</div>
+        <!-- Bottom row: Queue → Monitor → Error Handler -->
+        <div style="display:flex; gap:12px;">
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#007a44;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>Queue</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">success — active</div>
+          </div>
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#8e5900;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>Monitor</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">warning — caution</div>
+          </div>
+          <div style="flex:1;padding:8px 12px;border-radius:8px;background:#ad3735;color:#fff;font-size:11px;font-weight:600;text-align:center;">
+            <div>Error Handler</div><div style="font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">error — critical</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example 2: Bar Chart -->
+    <div style="padding:24px; border-radius:12px; border:1px solid #30363d; background:#161b22;">
+      <h4 style="font-size:13px; color:#aaa; margin-bottom:16px; font-weight:600;">Data Visualization — 5-Series Bar Chart (dark mode)</h4>
+      <div style="display:flex; align-items:end; gap:8px; height:160px; padding:16px 12px 8px; border:1px solid #30363d; border-radius:8px; background:#0d1117;">
+        <!-- Group 1 -->
+        <div style="flex:1;display:flex;gap:4px;align-items:end;height:100%;">
+          <div style="flex:1;background:#53a0ec;height:75%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#a1a22b;height:55%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#c07ecf;height:90%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#938eeb;height:40%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#d7799f;height:65%;border-radius:3px 3px 0 0;"></div>
+        </div>
+        <!-- Group 2 -->
+        <div style="flex:1;display:flex;gap:4px;align-items:end;height:100%;">
+          <div style="flex:1;background:#53a0ec;height:60%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#a1a22b;height:80%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#c07ecf;height:45%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#938eeb;height:70%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#d7799f;height:35%;border-radius:3px 3px 0 0;"></div>
+        </div>
+        <!-- Group 3 -->
+        <div style="flex:1;display:flex;gap:4px;align-items:end;height:100%;">
+          <div style="flex:1;background:#53a0ec;height:85%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#a1a22b;height:50%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#c07ecf;height:70%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#938eeb;height:95%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#d7799f;height:60%;border-radius:3px 3px 0 0;"></div>
+        </div>
+        <!-- Group 4 -->
+        <div style="flex:1;display:flex;gap:4px;align-items:end;height:100%;">
+          <div style="flex:1;background:#53a0ec;height:50%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#a1a22b;height:65%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#c07ecf;height:80%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#938eeb;height:55%;border-radius:3px 3px 0 0;"></div>
+          <div style="flex:1;background:#d7799f;height:90%;border-radius:3px 3px 0 0;"></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#53a0ec;"></div><span style="color:#aaa;">Indigo</span></div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#a1a22b;"></div><span style="color:#aaa;">Lime</span></div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#c07ecf;"></div><span style="color:#aaa;">Magenta</span></div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#938eeb;"></div><span style="color:#aaa;">Violet</span></div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#d7799f;"></div><span style="color:#aaa;">Rose</span></div>
+      </div>
+    </div>
+
+    <!-- Example 3: Agent Pipeline Flow -->
+    <div style="padding:24px; border-radius:12px; border:1px solid #30363d; background:#161b22;">
+      <h4 style="font-size:13px; color:#aaa; margin-bottom:16px; font-weight:600;">Agent Pipeline — Multi-Phase Flow</h4>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <!-- Phase 1 -->
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:24px;height:24px;border-radius:4px;background:#9b436a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">1</div>
+          <div style="flex:1;padding:8px 16px;border-radius:8px;background:#9b436a;color:#fff;font-size:13px;font-weight:600;">User Input</div>
+          <div class="mono" style="font-size:11px;color:#d7799f;">rose</div>
+        </div>
+        <div style="text-align:center;color:#485252;font-size:13px;">↓</div>
+        <!-- Phase 2 -->
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:24px;height:24px;border-radius:4px;background:#1369b0;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">2</div>
+          <div style="flex:1;padding:8px 16px;border-radius:8px;background:#1369b0;color:#fff;font-size:13px;font-weight:600;">Context Retrieval</div>
+          <div class="mono" style="font-size:11px;color:#53a0ec;">indigo</div>
+        </div>
+        <div style="text-align:center;color:#485252;font-size:13px;">↓</div>
+        <!-- Phase 3 -->
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:24px;height:24px;border-radius:4px;background:#874895;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">3</div>
+          <div style="flex:1;padding:8px 16px;border-radius:8px;background:#874895;color:#fff;font-size:13px;font-weight:600;">LLM Processing</div>
+          <div class="mono" style="font-size:11px;color:#c07ecf;">magenta</div>
+        </div>
+        <div style="text-align:center;color:#485252;font-size:13px;">↓</div>
+        <!-- Phase 4 -->
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:24px;height:24px;border-radius:4px;background:#6057af;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">4</div>
+          <div style="flex:1;padding:8px 16px;border-radius:8px;background:#6057af;color:#fff;font-size:13px;font-weight:600;">Transformation</div>
+          <div class="mono" style="font-size:11px;color:#938eeb;">violet</div>
+        </div>
+        <div style="text-align:center;color:#485252;font-size:13px;">↓</div>
+        <!-- Phase 5 -->
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:24px;height:24px;border-radius:4px;background:#007576;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">5</div>
+          <div style="flex:1;padding:8px 16px;border-radius:8px;background:#007576;color:#fff;font-size:13px;font-weight:600;">Code Generation</div>
+          <div class="mono" style="font-size:11px;color:#00b2b2;">cyan</div>
+        </div>
+        <div style="text-align:center;color:#485252;font-size:13px;">↓</div>
+        <!-- Phase 6 -->
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:24px;height:24px;border-radius:4px;background:#007a44;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">6</div>
+          <div style="flex:1;padding:8px 16px;border-radius:8px;background:#007a44;color:#fff;font-size:13px;font-weight:600;">Validation &amp; Output</div>
+          <div class="mono" style="font-size:11px;color:#48b475;">success</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example 4: Full badge system + light-mode diagram -->
+    <div style="padding:24px; border-radius:12px; border:1px solid #30363d; background:#161b22;">
+      <h4 style="font-size:13px; color:#aaa; margin-bottom:16px; font-weight:600;">Full 9-Color Badge System</h4>
+
+      <!-- Dark mode badges -->
+      <div style="margin-bottom:16px;">
+        <div class="mono" style="font-size:11px; color:#666; margin-bottom:8px;">dark mode — solid fill</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span style="padding:4px 10px;border-radius:4px;background:#ad3735;color:#fff;font-size:11px;font-weight:600;">Error</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#8e5900;color:#fff;font-size:11px;font-weight:600;">Warning</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#6b6b00;color:#fff;font-size:11px;font-weight:600;">Lime</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#007a44;color:#fff;font-size:11px;font-weight:600;">Success</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#007576;color:#fff;font-size:11px;font-weight:600;">Cyan</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#1369b0;color:#fff;font-size:11px;font-weight:600;">Indigo</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#6057af;color:#fff;font-size:11px;font-weight:600;">Violet</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#874895;color:#fff;font-size:11px;font-weight:600;">Magenta</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#9b436a;color:#fff;font-size:11px;font-weight:600;">Rose</span>
+        </div>
+      </div>
+
+      <!-- Light mode badges -->
+      <div style="margin-bottom:16px;">
+        <div class="mono" style="font-size:11px; color:#666; margin-bottom:8px;">light mode — tinted bg + colored text</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; padding:16px; background:#f0f7f6; border-radius:8px; border:1px solid #cdd6d6;">
+          <span style="padding:4px 10px;border-radius:4px;background:#fff2f0;color:#ad3735;border:1px solid #ad3735;font-size:11px;font-weight:600;">Error</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#fff3e6;color:#8e5900;border:1px solid #8e5900;font-size:11px;font-weight:600;">Warning</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#f7fac9;color:#6b6b00;border:1px solid #6b6b00;font-size:11px;font-weight:600;">Lime</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#ddffe8;color:#007a44;border:1px solid #007a44;font-size:11px;font-weight:600;">Success</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#d4fffe;color:#007576;border:1px solid #007576;font-size:11px;font-weight:600;">Cyan</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#eef6ff;color:#1369b0;border:1px solid #1369b0;font-size:11px;font-weight:600;">Indigo</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#f4f4ff;color:#6057af;border:1px solid #6057af;font-size:11px;font-weight:600;">Violet</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#fcf0ff;color:#874895;border:1px solid #874895;font-size:11px;font-weight:600;">Magenta</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#fff1f6;color:#9b436a;border:1px solid #9b436a;font-size:11px;font-weight:600;">Rose</span>
+        </div>
+      </div>
+
+      <!-- Semantic application examples -->
+      <div>
+        <div class="mono" style="font-size:11px; color:#666; margin-bottom:8px;">semantic application</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span style="padding:4px 10px;border-radius:4px;background:#007576;color:#fff;font-size:11px;font-weight:600;">Module 1</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#874895;color:#fff;font-size:11px;font-weight:600;">AI Agent</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#1369b0;color:#fff;font-size:11px;font-weight:600;">Reference</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#6057af;color:#fff;font-size:11px;font-weight:600;">Transform</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#9b436a;color:#fff;font-size:11px;font-weight:600;">User Input</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#6b6b00;color:#fff;font-size:11px;font-weight:600;">In Progress</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#007a44;color:#fff;font-size:11px;font-weight:600;">Complete</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#8e5900;color:#fff;font-size:11px;font-weight:600;">Caution</span>
+          <span style="padding:4px 10px;border-radius:4px;background:#ad3735;color:#fff;font-size:11px;font-weight:600;">Breaking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example 5: Full-width light mode illustration -->
+  <div style="margin-top:24px; padding:32px; border-radius:12px; border:1px solid #cdd6d6; background:#ffffff;">
+    <h4 style="font-size:13px; color:#5d6969; margin-bottom:24px; font-weight:600;">Light Mode — Spec-to-Code Convergence Diagram</h4>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <!-- Spec box -->
+      <div style="flex:1; padding:24px; border-radius:8px; border:2px solid #6057af; background:#f4f4ff; text-align:center;">
+        <div style="font-size:13px; font-weight:700; color:#6057af;">SPEC</div>
+        <div style="font-size:11px; color:#768383; margin-top:4px;">Requirements</div>
+      </div>
+      <!-- Arrow: Generate -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+        <div style="font-size:11px; font-weight:600; color:#874895;">Generate</div>
+        <div style="width:60px; height:2px; background:#874895;"></div>
+        <div style="font-size:13px; color:#874895;">→</div>
+      </div>
+      <!-- Code box -->
+      <div style="flex:1; padding:24px; border-radius:8px; border:2px solid #007576; background:#d4fffe; text-align:center;">
+        <div style="font-size:13px; font-weight:700; color:#007576;">CODE</div>
+        <div style="font-size:11px; color:#768383; margin-top:4px;">Implementation</div>
+      </div>
+      <!-- Arrow: Extract -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+        <div style="font-size:11px; font-weight:600; color:#007a44;">Extract</div>
+        <div style="width:60px; height:2px; background:#007a44;"></div>
+        <div style="font-size:13px; color:#007a44;">→</div>
+      </div>
+      <!-- Test box -->
+      <div style="flex:1; padding:24px; border-radius:8px; border:2px solid #1369b0; background:#eef6ff; text-align:center;">
+        <div style="font-size:13px; font-weight:700; color:#1369b0;">TEST</div>
+        <div style="font-size:11px; color:#768383; margin-top:4px;">Validation</div>
+      </div>
+      <!-- Arrow: Verify -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+        <div style="font-size:11px; font-weight:600; color:#8e5900;">Verify</div>
+        <div style="width:60px; height:2px; background:#8e5900;"></div>
+        <div style="font-size:13px; color:#8e5900;">→</div>
+      </div>
+      <!-- Result box -->
+      <div style="flex:1; padding:24px; border-radius:8px; border:2px solid #007a44; background:#ddffe8; text-align:center;">
+        <div style="font-size:13px; font-weight:700; color:#007a44;">PASS</div>
+        <div style="font-size:11px; color:#768383; margin-top:4px;">Convergence</div>
+      </div>
+    </div>
+    <!-- Color legend -->
+    <div style="display:flex; gap:16px; margin-top:16px; padding-top:12px; border-top:1px solid #cdd6d6;">
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#6057af;"></div><span style="color:#5d6969;">Spec (violet)</span></div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#874895;"></div><span style="color:#5d6969;">Generate (magenta)</span></div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#007576;"></div><span style="color:#5d6969;">Code (cyan)</span></div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#007a44;"></div><span style="color:#5d6969;">Extract (success)</span></div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#1369b0;"></div><span style="color:#5d6969;">Test (indigo)</span></div>
+      <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><div style="width:10px;height:10px;border-radius:4px;background:#8e5900;"></div><span style="color:#5d6969;">Verify (warning)</span></div>
+    </div>
+  </div>
+
+  <!-- Example 6: Knowledge map / concept graph -->
+  <div style="margin-top:24px; padding:24px; border-radius:12px; border:1px solid #30363d; background:#0d1117;">
+    <h4 style="font-size:13px; color:#aaa; margin-bottom:24px; font-weight:600;">Dark Mode — Knowledge Map (Concept Relationships)</h4>
+    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
+      <!-- Row 1 -->
+      <div style="padding:16px;border-radius:8px;border:2px solid #53a0ec;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#53a0ec;">Context Window</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">Token limits, attention</div>
+      </div>
+      <div style="padding:16px;border-radius:8px;border:2px solid #938eeb;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#938eeb;">Transformer</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">Self-attention, layers</div>
+      </div>
+      <div style="padding:16px;border-radius:8px;border:2px solid #c07ecf;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#c07ecf;">Prompt Engineering</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">System prompts, few-shot</div>
+      </div>
+      <!-- Row 2 -->
+      <div style="padding:16px;border-radius:8px;border:2px solid #00b2b2;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#00b2b2;">RAG Pipeline</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">Retrieval, embeddings</div>
+      </div>
+      <div style="padding:16px;border-radius:8px;border:2px solid #48b475;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#48b475;">Grounding</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">File paths, line numbers</div>
+      </div>
+      <div style="padding:16px;border-radius:8px;border:2px solid #a1a22b;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#a1a22b;">Iteration Cycle</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">Plan → execute → verify</div>
+      </div>
+      <!-- Row 3 -->
+      <div style="padding:16px;border-radius:8px;border:2px solid #d7799f;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#d7799f;">Developer Intent</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">Requirements, goals</div>
+      </div>
+      <div style="padding:16px;border-radius:8px;border:2px solid #cd8c37;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#cd8c37;">Hallucination Risk</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">Drift, confabulation</div>
+      </div>
+      <div style="padding:16px;border-radius:8px;border:2px solid #ec7069;background:#161b22;">
+        <div style="font-size:11px;font-weight:700;color:#ec7069;">Failure Modes</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;">Context overflow, loops</div>
+      </div>
+    </div>
+    <!-- Connection lines via borders -->
+    <div style="display:flex; gap:8px; margin-top:12px; justify-content:center;">
+      <div style="font-size:11px; color:#485252;">↕ concepts connect by semantic color — same category = same hue family</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEMANTIC TOKEN TABLE -->
+<div class="section">
+  <h2>Semantic Token Mapping</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+    <div>
+      <h3 style="font-size:13px; color:#aaa; margin-bottom:12px;">Light Theme</h3>
+      <table class="token-table">
+        <thead>
+          <tr><th>Token</th><th>Value</th><th>Source</th></tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="3" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Surfaces</td></tr>
+          <tr><td>--surface-page</td><td><span class="token-swatch" style="background:#ffffff"></span>#ffffff</td><td>white</td></tr>
+          <tr><td>--surface-raised</td><td><span class="token-swatch" style="background:#f5f5f5"></span>#f5f5f5</td><td>neutral-50</td></tr>
+          <tr><td>--surface-muted</td><td><span class="token-swatch" style="background:#e8e8e8"></span>#e8e8e8</td><td>neutral-100</td></tr>
+          <tr><td colspan="3" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Text</td></tr>
+          <tr><td>--text-heading</td><td><span class="token-swatch" style="background:#2b2b2b"></span>#2b2b2b</td><td>neutral-900</td></tr>
+          <tr><td>--text-body</td><td><span class="token-swatch" style="background:#505050"></span>#505050</td><td>neutral-700</td></tr>
+          <tr><td>--text-muted</td><td><span class="token-swatch" style="background:#808080"></span>#808080</td><td>neutral-500</td></tr>
+          <tr><td colspan="3" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Borders</td></tr>
+          <tr><td>--border-default</td><td><span class="token-swatch" style="background:#d4d4d4"></span>#d4d4d4</td><td>neutral-200</td></tr>
+          <tr><td colspan="3" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Semantic Colors</td></tr>
+          <tr><td>--visual-error</td><td><span class="token-swatch" style="background:#ad3735"></span>#ad3735</td><td>error-600</td></tr>
+          <tr><td>--visual-warning</td><td><span class="token-swatch" style="background:#8e5900"></span>#8e5900</td><td>warning-600</td></tr>
+          <tr><td>--visual-lime</td><td><span class="token-swatch" style="background:#6b6b00"></span>#6b6b00</td><td>lime-600</td></tr>
+          <tr><td>--visual-success</td><td><span class="token-swatch" style="background:#007a44"></span>#007a44</td><td>success-600</td></tr>
+          <tr><td>--visual-cyan</td><td><span class="token-swatch" style="background:#007576"></span>#007576</td><td>cyan-600</td></tr>
+          <tr><td>--visual-indigo</td><td><span class="token-swatch" style="background:#1369b0"></span>#1369b0</td><td>indigo-600</td></tr>
+          <tr><td>--visual-violet</td><td><span class="token-swatch" style="background:#6057af"></span>#6057af</td><td>violet-600</td></tr>
+          <tr><td>--visual-magenta</td><td><span class="token-swatch" style="background:#874895"></span>#874895</td><td>magenta-600</td></tr>
+          <tr><td>--visual-rose</td><td><span class="token-swatch" style="background:#9b436a"></span>#9b436a</td><td>rose-600</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="font-size:13px; color:#aaa; margin-bottom:12px;">Dark Theme</h3>
+      <table class="token-table">
+        <thead>
+          <tr><th>Token</th><th>Value</th><th>Source</th></tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="3" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Surfaces</td></tr>
+          <tr><td>--surface-page</td><td><span class="token-swatch" style="background:#0d1117"></span>#0d1117</td><td>GitHub dark</td></tr>
+          <tr><td>--surface-raised</td><td><span class="token-swatch" style="background:#161b22"></span>#161b22</td><td>elevated</td></tr>
+          <tr><td>--surface-muted</td><td><span class="token-swatch" style="background:#3d3d3d"></span>#3d3d3d</td><td>neutral-800</td></tr>
+          <tr><td colspan="3" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Text</td></tr>
+          <tr><td>--text-heading</td><td><span class="token-swatch" style="background:#e8e8e8"></span>#e8e8e8</td><td>neutral-100</td></tr>
+          <tr><td>--text-body</td><td><span class="token-swatch" style="background:#d4d4d4"></span>#d4d4d4</td><td>neutral-200</td></tr>
+          <tr><td>--text-muted</td><td><span class="token-swatch" style="background:#9b9b9b"></span>#9b9b9b</td><td>neutral-400</td></tr>
+          <tr><td colspan="3" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Borders</td></tr>
+          <tr><td>--border-default</td><td><span class="token-swatch" style="background:#505050"></span>#505050</td><td>neutral-700</td></tr>
+          <tr><td colspan="3" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Semantic Colors</td></tr>
+          <tr><td>--visual-error</td><td><span class="token-swatch" style="background:#ec7069"></span>#ec7069</td><td>error-400</td></tr>
+          <tr><td>--visual-warning</td><td><span class="token-swatch" style="background:#cd8c37"></span>#cd8c37</td><td>warning-400</td></tr>
+          <tr><td>--visual-lime</td><td><span class="token-swatch" style="background:#a1a22b"></span>#a1a22b</td><td>lime-400</td></tr>
+          <tr><td>--visual-success</td><td><span class="token-swatch" style="background:#48b475"></span>#48b475</td><td>success-400</td></tr>
+          <tr><td>--visual-cyan</td><td><span class="token-swatch" style="background:#00b2b2"></span>#00b2b2</td><td>cyan-400</td></tr>
+          <tr><td>--visual-indigo</td><td><span class="token-swatch" style="background:#53a0ec"></span>#53a0ec</td><td>indigo-400</td></tr>
+          <tr><td>--visual-violet</td><td><span class="token-swatch" style="background:#938eeb"></span>#938eeb</td><td>violet-400</td></tr>
+          <tr><td>--visual-magenta</td><td><span class="token-swatch" style="background:#c07ecf"></span>#c07ecf</td><td>magenta-400</td></tr>
+          <tr><td>--visual-rose</td><td><span class="token-swatch" style="background:#d7799f"></span>#d7799f</td><td>rose-400</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SPATIAL SYSTEM -->
+<div class="section">
+  <h2>Spatial System</h2>
+  <p style="color:#aaa; font-size:13px; line-height:24px; margin-bottom:24px;">
+    Computed spatial token system for the Agentic Coding brand. All values derived programmatically from the brand PAD profile:
+    <strong style="color:#e0e0e0;">Pleasure: Medium</strong>,
+    <strong style="color:#e0e0e0;">Arousal: Low-Medium</strong>,
+    <strong style="color:#e0e0e0;">Dominance: Medium</strong>.
+    Base unit: 8px. Type scale ratio: 1.200 (Minor Third). Surface strategy: Flat 2.0.
+  </p>
+
+  <!-- Spacing Scale -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:32px;">Spacing Scale</h3>
+  <p style="color:#888; font-size:13px; margin-bottom:12px;">Base unit: 8px. Hybrid geometric progression — compresses at small values, expands at large values.</p>
+  <table class="token-table">
+    <thead>
+      <tr><th>Token</th><th>Step</th><th>Multiplier</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>--space-0</td><td>0</td><td>0</td><td>0px</td></tr>
+      <tr><td>--space-1</td><td>1</td><td>1</td><td>8px</td></tr>
+      <tr><td>--space-2</td><td>2</td><td>2</td><td>16px</td></tr>
+      <tr><td>--space-3</td><td>3</td><td>3</td><td>24px</td></tr>
+      <tr><td>--space-4</td><td>4</td><td>4</td><td>32px</td></tr>
+      <tr><td>--space-5</td><td>5</td><td>6</td><td>48px</td></tr>
+      <tr><td>--space-6</td><td>6</td><td>8</td><td>64px</td></tr>
+      <tr><td>--space-7</td><td>7</td><td>10</td><td>80px</td></tr>
+      <tr><td>--space-8</td><td>8</td><td>12</td><td>96px</td></tr>
+      <tr><td>--space-9</td><td>9</td><td>16</td><td>128px</td></tr>
+      <tr><td>--space-10</td><td>10</td><td>20</td><td>160px</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:24px;">Spacing Assignment (Low-Medium Arousal)</h3>
+  <table class="token-table">
+    <thead>
+      <tr><th>Purpose</th><th>Step Range</th><th>Value Range</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Component padding</td><td>step 2–3</td><td>16–24px</td></tr>
+      <tr><td>Section gap</td><td>step 5–6</td><td>48–64px</td></tr>
+      <tr><td>Page margin</td><td>step 7–8</td><td>80–96px</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Type Scale -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:32px;">Type Scale</h3>
+  <p style="color:#888; font-size:13px; margin-bottom:12px;">Base: 16px, ratio: 1.200 (Minor Third). All sizes rounded to integers. Line-heights grid-snapped to 8px multiples.</p>
+  <table class="token-table">
+    <thead>
+      <tr><th>Token</th><th>Step</th><th>Role</th><th>Size</th><th>LH Ratio</th><th>Line-Height</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>--text-xs</td><td>-2</td><td>Fine print, captions</td><td>11px</td><td>1.50</td><td>24px</td></tr>
+      <tr><td>--text-sm</td><td>-1</td><td>Secondary, metadata</td><td>13px</td><td>1.50</td><td>24px</td></tr>
+      <tr><td>--text-base</td><td>0</td><td>Body text</td><td>16px</td><td>1.50</td><td>24px</td></tr>
+      <tr><td>--text-lg</td><td>1</td><td>Lead paragraphs</td><td>19px</td><td>1.30</td><td>32px</td></tr>
+      <tr><td>--text-xl</td><td>2</td><td>h4 subheadings</td><td>23px</td><td>1.30</td><td>32px</td></tr>
+      <tr><td>--text-2xl</td><td>3</td><td>h3 section headings</td><td>28px</td><td>1.15</td><td>40px</td></tr>
+      <tr><td>--text-3xl</td><td>4</td><td>h2 major headings</td><td>33px</td><td>1.15</td><td>40px</td></tr>
+      <tr><td>--text-4xl</td><td>5</td><td>h1 page titles</td><td>40px</td><td>1.15</td><td>48px</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Vertical Rhythm -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:24px;">Vertical Rhythm</h3>
+  <p style="color:#888; font-size:13px; margin-bottom:12px;">Formula: <code class="mono" style="color:#c9d1d9; font-size:11px;">ceil(fontSize * lhRatio / 8) * 8</code>. All line-heights snap to the 8px grid.</p>
+  <table class="token-table">
+    <thead>
+      <tr><th>Context</th><th>Font Size</th><th>Ratio</th><th>Raw</th><th>Snapped</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Body</td><td>16px</td><td>1.50</td><td>24.0px</td><td>24px</td></tr>
+      <tr><td>Body (small)</td><td>14px</td><td>1.50</td><td>21.0px</td><td>24px</td></tr>
+      <tr><td>Heading (large)</td><td>28px</td><td>1.15</td><td>32.2px</td><td>40px</td></tr>
+      <tr><td>Heading (medium)</td><td>23px</td><td>1.15</td><td>26.5px</td><td>32px</td></tr>
+      <tr><td>Heading (small)</td><td>19px</td><td>1.15</td><td>21.9px</td><td>24px</td></tr>
+      <tr><td>Code</td><td>16px</td><td>1.40</td><td>22.4px</td><td>24px</td></tr>
+      <tr><td>Code (small)</td><td>14px</td><td>1.40</td><td>19.6px</td><td>24px</td></tr>
+      <tr><td>Caption</td><td>14px</td><td>1.35</td><td>18.9px</td><td>24px</td></tr>
+      <tr><td>Caption (small)</td><td>12px</td><td>1.35</td><td>16.2px</td><td>24px</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Border Radius -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:32px;">Border Radius</h3>
+  <p style="color:#888; font-size:13px; margin-bottom:12px;">Medium pleasure: multiplier 1.0, base_r = 8px. Curvature ratio 0.10–0.20 (professional, approachable).</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+    <div>
+      <h3 style="font-size:13px; color:#888; margin-bottom:8px;">Token Scale</h3>
+      <table class="token-table">
+        <thead>
+          <tr><th>Token</th><th>Formula</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>--radius-none</td><td>0</td><td>0px</td></tr>
+          <tr><td>--radius-sm</td><td>base_r &times; 0.5</td><td>4px</td></tr>
+          <tr><td>--radius-md</td><td>base_r</td><td>8px</td></tr>
+          <tr><td>--radius-lg</td><td>base_r &times; 1.5</td><td>12px</td></tr>
+          <tr><td>--radius-xl</td><td>base_r &times; 2</td><td>16px</td></tr>
+          <tr><td>--radius-2xl</td><td>base_r &times; 3</td><td>24px</td></tr>
+          <tr><td>--radius-full</td><td>9999px</td><td>9999px</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="font-size:13px; color:#888; margin-bottom:8px;">Semantic Adjustments (40px ref)</h3>
+      <table class="token-table">
+        <thead>
+          <tr><th>Role</th><th>Adjustment</th><th>Ratio</th><th>Radius</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Error/danger</td><td>-50%</td><td>0.075</td><td>2px</td></tr>
+          <tr><td>Warning</td><td>-25%</td><td>0.112</td><td>2px</td></tr>
+          <tr><td>Success</td><td>+25%</td><td>0.188</td><td>4px</td></tr>
+          <tr><td>Neutral/info</td><td>0%</td><td>0.150</td><td>3px</td></tr>
+          <tr><td>Avatar</td><td>circle</td><td>1.000</td><td>50%</td></tr>
+          <tr><td>Input fields</td><td>-25%</td><td>0.112</td><td>2px</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Line Weight -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:32px;">Line Weight System</h3>
+  <p style="color:#888; font-size:13px; margin-bottom:12px;">Medium dominance: 1–2px default borders, 3px for semantic accents. Perceived weight = thickness &times; &Delta;L.</p>
+  <table class="token-table">
+    <thead>
+      <tr><th>Token</th><th>Thickness</th><th>Light Color</th><th>&Delta;L (light)</th><th>PBW (light)</th><th>Dark Color</th><th>&Delta;L (dark)</th><th>PBW (dark)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>--border-subtle</td><td>1px</td><td>#d4d4d4 <span class="token-swatch" style="background:#d4d4d4"></span></td><td>0.342</td><td>0.342</td><td>#3d3d3d <span class="token-swatch" style="background:#3d3d3d"></span></td><td>0.041</td><td>0.041</td></tr>
+      <tr><td>--border-default</td><td>1px</td><td>#b7b7b7 <span class="token-swatch" style="background:#b7b7b7"></span></td><td>0.527</td><td>0.527</td><td>#505050 <span class="token-swatch" style="background:#505050"></span></td><td>0.075</td><td>0.075</td></tr>
+      <tr><td>--border-emphasis</td><td>1px</td><td>#808080 <span class="token-swatch" style="background:#808080"></span></td><td>0.784</td><td>0.784</td><td>#808080 <span class="token-swatch" style="background:#808080"></span></td><td>0.210</td><td>0.210</td></tr>
+      <tr><td>--border-strong</td><td>2px</td><td>#505050 <span class="token-swatch" style="background:#505050"></span></td><td>0.920</td><td>1.840</td><td>#b7b7b7 <span class="token-swatch" style="background:#b7b7b7"></span></td><td>0.468</td><td>0.936</td></tr>
+      <tr><td>--border-accent</td><td>3px</td><td colspan="2" style="color:#888;">semantic color</td><td style="color:#888;">variable</td><td colspan="2" style="color:#888;">semantic color</td><td style="color:#888;">variable</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Surface Hierarchy -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:32px;">Surface Hierarchy</h3>
+  <p style="color:#888; font-size:13px; margin-bottom:12px;">Flat 2.0 with medium dominance. Depth via luminance stepping only (no shadows/gradients). Distribution: 95/5 for content pages, 60-30-10 for diagram-heavy pages.</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+    <div>
+      <h3 style="font-size:13px; color:#888; margin-bottom:8px;">Light Mode</h3>
+      <table class="token-table">
+        <thead>
+          <tr><th>Tier</th><th>Hex</th><th>Luminance</th><th>&Delta;L</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Page</td><td>#ffffff <span class="token-swatch" style="background:#ffffff"></span></td><td>1.0000</td><td>&mdash;</td></tr>
+          <tr><td>Raised</td><td>#f5f5f5 <span class="token-swatch" style="background:#f5f5f5"></span></td><td>0.9131</td><td>0.087</td></tr>
+          <tr><td>Muted</td><td>#e8e8e8 <span class="token-swatch" style="background:#e8e8e8"></span></td><td>0.8070</td><td>0.106</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="font-size:13px; color:#888; margin-bottom:8px;">Dark Mode</h3>
+      <table class="token-table">
+        <thead>
+          <tr><th>Tier</th><th>Hex</th><th>Luminance</th><th>&Delta;L</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Page</td><td>#0d1117 <span class="token-swatch" style="background:#0d1117"></span></td><td>0.0055</td><td>&mdash;</td></tr>
+          <tr><td>Raised</td><td>#161b22 <span class="token-swatch" style="background:#161b22"></span></td><td>0.0107</td><td>0.005</td></tr>
+          <tr><td>Muted</td><td>#3d3d3d <span class="token-swatch" style="background:#3d3d3d"></span></td><td>0.0467</td><td>0.036</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div style="margin-top:12px; padding:12px 16px; background:#161b22; border:1px solid #30363d; border-radius:8px; font-size:13px;">
+    <div style="color:#aaa; margin-bottom:8px; font-weight:600;">Weber Fraction Compliance</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-family:var(--font-mono); font-feature-settings:var(--font-mono-features);">
+      <div><span style="color:#888;">Light page&rarr;raised:</span> <span style="color:#c9d1d9;">&Delta;L = 0.087</span> <span style="color:#48b475;">(min 0.03) PASS</span></div>
+      <div><span style="color:#888;">Dark page&rarr;raised:</span> <span style="color:#c9d1d9;">&Delta;L = 0.005</span> <span style="color:#cd8c37;">(min 0.01) WARN</span></div>
+      <div><span style="color:#888;">Light raised&rarr;muted:</span> <span style="color:#c9d1d9;">&Delta;L = 0.106</span> <span style="color:#48b475;">(min 0.03) PASS</span></div>
+      <div><span style="color:#888;">Dark raised&rarr;muted:</span> <span style="color:#c9d1d9;">&Delta;L = 0.036</span> <span style="color:#48b475;">(min 0.01) PASS</span></div>
+    </div>
+    <div style="color:#cd8c37; font-size:11px; margin-top:8px;">Note: Dark page&rarr;raised &Delta;L (0.005) is below the 0.01 Weber minimum. The #0d1117/#161b22 pair relies on the tinted blue channel of #161b22 for perceptual separation, which sRGB luminance does not fully capture. Functionally acceptable but at the threshold.</div>
+  </div>
+
+  <!-- Target Sizes -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:32px;">Target Sizes</h3>
+  <p style="color:#888; font-size:13px; margin-bottom:12px;">Interactive element sizing per Fitts' law and WCAG 2.2. Size hierarchy: primary &ge; secondary &times; 1.25.</p>
+  <table class="token-table">
+    <thead>
+      <tr><th>Token</th><th>Height</th><th>H-Padding</th><th>WCAG AA (&ge;24px)</th><th>WCAG AAA (&ge;44px)</th><th>Use</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>--target-sm</td><td>32px</td><td>16px</td><td style="color:#48b475;">PASS</td><td style="color:#888;">&mdash;</td><td>Tertiary actions, inline buttons, tags</td></tr>
+      <tr><td>--target-md</td><td>40px</td><td>24px</td><td style="color:#48b475;">PASS</td><td style="color:#888;">&mdash;</td><td>Secondary actions, form inputs</td></tr>
+      <tr><td>--target-lg</td><td>48px</td><td>32px</td><td style="color:#48b475;">PASS</td><td style="color:#48b475;">PASS</td><td>Primary actions, main CTAs</td></tr>
+      <tr><td>--target-xl</td><td>56px</td><td>48px</td><td style="color:#48b475;">PASS</td><td style="color:#48b475;">PASS</td><td>Hero CTAs, prominent actions</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:8px; font-size:11px; font-family:var(--font-mono); font-feature-settings:var(--font-mono-features);">
+    <span style="color:#888;">Hierarchy:</span>
+    <span style="color:#c9d1d9;">primary(48) / secondary(40) = 1.20</span>
+    <span style="color:#cd8c37;">WARN &lt; 1.25</span>
+    <span style="color:#888;">&mdash;</span>
+    <span style="color:#c9d1d9;">secondary(40) / tertiary(32) = 1.25</span>
+    <span style="color:#48b475;">PASS &ge; 1.15</span>
+  </div>
+
+  <!-- Gestalt Proximity -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:32px;">Gestalt Proximity Validation</h3>
+  <table class="token-table">
+    <thead>
+      <tr><th>Relationship</th><th>Step</th><th>Value</th><th>Ratio to Within-Group</th><th>Result</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Tightly related</td><td>1</td><td>8px</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td>Related (within-group)</td><td>2</td><td>16px</td><td>1.0&times;</td><td>&mdash;</td></tr>
+      <tr><td>Loosely related</td><td>4</td><td>32px</td><td>2.0&times;</td><td>&mdash;</td></tr>
+      <tr><td>Between-group</td><td>5</td><td>48px</td><td>3.0&times;</td><td style="color:#48b475;">0.333 &lt; 0.5 PASS</td></tr>
+      <tr><td>Unrelated (between sections)</td><td>6</td><td>64px</td><td>4.0&times;</td><td style="color:#48b475;">0.250 &lt; 0.5 PASS</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Congruence Validation -->
+  <h3 style="font-size:13px; color:#aaa; margin-bottom:12px; margin-top:32px;">Congruence Validation</h3>
+  <p style="color:#888; font-size:13px; margin-bottom:12px;">Three-axis PAD alignment check: spatial vs. color vs. typography. Tolerance: &pm;1 tier.</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px;">
+    <div style="padding:12px; background:#161b22; border:1px solid #30363d; border-radius:8px;">
+      <div style="font-size:11px; color:#888; margin-bottom:8px;">Spatial PAD</div>
+      <div style="font-size:13px; color:#c9d1d9; font-family:var(--font-mono); font-feature-settings:var(--font-mono-features); line-height:24px;">
+        P: 2.0 (Medium)<br>
+        A: 1.5 (Low-Medium)<br>
+        D: 2.0 (Medium)
+      </div>
+    </div>
+    <div style="padding:12px; background:#161b22; border:1px solid #30363d; border-radius:8px;">
+      <div style="font-size:11px; color:#888; margin-bottom:8px;">Color PAD</div>
+      <div style="font-size:13px; color:#c9d1d9; font-family:var(--font-mono); font-feature-settings:var(--font-mono-features); line-height:24px;">
+        P: 2.0 (Medium)<br>
+        A: 1.0 (Low)<br>
+        D: 2.0 (Medium)
+      </div>
+    </div>
+    <div style="padding:12px; background:#161b22; border:1px solid #30363d; border-radius:8px;">
+      <div style="font-size:11px; color:#888; margin-bottom:8px;">Typography PAD</div>
+      <div style="font-size:13px; color:#c9d1d9; font-family:var(--font-mono); font-feature-settings:var(--font-mono-features); line-height:24px;">
+        P: 2.0 (Medium)<br>
+        A: 1.5 (Low-Medium)<br>
+        D: 2.0 (Medium)
+      </div>
+    </div>
+  </div>
+  <table class="token-table">
+    <thead>
+      <tr><th>Check</th><th>Axis</th><th>Spatial</th><th>Compared</th><th>&Delta;</th><th>Result</th></tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="6" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Spatial vs Color</td></tr>
+      <tr><td></td><td>Pleasure</td><td>2.0</td><td>2.0</td><td>0.0</td><td style="color:#48b475;">PASS</td></tr>
+      <tr><td></td><td>Arousal</td><td>1.5</td><td>1.0</td><td>0.5</td><td style="color:#48b475;">PASS</td></tr>
+      <tr><td></td><td>Dominance</td><td>2.0</td><td>2.0</td><td>0.0</td><td style="color:#48b475;">PASS</td></tr>
+      <tr><td colspan="6" style="color:#505050;font-size:11px;padding:12px 12px 4px;">Spatial vs Typography</td></tr>
+      <tr><td></td><td>Pleasure</td><td>2.0</td><td>2.0</td><td>0.0</td><td style="color:#48b475;">PASS</td></tr>
+      <tr><td></td><td>Arousal</td><td>1.5</td><td>1.5</td><td>0.0</td><td style="color:#48b475;">PASS</td></tr>
+      <tr><td></td><td>Dominance</td><td>2.0</td><td>2.0</td><td>0.0</td><td style="color:#48b475;">PASS</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:12px; padding:12px 16px; background:#161b22; border:1px solid #30363d; border-radius:8px; font-size:13px;">
+    <span style="color:#48b475; font-weight:600;">All congruence checks pass.</span>
+    <span style="color:#aaa;"> Spatial tokens align with the monochrome-first achromatic color system and the Inter/Space Grotesk geometric typography stack across all three PAD axes. No incongruence flags.</span>
+  </div>
+</div>
+
+<!-- DESIGN RATIONALE -->
+<div class="section">
+  <h2>Design Rationale</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; font-size:13px; color:#aaa; line-height:24px;">
+    <div>
+      <h4 style="color:#e0e0e0; margin-bottom:8px;">Why Monochrome-First?</h4>
+      <ul style="padding-left:24px;">
+        <li><strong>Industry precedent:</strong> Vercel, Linear, Stripe, Notion — monochrome-first is the premium signal in dev tools. It communicates craft and confidence.</li>
+        <li><strong>Sharp's distinctiveness:</strong> Every competitor claimed a hue. Achromatic is the unoccupied position. Maximum uniqueness by occupying the space no one else wants.</li>
+        <li><strong>Color emotion science:</strong> Per Wilms &amp; Oberfeld 2018, saturation drives arousal (&eta;&sup2;=.693). High-chroma accents against achromatic backgrounds create maximum perceptual contrast. Pure gray amplifies every hue equally.</li>
+        <li><strong>Cognitive load:</strong> Per SHIFT eLearning, cognitive overload from color is a real risk in educational content. Monochrome base prevents it by design.</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="color:#e0e0e0; margin-bottom:8px;">Why Typographic Interaction?</h4>
+      <ul style="padding-left:24px;">
+        <li><strong>Color reserved for meaning:</strong> If links and buttons consume a brand color, that color can no longer serve as a pure semantic signal. Typographic interaction frees all 9 hues for content meaning.</li>
+        <li><strong>Universal affordance:</strong> Underlines and dark fills are universally recognized interactive patterns. They work without color vision. No accessibility workaround needed.</li>
+        <li><strong>Precedent:</strong> Vercel and Linear use minimal color for interactive chrome. Dark fill buttons, underlined links. The interaction pattern is shape and weight, not hue.</li>
+        <li><strong>Simplicity:</strong> One fewer decision per component — no "which color should this button be?" Every interactive element follows the same neutral rule.</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="color:#e0e0e0; margin-bottom:8px;">Why 9 Semantic Hues?</h4>
+      <ul style="padding-left:24px;">
+        <li><strong>Expressiveness:</strong> 9 hues prevent color reuse across unrelated concepts — architecture nodes, flow phases, and chart series each get distinct slots without collision.</li>
+        <li><strong>Maximum separation:</strong> Hues placed at the largest gaps in the 360° wheel. Min pairwise distance: 30° (Rose&harr;Error). Average: 41°.</li>
+        <li><strong>Semantic coherence:</strong> Each hue maps to a consistent meaning — Rose for human actors, Indigo for data/reference, Violet for AI/transformation, Magenta for creative/highlight, Lime for progress.</li>
+        <li><strong>WCAG validation:</strong> Every hue passes AA (&ge;4.5:1) at shade 600 on white and shade 400 on dark backgrounds. No accessibility compromise.</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="color:#e0e0e0; margin-bottom:8px;">Hue Placement Logic</h4>
+      <ul style="padding-left:24px;">
+        <li><strong>Indigo (250°):</strong> Full 11-shade scale for knowledge, documentation, and reference content.</li>
+        <li><strong>Violet (285°):</strong> Exact midpoint of 250°–320° gap. AI/intelligence — distinct from competitor purple (260–280°) in the Cemetery quadrant.</li>
+        <li><strong>Magenta (320°):</strong> Full scale for creative processes and highlights.</li>
+        <li><strong>Rose (355°):</strong> 30° from error red (25°), perceptually distinct warm-pink. Human actors and emphasis.</li>
+        <li><strong>Lime (110°):</strong> Fills the largest gap (85° between warning 70° and success 155°). &ge;40° from both. Progress and intermediate states.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- IMPLEMENTATION ROADMAP -->
+<div class="section" style="padding-bottom:80px;">
+  <h2>Implementation Roadmap</h2>
+  <p style="font-size:13px; color:#888; margin-bottom:24px;">
+    Phased build-out of the monochrome-first system. Each phase is independently deployable.
+  </p>
+  <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px;">
+    <div style="padding:16px 12px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:16px; font-weight:800; color:#505050; margin-bottom:8px;">1</div>
+      <div style="font-size:11px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Neutral Scale</div>
+      <div style="font-size:11px; color:#888;">Configure neutral scale in <code style="color:#c9d1d9;">custom.css</code> at chroma 0.000 (pure achromatic)</div>
+    </div>
+    <div style="padding:16px 12px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:16px; font-weight:800; color:#505050; margin-bottom:8px;">2</div>
+      <div style="font-size:11px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Semantic Tokens</div>
+      <div style="font-size:11px; color:#888;">Define <code style="color:#c9d1d9;">--visual-*</code> tokens for all 9 semantic hues in CSS custom properties</div>
+    </div>
+    <div style="padding:16px 12px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:16px; font-weight:800; color:#505050; margin-bottom:8px;">3</div>
+      <div style="font-size:11px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Infima Primary</div>
+      <div style="font-size:11px; color:#888;">Set Infima primary to neutral dark. Style links as typographic (underline + weight).</div>
+    </div>
+    <div style="padding:16px 12px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:16px; font-weight:800; color:#505050; margin-bottom:8px;">4</div>
+      <div style="font-size:11px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Logo SVG</div>
+      <div style="font-size:11px; color:#888;">Create monochrome logo SVG variants for light and dark contexts.</div>
+    </div>
+    <div style="padding:16px 12px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:16px; font-weight:800; color:#505050; margin-bottom:8px;">5</div>
+      <div style="font-size:11px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Favicon Set</div>
+      <div style="font-size:11px; color:#888;">Regenerate favicon set from monochrome source SVG.</div>
+    </div>
+    <div style="padding:16px 12px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:16px; font-weight:800; color:#505050; margin-bottom:8px;">6</div>
+      <div style="font-size:11px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Color Guide</div>
+      <div style="font-size:11px; color:#888;">Write <code style="color:#c9d1d9;">COLOR_GUIDE.md</code> documenting neutral scale, 9 semantic hues, and usage rules.</div>
+    </div>
+    <div style="padding:16px 12px; border-radius:8px; border:1px solid #30363d; background:#161b22;">
+      <div style="font-size:16px; font-weight:800; color:#505050; margin-bottom:8px;">7</div>
+      <div style="font-size:11px; color:#e0e0e0; font-weight:600; margin-bottom:4px;">Components</div>
+      <div style="font-size:11px; color:#888;">Wire all VisualElement components to <code style="color:#c9d1d9;">--visual-*</code> semantic tokens.</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

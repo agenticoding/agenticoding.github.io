@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic Coding — Icon & Illustration Style Showcase</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: 'Monaspace Neon'; src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@v1.101/fonts/webfonts/MonaspaceNeon-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Monaspace Neon'; src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@v1.101/fonts/webfonts/MonaspaceNeon-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+
+  :root {
+    --font-display: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'Monaspace Neon', monospace;
+    --bg: #0d1117; --surface: #161b22; --surface-alt: #1c2128;
+    --border: #30363d; --border-light: #444c56;
+    --text-primary: #e8e8e8; --text-secondary: #9b9b9b; --text-muted: #666;
+    --cyan: #00b2b2; --magenta: #c07ecf; --rose: #d7799f;
+    --indigo: #53a0ec; --violet: #938eeb; --lime: #a1a22b;
+    --success: #48b475; --warning: #cd8c37; --error: #ec7069;
+    --neutral: #9b9b9b;
+    --space-1: 8px; --space-2: 16px; --space-3: 24px; --space-4: 32px;
+    --space-5: 48px; --space-6: 64px;
+    --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: #0a0a0a; color: var(--text-primary); line-height: 1.5; }
+  h1, h2, h3 { font-family: var(--font-display); }
+  .mono { font-family: var(--font-mono); font-feature-settings: 'calt' 1, 'liga' 0; }
+
+  /* Layout */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-3); }
+
+  /* Header */
+  header { text-align: center; padding: var(--space-6) var(--space-3) var(--space-5); background: var(--bg); }
+  header h1 { font-size: 40px; font-weight: 700; margin-bottom: var(--space-1); }
+  header p { color: var(--text-secondary); font-size: 16px; }
+  .pad-badge {
+    display: inline-flex; gap: var(--space-2); margin-top: var(--space-3);
+    padding: var(--space-1) var(--space-3); background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary);
+  }
+  .pad-badge span { color: var(--text-primary); font-weight: 500; }
+
+  /* Section */
+  section { padding: var(--space-5) 0; }
+  section h2 {
+    font-size: 23px; font-weight: 700; margin-bottom: var(--space-3);
+    display: flex; align-items: center; gap: var(--space-1);
+  }
+  section h2::before { content: ''; width: 3px; height: 20px; background: var(--text-muted); border-radius: 2px; }
+
+  /* Style Legend */
+  .style-legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-bottom: var(--space-5); }
+  .style-card {
+    padding: var(--space-3); background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+  }
+  .style-card h3 { font-size: 16px; margin-bottom: var(--space-1); }
+  .style-card .tag {
+    display: inline-block; padding: 2px 8px; border-radius: var(--radius-sm);
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    margin-bottom: var(--space-1);
+  }
+  .style-card p { font-size: 13px; color: var(--text-secondary); }
+  .style-card .params { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-top: var(--space-1); }
+  .tag-blueprint { background: #1a2332; color: var(--indigo); border: 1px solid #1a3a5c; }
+  .tag-smooth { background: #1a2a2a; color: var(--cyan); border: 1px solid #004747; }
+  .tag-terminal { background: #2a1a2a; color: var(--magenta); border: 1px solid #55265f; }
+
+  /* Score bars */
+  .score-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 11px; }
+  .score-label { color: var(--text-muted); width: 60px; font-family: var(--font-mono); }
+  .score-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 2px; }
+  .score-val { color: var(--text-secondary); font-family: var(--font-mono); width: 36px; text-align: right; }
+
+  /* Icon Grid */
+  .icon-grid {
+    display: grid; grid-template-columns: 100px repeat(3, 1fr);
+    gap: 1px; background: var(--border); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+  }
+  .icon-grid .col-header {
+    padding: var(--space-2); background: var(--surface-alt);
+    font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+    text-align: center; color: var(--text-secondary);
+  }
+  .icon-grid .row-label {
+    padding: var(--space-2); background: var(--surface-alt);
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .icon-cell {
+    padding: var(--space-3); background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .icon-cell svg {
+    width: 72px; height: 72px; color: var(--text-primary);
+    stroke: currentColor; fill: none;
+  }
+
+  /* Illustration Comparison */
+  .illust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+  .illust-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-md); overflow: hidden;
+  }
+  .illust-panel .panel-header {
+    padding: var(--space-1) var(--space-2);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary);
+    display: flex; align-items: center; gap: var(--space-1);
+  }
+  .illust-panel .panel-header .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .illust-panel svg { width: 100%; height: auto; display: block; color: var(--text-primary); }
+
+  /* Semantic Color Grid */
+  .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-2); }
+  .color-cell {
+    padding: var(--space-2); background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    text-align: center;
+  }
+  .color-cell svg { width: 48px; height: 48px; margin: 0 auto var(--space-1); display: block; }
+  .color-cell .label { font-family: var(--font-mono); font-size: 11px; }
+
+  /* Metrics Table */
+  .metrics-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .metrics-table th, .metrics-table td {
+    padding: var(--space-1) var(--space-2); text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .metrics-table th { color: var(--text-muted); font-weight: 500; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .metrics-table td { font-family: var(--font-mono); font-size: 13px; }
+  .metrics-table .best { color: var(--cyan); font-weight: 600; }
+  .pass { color: var(--success); }
+  .fail { color: var(--error); }
+  .info { color: var(--text-secondary); }
+
+  /* Blend */
+  .blend-banner {
+    padding: var(--space-4); background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);
+    align-items: center;
+  }
+  .blend-icons { display: flex; gap: var(--space-3); justify-content: center; }
+  .blend-icons svg { width: 64px; height: 64px; color: var(--text-primary); }
+  .blend-text h3 { font-size: 19px; margin-bottom: var(--space-1); }
+  .blend-text p { font-size: 14px; color: var(--text-secondary); }
+  .blend-formula {
+    font-family: var(--font-mono); font-size: 13px; color: var(--cyan);
+    margin-top: var(--space-2); padding: var(--space-1) var(--space-2);
+    background: rgba(0,178,178,0.08); border-radius: var(--radius-sm);
+    display: inline-block;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .style-legend, .illust-grid { grid-template-columns: 1fr; }
+    .icon-grid { grid-template-columns: 80px repeat(3, 1fr); }
+    .color-grid { grid-template-columns: repeat(3, 1fr); }
+    .blend-banner { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- HEADER                                                        -->
+<!-- ============================================================ -->
+<header>
+  <h1>Icon & Illustration Style Showcase</h1>
+  <p>Three parametric directions for the Agentic Coding design system</p>
+  <div class="pad-badge">
+    <div>P: <span>0.55</span> Medium+</div>
+    <div>A: <span>0.50</span> Medium</div>
+    <div>D: <span>0.50</span> Medium</div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- STYLE LEGEND                                                  -->
+<!-- ============================================================ -->
+<section>
+  <h2>Three Parametric Directions</h2>
+  <div class="style-legend">
+
+    <!-- Blueprint Grid -->
+    <div class="style-card">
+      <span class="tag tag-blueprint">D1</span>
+      <h3>Blueprint Grid</h3>
+      <p>IBM-style construction from strict grid shapes. High regularity, symmetry, precision. Rectangles and circles on 8px grid with orthogonal routing.</p>
+      <div class="params">n=2 (circle) / n=&infin; (rect) &middot; 90&deg; angles &middot; BK 0.56</div>
+      <div class="score-row"><span class="score-label">PAD</span><div class="score-bar"><div class="score-fill" style="width:74.8%;background:var(--indigo)"></div></div><span class="score-val">0.748</span></div>
+      <div class="score-row"><span class="score-label">Frac D</span><div class="score-bar"><div class="score-fill" style="width:72.2%;background:var(--indigo)"></div></div><span class="score-val">1.44</span></div>
+      <div class="score-row"><span class="score-label">DCM</span><div class="score-bar"><div class="score-fill" style="width:97.7%;background:var(--success)"></div></div><span class="score-val">0.23%</span></div>
+    </div>
+
+    <!-- Smooth Circuit -->
+    <div class="style-card">
+      <span class="tag tag-smooth">D2</span>
+      <h3>Smooth Circuit</h3>
+      <p>Superellipse-based shapes with smooth continuous curves. Squircles for containers, Bezier connectors. Apple-adjacent organic feel.</p>
+      <div class="params">n=3&ndash;5 (squircle) &middot; curves &middot; BK 0.64 (bouba-lean)</div>
+      <div class="score-row"><span class="score-label">PAD</span><div class="score-bar"><div class="score-fill" style="width:81.7%;background:var(--cyan)"></div></div><span class="score-val">0.817</span></div>
+      <div class="score-row"><span class="score-label">Frac D</span><div class="score-bar"><div class="score-fill" style="width:71.6%;background:var(--cyan)"></div></div><span class="score-val">1.43</span></div>
+      <div class="score-row"><span class="score-label">DCM</span><div class="score-bar"><div class="score-fill" style="width:94.9%;background:var(--success)"></div></div><span class="score-val">5.04%</span></div>
+    </div>
+
+    <!-- Terminal Geometry -->
+    <div class="style-card">
+      <span class="tag tag-terminal">D3</span>
+      <h3>Terminal Geometry</h3>
+      <p>Code-native angular vocabulary. Diamonds, chevrons, bracket syntax. Line-segment based with sharp intersections on monospace grid.</p>
+      <div class="params">n=1&ndash;1.5 (diamond) &middot; 45&deg; angles &middot; BK 0.35 (kiki)</div>
+      <div class="score-row"><span class="score-label">PAD</span><div class="score-bar"><div class="score-fill" style="width:82.7%;background:var(--magenta)"></div></div><span class="score-val">0.827</span></div>
+      <div class="score-row"><span class="score-label">Frac D</span><div class="score-bar"><div class="score-fill" style="width:73.9%;background:var(--magenta)"></div></div><span class="score-val">1.48</span></div>
+      <div class="score-row"><span class="score-label">DCM</span><div class="score-bar"><div class="score-fill" style="width:99.8%;background:var(--success)"></div></div><span class="score-val">0.16%</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- ICON COMPARISON GRID                                          -->
+<!-- ============================================================ -->
+<section>
+  <h2>Icon Comparison</h2>
+  <div class="icon-grid">
+    <!-- Column Headers -->
+    <div class="col-header" style="background:transparent"></div>
+    <div class="col-header"><span class="tag tag-blueprint" style="font-size:11px">D1</span> Blueprint Grid</div>
+    <div class="col-header"><span class="tag tag-smooth" style="font-size:11px">D2</span> Smooth Circuit</div>
+    <div class="col-header"><span class="tag tag-terminal" style="font-size:11px">D3</span> Terminal Geometry</div>
+
+    <!-- ROW 1: Node -->
+    <div class="row-label">Node</div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5">
+        <rect x="8" y="8" width="32" height="32"/>
+        <circle cx="24" cy="24" r="6" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5">
+        <rect x="8" y="8" width="32" height="32" rx="10"/>
+        <circle cx="24" cy="24" r="5" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5">
+        <polygon points="24,6 42,24 24,42 6,24"/>
+        <polygon points="24,16 32,24 24,32 16,24" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+
+    <!-- ROW 2: Loop -->
+    <div class="row-label">Loop</div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linejoin="miter">
+        <polyline points="16,10 38,10 38,38 10,38 10,18"/>
+        <polygon points="6,18 10,10 14,18" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round">
+        <path d="M24,8 A16,16 0 1,1 8,24"/>
+        <polygon points="4,22 8,14 12,24" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter">
+        <polyline points="24,6 40,16 40,32 24,42 8,32 8,18"/>
+        <polygon points="8,18 16,12 14,22" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+
+    <!-- ROW 3: Code -->
+    <div class="row-label">Code</div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linejoin="miter">
+        <polyline points="16,8 8,8 8,40 16,40"/>
+        <polyline points="32,8 40,8 40,40 32,40"/>
+        <line x1="14" y1="18" x2="34" y2="18" stroke-width="2"/>
+        <line x1="14" y1="24" x2="28" y2="24" stroke-width="2"/>
+        <line x1="14" y1="30" x2="22" y2="30" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round">
+        <path d="M16,8 Q8,8 8,16 L8,32 Q8,40 16,40"/>
+        <path d="M32,8 Q40,8 40,16 L40,32 Q40,40 32,40"/>
+        <line x1="14" y1="18" x2="34" y2="18" stroke-width="2"/>
+        <line x1="14" y1="24" x2="28" y2="24" stroke-width="2"/>
+        <line x1="14" y1="30" x2="22" y2="30" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter">
+        <polyline points="18,8 6,24 18,40"/>
+        <polyline points="30,8 42,24 30,40"/>
+        <line x1="18" y1="20" x2="30" y2="20" stroke-width="2"/>
+        <line x1="18" y1="28" x2="26" y2="28" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <!-- ROW 4: Arrow / Flow -->
+    <div class="row-label">Flow</div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5">
+        <circle cx="10" cy="24" r="6"/>
+        <circle cx="38" cy="24" r="6"/>
+        <line x1="16" y1="24" x2="32" y2="24" stroke-width="2"/>
+        <polygon points="32,21 32,27 35,24" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round">
+        <circle cx="10" cy="24" r="6"/>
+        <circle cx="38" cy="24" r="6"/>
+        <path d="M16,24 C22,18 26,30 32,24" stroke-width="2"/>
+        <polygon points="32,21 32,27 35,24" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linejoin="miter">
+        <polygon points="10,18 16,24 10,30 4,24"/>
+        <polygon points="38,18 44,24 38,30 32,24"/>
+        <polyline points="16,24 24,18 32,24" stroke-linecap="square"/>
+        <polygon points="30,22 32,24 30,26" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+
+    <!-- ROW 5: Stack / Context -->
+    <div class="row-label">Stack</div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2">
+        <rect x="10" y="6" width="28" height="12" opacity="0.35"/>
+        <rect x="10" y="18" width="28" height="12" opacity="0.55"/>
+        <rect x="10" y="30" width="28" height="12" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2" stroke-linecap="round">
+        <rect x="10" y="6" width="28" height="12" rx="5" opacity="0.35"/>
+        <rect x="10" y="18" width="28" height="12" rx="5" opacity="0.55"/>
+        <rect x="10" y="30" width="28" height="12" rx="5" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2" stroke-linejoin="miter">
+        <polygon points="24,4 38,12 24,20 10,12" opacity="0.35"/>
+        <polygon points="24,16 38,24 24,32 10,24" opacity="0.55"/>
+        <polygon points="24,28 38,36 24,44 10,36" stroke-width="2.5"/>
+      </svg>
+    </div>
+
+    <!-- ROW 6: Check -->
+    <div class="row-label">Check</div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5">
+        <rect x="8" y="8" width="32" height="32"/>
+        <polyline points="15,24 22,32 34,16" stroke-width="3"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="24" cy="24" r="16"/>
+        <polyline points="15,24 22,32 34,16" stroke-width="3"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linejoin="miter">
+        <polygon points="24,6 42,24 24,42 6,24"/>
+        <polyline points="15,24 22,32 34,16" stroke-width="3" stroke-linecap="square"/>
+      </svg>
+    </div>
+
+    <!-- ROW 7: Shield / Security -->
+    <div class="row-label">Shield</div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linejoin="miter">
+        <path d="M24,6 L40,14 L40,28 L24,42 L8,28 L8,14 Z"/>
+        <line x1="24" y1="18" x2="24" y2="30" stroke-width="2.5"/>
+        <circle cx="24" cy="33" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24,6 Q40,14 40,28 Q40,36 24,42 Q8,36 8,28 Q8,14 24,6 Z"/>
+        <line x1="24" y1="18" x2="24" y2="30" stroke-width="2.5"/>
+        <circle cx="24" cy="33" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linejoin="miter" stroke-linecap="square">
+        <polyline points="24,6 40,14 40,28 24,42 8,28 8,14 24,6"/>
+        <line x1="24" y1="18" x2="24" y2="30" stroke-width="2.5"/>
+        <polygon points="22.5,32 25.5,32 24,34.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+
+    <!-- ROW 8: Lightning / Action -->
+    <div class="row-label">Action</div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linejoin="miter">
+        <polygon points="28,6 12,26 22,26 20,42 36,22 26,22" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M28,6 Q22,16 14,26 L22,26 Q18,34 20,42 Q30,30 36,22 L26,22 Q30,14 28,6 Z" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="icon-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linejoin="miter">
+        <polygon points="28,6 12,26 22,26 20,42 36,22 26,22" fill="none"/>
+        <line x1="24" y1="14" x2="24" y2="34" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- ILLUSTRATION COMPARISON                                       -->
+<!-- ============================================================ -->
+<section>
+  <h2>Illustration: Agent Workflow</h2>
+  <p style="color:var(--text-secondary);font-size:14px;margin-bottom:var(--space-3)">
+    Human &rarr; Agent &rarr; Output — each rendered in the three parametric styles.
+  </p>
+  <div class="illust-grid">
+
+    <!-- Blueprint Grid Illustration -->
+    <div class="illust-panel">
+      <div class="panel-header"><div class="dot" style="background:var(--indigo)"></div> Blueprint Grid</div>
+      <svg viewBox="0 0 480 160" style="padding:16px;color:var(--text-primary)" stroke="currentColor" fill="none" stroke-width="2">
+        <!-- Human Node (rectangle) -->
+        <rect x="24" y="42" width="72" height="56" stroke-width="2.5"/>
+        <circle cx="60" cy="62" r="8" fill="currentColor" stroke="none" opacity="0.4"/>
+        <text x="60" y="114" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Human</text>
+
+        <!-- Connector 1 -->
+        <line x1="96" y1="70" x2="188" y2="70" stroke-width="2"/>
+        <polygon points="188,66 188,74 196,70" fill="currentColor" stroke="none"/>
+
+        <!-- Agent Node (rectangle, larger) -->
+        <rect x="196" y="34" width="88" height="64" stroke-width="2.5"/>
+        <circle cx="240" cy="58" r="6" fill="currentColor" stroke="none" opacity="0.4"/>
+        <rect x="224" y="72" width="32" height="4" fill="currentColor" stroke="none" opacity="0.3"/>
+        <text x="240" y="114" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Agent</text>
+
+        <!-- Connector 2 -->
+        <line x1="284" y1="70" x2="376" y2="70" stroke-width="2"/>
+        <polygon points="376,66 376,74 384,70" fill="currentColor" stroke="none"/>
+
+        <!-- Output Node (rectangle) -->
+        <rect x="384" y="42" width="72" height="56" stroke-width="2.5"/>
+        <line x1="400" y1="58" x2="440" y2="58" stroke-width="2" opacity="0.4"/>
+        <line x1="400" y1="68" x2="432" y2="68" stroke-width="2" opacity="0.3"/>
+        <line x1="400" y1="78" x2="424" y2="78" stroke-width="2" opacity="0.2"/>
+        <text x="420" y="114" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Output</text>
+      </svg>
+    </div>
+
+    <!-- Smooth Circuit Illustration -->
+    <div class="illust-panel">
+      <div class="panel-header"><div class="dot" style="background:var(--cyan)"></div> Smooth Circuit</div>
+      <svg viewBox="0 0 480 160" style="padding:16px;color:var(--text-primary)" stroke="currentColor" fill="none" stroke-width="2">
+        <!-- Human Node (squircle) -->
+        <rect x="24" y="42" width="72" height="56" rx="16" stroke-width="2.5"/>
+        <circle cx="60" cy="62" r="8" fill="currentColor" stroke="none" opacity="0.4"/>
+        <text x="60" y="114" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Human</text>
+
+        <!-- Connector 1 (Bezier curve) -->
+        <path d="M96,70 C120,50 168,90 196,70" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="192,66 196,70 192,74" fill="currentColor" stroke="none"/>
+
+        <!-- Agent Node (squircle, larger) -->
+        <rect x="196" y="34" width="88" height="64" rx="18" stroke-width="2.5"/>
+        <circle cx="240" cy="58" r="6" fill="currentColor" stroke="none" opacity="0.4"/>
+        <path d="M222,76 Q232,80 240,76 Q248,72 258,76" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+        <text x="240" y="114" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Agent</text>
+
+        <!-- Connector 2 (Bezier curve) -->
+        <path d="M284,70 C308,90 356,50 384,70" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="380,66 384,70 380,74" fill="currentColor" stroke="none"/>
+
+        <!-- Output Node (squircle) -->
+        <rect x="384" y="42" width="72" height="56" rx="16" stroke-width="2.5"/>
+        <line x1="400" y1="58" x2="440" y2="58" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+        <line x1="400" y1="68" x2="432" y2="68" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+        <line x1="400" y1="78" x2="424" y2="78" stroke-width="2" stroke-linecap="round" opacity="0.2"/>
+        <text x="420" y="114" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Output</text>
+      </svg>
+    </div>
+
+    <!-- Terminal Geometry Illustration -->
+    <div class="illust-panel">
+      <div class="panel-header"><div class="dot" style="background:var(--magenta)"></div> Terminal Geometry</div>
+      <svg viewBox="0 0 480 160" style="padding:16px;color:var(--text-primary)" stroke="currentColor" fill="none" stroke-width="2">
+        <!-- Human Node (diamond) -->
+        <polygon points="60,34 96,70 60,106 24,70" stroke-width="2.5" stroke-linejoin="miter"/>
+        <polygon points="60,58 72,70 60,82 48,70" fill="currentColor" stroke="none" opacity="0.3"/>
+        <text x="60" y="122" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Human</text>
+
+        <!-- Connector 1 (angular) -->
+        <polyline points="96,70 140,50 196,70" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+        <polygon points="192,66 196,70 192,74" fill="currentColor" stroke="none"/>
+
+        <!-- Agent Node (larger diamond) -->
+        <polygon points="240,26 288,70 240,114 192,70" stroke-width="2.5" stroke-linejoin="miter"/>
+        <polyline points="226,64 240,52 254,64" stroke-width="2" opacity="0.4" stroke-linecap="square"/>
+        <line x1="226" y1="78" x2="254" y2="78" stroke-width="2" opacity="0.3"/>
+        <text x="240" y="130" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Agent</text>
+
+        <!-- Connector 2 (angular) -->
+        <polyline points="288,70 332,90 384,70" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+        <polygon points="380,66 384,70 380,74" fill="currentColor" stroke="none"/>
+
+        <!-- Output Node (diamond) -->
+        <polygon points="420,34 456,70 420,106 384,70" stroke-width="2.5" stroke-linejoin="miter"/>
+        <line x1="406" y1="62" x2="434" y2="62" stroke-width="2" opacity="0.4"/>
+        <line x1="410" y1="70" x2="430" y2="70" stroke-width="2" opacity="0.3"/>
+        <line x1="412" y1="78" x2="428" y2="78" stroke-width="2" opacity="0.2"/>
+        <text x="420" y="122" text-anchor="middle" fill="currentColor" stroke="none" font-family="'Monaspace Neon',monospace" font-size="11" opacity="0.6">Output</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SEMANTIC COLORS                                               -->
+<!-- ============================================================ -->
+<section>
+  <h2>Semantic Color Application</h2>
+  <p style="color:var(--text-secondary);font-size:14px;margin-bottom:var(--space-3)">
+    Same icon form, colored by semantic role. Shown in D2 (Smooth Circuit) style.
+  </p>
+  <div class="color-grid">
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--error)">
+        <circle cx="24" cy="24" r="16" stroke="currentColor" fill="none"/>
+        <line x1="16" y1="16" x2="32" y2="32" stroke="currentColor"/>
+        <line x1="32" y1="16" x2="16" y2="32" stroke="currentColor"/>
+      </svg>
+      <div class="label" style="color:var(--error)">Error</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--warning)">
+        <polygon points="24,8 42,40 6,40" stroke="currentColor" fill="none"/>
+        <line x1="24" y1="20" x2="24" y2="30" stroke="currentColor" stroke-width="3"/>
+        <circle cx="24" cy="35" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+      <div class="label" style="color:var(--warning)">Warning</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--success)">
+        <circle cx="24" cy="24" r="16" stroke="currentColor" fill="none"/>
+        <polyline points="15,24 22,32 34,16" stroke="currentColor" stroke-width="3"/>
+      </svg>
+      <div class="label" style="color:var(--success)">Success</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan)">
+        <rect x="8" y="8" width="32" height="32" rx="10" stroke="currentColor" fill="none"/>
+        <circle cx="24" cy="24" r="5" fill="currentColor" stroke="none"/>
+      </svg>
+      <div class="label" style="color:var(--cyan)">System</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--indigo)">
+        <rect x="8" y="8" width="32" height="32" rx="10" stroke="currentColor" fill="none"/>
+        <line x1="14" y1="18" x2="34" y2="18" stroke="currentColor" stroke-width="2"/>
+        <line x1="14" y1="24" x2="28" y2="24" stroke="currentColor" stroke-width="2"/>
+        <line x1="14" y1="30" x2="22" y2="30" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <div class="label" style="color:var(--indigo)">Knowledge</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--violet)">
+        <circle cx="24" cy="24" r="16" stroke="currentColor" fill="none"/>
+        <path d="M16,24 Q20,16 24,24 Q28,32 32,24" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <div class="label" style="color:var(--violet)">AI Transform</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--magenta)">
+        <path d="M24,8 A16,16 0 1,1 8,24" stroke="currentColor" fill="none"/>
+        <polygon points="4,22 8,14 12,24" fill="currentColor" stroke="none"/>
+      </svg>
+      <div class="label" style="color:var(--magenta)">AI Creative</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--rose)">
+        <circle cx="24" cy="16" r="8" stroke="currentColor" fill="none"/>
+        <path d="M12,40 Q12,28 24,28 Q36,28 36,40" stroke="currentColor" fill="none"/>
+      </svg>
+      <div class="label" style="color:var(--rose)">Human</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--lime)">
+        <rect x="8" y="12" width="32" height="24" rx="10" stroke="currentColor" fill="none"/>
+        <rect x="12" y="28" width="18" height="6" rx="3" fill="currentColor" stroke="none" opacity="0.4"/>
+      </svg>
+      <div class="label" style="color:var(--lime)">Progress</div>
+    </div>
+    <div class="color-cell">
+      <svg viewBox="0 0 48 48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--neutral)">
+        <circle cx="24" cy="24" r="16" stroke="currentColor" fill="none"/>
+        <circle cx="24" cy="20" r="2" fill="currentColor" stroke="none"/>
+        <line x1="24" y1="26" x2="24" y2="34" stroke="currentColor" stroke-width="2.5"/>
+      </svg>
+      <div class="label" style="color:var(--neutral)">Info</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- METRICS TABLE                                                 -->
+<!-- ============================================================ -->
+<section>
+  <h2>Computed Validation Metrics</h2>
+  <div style="overflow-x:auto">
+  <table class="metrics-table">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Threshold</th>
+        <th>D1 Blueprint</th>
+        <th>D2 Smooth</th>
+        <th>D3 Terminal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>PAD Alignment</td>
+        <td class="info">&gt; 0.80</td>
+        <td>0.748</td>
+        <td>0.817</td>
+        <td class="best">0.827</td>
+      </tr>
+      <tr>
+        <td>Fractal Dimension D</td>
+        <td class="pass">1.2 &ndash; 1.6</td>
+        <td class="pass">1.44 &#10003;</td>
+        <td class="pass">1.43 &#10003;</td>
+        <td class="pass best">1.48 &#10003;</td>
+      </tr>
+      <tr>
+        <td>DCM (balance)</td>
+        <td class="pass">&lt; 10%</td>
+        <td class="pass">0.23% &#10003;</td>
+        <td class="pass">5.04% &#10003;</td>
+        <td class="pass best">0.16% &#10003;</td>
+      </tr>
+      <tr>
+        <td>Shannon Entropy H/H<sub>max</sub></td>
+        <td class="info">info</td>
+        <td>0.859</td>
+        <td class="best">0.910</td>
+        <td>0.877</td>
+      </tr>
+      <tr>
+        <td>Aesthetic Measure</td>
+        <td class="info">&gt; 1.0</td>
+        <td class="fail">0.75</td>
+        <td>0.99</td>
+        <td>0.99</td>
+      </tr>
+      <tr>
+        <td>Berlyne Position</td>
+        <td class="pass">optimal</td>
+        <td class="info">near-optimal</td>
+        <td class="pass best">optimal &#10003;</td>
+        <td class="pass best">optimal &#10003;</td>
+      </tr>
+      <tr>
+        <td>Bouba/Kiki</td>
+        <td class="info">0 = kiki, 1 = bouba</td>
+        <td>0.56 (mixed)</td>
+        <td>0.64 (bouba)</td>
+        <td>0.35 (kiki)</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">Composite Score</td>
+        <td></td>
+        <td>79.0</td>
+        <td>100.4</td>
+        <td class="best">104.0</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- BLEND RECOMMENDATION                                          -->
+<!-- ============================================================ -->
+<section>
+  <h2>Recommended Blend</h2>
+  <div class="blend-banner">
+    <div class="blend-icons">
+      <!-- Blended Node: squircle container + diamond inner -->
+      <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round">
+        <rect x="8" y="8" width="32" height="32" rx="10"/>
+        <polygon points="24,16 32,24 24,32 16,24" fill="currentColor" stroke="none" opacity="0.5"/>
+      </svg>
+      <!-- Blended Loop: smooth arc + angular arrow -->
+      <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round">
+        <path d="M24,8 A16,16 0 1,1 8,24"/>
+        <polygon points="4,22 10,14 12,24" fill="currentColor" stroke="none"/>
+      </svg>
+      <!-- Blended Code: rounded brackets + angular internals -->
+      <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round">
+        <path d="M16,8 Q8,8 8,16 L8,32 Q8,40 16,40"/>
+        <path d="M32,8 Q40,8 40,16 L40,32 Q40,40 32,40"/>
+        <polyline points="14,20 22,20 26,16" stroke-width="2" stroke-linecap="square"/>
+        <line x1="14" y1="28" x2="28" y2="28" stroke-width="2"/>
+      </svg>
+      <!-- Blended Flow: circles + angular connector -->
+      <svg viewBox="0 0 48 48" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round">
+        <circle cx="10" cy="24" r="6"/>
+        <circle cx="38" cy="24" r="6"/>
+        <polyline points="16,24 24,18 32,24" stroke-width="2" stroke-linecap="square"/>
+        <polygon points="30,22 32,24 30,26" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="blend-text">
+      <h3>60% Smooth Circuit + 40% Terminal Geometry</h3>
+      <p>
+        Squircle containers (n=3&ndash;4) provide pleasure-axis warmth. Angular chevrons and diamond accents provide arousal-axis technical identity.
+        Curved forms for positive-valence elements (success, AI, system); angular forms for high-arousal states (error, warning, code).
+      </p>
+      <div class="blend-formula">PAD alignment = 0.937 &middot; P=0.55 A=0.51 D=0.52</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- PARAMETRIC REFERENCE                                          -->
+<!-- ============================================================ -->
+<section style="padding-bottom:var(--space-6)">
+  <h2>Parametric Reference</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-2)">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3)">
+      <h3 style="font-size:14px;margin-bottom:var(--space-1);color:var(--text-secondary)">Superellipse</h3>
+      <div class="mono" style="font-size:12px;color:var(--text-muted);line-height:1.6">
+        |x/a|<sup>n</sup> + |y/b|<sup>n</sup> = 1<br>
+        n=1 &rarr; diamond<br>
+        n=2 &rarr; ellipse<br>
+        n=4 &rarr; squircle<br>
+        n&rarr;&infin; &rarr; rectangle
+      </div>
+      <div style="display:flex;gap:8px;margin-top:var(--space-2);justify-content:center">
+        <svg viewBox="0 0 48 48" width="40" height="40" stroke="var(--text-muted)" fill="none" stroke-width="1.5"><polygon points="24,6 42,24 24,42 6,24"/></svg>
+        <svg viewBox="0 0 48 48" width="40" height="40" stroke="var(--text-muted)" fill="none" stroke-width="1.5"><circle cx="24" cy="24" r="18"/></svg>
+        <svg viewBox="0 0 48 48" width="40" height="40" stroke="var(--text-muted)" fill="none" stroke-width="1.5"><rect x="6" y="6" width="36" height="36" rx="10"/></svg>
+        <svg viewBox="0 0 48 48" width="40" height="40" stroke="var(--text-muted)" fill="none" stroke-width="1.5"><rect x="6" y="6" width="36" height="36"/></svg>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3)">
+      <h3 style="font-size:14px;margin-bottom:var(--space-1);color:var(--text-secondary)">Angles</h3>
+      <div class="mono" style="font-size:12px;color:var(--text-muted);line-height:1.6">
+        Preferred: 15&deg; 30&deg; 45&deg; 60&deg; 75&deg; 90&deg;<br>
+        D1: 90&deg; only (orthogonal)<br>
+        D2: continuous (Bezier)<br>
+        D3: 45&deg; primary (diagonal grid)
+      </div>
+      <div style="display:flex;gap:8px;margin-top:var(--space-2);justify-content:center">
+        <svg viewBox="0 0 48 48" width="40" height="40" stroke="var(--text-muted)" fill="none" stroke-width="1.5"><line x1="8" y1="24" x2="40" y2="24"/><line x1="24" y1="8" x2="24" y2="40"/></svg>
+        <svg viewBox="0 0 48 48" width="40" height="40" stroke="var(--text-muted)" fill="none" stroke-width="1.5"><path d="M8,40 C16,8 32,8 40,40" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 48 48" width="40" height="40" stroke="var(--text-muted)" fill="none" stroke-width="1.5"><line x1="8" y1="40" x2="40" y2="8"/><line x1="8" y1="8" x2="40" y2="40"/></svg>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3)">
+      <h3 style="font-size:14px;margin-bottom:var(--space-1);color:var(--text-secondary)">Grid</h3>
+      <div class="mono" style="font-size:12px;color:var(--text-muted);line-height:1.6">
+        Base unit: 8px<br>
+        Min feature: 8px (1 unit)<br>
+        Min gap: 8px (1 unit)<br>
+        Icon canvas: 48px (6 units)<br>
+        All anchors grid-snapped
+      </div>
+      <div style="display:flex;gap:8px;margin-top:var(--space-2);justify-content:center">
+        <svg viewBox="0 0 48 48" width="40" height="40" stroke="var(--border)" fill="none" stroke-width="0.5">
+          <line x1="8" y1="0" x2="8" y2="48"/><line x1="16" y1="0" x2="16" y2="48"/><line x1="24" y1="0" x2="24" y2="48"/><line x1="32" y1="0" x2="32" y2="48"/><line x1="40" y1="0" x2="40" y2="48"/>
+          <line y1="8" x1="0" y2="8" x2="48"/><line y1="16" x1="0" y2="16" x2="48"/><line y1="24" x1="0" y2="24" x2="48"/><line y1="32" x1="0" y2="32" x2="48"/><line y1="40" x1="0" y2="40" x2="48"/>
+          <circle cx="24" cy="24" r="2" fill="var(--text-muted)" stroke="none"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</body>
+</html>
