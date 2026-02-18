@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-labelledby="title desc" role="img">
-  <title>AI Coding Course — Agent Loop Icon</title>
-  <desc>Minimal agent loop with a node. Purple loop + fuchsia node, theme-aware.</desc>
+  <title>Agentic Coding</title>
+  <desc>Code glyph mark. Achromatic, theme-aware.</desc>
 
-  <!-- Theme-aware color system -->
   <style>
-    /* Light mode colors */
-    .loop { stroke: #7c3aed; }  /* Purple */
-    .node { fill: #ec4899; }    /* Fuchsia */
-
-    /* Dark mode colors */
+    .s { stroke: #2b2b2b; fill: none; }
     @media (prefers-color-scheme: dark) {
-      .loop { stroke: #a78bfa; }  /* Bright purple */
-      .node { fill: #f472b6; }    /* Bright fuchsia */
+      .s { stroke: #e8e8e8; }
     }
   </style>
 
-  <!-- Gapped loop -->
-  <g fill="none" stroke-width="6" stroke-linecap="round">
-    <circle cx="32" cy="32" r="18" stroke-dasharray="90 30" stroke-dashoffset="10" class="loop"/>
+  <g stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 20 L12 32 L24 44" class="s"/>
+    <line x1="36" y1="16" x2="28" y2="48" class="s"/>
+    <path d="M40 20 L52 32 L40 44" class="s"/>
   </g>
-
-  <!-- Node (cursor / agent) -->
-  <rect x="44" y="16" width="8" height="8" rx="2" ry="2" class="node"/>
 </svg>
