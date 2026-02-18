@@ -4,180 +4,311 @@
  * work well for content-centric websites.
  */
 
+/* Self-hosted font faces */
+@import './fonts.css';
+
 /* Import unified presentation system */
 @import '../styles/presentation-system.css';
 
 /* ========================================================================
-   AI CODING COURSE - COLOR SYSTEM (Single Source of Truth)
+   AGENTIC CODING — DESIGN TOKEN SYSTEM (Single Source of Truth)
    ========================================================================
 
-   All colors are defined here using a token-based system.
-   Components and content should ONLY reference these CSS variables,
-   never use hardcoded color values.
+   Token Architecture (per DESIGN_SYSTEM.md):
+   1. Primitive — Raw palette values (--neutral-*, brand hex)
+   2. Semantic — UI surfaces, text, borders, illustration (--surface-*, --text-*, --visual-*)
+   3. Component — Per-component overrides (in .module.css files)
 
-   Color System Structure:
-   1. Brand Colors - Purple AI theme for primary/interactive elements
-   2. Semantic Colors - Success, warning, error, info (readable with purple)
-   3. Gradient Endpoints - For minimal accent gradients
-   4. Infima Mapping - Maps brand colors to Docusaurus theme
-   5. Visual Element Colors - For interactive components and diagrams
+   Color System:
+   - Achromatic base (C:0.000) — no tinted neutrals
+   - 9 chromatic hues with equal standing — no privileged brand hue
+   - Color = meaning — every hue use answers "what does this hue mean here?"
+   - 60-30-10 budget — 60% achromatic, 30% elevated gray, 10% semantic color
 
-   WCAG Accessibility Compliance:
-   - All text colors meet WCAG AA minimum (4.5:1 contrast for normal text)
-   - Large text and UI components meet 3:1 minimum
-   - Purple brand color (4.84:1 on white) used only for accents, not body text
-   - Colorblind-safe: No critical information conveyed by color alone
-   - All interactive elements have non-color indicators (text, icons, patterns)
+   Style constraint: Flat only — no gradients, no shadows, no glows.
+   Solid colors, clean borders, whitespace hierarchy.
 
-   Dark Mode: All colors have optimized variants in [data-theme='dark']
-   Tested with: WebAIM Contrast Checker, Chrome DevTools colorblind simulation
+   WCAG Accessibility:
+   - Shade-600 on white >= 4.5:1 (light mode text)
+   - Shade-400 on #0d1117 >= 4.5:1 (dark mode text)
+   - Redundant encoding: every color signal has a non-color indicator
+
    ======================================================================== */
 
 :root {
-  /* === BRAND COLORS - Purple AI Theme === */
-  /* WCAG: #7c3aed on white = 4.84:1 (AA Pass for normal text) */
-  /* Use only for accents, borders, badges - NOT body text */
-  --brand-primary: #7c3aed; /* Rich violet - main brand color */
-  --brand-primary-dark: #6d28d9; /* Deeper violet - hover states */
-  --brand-primary-darker: #6020c0; /* Even deeper - active states */
-  --brand-primary-darkest: #5b21b6; /* Maximum depth - pressed states */
-  --brand-primary-light: #8b5cf6; /* Lighter violet - accents */
-  --brand-primary-lighter: #a78bfa; /* Soft violet - highlights */
-  --brand-primary-lightest: #c4b5fd; /* Pale violet - subtle backgrounds */
+  /* === NEUTRAL SCALE — Pure achromatic (C:0.000) === */
+  --neutral-50: #f5f5f5;
+  --neutral-100: #e8e8e8;
+  --neutral-200: #d4d4d4;
+  --neutral-300: #b7b7b7;
+  --neutral-400: #9b9b9b;
+  --neutral-500: #808080;
+  --neutral-600: #666666;
+  --neutral-700: #505050;
+  --neutral-800: #3d3d3d;
+  --neutral-900: #2b2b2b;
+  --neutral-950: #222222;
 
-  /* === SEMANTIC COLORS - Colorblind-Safe & WCAG Compliant === */
-  /* Cyan/Orange/Rose are distinguishable for most types of colorblindness */
-  /* Always paired with icons, text labels, or patterns for accessibility */
-  --semantic-success: #06b6d4; /* Cyan - distinguishable from red/green for protanopia/deuteranopia */
-  --semantic-warning: #f97316; /* Rose-orange - warm accent, distinguishable from blue */
-  --semantic-error: #e11d48; /* Rose-red - distinct from green for colorblind users */
-  --semantic-info: #3b82f6; /* Violet-blue - analogous to purple */
-  --semantic-neutral: #64748b; /* Slate - cool gray with purple tint */
+  /* === TYPOGRAPHY === */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'Monaspace Neon', monospace;
+  --font-mono-ai: 'Monaspace Argon', var(--font-mono);
+  --font-mono-spec: 'Monaspace Xenon', var(--font-mono);
+  --font-mono-human: 'Monaspace Radon', var(--font-mono);
+  --font-mono-keyword: 'Monaspace Krypton', var(--font-mono);
+  --font-mono-features: 'calt' 1, 'liga' 0;
 
-  /* === GRADIENT ENDPOINTS - Harmonized Purple-Tinted === */
-  --gradient-warm-end: #ec4899; /* Fuchsia - purple harmony */
-  --gradient-warning-end: #fb923c; /* Rose-orange - matches warning */
-  --gradient-critical-end: #fb7185; /* Rose-pink - matches error */
+  /* === SPATIAL SYSTEM — 8px base grid === */
+  --space-0: 0px;
+  --space-px: 1px;
+  --space-0h: 4px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --space-7: 80px;
+  --space-8: 96px;
+  --space-9: 128px;
+  --space-10: 160px;
 
-  /* === MAP TO INFIMA (Docusaurus Framework) === */
-  --ifm-color-primary: var(--brand-primary);
-  --ifm-color-primary-dark: var(--brand-primary-dark);
-  --ifm-color-primary-darker: var(--brand-primary-darker);
-  --ifm-color-primary-darkest: var(--brand-primary-darkest);
-  --ifm-color-primary-light: var(--brand-primary-light);
-  --ifm-color-primary-lighter: var(--brand-primary-lighter);
-  --ifm-color-primary-lightest: var(--brand-primary-lightest);
+  /* === TYPE SCALE — Minor Third (1.200), base 16px === */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 16px;
+  --text-lg: 19px;
+  --text-xl: 23px;
+  --text-2xl: 28px;
+  --text-3xl: 33px;
+  --text-4xl: 40px;
+  --text-5xl: 48px;
 
-  /* === VISUAL ELEMENT COLORS - For Interactive Components === */
-  --visual-workflow: var(--brand-primary); /* Purple for AI workflows/agents */
-  --visual-capability: var(
-    --semantic-success
-  ); /* Green for capabilities/success */
-  --visual-limitation: var(
-    --semantic-warning
-  ); /* Amber for limitations/warnings */
-  --visual-decision: var(
-    --brand-primary-light
-  ); /* Light purple for decision points */
-  --visual-error: var(--semantic-error); /* Red for errors/critical */
-  --visual-neutral: var(--semantic-neutral); /* Gray for neutral states */
+  /* === LINE HEIGHTS — 8px-snapped === */
+  --lh-tight: 16px;
+  --lh-sm: 24px;
+  --lh-lg: 32px;
+  --lh-2xl: 40px;
+  --lh-3xl: 48px;
+  --lh-4xl: 56px;
 
-  /* === VISUAL ELEMENT BACKGROUNDS - Transparent Variants === */
-  --visual-bg-workflow: rgba(124, 58, 237, 0.1); /* Purple tint */
-  --visual-bg-capability: rgba(6, 182, 212, 0.1); /* Cyan tint */
-  --visual-bg-limitation: rgba(249, 115, 22, 0.1); /* Rose-orange tint */
-  --visual-bg-decision: rgba(139, 92, 246, 0.1); /* Light purple tint */
-  --visual-bg-error: rgba(225, 29, 72, 0.1); /* Rose-red tint */
+  /* === BORDER RADIUS === */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* === STROKE WEIGHT SCALE — SVG illustration strokes === */
+  --stroke-fine: 1px;
+  --stroke-light: 1.5px;
+  --stroke-default: 2px;
+  --stroke-medium: 2.5px;
+  --stroke-heavy: 3px;
+  --stroke-accent: 4px;
+
+  /* === ICON CANVAS — Square viewBox sizes === */
+  --icon-sm: 16px;
+  --icon-md: 24px;
+  --icon-lg: 32px;
+  --icon-xl: 48px;
+  --icon-2xl: 64px;
+
+  /* === INTERACTIVE TARGET SIZES === */
+  --target-sm: 32px;
+  --target-md: 40px;
+  --target-lg: 48px;
+  --target-xl: 56px;
+
+  --ifm-font-family-base: var(--font-body);
+  --ifm-heading-font-family: var(--font-display);
+  --ifm-font-family-monospace: var(--font-mono);
+
+  /* === NAVBAR — Flat, line-based (Design System rule #4) === */
+  --ifm-navbar-background-color: var(--surface-page);
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-height: var(--space-7);              /* 80px — 8px grid */
+  --ifm-navbar-padding-horizontal: var(--space-5);  /* 48px */
+  --ifm-navbar-padding-vertical: 0;
+  --ifm-navbar-item-padding-horizontal: var(--space-2); /* 16px */
+  --ifm-navbar-item-padding-vertical: 0;
+  --ifm-navbar-link-color: var(--text-body);
+  --ifm-navbar-link-hover-color: var(--text-heading);
+
+  /* === SURFACE / TEXT / BORDER — Semantic layout tokens === */
+  --surface-page: #ffffff;
+  --surface-raised: var(--neutral-50);   /* #f5f5f5 */
+  --surface-muted: var(--neutral-100);   /* #e8e8e8 */
+  --text-heading: var(--neutral-900);    /* #2b2b2b */
+  --text-body: var(--neutral-700);       /* #505050 */
+  --text-muted: var(--neutral-500);      /* #808080 */
+  --border-default: var(--neutral-200);  /* #d4d4d4 */
+
+  /* Map to Infima layout variables */
+  --ifm-background-color: var(--surface-page);
+  --ifm-background-surface-color: var(--surface-raised);
+
+  /* === UTILITY TOKENS === */
+  --code-bg: var(--neutral-50);
+  --text-subtle: var(--neutral-500);
+  --icon-star: #e6aa63; /* warning-300 */
+
+  /* === CHROMATIC PRIMITIVES — Raw palette values === */
+  --cyan-300: #2ad0d0;
+  --cyan-400: #00b2b2;
+  --cyan-600: #007576;
+  --cyan-700: #005c5c;
+
+  /* === SEMANTIC COLORS === */
+  --semantic-success: #007a44;  /* Success-600 (H:155°) */
+  --semantic-warning: #8e5900;  /* Warning-600 (H:70°) */
+  --semantic-error: #ad3735;    /* Error-600 (H:25°) */
+  --semantic-info: #1369b0;     /* Indigo-600 (H:250°) */
+  --semantic-neutral: #666666;  /* Neutral-600 */
+
+  /* === MAP TO INFIMA (Docusaurus Framework) — Neutral primary === */
+  --ifm-color-primary: var(--neutral-900);
+  --ifm-color-primary-dark: var(--neutral-950);
+  --ifm-color-primary-darker: var(--neutral-950);
+  --ifm-color-primary-darkest: #000000;
+  --ifm-color-primary-light: var(--neutral-800);
+  --ifm-color-primary-lighter: var(--neutral-700);
+  --ifm-color-primary-lightest: var(--neutral-600);
+
+  /* === VISUAL ELEMENT COLORS — Diagram & illustration palette ===
+     Role names for universal UI concepts (error, warning, success).
+     Hue names for categorical diagram palette (cyan, indigo, etc.).
+     See DESIGN_SYSTEM.md "Semantic Meaning Map" for hue→meaning. */
+
+  /* Role-based (universal UI) */
+  --visual-error: var(--semantic-error);      /* #ad3735 — Danger, critical */
+  --visual-warning: var(--semantic-warning);  /* #8e5900 — Caution, attention */
+  --visual-success: var(--semantic-success);  /* #007a44 — Validated, complete */
+  --visual-neutral: var(--semantic-neutral);  /* #666666 — Neutral */
+
+  /* Hue-based (categorical) */
+  --visual-lime: #6b6b00;                    /* Lime-600 — Progress, growth */
+  --visual-cyan: var(--cyan-600);            /* #007576 — System, code */
+  --visual-indigo: var(--semantic-info);     /* #1369b0 — Knowledge, data */
+  --visual-violet: #6057af;                  /* Violet-600 — AI transformation */
+  --visual-magenta: #874895;                 /* Magenta-600 — AI creative */
+  --visual-rose: #9b436a;                    /* Rose-600 — Human actor */
+
+  /* === VISUAL ELEMENT BACKGROUNDS — 10% tint in light mode === */
+  --visual-bg-error: color-mix(in srgb, var(--visual-error) 10%, transparent);
+  --visual-bg-warning: color-mix(in srgb, var(--visual-warning) 10%, transparent);
+  --visual-bg-lime: color-mix(in srgb, var(--visual-lime) 10%, transparent);
+  --visual-bg-success: color-mix(in srgb, var(--visual-success) 10%, transparent);
+  --visual-bg-cyan: color-mix(in srgb, var(--visual-cyan) 10%, transparent);
+  --visual-bg-indigo: color-mix(in srgb, var(--visual-indigo) 10%, transparent);
+  --visual-bg-violet: color-mix(in srgb, var(--visual-violet) 10%, transparent);
+  --visual-bg-magenta: color-mix(in srgb, var(--visual-magenta) 10%, transparent);
+  --visual-bg-rose: color-mix(in srgb, var(--visual-rose) 10%, transparent);
+  --visual-bg-neutral: color-mix(in srgb, var(--visual-neutral) 10%, transparent);
+
+  /* === GRADIENT ENDPOINTS (used by ContextWindowMeter) === */
+  --gradient-warning-end: #cd8c37; /* Warning-400 */
+  --gradient-critical-end: #ec7069; /* Error-400 */
 
   /* === TYPOGRAPHY & CODE === */
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
   /* === CODE BLOCK BACKGROUNDS === */
-  --code-bg-light: #f9fafb; /* Subtle gray for code blocks */
+  --code-bg-light: #f5f5f5; /* neutral-50 */
 
-  /* === TEXT COLOR ACCESSIBILITY GUARANTEES === */
-  /* Docusaurus default text colors (--ifm-color-emphasis-*) are WCAG compliant */
-  /* Light mode: Dark text on light backgrounds = 7:1+ (AAA level) */
-  /* Our usage:
-     - Body text: --ifm-color-emphasis-700 (dark gray, ~13:1 contrast)
-     - Secondary text: --ifm-color-emphasis-600 (medium gray, ~7:1 contrast)
-     - All meet or exceed WCAG AA 4.5:1 minimum for normal text
-  */
+  /* === ANNOUNCEMENT BAR === */
+  --announcement-bg: #ffe3c3;  /* warning-100 */
+  --announcement-text: #402400; /* warning-900 */
 }
 
 /* ========================================================================
-   DARK MODE - Optimized Colors for Dark Backgrounds
+   DARK MODE — Optimized Colors for Dark Backgrounds
    ========================================================================
-   Brighter, more vibrant versions of light mode colors to ensure
-   sufficient contrast and reduce eye strain on dark backgrounds.
+   Semantic colors shift from shade-600 to shade-400.
+   Visual bg tints shift from 10% to 15%.
+   Surface colors use GitHub-style dark backgrounds.
    ======================================================================== */
 
 [data-theme='dark'] {
-  /* === BRAND COLORS - Brighter Purple for Dark Mode === */
-  --brand-primary: #a78bfa; /* Brighter violet for dark backgrounds */
-  --brand-primary-dark: #8b5cf6;
-  --brand-primary-darker: #7c3aed;
-  --brand-primary-darkest: #6d28d9;
-  --brand-primary-light: #c4b5fd;
-  --brand-primary-lighter: #ddd6fe;
-  --brand-primary-lightest: #ede9fe;
+  /* === SEMANTIC COLORS — shade-400 for dark mode === */
+  --semantic-success: #48b475;  /* Success-400 */
+  --semantic-warning: #cd8c37;  /* Warning-400 */
+  --semantic-error: #ec7069;    /* Error-400 */
+  --semantic-info: #53a0ec;     /* Indigo-400 */
+  --semantic-neutral: #9b9b9b;  /* Neutral-400 */
 
-  /* === SEMANTIC COLORS - Harmonized for Dark Mode === */
-  --semantic-success: #22d3ee; /* Cyan 400 - blue harmony with purple */
-  --semantic-warning: #fb923c; /* Orange 400 - rose-orange for dark */
-  --semantic-error: #fb7185; /* Rose 400 - magenta-red for dark */
-  --semantic-info: #60a5fa; /* Blue 400 - violet-blue for dark */
-  --semantic-neutral: #94a3b8; /* Slate 400 - purple-tinted gray */
+  /* === GRADIENT ENDPOINTS (used by ContextWindowMeter) === */
+  --gradient-warning-end: #e6aa63; /* Warning-300 */
+  --gradient-critical-end: #ff958d; /* Error-300 */
 
-  /* === GRADIENT ENDPOINTS - Harmonized for Dark Mode === */
-  --gradient-warm-end: #f472b6; /* Fuchsia 400 - purple harmony */
-  --gradient-warning-end: #fdba74; /* Orange 300 - rose-orange bright */
-  --gradient-critical-end: #fda4af; /* Rose 300 - rose-pink bright */
+  /* === MAP TO INFIMA — Neutral primary === */
+  --ifm-color-primary: var(--neutral-100);
+  --ifm-color-primary-dark: var(--neutral-200);
+  --ifm-color-primary-darker: var(--neutral-300);
+  --ifm-color-primary-darkest: var(--neutral-400);
+  --ifm-color-primary-light: var(--neutral-50);
+  --ifm-color-primary-lighter: #ffffff;
+  --ifm-color-primary-lightest: #ffffff;
 
-  /* === MAP TO INFIMA (Docusaurus Framework) === */
-  --ifm-color-primary: var(--brand-primary);
-  --ifm-color-primary-dark: var(--brand-primary-dark);
-  --ifm-color-primary-darker: var(--brand-primary-darker);
-  --ifm-color-primary-darkest: var(--brand-primary-darkest);
-  --ifm-color-primary-light: var(--brand-primary-light);
-  --ifm-color-primary-lighter: var(--brand-primary-lighter);
-  --ifm-color-primary-lightest: var(--brand-primary-lightest);
+  /* === VISUAL ELEMENT COLORS — shade-400 for dark mode === */
+  --visual-lime: #a1a22b;       /* Lime-400 */
+  --visual-cyan: var(--cyan-400); /* Cyan-400 */
+  --visual-violet: #938eeb;     /* Violet-400 */
+  --visual-magenta: #c07ecf;    /* Magenta-400 */
+  --visual-rose: #d7799f;       /* Rose-400 */
 
-  /* === VISUAL ELEMENT COLORS - Adjusted for Dark Mode === */
-  --visual-workflow: var(--brand-primary); /* Brighter purple */
-  --visual-capability: var(--semantic-success); /* Brighter green */
-  --visual-limitation: var(--semantic-warning); /* Brighter amber */
-  --visual-decision: var(--brand-primary-light); /* Lighter purple */
-  --visual-error: var(--semantic-error); /* Softer red */
-  --visual-neutral: var(--semantic-neutral); /* Lighter gray */
+  /* === VISUAL ELEMENT BACKGROUNDS — 15% tint in dark mode === */
+  --visual-bg-error: color-mix(in srgb, var(--visual-error) 15%, transparent);
+  --visual-bg-warning: color-mix(in srgb, var(--visual-warning) 15%, transparent);
+  --visual-bg-lime: color-mix(in srgb, var(--visual-lime) 15%, transparent);
+  --visual-bg-success: color-mix(in srgb, var(--visual-success) 15%, transparent);
+  --visual-bg-cyan: color-mix(in srgb, var(--visual-cyan) 15%, transparent);
+  --visual-bg-indigo: color-mix(in srgb, var(--visual-indigo) 15%, transparent);
+  --visual-bg-violet: color-mix(in srgb, var(--visual-violet) 15%, transparent);
+  --visual-bg-magenta: color-mix(in srgb, var(--visual-magenta) 15%, transparent);
+  --visual-bg-rose: color-mix(in srgb, var(--visual-rose) 15%, transparent);
+  --visual-bg-neutral: color-mix(in srgb, var(--visual-neutral) 15%, transparent);
 
-  /* === VISUAL ELEMENT BACKGROUNDS - Harmonized Transparency === */
-  --visual-bg-workflow: rgba(167, 139, 250, 0.15); /* Purple tint */
-  --visual-bg-capability: rgba(34, 211, 238, 0.15); /* Cyan tint */
-  --visual-bg-limitation: rgba(251, 146, 60, 0.15); /* Rose-orange tint */
-  --visual-bg-decision: rgba(196, 181, 253, 0.15); /* Light purple tint */
-  --visual-bg-error: rgba(251, 113, 133, 0.15); /* Rose-red tint */
+  /* === SURFACE / TEXT / BORDER — Dark mode === */
+  --surface-page: #0d1117;
+  --surface-raised: #161b22;
+  --surface-muted: #3d3d3d;       /* neutral-800 */
+  --text-heading: #e8e8e8;        /* neutral-100 */
+  --text-body: #d4d4d4;           /* neutral-200 */
+  --text-muted: #9b9b9b;          /* neutral-400 */
+  --border-default: #505050;      /* neutral-700 */
+
+  /* === DARK MODE BACKGROUNDS === */
+  --ifm-background-color: var(--surface-page);
+  --ifm-background-surface-color: var(--surface-raised);
+  --code-bg-dark: #222222; /* neutral-950 */
+  --ifm-font-color-base: #d4d4d4; /* neutral-200 */
+  --ifm-heading-color: #e8e8e8;   /* neutral-100 */
+  --code-bg: var(--neutral-950);
+  --text-subtle: var(--neutral-400);
+  --icon-star: #fcca91; /* warning-200 */
 
   /* === TYPOGRAPHY & CODE === */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 
-  /* === DARK MODE BACKGROUNDS === */
-  --ifm-background-color: #0d1117; /* GitHub-style dark background */
-  --ifm-background-surface-color: #161b22; /* Elevated surfaces (cards, etc.) */
-  --code-bg-dark: #1e1e1e; /* VS Code dark background */
-  --ifm-font-color-base: #c9d1d9; /* Soft white (less eye strain) */
-  --ifm-heading-color: #e6edf3; /* Brighter for headings */
+  /* === NAVBAR — Dark mode === */
+  --ifm-navbar-background-color: var(--surface-page);
+  --ifm-navbar-link-color: var(--text-body);
+  --ifm-navbar-link-hover-color: var(--text-heading);
 
-  /* === DARK MODE TEXT COLOR ACCESSIBILITY === */
-  /* Light text on dark backgrounds maintains 7:1+ contrast (AAA level) */
-  /* #c9d1d9 on #0d1117 = ~12:1 contrast ratio */
-  /* All emphasis colors desaturated for optimal dark mode readability */
+  /* === ANNOUNCEMENT BAR === */
+  --announcement-bg: #8e5900;  /* warning-600 */
+  --announcement-text: #fff3e6; /* warning-50 */
 }
 
-/* Mermaid diagram styling - Centered horizontally
-   Docusaurus theme-mermaid uses CSS modules with hashed class names (e.g., container_lyt7)
-   Target using attribute selector that matches the Mermaid SVG ID pattern */
+/* ========================================================================
+   MERMAID DIAGRAM STYLING
+   ======================================================================== */
+
 [class*="container_"]:has(> svg[id^="mermaid"]) {
   display: flex;
   justify-content: center;
@@ -190,7 +321,6 @@
   text-align: center;
 }
 
-/* Mermaid SVG responsive behavior */
 [class*="container_"]:has(> svg[id^="mermaid"]) > svg {
   max-width: 100%;
   height: auto;
@@ -198,7 +328,10 @@
   margin: 0 auto;
 }
 
-/* Container for visual elements */
+/* ========================================================================
+   VISUAL CONTAINER CLASSES — Hue-based naming per design system
+   ======================================================================== */
+
 .visual-container {
   margin: 2rem 0;
   padding: 1.5rem;
@@ -206,27 +339,60 @@
   border: 1px solid var(--ifm-color-emphasis-300);
 }
 
-.visual-container--workflow {
-  background: var(--visual-bg-workflow);
-  border-color: var(--visual-workflow);
+.visual-container--cyan {
+  background: var(--visual-bg-cyan);
+  border-color: var(--visual-cyan);
 }
 
-.visual-container--capability {
-  background: var(--visual-bg-capability);
-  border-color: var(--visual-capability);
+.visual-container--success {
+  background: var(--visual-bg-success);
+  border-color: var(--visual-success);
 }
 
-.visual-container--limitation {
-  background: var(--visual-bg-limitation);
-  border-color: var(--visual-limitation);
+.visual-container--warning {
+  background: var(--visual-bg-warning);
+  border-color: var(--visual-warning);
 }
 
-.visual-container--decision {
-  background: var(--visual-bg-decision);
-  border-color: var(--visual-decision);
+.visual-container--indigo {
+  background: var(--visual-bg-indigo);
+  border-color: var(--visual-indigo);
 }
 
-/* Visual checklist styling */
+.visual-container--error {
+  background: var(--visual-bg-error);
+  border-color: var(--visual-error);
+}
+
+.visual-container--lime {
+  background: var(--visual-bg-lime);
+  border-color: var(--visual-lime);
+}
+
+.visual-container--violet {
+  background: var(--visual-bg-violet);
+  border-color: var(--visual-violet);
+}
+
+.visual-container--magenta {
+  background: var(--visual-bg-magenta);
+  border-color: var(--visual-magenta);
+}
+
+.visual-container--rose {
+  background: var(--visual-bg-rose);
+  border-color: var(--visual-rose);
+}
+
+.visual-container--neutral {
+  background: var(--visual-bg-neutral);
+  border-color: var(--visual-neutral);
+}
+
+/* ========================================================================
+   VISUAL CHECKLIST STYLING
+   ======================================================================== */
+
 .visual-checklist {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -242,13 +408,11 @@
   background: var(--ifm-background-surface-color);
   border-radius: 6px;
   border: 1px solid var(--ifm-color-emphasis-200);
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .visual-checklist-item:hover {
-  border-color: var(--ifm-color-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--neutral-400);
 }
 
 .visual-checklist-icon {
@@ -262,95 +426,197 @@
 }
 
 /* ========================================================================
-   MINIMAL GRADIENT ACCENTS - Professional AI Aesthetic
-   ========================================================================
-   Subtle gradient effects for key interactive elements.
-   Use sparingly - gradients only where they add meaning or visual hierarchy.
+   ACCENT BORDERS — Semantic callout + live code blocks
    ======================================================================== */
 
-/* Gradient border for AI-specific callouts and live code blocks */
 .ai-gradient-border {
-  border-left: 4px solid transparent;
-  border-image: linear-gradient(
-      180deg,
-      var(--brand-primary) 0%,
-      var(--gradient-warm-end) 100%
-    )
-    1;
+  border-left: 4px solid var(--neutral-400);
 }
 
-/* Apply gradient border to live code blocks */
+/* Apply accent border to live code blocks */
 .theme-live-codeblock {
-  border-left: 4px solid transparent;
-  border-image: linear-gradient(
-      180deg,
-      var(--brand-primary) 0%,
-      var(--gradient-warm-end) 100%
-    )
-    1;
+  border-left: 4px solid var(--neutral-400);
   margin: 2rem 0;
 }
 
-/* Subtle gradient divider for major sections */
+/* Subtle divider for major sections */
 .gradient-divider {
   height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--brand-primary) 50%,
-    transparent 100%
-  );
+  background: var(--border-default);
   margin: 3rem 0;
   border: none;
 }
 
-/* Navbar with subtle bottom border */
+/* ========================================================================
+   NAVBAR — Flat, line-based navigation
+   ========================================================================
+   Design system: flat construction, typographic interaction, achromatic.
+   The navbar is defined by a single bottom border, not a filled surface.
+   Interactive states use weight and underline, not color.
+   ======================================================================== */
+
 .navbar {
-  border-bottom: 1px solid var(--brand-primary);
+  border-bottom: 1px solid var(--neutral-300);
 }
 
-/* Enhanced code block styling with subtle shadow */
+[data-theme='dark'] .navbar {
+  border-bottom-color: var(--neutral-800);
+}
+
+/* Vertical alignment: center all elements, nudge brand to match link baselines */
+.navbar__inner {
+  align-items: center;
+}
+
+/* Brand: nudge up 1.5px to split the baseline gap between
+   19px title (baseline at +3px) and 13px links (baseline at 0) */
+.navbar__brand {
+  transform: translateY(-1.5px);
+}
+
+.navbar__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-lg);
+  line-height: var(--lh-lg);
+  letter-spacing: -0.01em;
+}
+
+.navbar__logo {
+  height: var(--space-3);
+  margin-right: var(--space-1);
+}
+
+/* Nav links: Inter, small caps feel via uppercase + tracking */
+.navbar__link {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease, font-weight 0.15s ease;
+}
+
+/* Hover: underline appears */
+.navbar__link:hover {
+  text-decoration: none;
+  border-bottom: 1px solid var(--neutral-400);
+}
+
+[data-theme='dark'] .navbar__link:hover {
+  border-bottom-color: var(--neutral-500);
+}
+
+/* Active: persistent underline, slightly heavier */
+.navbar__link--active {
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 2px solid var(--text-heading);
+}
+
+/* Search input — flat, bordered */
+.navbar__search-input {
+  background: var(--surface-page);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  height: var(--target-sm);
+  color: var(--text-body);
+}
+
+.navbar__search-input:focus {
+  border-color: var(--neutral-600);
+  outline: none;
+}
+
+[data-theme='dark'] .navbar__search-input {
+  background: var(--surface-page);
+  border-color: var(--neutral-700);
+  color: var(--text-body);
+}
+
+[data-theme='dark'] .navbar__search-input:focus {
+  border-color: var(--neutral-400);
+}
+
+/* Color mode toggle — neutral styling */
+.navbar [class*='colorModeToggle'] button {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+}
+
+.navbar [class*='colorModeToggle'] button:hover {
+  background: var(--surface-muted);
+}
+
+/* Mobile hamburger toggle */
+@media (max-width: 996px) {
+  .navbar__toggle {
+    border: none;
+    color: var(--text-body);
+  }
+}
+
+/* Mobile sidebar — flat, no shadow */
+.navbar-sidebar {
+  background-color: var(--surface-page);
+  box-shadow: none;
+  border-right: 1px solid var(--neutral-300);
+}
+
+[data-theme='dark'] .navbar-sidebar {
+  border-right-color: var(--neutral-800);
+}
+
+.navbar-sidebar__brand {
+  box-shadow: none;
+  border-bottom: 1px solid var(--neutral-300);
+}
+
+[data-theme='dark'] .navbar-sidebar__brand {
+  border-bottom-color: var(--neutral-800);
+}
+
+/* Content area links — typographic interaction (Design System rule #4) */
+.markdown a,
+article a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Code block styling */
 .theme-code-block {
-  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.1);
   margin: 2rem 0;
 }
 
-[data-theme='dark'] .theme-code-block {
-  box-shadow: 0 2px 8px rgba(167, 139, 250, 0.2);
+/* Font features for all monospace containers */
+code, pre, kbd, [class*="codeBlock"] {
+  font-feature-settings: var(--font-mono-features);
 }
+
+/* Voice utility classes (per DESIGN_SYSTEM.md) */
+.mono-ai { font-family: var(--font-mono-ai); }
+.mono-spec { font-family: var(--font-mono-spec); }
+.mono-human { font-family: var(--font-mono-human); }
+.mono-keyword { font-family: var(--font-mono-keyword); }
 
 /* ========================================================================
-   ANNOUNCEMENT BANNER - Under Construction Warning
-   ========================================================================
-   High-visibility warning banner for course development status.
-   Uses warm orange/amber colors for maximum attention.
-   Maintains WCAG AA compliance for accessibility.
+   ANNOUNCEMENT BANNER
    ======================================================================== */
 
-:root {
-  /* Light mode: Vibrant amber/orange background with dark text */
-  /* WCAG: #78350f (dark brown) on #fed7aa (light peach) = 7.1:1 (AAA Pass) */
-  --announcement-bg: #fed7aa; /* Light peach - softer than pure orange */
-  --announcement-text: #78350f; /* Dark brown - high contrast, readable */
-}
-
-[data-theme='dark'] {
-  /* Dark mode: Deep orange background with bright text */
-  /* WCAG: #fef3c7 (cream) on #ea580c (orange) = 7.8:1 (AAA Pass) */
-  --announcement-bg: #ea580c; /* Vivid orange - warm and attention-grabbing */
-  --announcement-text: #fef3c7; /* Cream - bright and readable */
-}
-
-/* Announcement bar custom styling */
 div[class*='announcementBar'] {
   font-weight: 600;
   font-size: 0.95rem;
   text-align: center;
   border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme='dark'] div[class*='announcementBar'] {
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 12px rgba(234, 88, 12, 0.3);
 }
