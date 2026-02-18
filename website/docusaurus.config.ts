@@ -20,25 +20,6 @@ const config: Config = {
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
-  // Modern favicon setup (SVG + Apple touch icon)
-  headTags: [
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'icon',
-        href: '/img/icon.svg',
-        type: 'image/svg+xml',
-      },
-    },
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'apple-touch-icon',
-        href: '/img/apple-touch-icon.png',
-      },
-    },
-  ],
-
   // Analytics
   scripts: [
     {
@@ -64,6 +45,41 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+
+  // Favicon + theme-color meta tags
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'icon',
+        href: '/img/icon.svg',
+        type: 'image/svg+xml',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'apple-touch-icon',
+        href: '/img/apple-touch-icon.png',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'theme-color',
+        content: '#ffffff',
+        media: '(prefers-color-scheme: light)',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'theme-color',
+        content: '#0d1117',
+        media: '(prefers-color-scheme: dark)',
+      },
+    },
+  ],
 
   markdown: {
     mermaid: true,
@@ -273,8 +289,7 @@ const config: Config = {
       theme: { light: 'base', dark: 'dark' },
       options: {
         maxTextSize: 50000,
-        fontFamily:
-          'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
+        fontFamily: "'Monaspace Neon', monospace",
       },
     },
   } satisfies Preset.ThemeConfig,
