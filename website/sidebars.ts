@@ -49,6 +49,17 @@ const sidebars: SidebarsConfig = {
         'practical-techniques/lesson-13-systems-thinking-specs',
       ],
     },
+    {
+      type: 'category',
+      label: 'Experience Engineering',
+      collapsed: false,
+      items: [
+        'experience-engineering/lesson-14-design-tokens',
+        'experience-engineering/lesson-15-ui-specs',
+        'experience-engineering/lesson-16-accessibility-i18n',
+        'experience-engineering/lesson-17-verification',
+      ],
+    },
   ],
 };
 

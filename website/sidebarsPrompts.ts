@@ -45,7 +45,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Specifications',
-      items: ['specifications/generate-spec', 'specifications/spec-template'],
+      items: ['specifications/generate-spec', 'specifications/spec-template', 'specifications/experience-spec-template'],
     },
   ],
 };

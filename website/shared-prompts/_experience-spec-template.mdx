@@ -1,0 +1,371 @@
+{/* Standalone experience specification template — pure structure, no agent instructions */}
+
+````markdown
+# {Feature Name}
+
+> **Spec Version:** 1.0 | **Code:** `git:HEAD` | **Status:** draft
+
+## User Story & Metrics
+
+**Problem:** [1-2 sentences — what user pain does this solve?]
+
+**Impact:** [who affected, how many, severity]
+
+| Metric | Category | Current | Target | Failure |
+|--------|----------|---------|--------|---------|
+| [name] | efficiency / effectiveness / satisfaction / accessibility / internationalization | [baseline] | [goal] | [unacceptable] |
+
+---
+
+## Components
+
+> Props are preconditions. Rendered output is postconditions. Accessibility attributes are non-negotiable.
+
+### Component Table
+
+| Component | Responsibility | Owns / Never Does | Interface |
+|-----------|---------------|----------|----------|
+| [name] | [single responsibility] | [what it never does] | Props: `[type]`, emits: `[callbacks]` |
+
+All text-bearing components accept translation keys, never hardcoded strings (L-001).
+
+### Interfaces
+
+| Parent | Child | Interface |
+|--------|-------|-----------|
+| [parent] | [child] | `[prop]: [Type]` — precondition: [what must be true] |
+| [child] | [parent] | `[callback]` — postcondition: [when called] |
+| Any component | Screen reader | `role`, `aria-label` — non-negotiable: always present on interactive elements (A-001) |
+
+### Responsibilities
+
+- **[component]** — NEVER imports from [other components] — [reason]
+- **[component]** — NEVER calls APIs directly — receives data via props
+- **Shared kernel:** `src/components/primitives/` — [what lives here]
+
+---
+
+## Flows
+
+### [Flow Name]
+
+```
+1. User [action] on [Component]
+   → [immediate UI response]
+   → Focus moves to [target element] (A-006)
+   → On cancel: [cancel behavior], return focus to [trigger] (A-007)
+
+2. User [action]
+   → [validation / loading state]
+   → Call [API endpoint]
+   → On success: [success behavior], announce via aria-live="polite" (A-008)
+   → On error (4xx): [error behavior], announce via aria-live="assertive" (A-009)
+   → On network error: [network error behavior]
+```
+
+All user-visible strings use translation keys. Pluralization follows ICU MessageFormat (L-003).
+
+---
+
+## State Model
+
+> Choose one per entity: Declarative, Event-Driven, or State Machine. Delete unused.
+
+### [Entity Name]
+
+#### Option A: Declarative (Desired State)
+
+- **Target state:** [what the view converges to]
+- **Reconciliation:** [how drift is detected — e.g., React reconciliation]
+- **Trigger:** [what causes re-render]
+
+#### Option B: Event-Driven
+
+| Event | Payload | Source | Handler |
+|-------|---------|--------|---------|
+| [name] | [schema] | [WebSocket / user action / timer] | [component/hook] |
+
+#### Option C: State Machine
+
+| State | Transitions To | Trigger |
+|-------|----------------|---------|
+| [state] | [next states] | [user action / API response] |
+
+- **Initial:** [start state]
+- **Terminal:** [end states]
+
+### Five View States
+
+> Every data-bound view has exactly five states: happy, loading, error, empty, partial. Omitting any is a bug.
+
+| State | What User Sees | Screen Reader | Constraint |
+|-------|---------------|---------------|------------|
+| Happy | [rendered data] | Content via landmarks and labels | [design spec match] |
+| Loading | [skeleton/spinner] | `aria-busy="true"` (A-002) | Within 100ms of trigger |
+| Error | [error + recovery CTA] | `aria-live="assertive"` (A-003) | Never show raw error |
+| Empty | [guidance to action] | Perceivable guidance (A-004) | Guide user to next step |
+| Partial | [partial data + failed indicator] | Failed section announced (A-005) | Never block entire view |
+
+### View State Constraints
+
+| ID | Rule | Verified By |
+|----|------|-------------|
+| V-001 | NEVER [forbidden UI state] | Browser automation: [verification method] |
+
+---
+
+## Design Token Assumptions
+
+> Architectural constants that constrain every component, layout, and flow. When a token assumption changes, its "Drives" column shows which spec elements to revisit.
+
+| Token Assumption | Source | Drives |
+|------------------|--------|--------|
+| [spacing/type/color/contrast constraint] | [design system / accessibility standard / brand guide] | V-[id], A-[id], [component], [layout] |
+
+### Primitive Tokens
+
+| Token | Value | Color Space |
+|-------|-------|-------------|
+| [name] | [value] | OKLCH / sRGB fallback |
+
+### Semantic Tokens
+
+| Token | Light | Dark | Purpose |
+|-------|-------|------|---------|
+| [name] | {primitive} | {primitive} | [intent] |
+
+---
+
+## Layouts
+
+| Layout | Structure | Components |
+|--------|-----------|------------|
+| [name] | [grid/flex description] | [child components] |
+
+RTL layouts mirror the entire grid. Use logical properties for all spatial tokens (L-002).
+
+### Breakpoints
+
+| Breakpoint | Viewport | Layout Adaptation | Token Scale |
+|------------|----------|-------------------|-------------|
+| Mobile | < 768px | [adaptation] | [scale] |
+| Tablet | 768-1024px | [adaptation] | [scale] |
+| Desktop | > 1024px | [adaptation] | [scale] |
+
+Touch targets ≥ 44px on mobile (A-012). Tab order follows visual order per breakpoint (A-013). Zoom to 200% — no horizontal scroll (A-014).
+
+---
+
+## Accessibility Architecture
+
+> Structural decisions affecting every component, flow, and state transition. Specify up front, not after implementation.
+
+### Semantic HTML
+
+| Need | Use | Not |
+|------|-----|-----|
+| [interaction type] | [native HTML element] | [ARIA workaround] |
+
+### Landmark Structure
+
+| Landmark | Element | Purpose |
+|----------|---------|---------|
+| `banner` | `<header>` | [purpose] |
+| `navigation` | `<nav aria-label="...">` | [purpose] |
+| `main` | `<main>` | [purpose] |
+| `complementary` | `<aside>` | [purpose] |
+| `contentinfo` | `<footer>` | [purpose] |
+
+### Keyboard Navigation
+
+| Context | Keys | Behavior |
+|---------|------|----------|
+| Page-level | `Tab` / `Shift+Tab` | Move between interactive elements |
+| [composite widget] | `Arrow keys` | Navigate within widget |
+| Modal | `Escape` | Close and return focus to trigger |
+| [other context] | [keys] | [behavior] |
+
+### Focus Management
+
+| Trigger | Focus Destination | Constraint |
+|---------|-------------------|------------|
+| Modal opens | Heading or first control | A-006 |
+| Modal closes | Trigger element | A-007 |
+| Route change | Main content heading | A-015 |
+| Item deleted | Next/previous sibling | A-016 |
+| [trigger] | [destination] | A-[id] |
+
+### Live Regions
+
+| Content Type | Politeness | Example |
+|-------------|------------|---------|
+| Success confirmation | `polite` | [message] |
+| Error / validation | `assertive` | [message] |
+| [type] | [polite/assertive] | [message] |
+
+### Accessibility Constraints
+
+| ID | Rule | Scope | Verified By |
+|----|------|-------|-------------|
+| A-001 | Interactive elements ALWAYS have visible label or `aria-label` | All components | `snapshot -ic` |
+| A-[id] | [rule] | [scope] | [verification] |
+
+---
+
+## Internationalization
+
+> Structural decisions affecting every component, layout, and flow. Specify up front — retrofitting RTL or pluralization is an order of magnitude harder.
+
+### RTL Layout Mirroring
+
+| Element | LTR | RTL | Rule |
+|---------|-----|-----|------|
+| [element] | [LTR behavior] | [RTL behavior] | [implementation] |
+
+Use CSS logical properties exclusively (L-002).
+
+### Translation Key Architecture
+
+| Concern | Decision | Trade-off |
+|---------|----------|-----------|
+| Key format | [namespaced / flat] | [trade-off] |
+| Loading | [sync / async / split] | [trade-off] |
+| Fallback | [chain description] | [trade-off] |
+
+All text-bearing components accept keys, never hardcoded strings (L-001).
+
+### Pluralization (ICU MessageFormat)
+
+| Language | Plural Categories | Example |
+|----------|------------------|---------|
+| [lang] | [categories] | [example] |
+
+All pluralized strings use ICU MessageFormat (L-003).
+
+### Locale-Aware Formatting
+
+| Data Type | API | Example (locale 1) | Example (locale 2) |
+|-----------|-----|-------|-------|
+| Date | `Intl.DateTimeFormat` | [formatted] | [formatted] |
+| Number | `Intl.NumberFormat` | [formatted] | [formatted] |
+| Currency | `Intl.NumberFormat` (currency) | [formatted] | [formatted] |
+
+All formatting uses `Intl` APIs with active locale (L-004).
+
+### Locale Detection & Routing
+
+| Strategy | URL Example | Trade-off |
+|----------|-------------|-----------|
+| [strategy] | [URL] | [trade-off] |
+
+Fallback chain: [user pref] → [browser locale] → [default].
+
+### Bidirectional Text
+
+LTR content in RTL context uses explicit `dir="ltr"` markers (L-005).
+
+### Internationalization Constraints
+
+| ID | Rule | Scope | Verified By |
+|----|------|-------|-------------|
+| L-001 | No hardcoded strings | All components | Lint |
+| L-[id] | [rule] | [scope] | [verification] |
+
+---
+
+## Behavioral Scenarios
+
+> Concrete Given/When/Then at UI boundaries. Specific enough to become browser automation scripts.
+
+| ID | Scenario | Given | When | Then | Edge Category |
+|----|----------|-------|------|------|---------------|
+| B-001 | [scenario name] | [precondition + concrete data] | [user action] | [expected UI outcome] | [category] |
+
+### Edge Categories
+
+| Category | Question |
+|----------|----------|
+| Boundary values | What happens at min, max, min-1, max+1? |
+| Null / empty | What happens with no data or empty lists? |
+| Error propagation | When an API fails, what does the user see? |
+| Concurrency | What happens with rapid clicks or simultaneous updates? |
+| Temporal | What happens with slow networks or stale data? |
+
+---
+
+## Entry Points & Routing
+
+| Entry Point | URL Pattern | State Required | Auth | Deep Link | Locale |
+|-------------|-------------|---------------|------|-----------|--------|
+| [name] | [URL] | [what to load] | [auth requirement] | Yes/No | [strategy] |
+
+Every URL must be a valid entry point. On direct navigation, focus moves to main content heading (A-015). Locale in URL determines layout direction and translation set.
+
+---
+
+## Permissions Matrix
+
+| View/Action | [Role 1] | [Role 2] | [Role 3] | Unauthenticated |
+|-------------|----------|----------|----------|-----------------|
+| [view/action] | [Full / Read-only / Disabled / Hidden] | ... | ... | Redirect to login |
+
+Disabled controls use `aria-disabled="true"` with explanation, not `disabled` attribute (A-018).
+
+### Auth Flow Mapping
+
+| Scenario | Experience | System Spec Reference |
+|----------|-----------|----------------------|
+| Session expired | [UX behavior] | [system endpoint] |
+| Insufficient permissions | [UX behavior] | [system middleware] |
+
+---
+
+## Settings
+
+| Setting | Scope | Storage | Default | Constraint |
+|---------|-------|---------|---------|------------|
+| [name] | User/Team/Global | [localStorage / API / both] | [default] | [constraint or token override] |
+
+---
+
+## Behavior Mock Contracts
+
+| Endpoint | Method | Mock Response | Error Scenarios | System Spec Reference |
+|----------|--------|--------------|-----------------|----------------------|
+| [path] | GET/POST/PUT/DELETE | `{ [response shape] }` | [status codes + scenarios] | [system spec module] |
+
+### Integration Workflow
+
+1. Experience engineer writes mock handlers (defines contract)
+2. System engineer implements API matching the contract
+3. Run contract tests: mock responses vs. real responses
+4. Replace mock handlers with real API calls (per-endpoint)
+5. Delete mock handler when real API is verified
+
+---
+
+## Performance Budget
+
+| Metric | Target | Degraded | Failure | Measured By |
+|--------|--------|----------|---------|-------------|
+| FCP (First Contentful Paint) | [ms] | [ms] | [ms] | Lighthouse / WebPageTest |
+| LCP (Largest Contentful Paint) | [ms] | [ms] | [ms] | Core Web Vitals |
+| CLS (Cumulative Layout Shift) | [score] | [score] | [score] | Core Web Vitals |
+| INP (Interaction to Next Paint) | [ms] | [ms] | [ms] | Core Web Vitals |
+| Bundle size (JS) | [KB] | [KB] | [KB] | Build output |
+
+---
+
+## Browser Automation Verification
+
+| Spec Section | Verification Method |
+|-------------|-------------------|
+| Components | `snapshot -ic` → verify component tree matches hierarchy |
+| States (5 states) | Throttle network → verify loading/error states render |
+| Flows | Execute step-by-step: `click @ref` → `snapshot -ic` → verify next state |
+| Permissions | Switch auth context → verify elements hidden/disabled per role |
+| Responsiveness | Set viewport size → `snapshot -ic` → verify layout adaptation |
+| Accessibility (keyboard) | Tab through all interactive elements → verify focus order |
+| Accessibility (screen reader) | `snapshot -ic` → verify landmarks, labels, live regions |
+| Internationalization | Switch locale → `snapshot -ic` → verify translations, RTL layout, formatted data |
+````
