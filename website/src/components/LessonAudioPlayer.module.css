@@ -1,10 +1,9 @@
 .audioPlayer {
-  background: var(--ifm-color-emphasis-100);
-  border: 1px solid var(--ifm-color-emphasis-300);
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .controls {
@@ -15,27 +14,34 @@
 }
 
 .playButton {
-  background: var(--ifm-color-primary);
-  color: white;
+  background: var(--text-heading);
+  color: var(--surface-page);
   border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  border-radius: var(--radius-full);
+  width: var(--target-lg);
+  height: var(--target-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.15s ease;
   flex-shrink: 0;
 }
 
 .playButton:hover {
-  background: var(--ifm-color-primary-dark);
-  transform: scale(1.05);
+  background: var(--neutral-700);
+}
+
+:global([data-theme='dark']) .playButton:hover {
+  background: var(--neutral-300);
 }
 
 .playButton:active {
-  transform: scale(0.95);
+  background: var(--neutral-800);
+}
+
+:global([data-theme='dark']) .playButton:active {
+  background: var(--neutral-200);
 }
 
 .timeInfo {
@@ -157,11 +163,6 @@
 }
 
 /* Dark mode specific adjustments */
-[data-theme='dark'] .audioPlayer {
-  background: var(--ifm-background-surface-color);
-  border-color: var(--ifm-color-emphasis-300);
-}
-
 [data-theme='dark'] .speedSelect {
-  background: var(--ifm-background-surface-color);
+  background: var(--surface-raised);
 }

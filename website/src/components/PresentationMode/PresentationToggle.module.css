@@ -1,28 +1,34 @@
 .toggleButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--ifm-color-primary);
-  color: white;
+  gap: var(--space-1);
+  height: var(--target-md);
+  padding: 0 var(--space-3);
+  background: var(--text-heading);
+  color: var(--surface-page);
   border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background 0.15s ease;
 }
 
 .toggleButton:hover:not(:disabled) {
-  background: var(--ifm-color-primary-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: var(--neutral-700);
+}
+
+:global([data-theme='dark']) .toggleButton:hover:not(:disabled) {
+  background: var(--neutral-300);
 }
 
 .toggleButton:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: var(--neutral-800);
+}
+
+:global([data-theme='dark']) .toggleButton:active:not(:disabled) {
+  background: var(--neutral-200);
 }
 
 .toggleButton:disabled {
@@ -36,7 +42,7 @@
 }
 
 .label {
-  font-family: var(--ifm-font-family-base);
+  font-family: var(--font-body);
 }
 
 .spinner {
@@ -59,32 +65,35 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 9999;
-  background: var(--ifm-background-color);
-  border: 2px solid var(--ifm-color-danger);
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  background: var(--surface-page);
+  border: 2px solid var(--visual-error);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
   max-width: 400px;
   text-align: center;
 }
 
 .errorMessage p {
-  color: var(--ifm-color-danger);
-  margin-bottom: 1rem;
+  color: var(--visual-error);
+  margin-bottom: var(--space-2);
 }
 
 .errorMessage button {
-  padding: 0.5rem 1rem;
-  background: var(--ifm-color-danger);
-  color: white;
+  height: var(--target-sm);
+  padding: 0 var(--space-2);
+  background: var(--visual-error);
+  color: #ffffff;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .errorMessage button:hover {
-  background: var(--ifm-color-danger-dark);
+  background: color-mix(in srgb, var(--visual-error) 80%, black);
 }
 
 .loadingOverlay {
@@ -94,11 +103,11 @@
   right: 0;
   bottom: 0;
   z-index: 10000;
-  background: #000;
+  background: var(--surface-page);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 1.5rem;
+  color: var(--text-heading);
+  font-size: var(--text-lg);
   font-weight: 600;
 }
