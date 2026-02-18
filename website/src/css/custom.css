@@ -138,6 +138,21 @@
   --ifm-navbar-link-color: var(--text-body);
   --ifm-navbar-link-hover-color: var(--text-heading);
 
+  /* === DOC SIDEBAR — Design system tokens === */
+  --ifm-menu-color: var(--text-body);
+  --ifm-menu-color-active: var(--text-heading);
+  --ifm-menu-color-background-active: var(--surface-raised);
+  --ifm-menu-color-background-hover: var(--surface-muted);
+  --ifm-menu-link-padding-horizontal: var(--space-2);     /* 16px, was 12px */
+  --ifm-menu-link-padding-vertical: var(--space-1);       /* 8px, was 6px → 40px touch targets */
+  --ifm-menu-link-sublist-icon-filter: none;
+  --ifm-toc-border-color: var(--border-default);
+  --docusaurus-collapse-button-bg: var(--surface-raised);
+  --docusaurus-collapse-button-bg-hover: var(--surface-muted);
+  --ifm-scrollbar-track-background-color: var(--surface-raised);
+  --ifm-scrollbar-thumb-background-color: var(--neutral-300);
+  --ifm-scrollbar-thumb-hover-background-color: var(--neutral-400);
+
   /* === SURFACE / TEXT / BORDER — Semantic layout tokens === */
   --surface-page: #ffffff;
   --surface-raised: var(--neutral-50);   /* #f5f5f5 */
@@ -294,6 +309,14 @@
 
   /* === TYPOGRAPHY & CODE === */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+  /* === DOC SIDEBAR — Dark mode === */
+  --ifm-menu-link-sublist-icon-filter: none;
+  --docusaurus-collapse-button-bg: var(--surface-raised);
+  --docusaurus-collapse-button-bg-hover: var(--surface-muted);
+  --ifm-scrollbar-track-background-color: var(--surface-raised);
+  --ifm-scrollbar-thumb-background-color: var(--neutral-700);
+  --ifm-scrollbar-thumb-hover-background-color: var(--neutral-600);
 
   /* === NAVBAR — Dark mode === */
   --ifm-navbar-background-color: var(--surface-page);
@@ -616,6 +639,71 @@ code, pre, kbd, [class*="codeBlock"] {
 .mono-spec { font-family: var(--font-mono-spec); }
 .mono-human { font-family: var(--font-mono-human); }
 .mono-keyword { font-family: var(--font-mono-keyword); }
+
+/* ========================================================================
+   DOC SIDEBAR — Design system conformance
+   ========================================================================
+   Typography: Inter for items, Space Grotesk for category labels.
+   Spacing: 8px grid, 40px touch targets (--target-md).
+   Colors: achromatic — typographic interaction (weight/contrast, not hue).
+   Icons: mask-image replaces Infima's filter hack for dark mode.
+   ======================================================================== */
+
+/* Typography ------------------------------------------------------------ */
+
+.menu {
+  font-weight: 400;                     /* was 500; active items get 600 below */
+}
+
+.menu__link {
+  font-size: var(--text-sm);            /* 13px, was ~14px inherited */
+  line-height: var(--lh-sm);            /* 24px, was 1.25 (~17.5px) */
+}
+
+.menu__link--sublist {
+  font-family: var(--font-display);     /* Space Grotesk for section headings */
+  font-weight: 600;
+  font-size: var(--text-sm);
+  letter-spacing: -0.01em;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  font-weight: 600;                     /* active leaf item: weight bump */
+}
+
+/* Interactive states ---------------------------------------------------- */
+
+.menu__link:hover {
+  color: var(--text-heading);           /* contrast shift on hover */
+}
+
+/* Spacing --------------------------------------------------------------- */
+
+.menu > .menu__list > .menu__list-item:not(:first-child) {
+  margin-top: var(--space-2);           /* 16px between category groups */
+}
+
+/* Caret icons — mask-image approach (no filter hack) -------------------- */
+
+.menu__link--sublist-caret::after,
+.menu__caret::before {
+  background: var(--text-muted);
+  filter: none;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'/%3E%3C/svg%3E");
+  mask-size: var(--icon-sm) var(--icon-sm);
+  -webkit-mask-size: var(--icon-sm) var(--icon-sm);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  height: var(--icon-sm);               /* 16px, was 20px */
+  width: var(--icon-sm);
+}
+
+.menu__link--sublist-caret::after {
+  min-width: var(--icon-sm);            /* 16px, was 20px */
+}
 
 /* ========================================================================
    ANNOUNCEMENT BANNER
