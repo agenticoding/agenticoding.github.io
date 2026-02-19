@@ -1,7 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: 'Lesson 1: LLMs Demystified'
-title: 'Lesson 1: LLMs Demystified'
+sidebar_label: 'LLMs Demystified'
+sidebar_custom_props:
+  sectionNumber: 1
+title: 'LLMs Demystified'
 ---
 
 Welcome to the future of software engineering. This course teaches you to **operate AI agents** that autonomously execute complex development tasks - from specification to deployment.

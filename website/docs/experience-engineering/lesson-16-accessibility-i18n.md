@@ -1,7 +1,9 @@
 ---
 sidebar_position: 3
-sidebar_label: 'Lesson 16: Accessibility & i18n'
-title: 'Lesson 16: Accessibility & Internationalization'
+sidebar_label: 'Accessibility & i18n'
+sidebar_custom_props:
+  sectionNumber: 16
+title: 'Accessibility & Internationalization'
 ---
 
 Accessibility and internationalization are architectural constraints on the components from [Lesson 15](/docs/experience-engineering/lesson-15-ui-specs) — structural decisions that affect every component, flow, and state transition. Both are specified up front, not bolted on after implementation, and both are verifiable through `snapshot -ic` — the same tool that validates agent output.

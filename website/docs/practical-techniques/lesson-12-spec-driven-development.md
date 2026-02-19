@@ -1,7 +1,9 @@
 ---
 sidebar_position: 7
-sidebar_label: 'Lesson 12: Spec Driven Development'
-title: 'Lesson 12: Spec Driven Development'
+sidebar_label: 'Spec-Driven Development'
+sidebar_custom_props:
+  sectionNumber: 12
+title: 'Spec-Driven Development'
 ---
 
 import KnowledgeExpansionDiamond from '@site/src/components/VisualElements/KnowledgeExpansionDiamond';

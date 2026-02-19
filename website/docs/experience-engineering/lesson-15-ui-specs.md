@@ -1,7 +1,9 @@
 ---
 sidebar_position: 2
-sidebar_label: 'Lesson 15: UI Specs'
-title: 'Lesson 15: UI Specs — Components, Flows, and State'
+sidebar_label: 'UI Specs'
+sidebar_custom_props:
+  sectionNumber: 15
+title: 'UI Specs — Components, Flows, and State'
 ---
 
 With design tokens established in [Lesson 14](/docs/experience-engineering/lesson-14-design-tokens), this lesson defines the components, flows, and state transitions that consume them. These three sections are the minimum viable UI spec — enough to generate a first pass. The rest emerges as the code pulls depth from you.

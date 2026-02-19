@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
-sidebar_label: 'Lesson 3: Four-Phase Workflow'
+sidebar_label: 'Four-Phase Workflow'
+sidebar_custom_props:
+  sectionNumber: 3
 title: 'Four-Phase Workflow'
 ---
 

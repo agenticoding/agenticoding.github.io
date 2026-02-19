@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
-sidebar_label: 'Lesson 9: Reviewing Code'
+sidebar_label: 'Reviewing Code'
+sidebar_custom_props:
+  sectionNumber: 9
 title: 'Reviewing Code'
 ---
 

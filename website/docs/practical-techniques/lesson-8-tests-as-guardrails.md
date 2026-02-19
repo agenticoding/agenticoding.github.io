@@ -1,7 +1,9 @@
 ---
 sidebar_position: 3
-sidebar_label: 'Lesson 8: Tests as Guardrails'
-title: 'Lesson 8: Tests as Guardrails'
+sidebar_label: 'Tests as Guardrails'
+sidebar_custom_props:
+  sectionNumber: 8
+title: 'Tests as Guardrails'
 ---
 
 import ThreeContextWorkflow from '@site/src/components/VisualElements/ThreeContextWorkflow';

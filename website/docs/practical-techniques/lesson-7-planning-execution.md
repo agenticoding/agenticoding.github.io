@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
-sidebar_label: 'Lesson 7: Planning & Execution'
+sidebar_label: 'Planning & Execution'
+sidebar_custom_props:
+  sectionNumber: 7
 title: 'Planning & Execution'
 ---
 

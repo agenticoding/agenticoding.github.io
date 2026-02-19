@@ -1,7 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: 'Lesson 6: Project Onboarding'
-title: 'Lesson 6: Project Onboarding'
+sidebar_label: 'Project Onboarding'
+sidebar_custom_props:
+  sectionNumber: 6
+title: 'Project Onboarding'
 ---
 
 import Tabs from '@theme/Tabs';

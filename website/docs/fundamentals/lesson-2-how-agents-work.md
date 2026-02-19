@@ -1,7 +1,9 @@
 ---
 sidebar_position: 2
-sidebar_label: 'Lesson 2: Agents Demystified'
-title: 'Lesson 2: Agents Demystified'
+sidebar_label: 'Agents Demystified'
+sidebar_custom_props:
+  sectionNumber: 2
+title: 'Agents Demystified'
 ---
 
 import AbstractShapesVisualization from '@site/src/components/VisualElements/AbstractShapesVisualization';

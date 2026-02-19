@@ -1,7 +1,9 @@
 ---
 sidebar_position: 4
-sidebar_label: 'Lesson 17: Verification & the Build Loop'
-title: 'Lesson 17: Verification & the Build Loop'
+sidebar_label: 'Verification & the Build Loop'
+sidebar_custom_props:
+  sectionNumber: 17
+title: 'Verification & the Build Loop'
 ---
 
 This lesson closes the loop: spec ([Lessons 14–16](/docs/experience-engineering/lesson-14-design-tokens)) → build → check → repeat → delete. The preceding lessons defined what to build — design tokens, component APIs, accessibility constraints. This lesson covers how to verify the agent built it correctly, how to iterate when it didn't, and when to stop.

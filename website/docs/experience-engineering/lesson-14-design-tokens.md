@@ -1,7 +1,9 @@
 ---
 sidebar_position: 1
-sidebar_label: 'Lesson 14: Design Tokens & Visual Primitives'
-title: 'Lesson 14: Design Tokens & Visual Primitives'
+sidebar_label: 'Design Tokens & Visual Primitives'
+sidebar_custom_props:
+  sectionNumber: 14
+title: 'Design Tokens & Visual Primitives'
 ---
 
 [Lesson 12](/docs/practical-techniques/lesson-12-spec-driven-development) established that specs are scaffolding — temporary thinking tools deleted after implementation. This section applies spec-driven development to user-facing interfaces. We call this **Experience Engineering** — specifying design tokens, component APIs, interaction flows, and accessibility architecture precisely enough for an agent to implement and browser automation to verify. For system-level specs, see [Lesson 13](/docs/practical-techniques/lesson-13-systems-thinking-specs).

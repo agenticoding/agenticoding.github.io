@@ -1,7 +1,9 @@
 ---
 sidebar_position: 5
-sidebar_label: 'Lesson 10: Debugging'
-title: 'Lesson 10: Debugging with AI Agents'
+sidebar_label: 'Debugging'
+sidebar_custom_props:
+  sectionNumber: 10
+title: 'Debugging with AI Agents'
 ---
 
 import EvidenceBasedDebug from '@site/shared-prompts/\_evidence-based-debug.mdx';

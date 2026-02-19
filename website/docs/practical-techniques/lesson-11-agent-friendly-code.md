@@ -1,7 +1,9 @@
 ---
 sidebar_position: 6
-sidebar_label: 'Lesson 11: Agent-Friendly Code'
-title: 'Lesson 11: Writing Agent-Friendly Code'
+sidebar_label: 'Agent-Friendly Code'
+sidebar_custom_props:
+  sectionNumber: 11
+title: 'Writing Agent-Friendly Code'
 ---
 
 import CompoundQualityVisualization from '@site/src/components/VisualElements/CompoundQualityVisualization';

@@ -1,7 +1,9 @@
 ---
 sidebar_position: 8
-sidebar_label: 'Lesson 13: Thinking in Systems'
-title: 'Lesson 13: Thinking in Systems'
+sidebar_label: 'Thinking in Systems'
+sidebar_custom_props:
+  sectionNumber: 13
+title: 'Thinking in Systems'
 ---
 
 import SystemFlowDiagram from '@site/src/components/VisualElements/SystemFlowDiagram';

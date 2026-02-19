@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
-sidebar_label: 'Lesson 4: Prompting 101'
+sidebar_label: 'Prompting 101'
+sidebar_custom_props:
+  sectionNumber: 4
 title: 'Prompting 101'
 ---
 

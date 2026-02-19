@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
-sidebar_label: 'Lesson 5: Grounding'
+sidebar_label: 'Grounding'
+sidebar_custom_props:
+  sectionNumber: 5
 title: 'Grounding: Anchoring Agents in Reality'
 ---
 
