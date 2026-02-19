@@ -110,81 +110,81 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
   };
 
   const formatTime = (seconds: number): string => {
-    if (!isFinite(seconds)) return '0:00';
+    if (!isFinite(seconds)) return '--:--';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Don't render if still loading
-  if (isLoading) {
-    return null;
-  }
-
-  // Don't render if no audio found
-  if (!audioUrl) {
+  if (isLoading || !audioUrl) {
     return null;
   }
 
   return (
-    <div className={styles.audioPlayer}>
+    <div
+      className={styles.strip}
+      data-playing={isPlaying || undefined}
+    >
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
 
-      <div className={styles.controls}>
-        <button
-          className={styles.playButton}
-          onClick={togglePlayPause}
-          aria-label={isPlaying ? 'Pause' : 'Play'}
-          title={isPlaying ? 'Pause podcast' : 'Play podcast'}
-        >
-          {isPlaying ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          )}
-        </button>
+      <button
+        className={styles.playButton}
+        onClick={togglePlayPause}
+        aria-label={isPlaying ? 'Pause audio' : 'Play audio'}
+      >
+        {isPlaying ? (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+            <rect x="2" y="2" width="3.5" height="10" rx="0.5"/>
+            <rect x="8.5" y="2" width="3.5" height="10" rx="0.5"/>
+          </svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+            <path d="M4 2.5l8 4.5-8 4.5V2.5z"/>
+          </svg>
+        )}
+      </button>
 
-        <div className={styles.timeInfo}>
-          <span className={styles.currentTime}>{formatTime(currentTime)}</span>
-          <span className={styles.separator}>/</span>
-          <span className={styles.duration}>{formatTime(duration)}</span>
-        </div>
+      <span className={styles.idleIcon} aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+          stroke="currentColor" strokeWidth="2"
+          strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 9V8a5 5 0 0 1 10 0v1"/>
+          <rect x="1" y="9" width="3" height="4" rx="1"/>
+          <rect x="12" y="9" width="3" height="4" rx="1"/>
+        </svg>
+      </span>
 
-        <input
-          type="range"
-          className={styles.seekBar}
-          min="0"
-          max={duration || 0}
-          value={currentTime}
-          onChange={handleSeek}
-          aria-label="Seek"
-        />
+      <span className={styles.labelText}>Audio companion</span>
 
-        <div className={styles.speedControl}>
-          <label htmlFor="playback-speed" className={styles.speedLabel}>
-            Speed:
-          </label>
-          <select
-            id="playback-speed"
-            className={styles.speedSelect}
-            value={playbackRate}
-            onChange={(e) => changePlaybackRate(parseFloat(e.target.value))}
+      <input
+        type="range"
+        className={styles.seekBar}
+        min="0"
+        max={duration || 0}
+        value={currentTime}
+        onChange={handleSeek}
+        style={{
+          '--seek-progress': `${duration ? (currentTime / duration) * 100 : 0}%`
+        } as React.CSSProperties}
+        aria-label="Seek"
+      />
+
+      <span className={styles.timeDisplay}>
+        {formatTime(currentTime)} / {formatTime(duration)}
+      </span>
+
+      <div className={styles.speedButtons} role="group" aria-label="Playback speed">
+        {([1, 1.25, 1.5, 2] as const).map(rate => (
+          <button
+            key={rate}
+            className={playbackRate === rate ? styles.rateActive : styles.rateInactive}
+            onClick={() => changePlaybackRate(rate)}
+            aria-label={`${rate}x speed`}
+            aria-pressed={playbackRate === rate}
           >
-            <option value="0.75">0.75x</option>
-            <option value="1">1x</option>
-            <option value="1.25">1.25x</option>
-            <option value="1.5">1.5x</option>
-            <option value="2">2x</option>
-          </select>
-        </div>
-      </div>
-
-      <div className={styles.podcastLabel}>
-        🎙️ Listen to this lesson as a podcast
+            {rate}x
+          </button>
+        ))}
       </div>
     </div>
   );

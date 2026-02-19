@@ -1,168 +1,174 @@
-.audioPlayer {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  padding: var(--space-2);
-  margin-bottom: var(--space-3);
-}
+/* Strip container — only track color uses a var; thumb uses explicit per-selector values */
+.strip {
+  --track-filled-color: var(--border-default);
 
-.controls {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: var(--space-2);
+  height: 40px;
+  margin: var(--space-4) 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
 }
 
+.strip[data-playing] {
+  --track-filled-color: var(--visual-cyan);
+}
+
+/* Play / Pause — borderless inline icon, blends with strip */
 .playButton {
-  background: var(--text-heading);
-  color: var(--surface-page);
-  border: none;
-  border-radius: var(--radius-full);
-  width: var(--target-lg);
-  height: var(--target-lg);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.15s ease;
   flex-shrink: 0;
+  line-height: 1;
+  transition: color 0.15s ease;
 }
-
 .playButton:hover {
-  background: var(--neutral-700);
+  color: var(--text-body);
 }
-
-:global([data-theme='dark']) .playButton:hover {
-  background: var(--neutral-300);
-}
-
 .playButton:active {
-  background: var(--neutral-800);
+  color: var(--text-heading);
 }
 
-:global([data-theme='dark']) .playButton:active {
-  background: var(--neutral-200);
-}
-
-.timeInfo {
-  display: flex;
+/* Headphone icon — always visible */
+.idleIcon {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  color: var(--ifm-color-emphasis-700);
-  min-width: 90px;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
-.currentTime {
-  font-weight: 600;
+/* Label — stays in place, color shifts subtly when playing */
+.labelText {
+  color: var(--text-muted);
+  transition: color 300ms ease;
+}
+.strip[data-playing] .labelText {
+  color: var(--text-body);
 }
 
-.separator {
-  color: var(--ifm-color-emphasis-500);
-}
-
-.duration {
-  color: var(--ifm-color-emphasis-600);
-}
-
+/* Seek bar — flat, no box-shadow. Filled color driven by state var. */
 .seekBar {
   flex: 1;
-  height: 6px;
-  border-radius: 3px;
+  height: 2px;
+  appearance: none;
+  background: linear-gradient(
+    to right,
+    var(--track-filled-color) var(--seek-progress, 0%),
+    var(--border-subtle) var(--seek-progress, 0%)
+  );
+  border: none;
   outline: none;
   cursor: pointer;
-  appearance: none;
-  background: var(--ifm-color-emphasis-300);
 }
 
+/* Smooth Circuit thumb — explicit idle values; no var() intermediary so Safari
+   can observe the property change and fire transitions correctly */
 .seekBar::-webkit-slider-thumb {
   appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--ifm-color-primary);
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: var(--text-muted);
   cursor: pointer;
-  transition: transform 0.2s;
+  transform: scale(0.6);
+  transition: background 200ms ease, transform 200ms ease;
+  will-change: transform;
 }
-
-.seekBar::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-}
-
 .seekBar::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   border: none;
-  border-radius: 50%;
-  background: var(--ifm-color-primary);
+  border-radius: var(--radius-full);
+  background: var(--text-muted);
   cursor: pointer;
-  transition: transform 0.2s;
+  transform: scale(0.6);
+  transition: background 200ms ease, transform 200ms ease;
+  will-change: transform;
+}
+.seekBar::-moz-range-track {
+  height: 2px;
+  background: var(--border-subtle);
+  border: none;
 }
 
-.seekBar::-moz-range-thumb:hover {
-  transform: scale(1.2);
+/* Playing: explicit values on pseudo-element selectors, not via var() on ancestor.
+   Safari requires the cascade itself to change the property value for transitions to fire.
+   animation-delay matches transition duration so scale-up finishes before pulse starts. */
+.strip[data-playing] .seekBar::-webkit-slider-thumb {
+  background: var(--visual-cyan);
+  transform: scale(1);
+  animation: thumbPulse 2s ease-in-out infinite;
+  animation-delay: 200ms;
+}
+.strip[data-playing] .seekBar::-moz-range-thumb {
+  background: var(--visual-cyan);
+  transform: scale(1);
+  animation: thumbPulse 2s ease-in-out infinite;
+  animation-delay: 200ms;
 }
 
-.speedControl {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+@keyframes thumbPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.2); }
+}
+
+/* Time */
+.timeDisplay {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-.speedLabel {
-  font-size: 13px;
-  color: var(--ifm-color-emphasis-700);
-  font-weight: 500;
+/* Speed toggles — Krypton voice for technical taxonomy labels */
+.speedButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
 }
-
-.speedSelect {
-  padding: 4px 8px;
-  border: 1px solid var(--ifm-color-emphasis-400);
-  border-radius: 4px;
-  background: var(--ifm-color-emphasis-0);
-  color: var(--ifm-color-emphasis-900);
-  font-size: 13px;
+.rateInactive,
+.rateActive {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
   cursor: pointer;
-  outline: none;
+  line-height: var(--lh-sm);
+}
+.rateInactive { color: var(--text-muted); }
+.rateActive   { color: var(--text-heading); font-weight: 600; }
+.rateInactive:hover { color: var(--text-body); }
+
+/* Mobile: hide secondary controls, preserve core play + scrub */
+@media (max-width: 600px) {
+  .labelText,
+  .timeDisplay,
+  .speedButtons { display: none; }
 }
 
-.speedSelect:hover {
-  border-color: var(--ifm-color-primary);
-}
-
-.speedSelect:focus {
-  border-color: var(--ifm-color-primary);
-  box-shadow: 0 0 0 2px var(--ifm-color-primary-lightest);
-}
-
-.podcastLabel {
-  font-size: 13px;
-  color: var(--ifm-color-emphasis-600);
-  text-align: center;
-  margin-top: 4px;
-}
-
-/* Responsive design for mobile */
-@media (max-width: 768px) {
-  .controls {
-    flex-wrap: wrap;
+/* Reduced motion — instant state switches, no animation */
+@media (prefers-reduced-motion: reduce) {
+  .seekBar::-webkit-slider-thumb,
+  .seekBar::-moz-range-thumb {
+    transition: none !important;
+    animation: none !important;
   }
-
-  .seekBar {
-    order: 3;
-    flex-basis: 100%;
-    margin-top: 8px;
+  .strip[data-playing] .seekBar::-webkit-slider-thumb,
+  .strip[data-playing] .seekBar::-moz-range-thumb {
+    animation: none !important;
   }
-
-  .speedControl {
-    order: 2;
-  }
-}
-
-/* Dark mode specific adjustments */
-[data-theme='dark'] .speedSelect {
-  background: var(--surface-raised);
 }
