@@ -2,61 +2,41 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  height: var(--target-md);
-  padding: 0 var(--space-3);
-  background: var(--text-heading);
-  color: var(--surface-page);
-  border: none;
+  height: var(--target-sm);               /* 32px — tertiary action */
+  padding: 0 var(--space-2);              /* 16px horizontal */
+  background: transparent;
+  color: var(--text-body);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .toggleButton:hover:not(:disabled) {
-  background: var(--neutral-700);
-}
-
-:global([data-theme='dark']) .toggleButton:hover:not(:disabled) {
-  background: var(--neutral-300);
+  border-color: var(--border-emphasis);
+  color: var(--text-heading);
 }
 
 .toggleButton:active:not(:disabled) {
-  background: var(--neutral-800);
-}
-
-:global([data-theme='dark']) .toggleButton:active:not(:disabled) {
-  background: var(--neutral-200);
+  background: var(--surface-muted);
 }
 
 .toggleButton:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
-}
-
-.icon {
-  font-size: 1.2em;
-  line-height: 1;
-}
-
-.label {
-  font-family: var(--font-body);
 }
 
 .spinner {
   display: inline-block;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .errorMessage {

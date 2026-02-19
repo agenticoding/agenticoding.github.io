@@ -118,9 +118,20 @@ export default function PresentationToggle({
         title="Toggle presentation mode (Cmd/Ctrl + Shift + P)"
       >
         {loading ? (
-          <span className={styles.spinner}>⏳</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+               stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+               className={styles.spinner} aria-hidden="true">
+            <circle cx="8" cy="8" r="5.5" strokeDasharray="22 13"/>
+          </svg>
         ) : (
-          <span className={styles.icon}>🎭</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+               stroke="currentColor" strokeWidth="1.5"
+               strokeLinecap="round" strokeLinejoin="round"
+               aria-hidden="true">
+            <rect x="2" y="2" width="12" height="9" rx="1.5"/>
+            <line x1="8" y1="11" x2="8" y2="14"/>
+            <line x1="5" y1="14" x2="11" y2="14"/>
+          </svg>
         )}
         <span className={styles.label}>
           {loading ? 'Loading...' : 'Present'}
