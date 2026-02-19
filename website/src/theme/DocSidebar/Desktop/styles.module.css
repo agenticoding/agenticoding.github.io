@@ -138,6 +138,7 @@
 
 .searchSlot :global(.navbar__search-input) {
   width: 100%;                           /* Infima default: 12.5rem (200px) */
+  padding-left: var(--space-2);          /* Infima default: 2.25rem (36px) — icon gone, reduce to component padding */
 }
 
 .searchSlot :global([class*='searchBar_']) {
@@ -259,6 +260,15 @@
 .footerLink:hover {
   color: var(--text-heading);
   text-decoration: none;
+}
+
+.footerLinkActive {
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.footerLinkActive:hover {
+  color: var(--text-heading);
 }
 
 /* Mobile sidebar additions */
