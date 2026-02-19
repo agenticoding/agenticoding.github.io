@@ -1,0 +1,279 @@
+/* DocSidebar/Desktop — Sidebar-first navigation layout
+   Design system: flat, achromatic, --space-* tokens, --target-* sizes */
+
+.sidebarContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Sticky header: brand + channel switcher */
+.sidebarHeader {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-2) 0;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--target-sm);
+}
+
+/* Brand title — collapses when search active */
+.brandRow:has([data-search-active]) .brandTitle {
+  opacity: 0;
+  max-width: 0;
+}
+
+/* Search button stays visible when active (becomes close toggle) */
+
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  text-decoration: none;
+  color: var(--text-heading);
+}
+
+.brandLink:hover {
+  text-decoration: none;
+  color: var(--text-heading);
+}
+
+.brandLogo {
+  height: var(--space-3);
+  width: auto;
+}
+
+.brandTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-lg);
+  line-height: var(--lh-lg);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 160px;
+  transition: opacity 200ms ease-out, max-width 200ms ease-out;
+}
+
+/* Channel switcher — underline tabs with sliding indicator */
+.channelSwitcher {
+  position: relative;
+  display: flex;
+  margin-top: var(--space-1);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.channelSwitcher::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  width: calc(100% / var(--channel-count, 3));
+  background: var(--text-heading);
+  transform: translateX(calc(var(--active-index, 0) * 100%));
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.channelTab {
+  flex: 1;
+  min-width: 0;
+  height: var(--target-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  line-height: var(--lh-sm);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 400;
+  padding: 0 var(--space-0h);
+  transition: color 0.15s ease;
+}
+
+.channelTab:hover {
+  color: var(--text-body);
+  text-decoration: none;
+}
+
+.channelTabActive {
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.channelTabActive:hover {
+  color: var(--text-heading);
+}
+
+/* Search slot — grows when active */
+.searchSlot {
+  flex-grow: 0;
+  opacity: 0;
+  min-width: 0;
+  overflow: hidden;
+  transition: flex-grow 200ms ease-out, opacity 200ms ease-out;
+}
+
+.searchSlot[data-search-active] {
+  flex-grow: 1;
+  opacity: 1;
+  overflow: visible; /* allow dropdown to escape */
+}
+
+/* Search plugin overrides — sidebar context.
+   Plugin targets full-width navbar; these constrain it to the sidebar flex row.
+   Specificity 0-2-0 beats plugin's module classes (0-1-0). */
+
+.searchSlot :global(.navbar__search) {
+  margin-left: 0;                        /* plugin default: 16px */
+}
+
+.searchSlot :global(.navbar__search-input) {
+  width: 100%;                           /* Infima default: 12.5rem (200px) */
+}
+
+.searchSlot :global([class*='searchBar_']) {
+  display: block !important;             /* autocomplete.js inline style: inline-block */
+  width: 100% !important;
+}
+
+.searchSlot :global([class*='searchHintContainer']) {
+  gap: 0;
+  right: var(--space-1);                 /* plugin default: 10px (not grid-snapped) */
+}
+
+.searchSlot :global([class*='searchHint']) {
+  box-shadow: none;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  border-radius: 0;
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  padding: 0;
+}
+
+/* Search button — 32×32 icon trigger in brand row */
+.searchButton {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--target-sm);
+  height: var(--target-sm);
+  max-width: var(--target-sm);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  overflow: hidden;
+  transition: opacity 200ms ease-out, max-width 200ms ease-out,
+              background 0.15s ease, color 0.15s ease;
+}
+
+.searchButton:hover {
+  background: var(--surface-muted);
+  color: var(--text-heading);
+}
+
+.searchButton:focus-visible {
+  border-color: var(--neutral-600);
+  outline: none;
+}
+
+:global([data-theme='dark']) .searchButton:focus-visible {
+  border-color: var(--neutral-400);
+}
+
+/* Reduced motion — instant swap */
+@media (prefers-reduced-motion: reduce) {
+  .brandTitle,
+  .searchSlot,
+  .searchButton {
+    transition-duration: 0s !important;
+  }
+  .channelSwitcher::after {
+    transition-duration: 0s !important;
+  }
+  .sidebarScrollable {
+    animation: none !important;
+  }
+}
+
+/* Channel entrance animation */
+@keyframes channelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollable middle area: sidebar items */
+.sidebarScrollable {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  animation: channelEnter 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Sticky footer: FAQ + GitHub + theme toggle */
+.sidebarFooter {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2);
+  border-top: 1px solid var(--border-default);
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.footerLink {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footerLink:hover {
+  color: var(--text-heading);
+  text-decoration: none;
+}
+
+/* Mobile sidebar additions */
+.searchArea {
+  padding: var(--space-2);
+}
+
+.mobileChannelArea {
+  padding: var(--space-2);
+}
+
+.mobileFooterLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-top: 1px solid var(--border-default);
+}
