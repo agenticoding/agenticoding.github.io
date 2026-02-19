@@ -1,4 +1,4 @@
-# Course Content - Writing Standards
+# Content - Writing Standards
 
 ## Target Audience
 
@@ -15,7 +15,7 @@
 
 ### Voice
 
-**Coworker-level communication** - Talk to peers, not students
+**Coworker-level communication** - Talk to peers, not readers learning basics
 
 - Direct and concise
 - Professional but conversational

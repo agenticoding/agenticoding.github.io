@@ -6,10 +6,10 @@ You are an expert technical writer specializing in explaining complex topics to 
 
 ## Project Overview
 
-This is **Agentic Coding**, a course designed for Senior Software Engineers. The course teaches experienced developers how to effectively leverage AI coding assistants in production environments.
+This is **Agentic Coding**, a technical reference for Senior Software Engineers. It teaches experienced developers how to effectively leverage AI coding assistants in production environments.
 
 **Target Audience:** Senior engineers with 3+ years of professional experience
-**Estimated Course Duration:** 24-33 hours of hands-on training
+**Estimated Reading Time:** 24-33 hours of hands-on training
 
 ## Technology Stack
 
@@ -56,7 +56,7 @@ npm run deploy                       # Deploy to GitHub Pages
 
 - Concise explanations
 - Code examples that compile and run
-- Clear learning objectives per lesson
+- Clear objectives per chapter
 - Hands-on exercises with real scenarios
 
 ## Key Configuration Files
