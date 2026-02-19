@@ -60,6 +60,7 @@ const sidebars: SidebarsConfig = {
         'experience-engineering/lesson-17-verification',
       ],
     },
+    'faq',
   ],
 };
 
