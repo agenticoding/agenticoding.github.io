@@ -126,6 +126,7 @@
   --ifm-font-family-base: var(--font-body);
   --ifm-heading-font-family: var(--font-display);
   --ifm-font-family-monospace: var(--font-mono);
+  --ifm-h1-font-size: var(--text-4xl); /* 40px — design system h1 token */
 
   /* === NAVBAR — Flat, line-based (Design System rule #4) === */
   --ifm-navbar-background-color: var(--surface-page);
@@ -138,6 +139,10 @@
   --ifm-navbar-link-color: var(--text-body);
   --ifm-navbar-link-hover-color: var(--text-heading);
 
+  /* === BREADCRUMBS — Metadata/wayfinding level === */
+  --ifm-breadcrumb-color-active: var(--text-body);          /* #505050 — current page item */
+  --ifm-breadcrumb-item-background-active: var(--surface-raised); /* token-aligned pill bg */
+
   /* === DOC SIDEBAR — Design system tokens === */
   --ifm-menu-color: var(--text-body);
   --ifm-menu-color-active: var(--text-heading);
@@ -147,6 +152,9 @@
   --ifm-menu-link-padding-vertical: var(--space-1);       /* 8px, was 6px → 40px touch targets */
   --ifm-menu-link-sublist-icon-filter: none;
   --ifm-toc-border-color: var(--border-default);
+  --ifm-toc-link-color: var(--text-muted);       /* #808080 light / #9b9b9b dark */
+  --ifm-toc-padding-vertical: var(--space-1);    /* 8px — 8px grid */
+  --ifm-toc-padding-horizontal: var(--space-1);  /* 8px — 8px grid */
   --docusaurus-collapse-button-bg: var(--surface-raised);
   --docusaurus-collapse-button-bg-hover: var(--surface-muted);
   --ifm-scrollbar-track-background-color: var(--surface-raised);
@@ -161,6 +169,7 @@
   --text-body: var(--neutral-700);       /* #505050 */
   --text-muted: var(--neutral-500);      /* #808080 */
   --border-default: var(--neutral-200);  /* #d4d4d4 */
+  --border-subtle: var(--neutral-200);   /* #d4d4d4 — hairline dividers */
 
   /* Map to Infima layout variables */
   --ifm-background-color: var(--surface-page);
@@ -315,6 +324,7 @@
   --text-body: #d4d4d4;           /* neutral-200 */
   --text-muted: #9b9b9b;          /* neutral-400 */
   --border-default: #505050;      /* neutral-700 */
+  --border-subtle: #3d3d3d;       /* neutral-800 — hairline dividers */
 
   /* === DARK MODE BACKGROUNDS === */
   --ifm-background-color: var(--surface-page);
@@ -353,6 +363,46 @@
   /* === ANNOUNCEMENT BAR === */
   --announcement-bg: #8e5900;  /* warning-600 */
   --announcement-text: #fff3e6; /* warning-50 */
+}
+
+/* ========================================================================
+   BREADCRUMBS — Inactive link color override
+   Infima uses `color: inherit` on <a> breadcrumb links, bypassing the
+   --ifm-breadcrumb-color variable. Direct selector required.
+   ======================================================================== */
+.breadcrumbs__item:not(.breadcrumbs__item--active) .breadcrumbs__link {
+  color: var(--text-muted); /* #808080 light / #9b9b9b dark — metadata level */
+}
+
+/* ========================================================================
+   PAGE TITLE — h1 size on design system scale
+   --ifm-h1-font-size is not applied to article h1 in Docusaurus's rendered
+   output; direct selector required.
+   ======================================================================== */
+article h1 {
+  font-size: var(--text-4xl);  /* 40px */
+  line-height: var(--lh-3xl);  /* 48px */
+}
+
+/* ========================================================================
+   TABLE OF CONTENTS — Right sidebar, design system alignment
+   ======================================================================== */
+
+.table-of-contents {
+  font-size: var(--text-sm);    /* 13px — secondary/metadata navigation */
+  font-family: var(--font-body);
+}
+
+.table-of-contents__link {
+  line-height: var(--lh-sm);   /* 24px — 8px-snapped */
+}
+
+/* Active + hover: contrast shift within neutral palette, not a hue shift */
+.table-of-contents__link:hover,
+.table-of-contents__link:hover code,
+.table-of-contents__link--active,
+.table-of-contents__link--active code {
+  color: var(--text-body);     /* One step up from --text-muted in the hierarchy */
 }
 
 /* ========================================================================
