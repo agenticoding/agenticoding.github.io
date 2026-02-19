@@ -331,6 +331,95 @@ Do NOT use equal spacing within and between groups. Instead, ensure at least a 2
 
 ---
 
+## Content Composition
+
+Rules for how prose, figures, code blocks, and interactive elements occupy the page.
+
+### Page Reading Flow
+
+Content follows a single-column vertical flow. Block elements (figures, code blocks, admonitions) interrupt the prose column and span its full width.
+
+| Transition | Spacing | Token |
+|-----------|---------|-------|
+| Paragraph → paragraph | 16px | `--space-2` |
+| Paragraph → block element | 32px | `--space-4` |
+| Block element → paragraph | 32px | `--space-4` |
+| Block element → block element | 24px | `--space-3` |
+| Section heading → first element | 16px | `--space-2` |
+| Last element → section heading | 64px | `--space-6` |
+
+Apply `max-width: 66ch` to prose containers. Block elements (figures, code blocks) may extend to the content column's full width but do NOT exceed it.
+
+Do NOT place a figure before its first textual reference. Instead, the figure appears immediately after the paragraph that introduces it.
+
+### Figure Integration
+
+Use semantic `<figure>` and `<figcaption>` for all visual block elements — diagrams, screenshots, illustrations, and annotated code.
+
+```html
+<figure>
+  <!-- SVG diagram, image, or code block -->
+  <figcaption>Figure 4.3 — Context window token allocation across three agent turns.</figcaption>
+</figure>
+```
+
+| Property | Value |
+|----------|-------|
+| Caption font | `--text-sm` (13px) |
+| Caption color | `--text-muted` |
+| Caption spacing | `--space-1` above caption |
+| Figure margin | `--space-4` top and bottom |
+| Numbering | Optional, section-based: `Figure {section}.{n} —` |
+
+| Figure Type | Width | Alignment |
+|------------|-------|-----------|
+| Diagram (SVG) | 100% of content column | Centered via `margin-inline: auto` |
+| Screenshot | Intrinsic, max 100% | Centered |
+| Inline icon pair | Intrinsic | Inline with text |
+
+Do NOT use figures without captions. Every `<figure>` must contain a `<figcaption>` that describes the content.
+
+Do NOT use `<img>` directly for diagrams or illustrations. Instead, wrap in `<figure>` with a descriptive caption.
+
+### Progressive Disclosure
+
+Three patterns for managing content density, mapped to Docusaurus primitives:
+
+| Pattern | Primitive | Use When |
+|---------|-----------|----------|
+| Collapsible depth | `<details>` / `<summary>` | Optional deep-dive, implementation detail, proof, or derivation |
+| Parallel alternatives | `<Tabs>` | Multiple equivalent approaches (languages, frameworks, OS) |
+| Semantic alert | Admonition (`:::type`) | Contextual warnings, tips, or prerequisites that interrupt flow |
+
+#### Selection criteria
+
+| Question | If Yes → |
+|----------|----------|
+| Is this content required to understand the main argument? | Keep inline — do NOT hide it |
+| Does the reader choose one of N equivalent paths? | `<Tabs>` |
+| Is this a tangent that only some readers need? | `<details>` |
+| Does this interrupt flow with a warning, tip, or prerequisite? | Admonition |
+
+Do NOT hide critical content behind `<details>`. Instead, keep essential information in the primary prose flow.
+
+Do NOT nest disclosure patterns. A `<details>` inside a `<Tabs>` panel (or vice versa) adds cognitive overhead. Instead, flatten the structure.
+
+### Content Block Hierarchy
+
+Content occupies three tiers. Tiers 1 and 2 must be self-sufficient — a reader who ignores tier 3 still gets the complete argument.
+
+| Tier | Elements | Role |
+|------|----------|------|
+| 1 — Primary | Prose paragraphs, headings, inline code | Core argument and explanation |
+| 2 — Secondary | Figures, code blocks, tables | Evidence, demonstration, specification |
+| 3 — Tertiary | Admonitions, `<details>`, footnotes | Supplementary context, caveats, deep-dives |
+
+Do NOT place essential information exclusively in tier 3. Instead, state the key point in tier 1 prose, then elaborate in tier 3 if needed.
+
+Do NOT exceed 3 consecutive block elements (tier 2 or 3) without intervening prose. Instead, add a bridging sentence that connects the blocks to the argument.
+
+---
+
 ## UI Patterns
 
 ### Buttons
@@ -383,6 +472,22 @@ All state changes use contrast/weight shifts. Do NOT introduce hue changes on in
 
 - Border: neutral. Focus: darker border.
 - Do NOT use colored focus rings. Instead, increase border contrast on focus.
+
+### Admonitions
+
+Docusaurus admonition types map to the semantic hue palette and use the Callout Borders pattern (3px left border + colored label).
+
+| Admonition | Hue | Token | Label Color |
+|-----------|-----|-------|-------------|
+| `:::tip` | Cyan (H:195°) | `--visual-cyan` | `var(--visual-cyan)` |
+| `:::info` | Indigo (H:250°) | `--visual-indigo` | `var(--visual-indigo)` |
+| `:::note` | Neutral | `--visual-neutral` | `var(--visual-neutral)` |
+| `:::caution` | Warning (H:70°) | `--visual-warning` | `var(--visual-warning)` |
+| `:::danger` | Error (H:25°) | `--visual-error` | `var(--visual-error)` |
+
+Body text inside admonitions stays `--text-body`. Only the label and left border carry the semantic color.
+
+Do NOT apply background tints to admonitions. Instead, use `--surface-raised` for the container background, matching the flat construction constraint.
 
 ---
 
@@ -546,6 +651,7 @@ Do NOT mix linecap/linejoin styles within a single icon. Choose one family based
 | Flow diagram | 400–600 | 160–240px |
 | System diagram | 500–1000 | 300–500px |
 | Comparison (side-by-side) | 600–1000 | 200–400px |
+| Figure caption | Same as parent figure | `--text-sm` line-height (24px) |
 
 All diagram containers use `width: 100%` with SVG `viewBox` controlling aspect ratio. Do NOT set fixed pixel widths on diagram containers.
 
