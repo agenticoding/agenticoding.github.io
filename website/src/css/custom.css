@@ -356,6 +356,29 @@
 }
 
 /* ========================================================================
+   CHANNEL SWITCH — Main content entrance animation
+   ========================================================================
+   Cross-channel navigation (/docs → /prompts) unmounts DocRoot entirely,
+   so a CSS animation on the container fires only on channel switches.
+   50ms delay staggers after the sidebar entrance (150ms in styles.module.css).
+   ======================================================================== */
+
+@keyframes channelEnter {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+[class*='docMainContainer'] > .container {
+  animation: channelEnter 200ms cubic-bezier(0.4, 0, 0.2, 1) 60ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*='docMainContainer'] > .container {
+    animation: none !important;
+  }
+}
+
+/* ========================================================================
    MERMAID DIAGRAM STYLING
    ======================================================================== */
 
@@ -498,12 +521,34 @@
 }
 
 /* ========================================================================
-   NAVBAR — Flat, line-based navigation
+   NAVBAR — Hidden on desktop, minimal on mobile
    ========================================================================
-   Design system: flat construction, typographic interaction, achromatic.
-   The navbar is defined by a single bottom border, not a filled surface.
-   Interactive states use weight and underline, not color.
+   All navigation is unified into the left sidebar on desktop (≥997px).
+   Mobile retains the navbar shell (brand + hamburger only).
    ======================================================================== */
+
+/* Hide navbar on desktop — sidebar-first layout */
+@media (min-width: 997px) {
+  .navbar {
+    display: none;
+  }
+
+  :root {
+    --ifm-navbar-height: 0px;
+  }
+
+  [data-theme='dark'] {
+    --ifm-navbar-height: 0px;
+  }
+}
+
+/* Sidebar right border — primary structural separator on desktop */
+@media (min-width: 997px) {
+  .theme-doc-sidebar-container {
+    border-right: 1px solid var(--border-default);
+    border-bottom: none;
+  }
+}
 
 .navbar {
   border-bottom: 1px solid var(--neutral-300);
@@ -600,10 +645,18 @@
   border-radius: var(--radius-sm);    /* 4px — input radius */
   width: var(--target-sm);            /* 32px — tertiary action */
   height: var(--target-sm);
+  color: var(--text-muted);           /* match footer link weight */
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.color-mode-toggle svg {
+  width: var(--icon-sm);              /* 16px — match search icon */
+  height: var(--icon-sm);
 }
 
 .color-mode-toggle button:hover {
   background: var(--surface-muted);
+  color: var(--text-heading);         /* match footer link hover */
 }
 
 .color-mode-toggle button:focus-visible {
@@ -616,29 +669,18 @@
 }
 
 /* Search dropdown — flat border replaces shadow (design system: flat construction) */
-.navbar [class*='dropdownMenu'] {
+[class*='dropdownMenu'] {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);    /* 8px — container radius */
 }
 
-/* Search hint badge (⌘K) — flat, design system tokens
-   Light: #666666 on #f5f5f5 = 5.27:1 (WCAG AA). Dark: #9b9b9b on #161b22 = 6.22:1. */
-.navbar [class*='searchHint'] {
-  box-shadow: none;
-  border: 1px solid var(--neutral-400);
-  background-color: var(--surface-raised);
-  color: var(--neutral-600);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  padding: 0 var(--space-0h);
+/* Search dropdown — sidebar context: align left, cap width to sidebar */
+.theme-doc-sidebar-container [class*='dropdownMenu'] {
+  left: 0;
+  right: auto;
+  max-width: calc(var(--doc-sidebar-width) - var(--space-4));
 }
 
-[data-theme='dark'] .navbar [class*='searchHint'] {
-  border-color: var(--neutral-600);
-  background-color: var(--surface-raised);
-  color: var(--neutral-400);
-}
 
 /* Mobile hamburger toggle */
 @media (max-width: 996px) {
@@ -755,6 +797,25 @@ code, pre, kbd, [class*="codeBlock"] {
 
 .menu__link--sublist-caret::after {
   min-width: var(--icon-sm);            /* 16px, was 20px */
+}
+
+/* §N section marker — typographically secondary reference tag ----------- */
+
+.sidebar-section-number {
+  display: inline-block;
+  font-family: var(--font-mono-keyword);  /* Monaspace Krypton — technical/mechanical voice */
+  font-size: var(--text-xs);             /* 11px — visually subordinate */
+  line-height: var(--lh-sm);            /* 24px — stays on baseline */
+  color: var(--text-muted);             /* #808080 light / #9b9b9b dark */
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-right: var(--space-0h);         /* 4px gap before label text */
+  min-width: 1.8em;                      /* prevents label shift as numbers grow: §1 vs §14 */
+  font-feature-settings: var(--font-mono-features);
+}
+
+.menu__link--active .sidebar-section-number {
+  color: var(--text-body);              /* lift to body color when active — subtle emphasis */
 }
 
 /* ========================================================================

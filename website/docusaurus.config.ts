@@ -194,45 +194,13 @@ const config: Config = {
         alt: 'Agentic Coding Logo',
         src: 'img/logo.svg',
       },
-      items: [
-        {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Course',
-        },
-        {
-          type: 'doc',
-          docId: 'index',
-          position: 'left',
-          label: 'Prompt Library',
-          docsPluginId: 'prompts',
-        },
-        {
-          type: 'doc',
-          docId: 'cli-coding-agents',
-          position: 'left',
-          label: 'Toolbox',
-          docsPluginId: 'developer-tools',
-        },
-        {
-          type: 'doc',
-          docId: 'faq',
-          position: 'left',
-          label: 'FAQ',
-        },
-        {
-          href: 'https://github.com/agenticoding/agenticoding.github.io',
-          label: 'GitHub',
-          position: 'right',
-        },
-      ],
+      items: [], // All navigation moved to sidebar
     },
     footer: {
       style: 'dark',
       links: [
         {
-          title: 'Course',
+          title: 'Reference',
           items: [
             {
               label: 'FAQ',
@@ -243,7 +211,7 @@ const config: Config = {
               to: '/docs',
             },
             {
-              label: 'Course Modules',
+              label: 'All Chapters',
               to: '/docs/fundamentals/lesson-1-how-llms-work',
             },
           ],
