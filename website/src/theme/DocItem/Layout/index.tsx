@@ -1,19 +1,17 @@
 import React, { type ReactNode } from 'react';
+import { publishTOC } from '../../tocStore';
 import clsx from 'clsx';
-import { useWindowSize } from '@docusaurus/theme-common';
 import { useDoc } from '@docusaurus/plugin-content-docs/client';
 import DocItemPaginator from '@theme/DocItem/Paginator';
 import DocVersionBanner from '@theme/DocVersionBanner';
 import DocVersionBadge from '@theme/DocVersionBadge';
 import DocItemFooter from '@theme/DocItem/Footer';
 import DocItemTOCMobile from '@theme/DocItem/TOC/Mobile';
-import DocItemTOCDesktop from '@theme/DocItem/TOC/Desktop';
 import DocItemContent from '@theme/DocItem/Content';
 import DocBreadcrumbs from '@theme/DocBreadcrumbs';
 import ContentVisibility from '@theme/ContentVisibility';
 import type { Props } from '@theme/DocItem/Layout';
 import PresentationToggle from '@site/src/components/PresentationMode/PresentationToggle';
-import SiteHero from '@site/src/components/SiteHero';
 
 import styles from './styles.module.css';
 
@@ -23,33 +21,27 @@ interface CustomFrontMatter {
 }
 
 /**
- * Decide if the toc should be rendered, on mobile or desktop viewports
+ * Decide if the toc should be rendered, and publish it to the sidebar TOC store.
  */
 function useDocTOC() {
   const { frontMatter, toc } = useDoc();
-  const windowSize = useWindowSize();
 
   const hidden = frontMatter.hide_table_of_contents;
   const canRender = !hidden && toc.length > 0;
 
-  const mobile = canRender ? <DocItemTOCMobile /> : undefined;
-
-  const desktop =
-    canRender && (windowSize === 'desktop' || windowSize === 'ssr') ? (
-      <DocItemTOCDesktop />
-    ) : undefined;
+  React.useEffect(() => {
+    publishTOC(hidden ? [] : toc);
+  }, [toc, hidden]);
 
   return {
     hidden,
-    mobile,
-    desktop,
+    mobile: canRender ? <DocItemTOCMobile /> : undefined,
   };
 }
 
 export default function DocItemLayout({ children }: Props): ReactNode {
   const docTOC = useDocTOC();
   const { metadata, frontMatter } = useDoc();
-  const isIntroPage = metadata.id === 'intro';
 
   // Get lesson path for presentation lookup
   const lessonPath = metadata.source?.replace('@site/docs/', '') || '';
@@ -60,22 +52,11 @@ export default function DocItemLayout({ children }: Props): ReactNode {
       <div className={clsx('col', !docTOC.hidden && styles.docItemCol)}>
         <ContentVisibility metadata={metadata} />
         <DocVersionBanner />
-        {isIntroPage && (
-          <div className={styles.docHeader}>
-            <DocBreadcrumbs />
-            {customFrontMatter.presentation !== false && (
-              <div className={styles.presentationToggleWrapper}>
-                <PresentationToggle lessonPath={lessonPath} />
-              </div>
-            )}
-          </div>
-        )}
-        {isIntroPage && <SiteHero />}
-        <div className={clsx(styles.docItemContainer, isIntroPage && styles.introPage)}>
+        <div className={styles.docItemContainer}>
           <article>
             <div className={styles.docHeader}>
-              {!isIntroPage && <DocBreadcrumbs />}
-              {!isIntroPage && customFrontMatter.presentation !== false && (
+              <DocBreadcrumbs />
+              {customFrontMatter.presentation !== false && (
                 <div className={styles.presentationToggleWrapper}>
                   <PresentationToggle lessonPath={lessonPath} />
                 </div>
@@ -89,7 +70,6 @@ export default function DocItemLayout({ children }: Props): ReactNode {
           <DocItemPaginator />
         </div>
       </div>
-      {docTOC.desktop && <div className="col col--3">{docTOC.desktop}</div>}
     </div>
   );
 }

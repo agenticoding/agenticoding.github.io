@@ -6,6 +6,7 @@ import Heading from '@theme/Heading';
 import MDXContent from '@theme/MDXContent';
 import type { Props } from '@theme/DocItem/Content';
 import LessonAudioPlayer from '@site/src/components/LessonAudioPlayer';
+import SiteHero from '@site/src/components/SiteHero';
 
 /**
  Title can be declared inside md content or declared through
@@ -29,14 +30,19 @@ function useSyntheticTitle(): string | null {
 
 export default function DocItemContent({ children }: Props): ReactNode {
   const syntheticTitle = useSyntheticTitle();
+  const { metadata } = useDoc();
+  const isIntroPage = metadata.id === 'intro';
+
+  const hasHeader = isIntroPage || !!syntheticTitle;
+
   return (
     <div className={clsx(ThemeClassNames.docs.docMarkdown, 'markdown')}>
-      {syntheticTitle && (
+      {hasHeader && (
         <header>
-          <Heading as="h1">{syntheticTitle}</Heading>
+          {isIntroPage ? <SiteHero /> : <Heading as="h1">{syntheticTitle}</Heading>}
+          {!isIntroPage && <LessonAudioPlayer />}
         </header>
       )}
-      <LessonAudioPlayer />
       <MDXContent>{children}</MDXContent>
     </div>
   );

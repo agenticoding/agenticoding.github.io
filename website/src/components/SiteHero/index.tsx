@@ -1,5 +1,6 @@
-import { type ReactNode, useState, useEffect } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import Heading from '@theme/Heading';
+import LessonAudioPlayer from '@site/src/components/LessonAudioPlayer';
 import styles from './index.module.css';
 
 // ---------------------------------------------------------------------------
@@ -32,10 +33,7 @@ function useGitHubStars(repo: string): number | null {
           setStars(data.stargazers_count);
           localStorage.setItem(
             `gh-stars-${repo}`,
-            JSON.stringify({
-              stars: data.stargazers_count,
-              timestamp: Date.now(),
-            })
+            JSON.stringify({ stars: data.stargazers_count, timestamp: Date.now() })
           );
         }
       })
@@ -46,7 +44,7 @@ function useGitHubStars(repo: string): number | null {
 }
 
 // ---------------------------------------------------------------------------
-// Icons
+// Icons — Smooth Circuit style (fill: none, stroke: currentColor, round caps)
 // ---------------------------------------------------------------------------
 
 function GitHubIcon() {
@@ -62,6 +60,7 @@ function GitHubIcon() {
   );
 }
 
+// Star uses fill (rating convention); color comes from --visual-warning via CSS
 function StarIcon() {
   return (
     <svg
@@ -76,7 +75,19 @@ function StarIcon() {
 }
 
 // ---------------------------------------------------------------------------
-// Hero component
+// Data
+// ---------------------------------------------------------------------------
+
+const testimonials = [
+  '"I just finished studying this. Very useful and well organized"',
+  '"No CTO/startup-dev/tech-advisor chat has taken place in the past month without mentioning it"',
+  '"Thank you for not making another video course series"',
+  '"I was looking for something like a course or some sort of guidelines"',
+  '"Great work, this is amazing"',
+];
+
+// ---------------------------------------------------------------------------
+// Hero
 // ---------------------------------------------------------------------------
 
 export default function SiteHero(): ReactNode {
@@ -84,83 +95,84 @@ export default function SiteHero(): ReactNode {
   const chunkHoundStars = useGitHubStars('chunkhound/chunkhound');
   const arguSeekStars = useGitHubStars('ArguSeek/arguseek');
 
-  const testimonials = [
-    '"I just finished studying this. Very useful and well organized"',
-    '"No CTO/startup-dev/tech-advisor chat has taken place in the past month without mentioning it"',
-    '"Thank you for not making another video course series"',
-    '"I was looking for something like a course or some sort of guidelines"',
-    '"Great work, this is amazing"',
-  ];
-  const [testimonialIndex] = useState(() =>
-    Math.floor(Math.random() * testimonials.length)
-  );
+  // Hydration-safe random pair: [0,1] on SSR, random distinct pair after mount
+  const [pair, setPair] = useState<[number, number]>([0, 1]);
+  useEffect(() => {
+    const first = Math.floor(Math.random() * testimonials.length);
+    let second = Math.floor(Math.random() * (testimonials.length - 1));
+    if (second >= first) second++;
+    setPair([first, second]);
+  }, []);
 
   return (
-    <header className={styles.hero}>
-      <div className="container">
-        <div className={styles.heroInner}>
-          <Heading as="h2" className={styles.heroTitle}>
-            Master Agentic Coding
-          </Heading>
-          <p className={styles.heroSubtitle}>
-            Structured methodology proven on enterprise mono-repos with millions
-            of lines of code
-          </p>
-          <div className={styles.heroProof}>
-            <a
-              href="https://github.com/agenticoding/agenticoding.github.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.repoBadge}
-            >
-              <GitHubIcon />
-              <span>Open Source</span>
-              <span className={styles.badgeSep}>&middot;</span>
-              <span>MIT</span>
-              {courseStars !== null && (
-                <>
-                  <span className={styles.badgeSep}>&middot;</span>
-                  <StarIcon />
-                  <span>{formatStarCount(courseStars)}</span>
-                </>
-              )}
-            </a>
+    <div className={styles.heroInner}>
+      <div className={styles.heroContent}>
+        <Heading as="h1" className={styles.heroTitle}>
+          Master Agentic Coding
+        </Heading>
+        <p className={styles.heroSubtitle}>
+          Structured methodology proven on enterprise mono-repos with millions
+          of lines of code
+        </p>
 
-            <div className={styles.testimonial}>
-              <span className={styles.testimonialText}>
-                {testimonials[testimonialIndex]}
-              </span>
-              <span className={styles.testimonialSource}>&mdash; Reddit</span>
-            </div>
-
-            <div className={styles.repoLinks}>
-              {chunkHoundStars !== null && (
-                <a
-                  href="https://github.com/chunkhound/chunkhound"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.repoLink}
-                >
-                  ChunkHound <StarIcon /> {formatStarCount(chunkHoundStars)}
-                </a>
-              )}
-              {chunkHoundStars !== null && arguSeekStars !== null && (
-                <span className={styles.badgeSep}>&middot;</span>
-              )}
-              {arguSeekStars !== null && (
-                <a
-                  href="https://github.com/ArguSeek/arguseek"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.repoLink}
-                >
-                  ArguSeek <StarIcon /> {formatStarCount(arguSeekStars)}
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
+        <p className={styles.heroMeta}>
+          <GitHubIcon />
+          <a
+            href="https://github.com/agenticoding/agenticoding.github.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.heroMetaLink}
+          >
+            Open Source
+          </a>
+          <span className={styles.metaSep}>&middot;</span>
+          <span>MIT</span>
+          {courseStars !== null && (
+            <>
+              <span className={styles.metaSep}>&middot;</span>
+              <StarIcon /><span>{formatStarCount(courseStars)}</span>
+            </>
+          )}
+          {chunkHoundStars !== null && (
+            <>
+              <span className={styles.metaSep}>&middot;</span>
+              <a
+                href="https://github.com/chunkhound/chunkhound"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.heroMetaLink}
+              >
+                ChunkHound
+              </a>
+              <StarIcon /><span>{formatStarCount(chunkHoundStars)}</span>
+            </>
+          )}
+          {arguSeekStars !== null && (
+            <>
+              <span className={styles.metaSep}>&middot;</span>
+              <a
+                href="https://github.com/ArguSeek/arguseek"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.heroMetaLink}
+              >
+                ArguSeek
+              </a>
+              <StarIcon /><span>{formatStarCount(arguSeekStars)}</span>
+            </>
+          )}
+        </p>
+        <LessonAudioPlayer />
       </div>
-    </header>
+
+      <aside className={styles.heroAside} aria-label="Reader testimonials">
+        {pair.map((idx, i) => (
+          <blockquote key={i} className={styles.testimonial}>
+            <p className={styles.testimonialText}>{testimonials[idx]}</p>
+            <footer className={styles.testimonialSource}>&mdash; Reddit</footer>
+          </blockquote>
+        ))}
+      </aside>
+    </div>
   );
 }
