@@ -1,0 +1,129 @@
+/* ========================================================================
+   SHARED SECTION LAYOUT
+   ======================================================================== */
+
+.sectionTitle {
+  font-family: var(--font-display);
+  text-align: center;
+  font-size: var(--text-3xl);
+  line-height: var(--lh-2xl);
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.sectionSubtitle {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--lh-sm);
+  color: var(--text-muted);
+  max-width: 66ch;
+  margin-inline: auto;
+  margin-bottom: var(--space-5);
+}
+
+/* ========================================================================
+   CURRICULUM
+   ======================================================================== */
+
+.curriculum {
+  padding: var(--space-6) 0;
+  background: var(--surface-raised);
+}
+
+.moduleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.moduleCard {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-3);
+  border-top: 3px solid transparent;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.moduleCard:hover {
+  background: var(--surface-muted);
+  text-decoration: none;
+}
+
+.moduleCard:active {
+  background: var(--border-default);
+}
+
+.moduleCard:focus {
+  outline: 3px solid var(--text-heading);
+  outline-offset: 2px;
+}
+
+/* Semantic hue borders */
+.module-indigo  { border-top-color: var(--visual-indigo); }
+.module-violet  { border-top-color: var(--visual-violet); }
+.module-magenta { border-top-color: var(--visual-magenta); }
+.module-rose    { border-top-color: var(--visual-rose); }
+
+.moduleLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  line-height: var(--lh-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.module-indigo  .moduleLabel { color: var(--visual-indigo); }
+.module-violet  .moduleLabel { color: var(--visual-violet); }
+.module-magenta .moduleLabel { color: var(--visual-magenta); }
+.module-rose    .moduleLabel { color: var(--visual-rose); }
+
+.moduleTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: var(--lh-lg);
+  font-weight: 600;
+  margin: var(--space-0h) 0;
+  color: var(--text-heading);
+}
+
+.moduleMeta {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--text-muted);
+}
+
+.moduleTopics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0h);
+  padding-top: var(--space-0h);
+}
+
+.moduleTopic {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--text-body);
+  white-space: nowrap;
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+
+@media screen and (max-width: 768px) {
+  .moduleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionTitle {
+    font-size: var(--text-2xl);
+  }
+}

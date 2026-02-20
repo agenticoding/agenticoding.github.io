@@ -412,6 +412,6 @@ agent-browser's ref-based approach (`@e1`, `@e2`) produces deterministic element
 
 **Related Course Content:**
 
-- [Lesson 7: Planning & Execution](/docs/practical-techniques/lesson-7-planning-execution) - Multi-worktree workflows leveraging these CLI tools
+- [Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution) - Multi-worktree workflows leveraging these CLI tools
 - [Developer Tools: Terminals](/developer-tools/terminals) - Terminal recommendations for running these CLI tools efficiently
 - [Developer Tools: MCP Servers](/developer-tools/mcp-servers) - Extend CLI agents with code research and web grounding

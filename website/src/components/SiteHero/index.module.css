@@ -1,0 +1,186 @@
+/* ========================================================================
+   HERO
+   ======================================================================== */
+
+.hero {
+  padding: var(--space-8) 0 var(--space-6);
+  text-align: center;
+  background: var(--surface-page);
+}
+
+.heroInner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: var(--space-2);
+  line-height: var(--lh-4xl);
+}
+
+.heroSubtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  color: var(--text-body);
+  margin-bottom: 0;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: var(--lh-lg);
+}
+
+
+.heroProof {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* ========================================================================
+   REPO BADGE & SOCIAL PROOF
+   ======================================================================== */
+
+.repoBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0h);
+  background: var(--surface-muted);
+  color: var(--text-body);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid var(--border-default);
+  transition: border-color 0.2s;
+}
+
+.repoBadge:hover {
+  border-color: var(--neutral-400);
+  text-decoration: none;
+}
+
+.badgeSep {
+  color: var(--text-muted);
+}
+
+.githubIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.starIcon {
+  width: 12px;
+  height: 12px;
+  color: var(--icon-star);
+}
+
+.repoBadge .starIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.testimonial {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.testimonialText {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.testimonialSource {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.repoLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.repoLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0h);
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.repoLink:hover {
+  color: var(--text-heading);
+  text-decoration-thickness: 2px;
+}
+
+.repoLink .starIcon {
+  width: 12px;
+  height: 12px;
+  color: var(--icon-star);
+}
+
+/* ========================================================================
+   ACCESSIBILITY
+   ======================================================================== */
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+
+@media screen and (max-width: 996px) {
+  .hero {
+    padding: var(--space-6) var(--space-2) var(--space-5);
+  }
+
+  .heroTitle {
+    font-size: var(--text-4xl);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .heroTitle {
+    font-size: var(--text-3xl);
+  }
+
+  .heroCtas {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .testimonial {
+    flex-direction: column;
+    gap: var(--space-0h);
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .hero {
+    padding: var(--space-5) var(--space-2) var(--space-4);
+  }
+
+  .heroTitle {
+    font-size: var(--text-2xl);
+  }
+
+  .repoLinks {
+    flex-direction: column;
+    gap: var(--space-0h);
+  }
+}

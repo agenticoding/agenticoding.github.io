@@ -13,6 +13,7 @@ import DocBreadcrumbs from '@theme/DocBreadcrumbs';
 import ContentVisibility from '@theme/ContentVisibility';
 import type { Props } from '@theme/DocItem/Layout';
 import PresentationToggle from '@site/src/components/PresentationMode/PresentationToggle';
+import SiteHero from '@site/src/components/SiteHero';
 
 import styles from './styles.module.css';
 
@@ -48,6 +49,7 @@ function useDocTOC() {
 export default function DocItemLayout({ children }: Props): ReactNode {
   const docTOC = useDocTOC();
   const { metadata, frontMatter } = useDoc();
+  const isIntroPage = metadata.id === 'intro';
 
   // Get lesson path for presentation lookup
   const lessonPath = metadata.source?.replace('@site/docs/', '') || '';
@@ -58,11 +60,22 @@ export default function DocItemLayout({ children }: Props): ReactNode {
       <div className={clsx('col', !docTOC.hidden && styles.docItemCol)}>
         <ContentVisibility metadata={metadata} />
         <DocVersionBanner />
-        <div className={styles.docItemContainer}>
+        {isIntroPage && (
+          <div className={styles.docHeader}>
+            <DocBreadcrumbs />
+            {customFrontMatter.presentation !== false && (
+              <div className={styles.presentationToggleWrapper}>
+                <PresentationToggle lessonPath={lessonPath} />
+              </div>
+            )}
+          </div>
+        )}
+        {isIntroPage && <SiteHero />}
+        <div className={clsx(styles.docItemContainer, isIntroPage && styles.introPage)}>
           <article>
             <div className={styles.docHeader}>
-              <DocBreadcrumbs />
-              {customFrontMatter.presentation !== false && (
+              {!isIntroPage && <DocBreadcrumbs />}
+              {!isIntroPage && customFrontMatter.presentation !== false && (
                 <div className={styles.presentationToggleWrapper}>
                   <PresentationToggle lessonPath={lessonPath} />
                 </div>

@@ -6,11 +6,11 @@ sidebar_custom_props:
 title: 'Design Tokens & Visual Primitives'
 ---
 
-[Lesson 12](/docs/practical-techniques/lesson-12-spec-driven-development) established that specs are scaffolding — temporary thinking tools deleted after implementation. This section applies spec-driven development to user-facing interfaces. We call this **Experience Engineering** — specifying design tokens, component APIs, interaction flows, and accessibility architecture precisely enough for an agent to implement and browser automation to verify. For system-level specs, see [Lesson 13](/docs/practical-techniques/lesson-13-systems-thinking-specs).
+[Lesson 12](/practical-techniques/lesson-12-spec-driven-development) established that specs are scaffolding — temporary thinking tools deleted after implementation. This section applies spec-driven development to user-facing interfaces. We call this **Experience Engineering** — specifying design tokens, component APIs, interaction flows, and accessibility architecture precisely enough for an agent to implement and browser automation to verify. For system-level specs, see [Lesson 13](/practical-techniques/lesson-13-systems-thinking-specs).
 
 The key insight: **the experience layer can be fully built and validated before any backend exists.** Design tokens, component layouts, interaction flows, accessibility constraints — none of these depend on API responses. An agent generates the UI with mocked data (behavior mocks via MSW), browser automation verifies it through the accessibility tree (`snapshot -ic`), and you iterate on the experience until it's right. Backend integration comes later, and by then the interface contract is locked.
 
-This lesson walks through building a production color palette using [Lesson 3](/docs/methodology/lesson-3-high-level-methodology)'s four-phase workflow — **Research → Plan → Execute → Validate** — applied to experience engineering. The running example throughout these lessons: a **team dashboard for a SaaS billing product** — subscription plans, usage metrics, invoices, team management, and settings.
+This lesson walks through building a production color palette using [Lesson 3](/methodology/lesson-3-high-level-methodology)'s four-phase workflow — **Research → Plan → Execute → Validate** — applied to experience engineering. The running example throughout these lessons: a **team dashboard for a SaaS billing product** — subscription plans, usage metrics, invoices, team management, and settings.
 
 ### Why Agents Need You for UI
 
@@ -36,11 +36,11 @@ Brand colors are your judgment. Everything derivative — shade scales, harmony 
 
 ## Research: Grounding Color Decisions
 
-[Lesson 3](/docs/methodology/lesson-3-high-level-methodology)'s first phase: ground the agent in both your codebase and domain knowledge before planning changes. For color systems, that means understanding the color science, studying how competitors handle palettes, and confirming accessibility requirements — before you pick a single hue.
+[Lesson 3](/methodology/lesson-3-high-level-methodology)'s first phase: ground the agent in both your codebase and domain knowledge before planning changes. For color systems, that means understanding the color science, studying how competitors handle palettes, and confirming accessibility requirements — before you pick a single hue.
 
 ### Domain Research with ArguSeek
 
-You wouldn't pick a database without researching the options. Same principle applies to color decisions. [ArguSeek](/docs/methodology/lesson-5-grounding#arguseek-isolated-context--state)'s `research_iteratively` builds cumulative knowledge across queries through semantic subtraction — each follow-up skips already-covered content and advances the research:
+You wouldn't pick a database without researching the options. Same principle applies to color decisions. [ArguSeek](/methodology/lesson-5-grounding#arguseek-isolated-context--state)'s `research_iteratively` builds cumulative knowledge across queries through semantic subtraction — each follow-up skips already-covered content and advances the research:
 
 ```
 Q1: "OKLCH color space best practices for design systems and token generation"
@@ -58,7 +58,7 @@ Q3: "WCAG 2.1 AA contrast requirements for design token systems"
 Total: 55 sources scanned, ~9,200 tokens to your orchestrator
 ```
 
-After three queries you have grounded knowledge on the color space (OKLCH over HSL), competitor precedent (what works in production SaaS dashboards), and the accessibility constraints your palette must satisfy (WCAG AA ≥ 4.5:1). All without polluting your main context — ArguSeek runs in isolated context per [Lesson 5](/docs/methodology/lesson-5-grounding)'s sub-agent pattern.
+After three queries you have grounded knowledge on the color space (OKLCH over HSL), competitor precedent (what works in production SaaS dashboards), and the accessibility constraints your palette must satisfy (WCAG AA ≥ 4.5:1). All without polluting your main context — ArguSeek runs in isolated context per [Lesson 5](/methodology/lesson-5-grounding)'s sub-agent pattern.
 
 ### Visual Research with agent-browser
 
@@ -81,7 +81,7 @@ The agent captures the screenshots. **You** evaluate them — which color temper
 
 ## Plan: Source Hues and Token Spec
 
-Research complete. Now lock in the design decisions that drive everything downstream. This is [Lesson 3](/docs/methodology/lesson-3-high-level-methodology)'s Plan phase — and for color palettes, it's "Exact Planning": the solution structure is known (OKLCH shade scales), so be directive with specificity and constraints.
+Research complete. Now lock in the design decisions that drive everything downstream. This is [Lesson 3](/methodology/lesson-3-high-level-methodology)'s Plan phase — and for color palettes, it's "Exact Planning": the solution structure is known (OKLCH shade scales), so be directive with specificity and constraints.
 
 ### Source Hue Selection (Human Judgment)
 
@@ -103,7 +103,7 @@ These five hue choices are **the** human judgment calls in this lesson. Everythi
 
 ### The Shade Scale Spec (Agent Math)
 
-HSL looks intuitive but isn't perceptually uniform — `hsl(60,100%,50%)` (yellow) appears far brighter than `hsl(240,100%,50%)` (blue) despite identical lightness values. OKLCH fixes this by design, which is why the primitive tokens above use it. From a single brand color, the agent writes and executes code to derive the entire primitive tier. This is [Lesson 4](/docs/methodology/lesson-4-prompting-101)'s math-as-code principle in action: LLMs can't do arithmetic reliably, but they write code that does — color math is a perfect application.
+HSL looks intuitive but isn't perceptually uniform — `hsl(60,100%,50%)` (yellow) appears far brighter than `hsl(240,100%,50%)` (blue) despite identical lightness values. OKLCH fixes this by design, which is why the primitive tokens above use it. From a single brand color, the agent writes and executes code to derive the entire primitive tier. This is [Lesson 4](/methodology/lesson-4-prompting-101)'s math-as-code principle in action: LLMs can't do arithmetic reliably, but they write code that does — color math is a perfect application.
 
 **What one brand color yields:**
 
@@ -147,11 +147,11 @@ The **Drives** column creates traceability from token decision to spec element. 
 
 ## Execute: Agent-Generated Palette
 
-Plan locked. The agent now writes and runs TypeScript to compute the entire palette — [Lesson 3](/docs/methodology/lesson-3-high-level-methodology)'s Execute phase. The prompt below feeds the source hues and algorithm spec directly to the agent. This is [Lesson 4](/docs/methodology/lesson-4-prompting-101)'s math-as-code principle: the agent can't do color arithmetic reliably, but it writes code that does.
+Plan locked. The agent now writes and runs TypeScript to compute the entire palette — [Lesson 3](/methodology/lesson-3-high-level-methodology)'s Execute phase. The prompt below feeds the source hues and algorithm spec directly to the agent. This is [Lesson 4](/methodology/lesson-4-prompting-101)'s math-as-code principle: the agent can't do color arithmetic reliably, but it writes code that does.
 
 ### The Prompt
 
-Demonstrates [Lesson 4](/docs/methodology/lesson-4-prompting-101) principles — imperative commands, constraints as guardrails, chain-of-thought, structure, math-as-code:
+Demonstrates [Lesson 4](/methodology/lesson-4-prompting-101) principles — imperative commands, constraints as guardrails, chain-of-thought, structure, math-as-code:
 
 ```
 Write a TypeScript script that generates a production color palette from
@@ -200,7 +200,7 @@ and sRGB hex fallbacks.
 - 5 roles × 11 shades = 55 primitives + ~15 semantic tokens per theme
 ```
 
-The prompt structure maps directly to [Lesson 4](/docs/methodology/lesson-4-prompting-101) principles: imperative commands ("Write a script that..."), constraints as guardrails (WCAG thresholds, color space, gamut), chain-of-thought (numbered steps), markdown structure for information density, and math-as-code — the agent writes and runs the calculation rather than guessing color values. The input table separates designer judgment (which hues, which roles) from agent work (shade generation, contrast checking, semantic mapping).
+The prompt structure maps directly to [Lesson 4](/methodology/lesson-4-prompting-101) principles: imperative commands ("Write a script that..."), constraints as guardrails (WCAG thresholds, color space, gamut), chain-of-thought (numbered steps), markdown structure for information density, and math-as-code — the agent writes and runs the calculation rather than guessing color values. The input table separates designer judgment (which hues, which roles) from agent work (shade generation, contrast checking, semantic mapping).
 
 ### What the Agent Produces
 
@@ -246,7 +246,7 @@ Note the three algorithms at work: lightness drops non-linearly (0.91→0.28), c
 
 ## Validate: The Perceptual Loop
 
-[Lesson 3](/docs/methodology/lesson-3-high-level-methodology)'s Validate phase closes the loop — and for experience engineering, this is where the human-agent division of labor matters most. The agent handles automated validation (contrast math, gamut checks). You handle perceptual validation (does it look right?). Neither can do the other's job.
+[Lesson 3](/methodology/lesson-3-high-level-methodology)'s Validate phase closes the loop — and for experience engineering, this is where the human-agent division of labor matters most. The agent handles automated validation (contrast math, gamut checks). You handle perceptual validation (does it look right?). Neither can do the other's job.
 
 ### Automated Validation (Agent)
 
@@ -341,7 +341,7 @@ When you spot a perceptual issue, feed it back to the agent in natural language:
 | Provide perceptual feedback | ✓ | |
 | Regenerate from adjusted parameters | | ✓ |
 
-This is [Lesson 3](/docs/methodology/lesson-3-high-level-methodology)'s "iterate back to research as needed" made concrete. The cycle isn't linear — a perceptual issue in Validate might send you back to Plan (different source hue) or even Research (what chroma range do competitors use for warnings?). The four phases are a cycle, not a waterfall.
+This is [Lesson 3](/methodology/lesson-3-high-level-methodology)'s "iterate back to research as needed" made concrete. The cycle isn't linear — a perceptual issue in Validate might send you back to Plan (different source hue) or even Research (what chroma range do competitors use for warnings?). The four phases are a cycle, not a waterfall.
 
 ### Theming as Validation
 
@@ -355,7 +355,7 @@ Theme switching is another validation axis. The palette must hold up under inver
 
 ## Key Takeaways
 
-- **The four-phase workflow applies to experience engineering** — Research grounds color decisions in competitors and standards, Plan captures human judgment (source hues), Execute generates the math (55 primitives + semantic mapping), Validate closes the perceptual loop. Same [Lesson 3](/docs/methodology/lesson-3-high-level-methodology) cycle, different domain.
+- **The four-phase workflow applies to experience engineering** — Research grounds color decisions in competitors and standards, Plan captures human judgment (source hues), Execute generates the math (55 primitives + semantic mapping), Validate closes the perceptual loop. Same [Lesson 3](/methodology/lesson-3-high-level-methodology) cycle, different domain.
 
 - **Visual quality is the human's job; contrast math is the agent's** — the VT perceptual floor means agents can screenshot what they can't evaluate. You provide the feedback that drives iteration; the agent regenerates and re-validates instantly.
 
@@ -369,4 +369,4 @@ Theme switching is another validation axis. The palette must hold up under inver
 
 - **Token assumptions table creates traceability** — the Drives column maps each design decision to the spec constraints it affects, telling you and the agent exactly what to re-verify when a token changes.
 
-- **Design tokens are architectural constraints** — they affect every component and must be specified upfront. Retrofitting tokens is an order of magnitude harder than building them in. [Lesson 15](/docs/experience-engineering/lesson-15-ui-specs) builds components that consume these tokens.
+- **Design tokens are architectural constraints** — they affect every component and must be specified upfront. Retrofitting tokens is an order of magnitude harder than building them in. [Lesson 15](/experience-engineering/lesson-15-ui-specs) builds components that consume these tokens.

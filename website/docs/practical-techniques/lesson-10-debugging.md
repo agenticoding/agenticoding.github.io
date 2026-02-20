@@ -48,7 +48,7 @@ For complex systems, use Docker to create isolated reproduction environments. Sn
 
 ## Closing the Loop: Place Agents Inside Failing Environments
 
-With good grounding, agents can always explore your codebase and research online issues—that's what [Lesson 5](/docs/methodology/lesson-5-grounding) teaches. **But closing the loop means the agent can test its fixes and verify its reasoning actually works.** Without environment access, the agent proposes solutions it can't validate. With closed-loop access, it applies fixes, re-runs reproduction, and proves they work—or iterates on new hypotheses when they don't.
+With good grounding, agents can always explore your codebase and research online issues—that's what [Lesson 5](/methodology/lesson-5-grounding) teaches. **But closing the loop means the agent can test its fixes and verify its reasoning actually works.** Without environment access, the agent proposes solutions it can't validate. With closed-loop access, it applies fixes, re-runs reproduction, and proves they work—or iterates on new hypotheses when they don't.
 
 The difference: An open-loop agent researches your code and online issues, then reports: "The bug is likely missing RS256 signature verification at jwt.ts:67—try adding algorithm validation." A closed-loop agent does the same research, then **applies that fix, re-runs the failing request, observes it now returns 401 correctly, and reports: "Fixed and verified—RS256 validation added at jwt.ts:67, reproduction now passes."**
 
@@ -67,7 +67,7 @@ This is where CLI agents (Claude Code, Codex, Copilot CLI) shine over IDE assist
 **4. INVESTIGATE** - Agent leverages grounding techniques to form hypotheses by correlating:
 
 - **Runtime behavior**: Execute diagnostic commands, inspect responses, analyze logs
-- **Codebase**: Use ChunkHound's code research for comprehensive investigation with architectural context and cross-module relationships. For smaller codebases, [agentic search](/docs/methodology/lesson-5-grounding#the-discovery-problem-agentic-search) (Grep, Read) works well. See [Lesson 5](/docs/methodology/lesson-5-grounding#code-grounding-choosing-tools-by-scale) for scale guidance.
+- **Codebase**: Use ChunkHound's code research for comprehensive investigation with architectural context and cross-module relationships. For smaller codebases, [agentic search](/methodology/lesson-5-grounding#the-discovery-problem-agentic-search) (Grep, Read) works well. See [Lesson 5](/methodology/lesson-5-grounding#code-grounding-choosing-tools-by-scale) for scale guidance.
 - **Known issues**: Research error patterns, CVEs, and similar bugs using tools like ArguSeek
 
 **5. VERIFY** - Agent applies the fix, re-runs reproduction, and confirms the bug is resolved—or forms a new hypothesis and iterates
@@ -78,7 +78,7 @@ This workflow transforms debugging from "research and guess" to "research, fix, 
 
 When you can't reproduce bugs locally or access the failing environment—customer deployments, edge infrastructure, locked-down production—you face limited information and no iteration cycle. This is where AI agents' **probabilistic reasoning** becomes a feature, not a limitation. Combined with their code generation capabilities, agents turn remote diagnosis from "send me logs and wait" into an active investigation workflow.
 
-The workflow follows the research-first pattern from [Lesson 5](/docs/methodology/lesson-5-grounding): ground yourself in the codebase (understand the architecture around the failing component using code research) and in known issues (search for similar problems in the ecosystem). With this context, the agent generates ranked hypotheses based on evidence—not generic patterns. Then it produces targeted diagnostic scripts that collect evidence for each hypothesis: configuration states, version mismatches, timing data, whatever's needed to validate or refute each theory.
+The workflow follows the research-first pattern from [Lesson 5](/methodology/lesson-5-grounding): ground yourself in the codebase (understand the architecture around the failing component using code research) and in known issues (search for similar problems in the ecosystem). With this context, the agent generates ranked hypotheses based on evidence—not generic patterns. Then it produces targeted diagnostic scripts that collect evidence for each hypothesis: configuration states, version mismatches, timing data, whatever's needed to validate or refute each theory.
 
 The key is trading developer time for compute time. Writing a comprehensive diagnostic script takes humans days but takes agents 30 minutes. More importantly, agents generate thorough diagnostics trivially—scripts that check dozens of potential issues, cross-reference configuration, and output structured data. Send the script to the customer, load the output into the agent's context, and it correlates evidence with hypotheses to identify the root cause. What would be tedious manual work becomes a simple prompt.
 

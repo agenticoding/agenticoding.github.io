@@ -187,11 +187,11 @@
   --cyan-700: #005c5c;
 
   /* === SEMANTIC COLORS === */
-  --semantic-success: #007a44;  /* Success-600 (H:155°) */
-  --semantic-warning: #8e5900;  /* Warning-600 (H:70°) */
-  --semantic-error: #ad3735;    /* Error-600 (H:25°) */
-  --semantic-info: #1369b0;     /* Indigo-600 (H:250°) */
-  --semantic-neutral: #666666;  /* Neutral-600 */
+  --semantic-success: #00894d;  /* Success optimal OKLCH(0.552 0.137 155°) */
+  --semantic-warning: #a76900;  /* Warning optimal OKLCH(0.575 0.125 70°) */
+  --semantic-error: #ee0028;    /* Error optimal OKLCH(0.598 0.242 25°) */
+  --semantic-info: #0079d1;     /* Indigo optimal OKLCH(0.568 0.161 250°) */
+  --semantic-neutral: #666666;  /* Neutral-600 — achromatic, unchanged */
 
   /* === MAP TO INFIMA (Docusaurus Framework) — Neutral primary === */
   --ifm-color-primary: var(--neutral-900);
@@ -208,18 +208,18 @@
      See DESIGN_SYSTEM.md "Semantic Meaning Map" for hue→meaning. */
 
   /* Role-based (universal UI) */
-  --visual-error: var(--semantic-error);      /* #ad3735 — Danger, critical */
-  --visual-warning: var(--semantic-warning);  /* #8e5900 — Caution, attention */
-  --visual-success: var(--semantic-success);  /* #007a44 — Validated, complete */
+  --visual-error: var(--semantic-error);      /* #ee0028 — Danger, critical */
+  --visual-warning: var(--semantic-warning);  /* #a76900 — Caution, attention */
+  --visual-success: var(--semantic-success);  /* #00894d — Validated, complete */
   --visual-neutral: var(--semantic-neutral);  /* #666666 — Neutral */
 
   /* Hue-based (categorical) */
-  --visual-lime: #6b6b00;                    /* Lime-600 — Progress, growth */
-  --visual-cyan: var(--cyan-600);            /* #007576 — System, code */
-  --visual-indigo: var(--semantic-info);     /* #1369b0 — Knowledge, data */
-  --visual-violet: #6057af;                  /* Violet-600 — AI transformation */
-  --visual-magenta: #874895;                 /* Magenta-600 — AI creative */
-  --visual-rose: #9b436a;                    /* Rose-600 — Human actor */
+  --visual-lime: #7b7b00;                    /* Lime optimal OKLCH(0.564 0.123 110°) */
+  --visual-cyan: #008485;                    /* Cyan optimal OKLCH(0.557 0.095 195°) */
+  --visual-indigo: var(--semantic-info);     /* #0079d1 — Knowledge, data */
+  --visual-violet: #6500ff;                  /* Violet optimal OKLCH(0.503 0.294 285°) */
+  --visual-magenta: #c900ea;                 /* Magenta optimal OKLCH(0.608 0.292 320°) */
+  --visual-rose: #c24c82;                    /* Rose conservative OKLCH(0.589 0.160 355°) */
 
   /* === VISUAL ELEMENT BACKGROUNDS — 10% tint in light mode === */
   --visual-bg-error: color-mix(in srgb, var(--visual-error) 10%, transparent);
@@ -881,4 +881,40 @@ div[class*='announcementBar'] {
 
 [data-theme='dark'] div[class*='announcementBar'] {
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================================================
+   STAT CALLOUTS (intro.mdx)
+   ======================================================================== */
+
+.stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+  align-items: flex-start;
+}
+
+.stat-callout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-0h);
+  min-width: 80px;
+}
+
+.stat-callout__number {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: var(--lh-2xl);
+  color: var(--text-heading);
+}
+
+.stat-callout__label {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  line-height: var(--lh-sm);
+  color: var(--text-muted);
+  text-align: center;
 }

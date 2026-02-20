@@ -101,6 +101,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          routeBasePath: '/',
           exclude: [
             '**/_*.{js,jsx,ts,tsx,md,mdx}',
             '**/_*/**',
@@ -159,17 +160,19 @@ const config: Config = {
         explicitSearchResultPath: true,
         indexBlog: false,
         indexDocs: true,
-        docsRouteBasePath: '/docs',
+        docsRouteBasePath: '/',
       },
     ],
     [
       '@docusaurus/plugin-client-redirects',
       {
         createRedirects(existingPath) {
-          // For all paths, create redirect from old /AI-Coding-Course/ prefixed version
-          // Example: /docs/intro gets redirect from /AI-Coding-Course/docs/intro
-          // For root: / gets redirect from /AI-Coding-Course/
-          return `/AI-Coding-Course${existingPath}`;
+          const redirects = [`/AI-Coding-Course${existingPath}`];
+          // Redirect old /docs/* URLs to new /* URLs after routeBasePath change
+          if (!existingPath.startsWith('/docs')) {
+            redirects.push(`/docs${existingPath}`);
+          }
+          return redirects;
         },
       },
     ],
@@ -204,15 +207,15 @@ const config: Config = {
           items: [
             {
               label: 'FAQ',
-              to: '/docs/faq',
+              to: '/faq',
             },
             {
               label: 'Getting Started',
-              to: '/docs',
+              to: '/',
             },
             {
               label: 'All Chapters',
-              to: '/docs/fundamentals/lesson-1-how-llms-work',
+              to: '/fundamentals/lesson-1-how-llms-work',
             },
           ],
         },

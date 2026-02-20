@@ -411,7 +411,7 @@ export default function CompoundQualityVisualization({
       {!compact && (
         <div className={styles.circuitBreakerBox}>
           <strong>Your Role as Circuit Breaker:</strong> Code review (
-          <a href="/docs/practical-techniques/lesson-9-reviewing-code">
+          <a href="/practical-techniques/lesson-9-reviewing-code">
             Lesson 9
           </a>
           ) is where you intervene. Accepting bad patterns lets them enter the

@@ -6,7 +6,7 @@ sidebar_custom_props:
 title: 'Accessibility & Internationalization'
 ---
 
-Accessibility and internationalization are architectural constraints on the components from [Lesson 15](/docs/experience-engineering/lesson-15-ui-specs) — structural decisions that affect every component, flow, and state transition. Both are specified up front, not bolted on after implementation, and both are verifiable through `snapshot -ic` — the same tool that validates agent output.
+Accessibility and internationalization are architectural constraints on the components from [Lesson 15](/experience-engineering/lesson-15-ui-specs) — structural decisions that affect every component, flow, and state transition. Both are specified up front, not bolted on after implementation, and both are verifiable through `snapshot -ic` — the same tool that validates agent output.
 
 ## Accessibility Architecture
 
@@ -22,7 +22,7 @@ Five architectural decisions for every UI spec:
 | Focus management | When the DOM changes, where does focus land? | Modal opens → heading. Modal closes → trigger. Route change → `<h1>`. Item deleted → next sibling |
 | Live regions | How are async changes announced without moving focus? | Success → `aria-live="polite"`. Errors → `assertive`. Never `assertive` for routine notifications |
 
-**Focus management is the most commonly broken aspect of component APIs.** When you remove the focused element from the DOM without explicitly moving focus first, it disappears into `<body>` — invisible to keyboard and screen reader users. Define the focus destination for every DOM change in your [flows](/docs/experience-engineering/lesson-15-ui-specs#flows-interaction-traces).
+**Focus management is the most commonly broken aspect of component APIs.** When you remove the focused element from the DOM without explicitly moving focus first, it disappears into `<body>` — invisible to keyboard and screen reader users. Define the focus destination for every DOM change in your [flows](/experience-engineering/lesson-15-ui-specs#flows-interaction-traces).
 
 **How agents break accessibility.** Agents default to `<div>` with ARIA roles instead of semantic HTML, add redundant `aria-label` to elements that already have visible text, and generate `tabindex="0"` on elements that are natively focusable. The semantic HTML row in the table above is the primary defense: specify `<button>` not `<div role="button">`, and the agent follows. The constraint IDs (A-001 through A-017+) are agent-readable checkpoints — include them, and the agent inlines them as code comments during implementation.
 
@@ -60,4 +60,4 @@ Agents treat internationalization as string extraction — they'll wrap visible 
 
 - **Internationalization is architecture, not string replacement** — RTL layout direction, pluralization rules, locale-aware formatting, and bidirectional text handling are structural decisions that affect every component.
 
-- **Constraint IDs are agent-readable checkpoints** — A-001 through A-017+ for accessibility, L-001 through L-005 for internationalization. Include them in the spec and the agent inlines them as code comments. [Lesson 17](/docs/experience-engineering/lesson-17-verification) covers how to verify these constraints with browser automation.
+- **Constraint IDs are agent-readable checkpoints** — A-001 through A-017+ for accessibility, L-001 through L-005 for internationalization. Include them in the spec and the agent inlines them as code comments. [Lesson 17](/experience-engineering/lesson-17-verification) covers how to verify these constraints with browser automation.

@@ -5,13 +5,13 @@ import NavbarColorModeToggle from '@theme/Navbar/ColorModeToggle';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 
-// Module-level: persists across renders, resets to '/docs' on full page load
-let prevNonFaqPath = '/docs';
+// Module-level: persists across renders, resets to '/' on full page load
+let prevNonFaqPath = '/';
 
 export default function SidebarFooter(): ReactNode {
   const {pathname} = useLocation();
   const history = useHistory();
-  const isFaqActive = pathname === '/docs/faq';
+  const isFaqActive = pathname === '/faq';
 
   // Track the last non-FAQ path for the exit destination
   if (!isFaqActive) {
@@ -29,7 +29,7 @@ export default function SidebarFooter(): ReactNode {
     <div className={styles.sidebarFooter}>
       <div className={styles.footerLinks}>
         <Link
-          to="/docs/faq"
+          to="/faq"
           className={clsx(styles.footerLink, isFaqActive && styles.footerLinkActive)}
           onClick={handleFaqClick}
         >

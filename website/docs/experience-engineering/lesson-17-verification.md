@@ -6,7 +6,7 @@ sidebar_custom_props:
 title: 'Verification & the Build Loop'
 ---
 
-This lesson closes the loop: spec ([Lessons 14–16](/docs/experience-engineering/lesson-14-design-tokens)) → build → check → repeat → delete. The preceding lessons defined what to build — design tokens, component APIs, accessibility constraints. This lesson covers how to verify the agent built it correctly, how to iterate when it didn't, and when to stop.
+This lesson closes the loop: spec ([Lessons 14–16](/experience-engineering/lesson-14-design-tokens)) → build → check → repeat → delete. The preceding lessons defined what to build — design tokens, component APIs, accessibility constraints. This lesson covers how to verify the agent built it correctly, how to iterate when it didn't, and when to stop.
 
 ## Skip the Mockup: Build the Real Thing
 
@@ -70,7 +70,7 @@ Done → Delete spec, mocks become contracts, code is truth
 - It simultaneously validates accessibility (correct roles, labels)
 - It's what screen readers see — if the agent can operate the UI via accessibility refs, so can assistive technology
 
-This is a direct consequence of the [perceptual limitation](/docs/experience-engineering/lesson-14-design-tokens#why-agents-need-you-for-ui): vision can tell you the page looks broadly correct, but cannot tell you the button has exactly 8px padding or that the border is `gray-300` instead of `gray-200`. Use both — vision for general guidance during development, the accessibility tree for exact verification.
+This is a direct consequence of the [perceptual limitation](/experience-engineering/lesson-14-design-tokens#why-agents-need-you-for-ui): vision can tell you the page looks broadly correct, but cannot tell you the button has exactly 8px padding or that the border is `gray-300` instead of `gray-200`. Use both — vision for general guidance during development, the accessibility tree for exact verification.
 
 | Concern | Vision (screenshots) | Accessibility tree (`snapshot -ic`) |
 |---------|---------------------|--------------------------------------|
@@ -85,7 +85,7 @@ This is a direct consequence of the [perceptual limitation](/docs/experience-eng
 
 Three verification layers: vision for broad structural guidance, accessibility tree for deterministic structural verification, visual regression (Chromatic, Percy, Playwright's `toHaveScreenshot()`) for pixel-level fidelity.
 
-For projects using browser automation as the verification layer, add `snapshot -ic` conventions and accessibility verification commands to your CLAUDE.md / AGENTS.md ([Lesson 6](/docs/practical-techniques/lesson-6-project-onboarding)). The agent should verify its own output against the spec's accessibility constraints as a post-implementation step — same principle as running tests after generating code.
+For projects using browser automation as the verification layer, add `snapshot -ic` conventions and accessibility verification commands to your CLAUDE.md / AGENTS.md ([Lesson 6](/practical-techniques/lesson-6-project-onboarding)). The agent should verify its own output against the spec's accessibility constraints as a post-implementation step — same principle as running tests after generating code.
 
 ## Detailed Behavior: Template-Driven Sections
 
@@ -121,7 +121,7 @@ Each loop reveals what the spec missed — a view state you didn't anticipate, a
 - Last pass surfaces no new gaps
 - Delete the spec — code + mock contracts + accessibility tree are the source of truth
 
-UI iteration is fast because browser automation provides immediate structural and visual feedback — you see whether the agent's output is right within seconds, not minutes. The engineer who runs ten spec → build → check loops per day outperforms the one who writes a more thorough spec upfront. For the same pattern applied to system architecture, see [Lesson 13: Converge, Don't Count Passes](/docs/practical-techniques/lesson-13-systems-thinking-specs#converge-dont-count-passes).
+UI iteration is fast because browser automation provides immediate structural and visual feedback — you see whether the agent's output is right within seconds, not minutes. The engineer who runs ten spec → build → check loops per day outperforms the one who writes a more thorough spec upfront. For the same pattern applied to system architecture, see [Lesson 13: Converge, Don't Count Passes](/practical-techniques/lesson-13-systems-thinking-specs#converge-dont-count-passes).
 
 ## Key Takeaways
 
@@ -131,6 +131,6 @@ UI iteration is fast because browser automation provides immediate structural an
 
 - **Behavior mocks are contracts, not shortcuts** — MSW handlers define the interface between frontend and backend, and are deleted when the real API is verified. Strangler fig pattern applied to frontend-backend integration.
 
-- **Spec → build → check → repeat** — the agent builds, browser automation checks, you fix either spec or code. Iterate until no gaps remain. Same pattern as system specs ([Lesson 13](/docs/practical-techniques/lesson-13-systems-thinking-specs)), different verification tool.
+- **Spec → build → check → repeat** — the agent builds, browser automation checks, you fix either spec or code. Iterate until no gaps remain. Same pattern as system specs ([Lesson 13](/practical-techniques/lesson-13-systems-thinking-specs)), different verification tool.
 
 - **Delete the spec when done** — code + mock contracts + accessibility tree are the source of truth.

@@ -102,4 +102,4 @@ Use ArguSeek to research best practices for your chosen terminal—session manag
 **Related:**
 
 - [Developer Tools: Modern CLI Tools](/developer-tools/cli-tools) - The ecosystem that completes your terminal-based development environment
-- [Lesson 7: Planning & Execution](/docs/practical-techniques/lesson-7-planning-execution) - Multi-worktree workflows leveraging modern terminals
+- [Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution) - Multi-worktree workflows leveraging modern terminals

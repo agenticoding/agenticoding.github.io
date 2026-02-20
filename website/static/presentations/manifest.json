@@ -1,5 +1,5 @@
 {
-  "intro.md": {
+  "intro.mdx": {
     "presentationUrl": "/presentations/intro.json",
     "slideCount": 10,
     "estimatedDuration": "20-30 minutes",

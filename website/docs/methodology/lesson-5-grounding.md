@@ -11,7 +11,7 @@ import GroundingComparison from '@site/src/components/VisualElements/GroundingCo
 
 You ask your agent to fix the authentication bug. It confidently generates a solution using JWT verification patterns... that don't exist in your codebase. You use sessions, not JWTs. The agent just hallucinated a plausible implementation based on common patterns from its training data.
 
-Here's the fundamental issue: **The agent doesn't know your codebase exists.** It doesn't know your architecture, your patterns, or your constraints. As covered in [Lesson 2: Agents Demystified](/docs/fundamentals/lesson-2-how-agents-work), the context window is the agent's entire world—everything else doesn't exist. Without explicit grounding in your actual code and current documentation, agents generate statistically plausible solutions that may be completely wrong for your system.
+Here's the fundamental issue: **The agent doesn't know your codebase exists.** It doesn't know your architecture, your patterns, or your constraints. As covered in [Lesson 2: Agents Demystified](/fundamentals/lesson-2-how-agents-work), the context window is the agent's entire world—everything else doesn't exist. Without explicit grounding in your actual code and current documentation, agents generate statistically plausible solutions that may be completely wrong for your system.
 
 **Grounding is how you inject reality into the context window.** You retrieve relevant external information—your codebase patterns, current docs, best practices—and feed it to the agent before generation. This lesson covers the engineering techniques that anchor agents in your actual system instead of hypothetical ones.
 

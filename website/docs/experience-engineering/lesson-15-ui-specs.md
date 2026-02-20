@@ -6,7 +6,7 @@ sidebar_custom_props:
 title: 'UI Specs — Components, Flows, and State'
 ---
 
-With design tokens established in [Lesson 14](/docs/experience-engineering/lesson-14-design-tokens), this lesson defines the components, flows, and state transitions that consume them. These three sections are the minimum viable UI spec — enough to generate a first pass. The rest emerges as the code pulls depth from you.
+With design tokens established in [Lesson 14](/experience-engineering/lesson-14-design-tokens), this lesson defines the components, flows, and state transitions that consume them. These three sections are the minimum viable UI spec — enough to generate a first pass. The rest emerges as the code pulls depth from you.
 
 The running example: a **team dashboard for a SaaS billing product** — subscription plans, usage metrics, invoices, team management, and settings. Rich enough to exercise components, flows, state, responsive layouts, and view states.
 
@@ -28,7 +28,7 @@ KPI categories:
 | **Effectiveness** | Success rate, error rate | Form submissions, retry counts |
 | **Satisfaction** | Rage clicks, abandonment, NPS | Heatmaps, exit rate, surveys |
 
-Accessibility and internationalization KPIs (WCAG compliance, locale coverage, RTL correctness) live in their respective architecture sections in [Lesson 16](/docs/experience-engineering/lesson-16-accessibility-i18n) — they're architectural constraints, not standalone metrics.
+Accessibility and internationalization KPIs (WCAG compliance, locale coverage, RTL correctness) live in their respective architecture sections in [Lesson 16](/experience-engineering/lesson-16-accessibility-i18n) — they're architectural constraints, not standalone metrics.
 
 Metrics are the completion test. When the agent's implementation meets these thresholds as measured by browser automation, iteration stops.
 
@@ -36,7 +36,7 @@ Metrics are the completion test. When the agent's implementation meets these thr
 
 Components are units of UI responsibility with explicit APIs. Props define what a component **accepts**. Rendered output defines what it **guarantees**. Accessibility attributes are **non-negotiable** — always present, never conditional.
 
-Throughout the Experience Engineering lessons and the [UI spec template](/prompts/specifications/experience-spec-template), you'll see IDs like `A-001` or `L-003`. These are constraint IDs — labels you put in the spec that the agent carries into code comments during implementation, making rules grep-able and verifiable across the codebase. For the code-level mechanics, see [Lesson 11](/docs/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents).
+Throughout the Experience Engineering lessons and the [UI spec template](/prompts/specifications/experience-spec-template), you'll see IDs like `A-001` or `L-003`. These are constraint IDs — labels you put in the spec that the agent carries into code comments during implementation, making rules grep-able and verifiable across the codebase. For the code-level mechanics, see [Lesson 11](/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents).
 
 ### Component Table
 
@@ -72,7 +72,7 @@ When building on an established component library (shadcn/ui, Radix, Ant Design,
 
 Example: `SubscriptionCard` uses `<Card>` from shadcn/ui. The agent already knows Card's API from library documentation. Your spec defines the domain props (`plan: Plan`, `onUpgrade`) and responsibility rules, not how a card renders a shadow.
 
-Include component library references in your project's CLAUDE.md / AGENTS.md ([Lesson 6](/docs/practical-techniques/lesson-6-project-onboarding)): import conventions, preferred primitives, and any overrides. This dramatically reduces spec surface and improves agent output because the agent operates within a constrained, well-documented design system.
+Include component library references in your project's CLAUDE.md / AGENTS.md ([Lesson 6](/practical-techniques/lesson-6-project-onboarding)): import conventions, preferred primitives, and any overrides. This dramatically reduces spec surface and improves agent output because the agent operates within a constrained, well-documented design system.
 
 ## Flows: Interaction Traces
 
@@ -148,7 +148,7 @@ Every data-bound view has exactly five states. Omitting any is a bug:
 
 Agents consistently miss the **Partial** and **Empty** states. If the spec doesn't enumerate all five explicitly with examples, the agent will implement only Ideal and Loading — then the first empty dataset or partial API failure renders a blank screen.
 
-**Choosing a state model.** Pick one model per view entity, not per app. Three options: **Declarative** — you define the desired state, a reconciler (React, for example) figures out how to get there. Best for data display (tables, charts, read-only views). **State machine** — you enumerate every legal state and transition. Best for multi-step flows (forms, wizards, modals with distinct phases). **Event-driven** — you react to incoming events as they arrive. Best for real-time data (WebSocket feeds, collaborative editing, live notifications). For the system-level perspective on these models (event sourcing, CQRS, entity lifecycles), see [Lesson 13: State Models](/docs/practical-techniques/lesson-13-systems-thinking-specs#state-models).
+**Choosing a state model.** Pick one model per view entity, not per app. Three options: **Declarative** — you define the desired state, a reconciler (React, for example) figures out how to get there. Best for data display (tables, charts, read-only views). **State machine** — you enumerate every legal state and transition. Best for multi-step flows (forms, wizards, modals with distinct phases). **Event-driven** — you react to incoming events as they arrive. Best for real-time data (WebSocket feeds, collaborative editing, live notifications). For the system-level perspective on these models (event sourcing, CQRS, entity lifecycles), see [Lesson 13: State Models](/practical-techniques/lesson-13-systems-thinking-specs#state-models).
 
 ## Layouts and Responsiveness
 
@@ -161,7 +161,7 @@ Layouts define **how components are arranged** — the spatial structure of the 
 | `DashboardGrid` | 12-col grid, sidebar + main | Desktop: sidebar+main, Tablet: stacked, Mobile: single column | `Sidebar`, `MetricsRow`, `ContentArea` |
 | `SettingsLayout` | 2-col: nav + panel | Desktop: side-by-side, Mobile: nav→panel drill-down | `SettingsNav`, `SettingsPanel` |
 
-RTL layouts mirror the entire grid — sidebar switches sides, reading order reverses. Use logical properties (`inline-start`/`block-start`) for all spatial tokens (L-002). See [Lesson 16: Accessibility & Internationalization](/docs/experience-engineering/lesson-16-accessibility-i18n#internationalization-architecture) for the full RTL model.
+RTL layouts mirror the entire grid — sidebar switches sides, reading order reverses. Use logical properties (`inline-start`/`block-start`) for all spatial tokens (L-002). See [Lesson 16: Accessibility & Internationalization](/experience-engineering/lesson-16-accessibility-i18n#internationalization-architecture) for the full RTL model.
 
 ### Responsiveness as Constraint
 

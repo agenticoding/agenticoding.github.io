@@ -41,7 +41,7 @@ Agentic coding is software development using AI agents that can perceive your co
 
 This course teaches a structured methodology—research, plan, execute, validate—that makes agentic coding reliable for production systems.
 
-*Learn more in [Lesson 2: How Agents Work](/docs/fundamentals/lesson-2-how-agents-work).*
+*Learn more in [Lesson 2: How Agents Work](/fundamentals/lesson-2-how-agents-work).*
 
 ### What is agentic development?
 
@@ -49,19 +49,19 @@ Agentic development extends agentic coding across the full software development 
 
 While these terms overlap conceptually, industry literature typically maintains a scope distinction.
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/docs/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
 
 ### Who is this course for?
 
 Senior software engineers with 3+ years of production experience who tried AI coding assistants and hit frustration points. You need strong fundamentals in architecture, design patterns, and system design because agentic coding moves your work up the stack—you make decisions and validate results, not write every line.
 
-*Learn more in the [Course Introduction](/docs/).*
+*Learn more in the [Course Introduction](/).*
 
 ### How do I get started with agentic coding?
 
 Start with the fundamentals: understand how LLMs work (statistical pattern matching that enables reasoning), learn the agent loop (perceive-reason-act-observe-verify), then practice the four-phase workflow on a real task. Begin with supervised mode until you trust your grounding and validation process.
 
-*Start with [Lesson 1: How LLMs Work](/docs/fundamentals/lesson-1-how-llms-work).*
+*Start with [Lesson 1: How LLMs Work](/fundamentals/lesson-1-how-llms-work).*
 
 ---
 
@@ -73,7 +73,7 @@ Vibe coding, [coined by Andrej Karpathy](https://x.com/karpathy/status/188619218
 
 It's effective for throwaway prototypes and personal scripts, but produces unmaintainable, potentially insecure code unsuitable for production systems.
 
-*See [Lesson 3: The Four-Phase Workflow](/docs/methodology/lesson-3-high-level-methodology) for why this matters.*
+*See [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology) for why this matters.*
 
 ### How is agentic coding different from vibe coding?
 
@@ -89,7 +89,7 @@ Both use AI to generate code, but agentic coding treats the human as the account
 | **Accountability** | None | Full ownership |
 | **Use case** | Prototypes | Production systems |
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/docs/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
 
 ### What is vibe engineering?
 
@@ -97,7 +97,7 @@ Vibe engineering, [coined by Simon Willison](https://simonwillison.net/2025/Oct/
 
 Agentic coding shares this accountability principle but adds explicit structure: the four-phase workflow (research, plan, execute, validate) that makes AI-assisted development predictable and repeatable.
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/docs/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
 
 ---
 
@@ -128,31 +128,31 @@ IDE agents (Cursor, Copilot) work but are coupled to single windows, limiting co
 
 The methodology applies to any agent, but CLI agents unlock the parallel execution model this course teaches.
 
-*Learn more in [Lesson 2: Agents Demystified](/docs/fundamentals/lesson-2-how-agents-work) and [Lesson 7: Planning & Execution](/docs/practical-techniques/lesson-7-planning-execution).*
+*Learn more in [Lesson 2: Agents Demystified](/fundamentals/lesson-2-how-agents-work) and [Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution).*
 
 ### Is agentic coding better than prompt engineering?
 
 Prompt engineering optimizes individual prompts. Agentic coding is a complete methodology: research, plan, execute, validate. You still write prompts, but within a structured workflow that includes grounding agents in your codebase, reviewing plans before execution, and validating output against your mental model.
 
-*Learn more in [Lesson 4: Prompting 101](/docs/methodology/lesson-4-prompting-101).*
+*Learn more in [Lesson 4: Prompting 101](/methodology/lesson-4-prompting-101).*
 
 ### Why "power tool" instead of "junior developer"?
 
 A power tool doesn't 'understand' what you're building—it executes based on how you operate it. You don't get frustrated when a circular saw cuts the wrong angle; you adjust your setup and technique. Same with AI agents. You own the results, validate through testing, and debug your input when output fails.
 
-*Learn more in [Lesson 1: How LLMs Work](/docs/fundamentals/lesson-1-how-llms-work).*
+*Learn more in [Lesson 1: How LLMs Work](/fundamentals/lesson-1-how-llms-work).*
 
 ### What is the agentic coding workflow?
 
 Four phases: Research (ground agents in your codebase patterns and external domain knowledge), Plan (choose exploration or exact planning strategy, make architectural decisions), Execute (delegate to agents in supervised or autonomous mode), Validate (decide iterate or regenerate based on alignment with your mental model and automated checks). Skipping any phase dramatically increases failure rate.
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/docs/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
 
 ### Why do some developers report being slower with AI tools?
 
 [Studies show](https://arxiv.org/abs/2507.09089) experienced developers are often slower on individual tasks with AI—despite believing they're faster. Speed per task is the wrong metric. This methodology teaches that the real productivity gain comes from parallelism: running multiple agents on different tasks while you attend meetings, review PRs, or handle other work. A senior engineer with three parallel agents ships more than one babysitting a single conversation.
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/docs/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
 
 ---
 
@@ -162,7 +162,7 @@ Four phases: Research (ground agents in your codebase patterns and external doma
 
 Agents don't know your codebase exists. Without grounding, they generate from training data patterns frozen at their knowledge cutoff. The fix: inject your real code patterns, architectural constraints, and current documentation into context before asking for generation. Grounding significantly reduces hallucination by anchoring generation in your actual codebase.
 
-*Learn more in [Lesson 5: Grounding](/docs/methodology/lesson-5-grounding).*
+*Learn more in [Lesson 5: Grounding](/methodology/lesson-5-grounding).*
 
 ### Why does my AI agent forget context mid-task?
 
@@ -172,25 +172,25 @@ The fix: **deliberately load context** before each task phase. Ask exploratory q
 
 Use hierarchical instruction files (CLAUDE.md at repo and directory levels) to persist architectural constraints and patterns that should always be available. Grounding isn't a one-time upfront step—it's continuous context engineering throughout the session.
 
-*Learn more in [Lesson 5: Grounding](/docs/methodology/lesson-5-grounding) and [Lesson 7: Planning & Execution](/docs/practical-techniques/lesson-7-planning-execution#prompt-to-explain-loading-context-into-the-window).*
+*Learn more in [Lesson 5: Grounding](/methodology/lesson-5-grounding) and [Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution#prompt-to-explain-loading-context-into-the-window).*
 
 ### How do I stop AI agents from duplicating code?
 
 Agents amplify existing patterns—they don't invent duplication. If your codebase has inconsistent patterns, agents replicate them. Before requesting new implementations, show existing ones. Force the agent to search for existing patterns first. Grounding in your actual code prevents reinvention.
 
-*Learn more in [Lesson 11: Writing Agent-Friendly Code](/docs/practical-techniques/lesson-11-agent-friendly-code).*
+*Learn more in [Lesson 11: Writing Agent-Friendly Code](/practical-techniques/lesson-11-agent-friendly-code).*
 
 ### Can AI agents review their own generated code?
 
 Not in the same context. Agents reviewing their own work defend prior decisions—confirmation bias. They defend issues rather than identify them. For objective analysis, review in a fresh context (different conversation) where the agent has no memory of implementation decisions.
 
-*Learn more in [Lesson 9: Reviewing Code](/docs/practical-techniques/lesson-9-reviewing-code).*
+*Learn more in [Lesson 9: Reviewing Code](/practical-techniques/lesson-9-reviewing-code).*
 
 ### How do I validate AI-generated code efficiently?
 
 Use the three-context workflow: generate code in Context A, write tests in a fresh Context B (the agent can't defend its implementation), and triage failures in Context C (objective analysis). Use sociable tests that exercise real code—mock only external systems. Tests define the operational boundaries agents cannot cross.
 
-*Learn more in [Lesson 8: Tests as Guardrails](/docs/practical-techniques/lesson-8-tests-as-guardrails).*
+*Learn more in [Lesson 8: Tests as Guardrails](/practical-techniques/lesson-8-tests-as-guardrails).*
 
 ### How do AI coding agents handle large codebases?
 
@@ -198,7 +198,7 @@ They don't load everything—they delegate research to sub-agents. Even 1 millio
 
 The solution scales with codebase size: Under 10K lines, agentic search (Grep, Read, Glob) works fine. At 10-100K lines, add semantic search or sub-agents. Over 100K lines, you need code research—tools like [ChunkHound](https://chunkhound.github.io/code-research/) generate architectural reports that map components, relationships, and patterns across millions of lines.
 
-*Learn more in [Lesson 5: Grounding](/docs/methodology/lesson-5-grounding).*
+*Learn more in [Lesson 5: Grounding](/methodology/lesson-5-grounding).*
 
 ### How do AI agents handle obscure bugs and latest package versions?
 
@@ -208,8 +208,8 @@ The fix: ground agents with real-time web research before generation. Instead of
 
 [ArguSeek](https://github.com/ArguSeek/arguseek) is an MCP server for wide research—rapidly synthesizing many sources so agents work with current facts rather than hallucinating from outdated patterns. Combined with codebase grounding, this anchors generation in both your existing patterns and current reality.
 
-*Learn more in [Lesson 5: Grounding](/docs/methodology/lesson-5-grounding).*
+*Learn more in [Lesson 5: Grounding](/methodology/lesson-5-grounding).*
 
 ---
 
-**Ready to start?** Begin with [Lesson 1: How LLMs Work](/docs/fundamentals/lesson-1-how-llms-work) or explore the [Prompt Library](/prompts).
+**Ready to start?** Begin with [Lesson 1: How LLMs Work](/fundamentals/lesson-1-how-llms-work) or explore the [Prompt Library](/prompts).

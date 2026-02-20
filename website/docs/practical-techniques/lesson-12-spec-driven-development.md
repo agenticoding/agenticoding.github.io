@@ -26,19 +26,19 @@ This mirrors traditional waterfall, but with AI agents, it happens in hours rath
 
 ## The Duplicate Knowledge Problem
 
-Once implementation is complete and the code passes tests ([Lesson 8](/docs/practical-techniques/lesson-8-tests-as-guardrails)) and review ([Lesson 9](/docs/practical-techniques/lesson-9-reviewing-code)), you have a problem: the same knowledge exists in three places—the spec, the design, and the code.
+Once implementation is complete and the code passes tests ([Lesson 8](/practical-techniques/lesson-8-tests-as-guardrails)) and review ([Lesson 9](/practical-techniques/lesson-9-reviewing-code)), you have a problem: the same knowledge exists in three places—the spec, the design, and the code.
 
 Which is correct?
 
 The spec says "users can have at most 5 active sessions." The code implements a limit of 10. The design document mentions "configurable session limits." Three sources, three different truths.
 
-This is exactly the [Knowledge Cache Anti-Pattern](/docs/practical-techniques/lesson-11-agent-friendly-code#the-knowledge-cache-anti-pattern) from Lesson 11. Saved specifications become stale the moment code changes. Future agents researching your codebase find both the outdated spec and the current code, leading to confusion and conflicting implementations.
+This is exactly the [Knowledge Cache Anti-Pattern](/practical-techniques/lesson-11-agent-friendly-code#the-knowledge-cache-anti-pattern) from Lesson 11. Saved specifications become stale the moment code changes. Future agents researching your codebase find both the outdated spec and the current code, leading to confusion and conflicting implementations.
 
-Here's the key insight from [Lesson 5](/docs/methodology/lesson-5-grounding): **grounding tools already perform knowledge extraction.** When ChunkHound's [code research](https://chunkhound.github.io/code-research) processes 50,000 tokens of raw code and returns a 3,000-token synthesis, that synthesis IS a spec—extracted on-demand from the source of truth. You don't need to maintain spec files because you can regenerate them from code whenever needed.
+Here's the key insight from [Lesson 5](/methodology/lesson-5-grounding): **grounding tools already perform knowledge extraction.** When ChunkHound's [code research](https://chunkhound.github.io/code-research) processes 50,000 tokens of raw code and returns a 3,000-token synthesis, that synthesis IS a spec—extracted on-demand from the source of truth. You don't need to maintain spec files because you can regenerate them from code whenever needed.
 
-But not all spec knowledge is equal. **HOW** knowledge—implementation details, data flows, edge cases—gets fully encoded in code during implementation. Once the code exists, the spec's HOW is redundant. **WHY** knowledge—rejected alternatives, business rationale for a constraint, compliance mandates—can't be expressed in code. A constraint comment like `// C-001: NEVER process duplicate webhook` ([Lesson 11](/docs/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents)) tells the agent *what* to enforce, but not *why* you chose idempotency-via-database over idempotency-via-cache. That rationale is the **residual**—the part of the spec that doesn't migrate into code.
+But not all spec knowledge is equal. **HOW** knowledge—implementation details, data flows, edge cases—gets fully encoded in code during implementation. Once the code exists, the spec's HOW is redundant. **WHY** knowledge—rejected alternatives, business rationale for a constraint, compliance mandates—can't be expressed in code. A constraint comment like `// C-001: NEVER process duplicate webhook` ([Lesson 11](/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents)) tells the agent *what* to enforce, but not *why* you chose idempotency-via-database over idempotency-via-cache. That rationale is the **residual**—the part of the spec that doesn't migrate into code.
 
-**The solution: DELETE the HOW spec after implementation.** The code is the single source of truth for implementation. For the small WHY residual (rejected alternatives, business context that drove constraints), have the agent diff the original spec against the final code—what's expressed in code is now redundant. The residual gets committed as a decision record ([Lesson 11](/docs/practical-techniques/lesson-11-agent-friendly-code#the-knowledge-cache-anti-pattern)). Everything else is regenerable from code via grounding tools.
+**The solution: DELETE the HOW spec after implementation.** The code is the single source of truth for implementation. For the small WHY residual (rejected alternatives, business context that drove constraints), have the agent diff the original spec against the final code—what's expressed in code is now redundant. The residual gets committed as a decision record ([Lesson 11](/practical-techniques/lesson-11-agent-friendly-code#the-knowledge-cache-anti-pattern)). Everything else is regenerable from code via grounding tools.
 
 ## Mainstream SDD vs This Approach
 
@@ -61,13 +61,13 @@ Agentic search, semantic search, [ChunkHound](https://chunkhound.github.io)'s co
 - "What's the API contract?" → Interface documentation
 - "What are the architectural boundaries?" → Component diagram
 
-Same source of truth, different compression targets. The grounding process ([Lesson 5](/docs/methodology/lesson-5-grounding)) extracts exactly what you need, when you need it—no stale caches, no conflicting sources.
+Same source of truth, different compression targets. The grounding process ([Lesson 5](/methodology/lesson-5-grounding)) extracts exactly what you need, when you need it—no stale caches, no conflicting sources.
 
 ## Modifying Existing Code
 
 When modifying existing code, the knowledge already lives in the implementation. Your job is to extract it, reshape it for whoever needs to approve or understand the change, modify it, then re-implement.
 
-**Extract the spec from code.** Use [grounding techniques](/docs/methodology/lesson-5-grounding) to surface the current implementation as a spec. The shape of that spec depends on who needs it:
+**Extract the spec from code.** Use [grounding techniques](/methodology/lesson-5-grounding) to surface the current implementation as a spec. The shape of that spec depends on who needs it:
 
 - **Product stakeholders** need behavioral specs: what users can do, what business rules apply, what outcomes to expect – `Users can have up to 5 concurrent sessions. When exceeded, the oldest session is terminated.`
 
@@ -79,7 +79,7 @@ Same source code, different compression targets. Extract the right shape for you
 
 **Modify the spec, then gap-analyze.** Once you've edited the spec with your desired changes, perform gap analysis: compare the modified spec against the current implementation. What exists? What's missing? What conflicts? This bridges "where we are" to "where we want to be."
 
-**Follow the four-phase workflow.** With the gap identified, apply the standard [Research → Plan → Execute → Validate](/docs/methodology/lesson-3-high-level-methodology) workflow. The modified spec feeds your planning phase; the gap analysis tells you exactly what needs to change.
+**Follow the four-phase workflow.** With the gap identified, apply the standard [Research → Plan → Execute → Validate](/methodology/lesson-3-high-level-methodology) workflow. The modified spec feeds your planning phase; the gap analysis tells you exactly what needs to change.
 
 **Clean up.** Delete temporary spec files and any test scaffolding. The code is now the source of truth again.
 
@@ -94,7 +94,7 @@ If you've followed this course, you've been practicing SDD all along. Every time
 
 ...you were doing Spec Driven Development. The spec lived in your context window—RAM, not disk.
 
-What makes this safe is [constraint migration](/docs/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents): during implementation, the agent inlines spec constraints—with their IDs—into code comments. The WHY moves from spec to code. When you close the conversation, nothing is lost.
+What makes this safe is [constraint migration](/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents): during implementation, the agent inlines spec constraints—with their IDs—into code comments. The WHY moves from spec to code. When you close the conversation, nothing is lost.
 
 ### When to Persist Specs
 

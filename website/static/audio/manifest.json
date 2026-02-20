@@ -1,12 +1,12 @@
 {
-  "intro.md": {
+  "intro.mdx": {
     "audioUrl": "/audio/intro.mp3",
     "size": 19343176,
     "format": "audio/mp3",
     "tokenCount": 1318,
     "chunks": 2,
     "generatedAt": "2025-12-30T13:26:07.789Z",
-    "scriptSource": "intro.md"
+    "scriptSource": "intro.mdx"
   },
   "practical-techniques/lesson-10-debugging.md": {
     "audioUrl": "/audio/practical-techniques/lesson-10-debugging.mp3",

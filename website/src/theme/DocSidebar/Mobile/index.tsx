@@ -41,7 +41,7 @@ export default function MobileWrapper(props: Props): ReactNode {
       </div>
       <Mobile {...props} />
       <div className={styles.mobileFooterLinks}>
-        <Link to="/docs/faq" className={styles.footerLink}>
+        <Link to="/faq" className={styles.footerLink}>
           FAQ
         </Link>
         <a

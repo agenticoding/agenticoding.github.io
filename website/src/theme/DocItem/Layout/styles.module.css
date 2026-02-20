@@ -3,6 +3,11 @@
   margin-top: 0;
 }
 
+/* Suppress the auto-generated doc title h1 on the intro page — the SiteHero serves as the page title */
+.introPage article h1:first-of-type {
+  display: none;
+}
+
 .docHeader {
   display: flex;
   justify-content: space-between;

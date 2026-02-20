@@ -1,0 +1,138 @@
+/* ========================================================================
+   SHARED SECTION LAYOUT
+   ======================================================================== */
+
+.sectionTitle {
+  font-family: var(--font-display);
+  text-align: center;
+  font-size: var(--text-3xl);
+  line-height: var(--lh-2xl);
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.sectionSubtitle {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--lh-sm);
+  color: var(--text-muted);
+  max-width: 66ch;
+  margin-inline: auto;
+  margin-bottom: var(--space-5);
+}
+
+/* ========================================================================
+   RESOURCES
+   ======================================================================== */
+
+.resources {
+  padding: var(--space-6) 0;
+}
+
+.resourceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.resourceCard {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-top: 3px solid transparent;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.resourceCard:hover {
+  border-color: var(--neutral-400);
+  text-decoration: none;
+}
+
+.resourceCard:focus {
+  outline: 3px solid var(--text-heading);
+  outline-offset: 2px;
+}
+
+/* Semantic top accent borders */
+.resource-magenta { border-top-color: var(--visual-magenta); }
+.resource-cyan    { border-top-color: var(--visual-cyan); }
+.resource-indigo  { border-top-color: var(--visual-indigo); }
+.resource-success { border-top-color: var(--visual-success); }
+
+.resourceIllustration {
+  width: 100%;
+  height: auto;
+  max-height: 80px;
+  margin-bottom: var(--space-2);
+}
+
+.resourceTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: var(--lh-lg);
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0 0 var(--space-0h) 0;
+}
+
+.resourceDesc {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--text-body);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.resourceFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.resourceCount {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.resource-magenta .resourceCount { color: var(--visual-magenta); }
+.resource-cyan    .resourceCount { color: var(--visual-cyan); }
+.resource-indigo  .resourceCount { color: var(--visual-indigo); }
+.resource-success .resourceCount { color: var(--visual-success); }
+
+.ghostLink {
+  color: var(--text-body);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.ghostLink:hover {
+  color: var(--text-heading);
+  text-decoration-thickness: 2px;
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+
+@media screen and (max-width: 768px) {
+  .resourceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionTitle {
+    font-size: var(--text-2xl);
+  }
+}

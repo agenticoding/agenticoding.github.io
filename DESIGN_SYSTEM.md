@@ -38,7 +38,7 @@ When deciding which color to apply, follow these steps:
 
 | Context | Light Mode Shade | Dark Mode Shade |
 |---------|-----------------|-----------------|
-| Semantic text and icons | 600 (WCAG AA on white) | 400 (WCAG AA on #0d1117) |
+| Semantic text and icons | Pareto-optimal¹ (WCAG AA ≥4.5:1 on white) | 400 (WCAG AA on #0d1117) |
 | Subtle tinted backgrounds | 50 | 950 |
 | Borders, decorative fills | 100–200 | 700–800 |
 | Mid-tone accents | 500 | 500 |
@@ -46,18 +46,22 @@ When deciding which color to apply, follow these steps:
 
 ### Step 3: Use CSS tokens (not raw hex)
 
-| Token | Light (shade-600) | Dark (shade-400) |
-|-------|-------------------|-------------------|
-| `--visual-error` | #ad3735 | #ec7069 |
-| `--visual-warning` | #8e5900 | #cd8c37 |
-| `--visual-lime` | #6b6b00 | #a1a22b |
-| `--visual-success` | #007a44 | #48b475 |
-| `--visual-cyan` | #007576 | #00b2b2 |
-| `--visual-indigo` | #1369b0 | #53a0ec |
-| `--visual-violet` | #6057af | #938eeb |
-| `--visual-magenta` | #874895 | #c07ecf |
-| `--visual-rose` | #9b436a | #d7799f |
+| Token | Light (Pareto-optimal) | Dark (shade-400) |
+|-------|------------------------|-------------------|
+| `--visual-error` | #ee0028 | #ec7069 |
+| `--visual-warning` | #a76900 | #cd8c37 |
+| `--visual-lime` | #7b7b00 | #a1a22b |
+| `--visual-success` | #00894d | #48b475 |
+| `--visual-cyan` | #008485 | #00b2b2 |
+| `--visual-indigo` | #0079d1 | #53a0ec |
+| `--visual-violet` | #6500ff | #938eeb |
+| `--visual-magenta` | #c900ea | #c07ecf |
+| `--visual-rose` | #c24c82 | #d7799f |
 | `--visual-neutral` | #666666 | #9b9b9b |
+
+¹ Light-mode visual tokens use Pareto-optimal OKLCH values — the highest-lightness, highest-chroma
+point in the sRGB gamut that passes WCAG AA. These exceed shade-600 in chroma for hues with available
+gamut room (violet, magenta, rose: +100–117%). Gamut-constrained hues (cyan, lime) see modest gains (~9–11%).
 
 ### Step 4: For diagram region fills, use background tokens
 
