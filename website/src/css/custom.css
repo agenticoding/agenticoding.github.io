@@ -760,6 +760,15 @@ article h1 {
   border-bottom-color: var(--neutral-800);
 }
 
+/* Figure — reset UA margin-inline:40px, center captions under diagrams */
+figure {
+  margin-inline: 0;
+}
+
+figure figcaption {
+  text-align: center;
+}
+
 /* Content area links — typographic interaction (Design System rule #4) */
 .markdown a,
 article a {

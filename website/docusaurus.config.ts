@@ -199,51 +199,6 @@ const config: Config = {
       },
       items: [], // All navigation moved to sidebar
     },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: 'Reference',
-          items: [
-            {
-              label: 'FAQ',
-              to: '/faq',
-            },
-            {
-              label: 'Getting Started',
-              to: '/',
-            },
-            {
-              label: 'All Chapters',
-              to: '/fundamentals/lesson-1-how-llms-work',
-            },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'GitHub Discussions',
-              href: 'https://github.com/agenticoding/agenticoding.github.io/discussions',
-            },
-            {
-              label: 'Report Issues',
-              href: 'https://github.com/agenticoding/agenticoding.github.io/issues',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/agenticoding/agenticoding.github.io',
-            },
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} Agentic Coding. Built with Docusaurus.`,
-    },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
