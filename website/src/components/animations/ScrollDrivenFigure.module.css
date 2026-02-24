@@ -1,0 +1,64 @@
+.figure {
+  position: relative;
+  width: 100%;
+  margin-block: var(--space-4);
+}
+
+/* Base state: hidden before scroll drives it in */
+.inner {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Fallback: IO has revealed it */
+.inner.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* When the feature is unsupported, show content immediately */
+.noScrollTimeline .inner {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* Scroll-driven path — only applied when CSS supports it */
+@supports (animation-timeline: scroll()) {
+  .inner {
+    animation-name: scrollReveal;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: view();
+    animation-range: entry 0% cover 50%;
+    /* Override JS-transition fallback — CSS drives this entirely */
+    transition: none;
+  }
+}
+
+@keyframes scrollReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .inner {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .inner.revealed {
+    opacity: 1;
+    transform: none;
+  }
+}
