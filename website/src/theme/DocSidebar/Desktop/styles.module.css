@@ -232,14 +232,13 @@
   animation: channelEnter 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Sticky footer: FAQ + GitHub + theme toggle */
+/* Sticky footer: GitHub + theme toggle */
 .sidebarFooter {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-2);
-  border-top: 1px solid var(--border-default);
+  padding: var(--space-0h) var(--space-2) var(--space-2);
 }
 
 .footerLinks {
@@ -262,50 +261,11 @@
   text-decoration: none;
 }
 
-.footerLinkActive {
-  font-weight: 600;
-  color: var(--text-heading);
-}
-
-.footerLinkActive:hover {
-  color: var(--text-heading);
-}
-
-.footerIconGroup {
-  display: flex;
-  align-items: center;
-  gap: var(--space-0h);
-}
-
-.footerIconLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--target-sm);
-  height: var(--target-sm);
-  color: var(--text-muted);
-  transition: color 0.15s ease;
-}
-
-.footerIconLink:hover {
-  color: var(--text-heading);
-}
-
-.footerIconLinkActive {
-  color: var(--text-heading);
-}
-
 /* ── On This Page — sidebar TOC zone ─────────────────── */
 
 .tocZone {
   flex-shrink: 0;
-  padding: 0 var(--space-2) var(--space-2);
-}
-
-.tocSeparator {
-  height: 1px;
-  background: var(--border-subtle);
-  margin-bottom: var(--space-2);
+  padding: var(--space-3) var(--space-2) var(--space-0h);
 }
 
 .tocToggle {
@@ -361,6 +321,7 @@
 
 .tocChevron {
   flex-shrink: 0;
+  width: var(--target-sm);              /* 32px — centers 12px drawing at same x as search/toggle */
   transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -467,6 +428,5 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2);
-  border-top: 1px solid var(--border-default);
+  padding: var(--space-3) var(--space-2) var(--space-2);
 }

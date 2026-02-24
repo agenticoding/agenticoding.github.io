@@ -73,7 +73,6 @@ export default function SidebarTOC(): ReactNode {
 
   return (
     <div className={styles.tocZone}>
-      <div className={styles.tocSeparator} />
       <button
         type="button"
         className={styles.tocToggle}

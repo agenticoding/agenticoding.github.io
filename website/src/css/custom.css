@@ -177,6 +177,7 @@
   /* Map to Infima layout variables */
   --ifm-background-color: var(--surface-page);
   --ifm-background-surface-color: var(--surface-raised);
+  --ifm-container-width-xl: 960px; /* Reference-book prose width (~67ch at 16px) */
 
   /* === UTILITY TOKENS === */
   --code-bg: var(--neutral-50);
@@ -594,10 +595,10 @@ article h1 {
   }
 }
 
-/* Sidebar right border — primary structural separator on desktop */
+/* Sidebar container — no structural borders */
 @media (min-width: 997px) {
   .theme-doc-sidebar-container {
-    border-right: 1px solid var(--border-default);
+    border-right: none;
     border-bottom: none;
   }
 }
@@ -762,13 +763,18 @@ article h1 {
   border-bottom-color: var(--neutral-800);
 }
 
-/* Figure — reset UA margin-inline:40px, center captions under diagrams */
+/* Figure — reset UA margins, apply design-system spacing consistently */
 figure {
   margin-inline: 0;
+  margin-block: var(--space-4);  /* 32px — matches ScrollDrivenFigure */
 }
 
 figure figcaption {
   text-align: center;
+  font-size: var(--text-sm);        /* 13px — caption scale per DESIGN_SYSTEM */
+  line-height: var(--lh-sm);        /* 24px — 8px-grid snap */
+  color: var(--text-muted);
+  margin-top: var(--space-1);       /* 8px */
 }
 
 /* Content area links — typographic interaction (Design System rule #4) */
@@ -836,6 +842,12 @@ code, pre, kbd, [class*="codeBlock"] {
 
 .menu > .menu__list > .menu__list-item:not(:first-child) {
   margin-top: var(--space-2);           /* 16px between category groups */
+}
+
+/* Icon column alignment: override Content module's 0px right padding
+   (scrollbar-gutter on .menu is inert — .sidebarScrollable is the scroll container) */
+.theme-doc-sidebar-container .menu {
+  padding-right: var(--space-2) !important;
 }
 
 /* Caret icons — mask-image approach (no filter hack) -------------------- */

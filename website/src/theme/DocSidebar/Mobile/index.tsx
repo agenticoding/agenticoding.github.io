@@ -41,9 +41,6 @@ export default function MobileWrapper(props: Props): ReactNode {
       </div>
       <Mobile {...props} />
       <div className={styles.mobileFooterLinks}>
-        <Link to="/faq" className={styles.footerLink}>
-          FAQ
-        </Link>
         <a
           href="https://github.com/agenticoding/agenticoding.github.io"
           target="_blank"
