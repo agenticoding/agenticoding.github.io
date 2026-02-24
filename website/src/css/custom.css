@@ -10,6 +10,9 @@
 /* Import unified presentation system */
 @import '../styles/presentation-system.css';
 
+/* Motion tokens: durations, easings, stagger, reveal offsets */
+@import './motion-tokens.css';
+
 /* ========================================================================
    AGENTIC CODING — DESIGN TOKEN SYSTEM (Single Source of Truth)
    ========================================================================
@@ -926,4 +929,35 @@ div[class*='announcementBar'] {
   line-height: var(--lh-sm);
   color: var(--text-muted);
   text-align: center;
+}
+
+/* ── Idle micro-animations (DESIGN_SYSTEM.md §Motion) ─────────────────────── */
+@keyframes idleCursorBlink {
+  0%, 100% { opacity: 1; } 50% { opacity: 0; }
+}
+@keyframes idleStatusPulse {
+  0%, 100% { opacity: 1; } 50% { opacity: 0.5; }
+}
+@keyframes idleFlowDrift {
+  0%, 100% { transform: translateX(0); } 50% { transform: translateX(2px); }
+}
+@keyframes idleReadyBreathe {
+  0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); }
+}
+@keyframes pingOnce {
+  0%   { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.idle-cursor-blink  { animation: idleCursorBlink  1000ms step-end infinite; }
+.idle-status-pulse  { animation: idleStatusPulse  2000ms ease-in-out infinite; }
+.idle-flow-drift    { animation: idleFlowDrift    3000ms ease-in-out infinite; }
+.idle-ready-breathe { animation: idleReadyBreathe 4000ms ease-in-out infinite; }
+.ping-once          { animation: pingOnce 400ms var(--ease-exit) 1 both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .idle-cursor-blink, .idle-status-pulse,
+  .idle-flow-drift, .idle-ready-breathe, .ping-once {
+    animation: none !important;
+  }
 }

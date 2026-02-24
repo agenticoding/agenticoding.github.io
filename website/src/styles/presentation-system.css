@@ -93,22 +93,20 @@
   --visual-indigo: var(--semantic-info);
   --visual-error: var(--semantic-error);
   --visual-neutral: var(--semantic-neutral);
-  --visual-lime: #a1a22b;       /* Lime-400 */
   --visual-violet: #938eeb;     /* Violet-400 */
   --visual-magenta: #c07ecf;    /* Magenta-400 */
-  --visual-rose: #d7799f;       /* Rose-400 */
+  /* --visual-lime and --visual-rose removed; they alias success and neutral */
 
   /* Visual element backgrounds - 15% tint (dark mode) */
   --visual-bg-error: color-mix(in srgb, var(--visual-error) 15%, transparent);
   --visual-bg-warning: color-mix(in srgb, var(--visual-warning) 15%, transparent);
-  --visual-bg-lime: color-mix(in srgb, var(--visual-lime) 15%, transparent);
   --visual-bg-success: color-mix(in srgb, var(--visual-success) 15%, transparent);
   --visual-bg-cyan: color-mix(in srgb, var(--visual-cyan) 15%, transparent);
   --visual-bg-indigo: color-mix(in srgb, var(--visual-indigo) 15%, transparent);
   --visual-bg-violet: color-mix(in srgb, var(--visual-violet) 15%, transparent);
   --visual-bg-magenta: color-mix(in srgb, var(--visual-magenta) 15%, transparent);
-  --visual-bg-rose: color-mix(in srgb, var(--visual-rose) 15%, transparent);
   --visual-bg-neutral: color-mix(in srgb, var(--visual-neutral) 15%, transparent);
+  /* --visual-bg-lime and --visual-bg-rose follow their aliases (success and neutral) */
 }
 
 /* ========================================================================
