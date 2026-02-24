@@ -105,7 +105,7 @@ export default function SidebarTOC(): ReactNode {
         </svg>
       </button>
       <div className={clsx(styles.tocContent, open && styles.tocContentOpen)}>
-        <div className={clsx(styles.tocContentInner, open && styles.tocContentInnerOpen)}>
+        <div key={allIds.join(',')} className={clsx(styles.tocContentInner, open && styles.tocContentInnerOpen)}>
           {toc.map(h2 => (
             <React.Fragment key={h2.id}>
               <a

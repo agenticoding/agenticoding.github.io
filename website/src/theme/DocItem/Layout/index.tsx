@@ -52,7 +52,7 @@ export default function DocItemLayout({ children }: Props): ReactNode {
       <div className={clsx('col', !docTOC.hidden && styles.docItemCol)}>
         <ContentVisibility metadata={metadata} />
         <DocVersionBanner />
-        <div className={styles.docItemContainer}>
+        <div key={metadata.id} className={styles.docItemContainer}>
           <article>
             <div className={styles.docHeader}>
               <DocBreadcrumbs />

@@ -344,10 +344,17 @@
 }
 
 /* Inner wrapper: overflow:hidden clips content at 0fr.
-   When open, cap height and enable scroll for long TOCs. */
+   When open, cap height and enable scroll for long TOCs.
+   Re-keyed on page change → remount fires tocEnter animation. */
+@keyframes tocEnter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 .tocContentInner {
   min-height: 0;
   overflow: hidden;
+  animation: tocEnter var(--duration-subtle) var(--ease-enter) both;
 }
 
 .tocContentInnerOpen {
@@ -412,6 +419,9 @@
   .tocContent,
   .tocActiveLabel {
     transition-duration: 0s !important;
+  }
+  .tocContentInner {
+    animation: none !important;
   }
 }
 
