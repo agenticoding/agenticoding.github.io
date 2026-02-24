@@ -75,4 +75,4 @@ npm run deploy                       # Deploy to GitHub Pages
 
 ## Design System
 
-@DESIGN_SYSTEM.md
+Read DESIGN_SYSTEM.md whenever visual work is involved

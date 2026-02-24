@@ -97,16 +97,19 @@ function ReviewIcon() {
   );
 }
 
-/** Icon 5: Plan & execute features — branch/network nodes (Smooth Circuit) */
+/** Icon 5: Plan & execute features — checklist (Smooth Circuit) */
 function PlanIcon() {
   return (
     <OutcomeIcon label="Plan & Execute" color="var(--visual-magenta)">
-      <circle cx="12" cy="4" r="2" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="4" cy="20" r="2" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="20" cy="20" r="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M12 6v7" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M12 13L6 18" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M12 13l6 5" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Row 1 — checked */}
+      <path d="M 3,5 L 5,7 L 8,3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="10" y1="5" x2="21" y2="5" strokeWidth="2" strokeLinecap="round" />
+      {/* Row 2 — checked */}
+      <path d="M 3,12 L 5,14 L 8,10" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="10" y1="12" x2="18" y2="12" strokeWidth="2" strokeLinecap="round" />
+      {/* Row 3 — pending */}
+      <circle cx="5.5" cy="19" r="1.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="10" y1="19" x2="16" y2="19" strokeWidth="2" strokeLinecap="round" />
     </OutcomeIcon>
   );
 }

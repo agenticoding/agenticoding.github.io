@@ -661,6 +661,7 @@ The agent selects algorithm based on data structure:
 | Circle packing | Hierarchical (tree + values) | Nested circles | Organic hierarchy, set containment |
 | Voronoi tessellation | Seed points | Cell partitions | Territory, proximity-based regions |
 | Constraint solver | Constraints | Element positions | Structured diagrams, labeled layouts |
+| Narrative diagram | Ordered act sequence | N static compositions | Scroll-driven reveals, causal sequence diagrams |
 
 ### Force-Directed Layout
 
@@ -700,6 +701,21 @@ where `s = SUM(r_i)` and `w` is the row width.
 Hierarchical circle packing places child circles within parent circles. Recursive application with iterative relaxation minimizes wasted space. The front-chain algorithm maintains a frontier of placed circles and greedily places each new circle tangent to two frontier circles.
 
 **Source:** Wang, W. et al. (2006). "Visualization of large hierarchical data by circle packing." *CHI 2006*.
+
+### Narrative Diagram
+
+A narrative diagram has N discrete act-states, each of which is a valid static composition. Acts are ordered sequences that reveal a concept incrementally — typically through scroll phase or time-based progression.
+
+**Design rule:** Enumerate all act-states as static layouts first. Verify compositional balance (DCM < 10.0) at each state before adding any animation. The final act-state (phase=1) is the canonical diagram — the authoritative design artifact that must communicate the full concept with no motion.
+
+**Construction procedure:**
+1. Define the complete set of acts (N states) and the elements present in each.
+2. For each act-state i where 0 ≤ i < N: lay out the composition as a static diagram. Elements that arrive in later acts contribute placeholder mass (ghost geometry, neutral fill at opacity ≤ 0.15) to preserve spatial balance. Verify DCM < 10.0 at each act-state.
+3. Verify the final act-state (i = N−1) is a fully self-sufficient composition readable with no prior acts.
+4. Verify that appearance order across acts matches causal order of the concept: upstream causes appear before downstream effects; labels appear after the elements they describe.
+5. Only after all act-states pass the static composition check, add entrance transitions and idle states.
+
+Narrative diagrams use the `useActs` hook and `ScrollDrivenFigure` wrapper. See `ANIMATION_GUIDE.md §Diagram Animation System` for the act system contract.
 
 ---
 
