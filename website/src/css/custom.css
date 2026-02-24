@@ -217,23 +217,23 @@
   --visual-neutral: var(--semantic-neutral);  /* #666666 — Neutral */
 
   /* Hue-based (categorical) */
-  --visual-lime: #7b7b00;                    /* Lime optimal OKLCH(0.564 0.123 110°) */
-  --visual-cyan: #008485;                    /* Cyan optimal OKLCH(0.557 0.095 195°) */
-  --visual-indigo: var(--semantic-info);     /* #0079d1 — Knowledge, data */
-  --visual-violet: #6500ff;                  /* Violet optimal OKLCH(0.503 0.294 285°) */
-  --visual-magenta: #c900ea;                 /* Magenta optimal OKLCH(0.608 0.292 320°) */
-  --visual-rose: #c24c82;                    /* Rose conservative OKLCH(0.589 0.160 355°) */
+  --visual-lime: var(--visual-success);      /* Alias → success; lime removed from spectrum */
+  --visual-cyan: #008485;                    /* Cyan C=0.095 OKLCH(0.557 0.095 195°) — gamut limit */
+  --visual-indigo: #307ac0;                  /* Indigo C=0.13 OKLCH(0.567 0.13 250°) */
+  --visual-violet: #736cc3;                  /* Violet C=0.13 OKLCH(0.578 0.13 285°) */
+  --visual-magenta: #9d5fab;                 /* Magenta C=0.13 OKLCH(0.583 0.13 320°) */
+  --visual-rose: var(--visual-neutral);      /* Alias → neutral; rose removed from spectrum */
 
   /* === VISUAL ELEMENT BACKGROUNDS — 10% tint in light mode === */
   --visual-bg-error: color-mix(in srgb, var(--visual-error) 10%, transparent);
   --visual-bg-warning: color-mix(in srgb, var(--visual-warning) 10%, transparent);
-  --visual-bg-lime: color-mix(in srgb, var(--visual-lime) 10%, transparent);
+  --visual-bg-lime: var(--visual-bg-success);                                     /* Follows lime alias */
   --visual-bg-success: color-mix(in srgb, var(--visual-success) 10%, transparent);
   --visual-bg-cyan: color-mix(in srgb, var(--visual-cyan) 10%, transparent);
   --visual-bg-indigo: color-mix(in srgb, var(--visual-indigo) 10%, transparent);
   --visual-bg-violet: color-mix(in srgb, var(--visual-violet) 10%, transparent);
   --visual-bg-magenta: color-mix(in srgb, var(--visual-magenta) 10%, transparent);
-  --visual-bg-rose: color-mix(in srgb, var(--visual-rose) 10%, transparent);
+  --visual-bg-rose: var(--visual-bg-neutral);                                      /* Follows rose alias */
   --visual-bg-neutral: color-mix(in srgb, var(--visual-neutral) 10%, transparent);
 
   /* === GRADIENT ENDPOINTS (used by ContextWindowMeter) === */
@@ -301,23 +301,22 @@
   --ifm-color-primary-lightest: #ffffff;
 
   /* === VISUAL ELEMENT COLORS — shade-400 for dark mode === */
-  --visual-lime: #a1a22b;       /* Lime-400 */
+  --visual-indigo: #53a0ec;     /* Indigo-400 — override :root hardcode */
   --visual-cyan: var(--cyan-400); /* Cyan-400 */
   --visual-violet: #938eeb;     /* Violet-400 */
   --visual-magenta: #c07ecf;    /* Magenta-400 */
-  --visual-rose: #d7799f;       /* Rose-400 */
+  /* --visual-lime and --visual-rose removed; they alias success and neutral */
 
   /* === VISUAL ELEMENT BACKGROUNDS — 15% tint in dark mode === */
   --visual-bg-error: color-mix(in srgb, var(--visual-error) 15%, transparent);
   --visual-bg-warning: color-mix(in srgb, var(--visual-warning) 15%, transparent);
-  --visual-bg-lime: color-mix(in srgb, var(--visual-lime) 15%, transparent);
   --visual-bg-success: color-mix(in srgb, var(--visual-success) 15%, transparent);
   --visual-bg-cyan: color-mix(in srgb, var(--visual-cyan) 15%, transparent);
   --visual-bg-indigo: color-mix(in srgb, var(--visual-indigo) 15%, transparent);
   --visual-bg-violet: color-mix(in srgb, var(--visual-violet) 15%, transparent);
   --visual-bg-magenta: color-mix(in srgb, var(--visual-magenta) 15%, transparent);
-  --visual-bg-rose: color-mix(in srgb, var(--visual-rose) 15%, transparent);
   --visual-bg-neutral: color-mix(in srgb, var(--visual-neutral) 15%, transparent);
+  /* --visual-bg-lime and --visual-bg-rose follow their aliases (success and neutral) */
 
   /* === SURFACE / TEXT / BORDER — Dark mode === */
   --surface-page: #0d1117;

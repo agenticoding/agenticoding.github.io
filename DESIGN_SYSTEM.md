@@ -4,8 +4,6 @@ You are implementing UI for a monochrome-first design system. Color exists only 
 
 ## Constraints
 
-Apply these rules to every UI decision:
-
 1. **Achromatic base** — Use pure gray for all surfaces, borders, and text. Do NOT use tinted neutrals. Instead, use the neutral palette (C:0.000) for all non-semantic elements.
 2. **Color = meaning** — Apply chromatic color only for semantic callouts, diagrams, status indicators, and data viz. Before using any color, answer: "what does this hue mean here?" If there is no semantic answer, use neutral gray instead.
 3. **Equal hue standing** — All 9 chromatic hues have equal weight. Do NOT treat any single hue as "the brand color." Instead, select hue based on semantic meaning (see Color Selection Procedure).
@@ -13,12 +11,12 @@ Apply these rules to every UI decision:
 5. **Typographic interaction** — Identify interactive elements by typography and shape. Use underlines + font-weight for links. Use dark/light fills for buttons. Do NOT rely on color to signal interactivity. Instead, use shape, weight, and underlines.
 6. **Color budget: 60-30-10** — 60% achromatic surfaces, 30% elevated gray, 10% semantic color. Default to 95/5 for content pages. Reserve 60-30-10 for diagram-heavy pages only.
 7. **Curved default, angular accent** — Use rounded forms (squircle containers, Bezier connectors) as the default shape vocabulary. Reserve angular forms (diamonds, chevrons, sharp miters) for high-arousal semantic states (error, warning, code). Do NOT mix angular containers with positive-valence content. Instead, match shape curvature to semantic valence (see Illustration System).
+8. **Motion is purposive** — Every animated element must answer: "what does this motion orient, teach, or confirm?" If no answer, use no animation. Do NOT animate for decoration. Reserve looping motion (idle states) for semantic signals only: active authoring, AI processing, data flow, system readiness. Max 2 simultaneous idle loops per figure.
+9. **Static completeness** — Design the final settled state first. Animation reveals content; it does not define it. Every figure must communicate its full concept in the phase=1 state with no motion.
 
 ---
 
 ## Color Selection Procedure
-
-When deciding which color to apply, follow these steps:
 
 ### Step 1: Determine semantic category
 
@@ -26,13 +24,16 @@ When deciding which color to apply, follow these steps:
 |-----|--------------|----------|
 | Error (H:25°) | Danger, critical | Error states, breaking changes, destructive actions |
 | Warning (H:70°) | Caution, attention | Warnings, deprecation notices, hallucination risk |
-| Lime (H:110°) | Progress, growth | In-progress states, intermediate steps, iteration cycles |
 | Success (H:155°) | Validated, complete | Completed states, validation passes, active connections |
 | Cyan (H:195°) | System, code | System components, code generation, infrastructure |
 | Indigo (H:250°) | Knowledge, data | Documentation, context retrieval, data references |
 | Violet (H:285°) | AI transformation | AI processing, transformation steps, synthesis operations |
 | Magenta (H:320°) | AI creative | LLM agents, creative processes, prompt engineering |
-| Rose (H:355°) | Human actor | User input, human actors, developer intent, emphasis |
+| Neutral | Human actor / base | Human actors, developer intent — achromatic by design |
+
+**Removed hues:** Lime (H:110°) aliased to Success — semantically overlapping at 45° gap.
+Rose (H:355°) aliased to Neutral — human actors represented achromatic per the base principle.
+CSS tokens `--visual-lime` and `--visual-rose` remain as aliases for backward compatibility.
 
 ### Step 2: Select shade by context
 
@@ -46,22 +47,24 @@ When deciding which color to apply, follow these steps:
 
 ### Step 3: Use CSS tokens (not raw hex)
 
-| Token | Light (Pareto-optimal) | Dark (shade-400) |
-|-------|------------------------|-------------------|
-| `--visual-error` | #ee0028 | #ec7069 |
-| `--visual-warning` | #a76900 | #cd8c37 |
-| `--visual-lime` | #7b7b00 | #a1a22b |
-| `--visual-success` | #00894d | #48b475 |
-| `--visual-cyan` | #008485 | #00b2b2 |
-| `--visual-indigo` | #0079d1 | #53a0ec |
-| `--visual-violet` | #6500ff | #938eeb |
-| `--visual-magenta` | #c900ea | #c07ecf |
-| `--visual-rose` | #c24c82 | #d7799f |
-| `--visual-neutral` | #666666 | #9b9b9b |
+| Token | Light mode | Dark mode | OKLCH |
+|-------|------------|-----------|-------|
+| `--visual-error` | #ee0028 | #ec7069 | Pareto-optimal, H:25° |
+| `--visual-warning` | #a76900 | #cd8c37 | Gamut-clipped C=0.125, H:70° |
+| `--visual-success` | #00894d | #48b475 | C=0.137, H:155° |
+| `--visual-cyan` | #008485 | #00b2b2 | Gamut-clipped C=0.095, H:195° |
+| `--visual-indigo` | #307ac0 | #53a0ec | C=0.13, H:250° |
+| `--visual-violet` | #736cc3 | #938eeb | C=0.13, H:285° |
+| `--visual-magenta` | #9d5fab | #c07ecf | C=0.13, H:320° |
+| `--visual-neutral` | #666666 | #9b9b9b | Achromatic |
+| `--visual-lime` | → `--visual-success` | → `--visual-success` | Alias — removed from spectrum |
+| `--visual-rose` | → `--visual-neutral` | → `--visual-neutral` | Alias — removed from spectrum |
 
-¹ Light-mode visual tokens use Pareto-optimal OKLCH values — the highest-lightness, highest-chroma
-point in the sRGB gamut that passes WCAG AA. These exceed shade-600 in chroma for hues with available
-gamut room (violet, magenta, rose: +100–117%). Gamut-constrained hues (cyan, lime) see modest gains (~9–11%).
+**Chroma normalization:** Categorical hues (indigo, violet, magenta) are capped at C=0.13 to
+enforce visual equal-standing. The previous Pareto-optimal approach produced violet/magenta at
+C≈0.29 — three times louder than cyan (C=0.095). The 1.37× residual variation is physical gamut
+limits at constrained hue angles (cyan, warning). Error retains Pareto-optimal for its semantic
+role as a high-arousal danger signal.
 
 ### Step 4: For diagram region fills, use background tokens
 
@@ -101,7 +104,7 @@ All 10 hues (error, warning, lime, success, cyan, indigo, violet, magenta, rose,
 --font-mono-features: 'calt' 1, 'liga' 0;
 ```
 
-Apply `--font-display` to `h1`, `h2`. Apply `--font-body` to body text. All five Monaspace faces share identical metrics and mix freely within the same monospaced grid.
+Apply `--font-display` to `h1`, `h2`. Apply `--font-body` to body. Monaspace faces share identical metrics — mix freely.
 
 ### OpenType Features
 
@@ -117,8 +120,6 @@ font-feature-settings: var(--font-mono-features);
 ### Typographic Voice Selection
 
 Color encodes *category*. Typeface encodes *speaker*. These axes are orthogonal — a keyword can be Krypton *and* cyan; a comment can be Radon *and* muted gray.
-
-When selecting a monospace voice:
 
 | Face | Voice | Apply To |
 |------|-------|----------|
@@ -142,10 +143,7 @@ When selecting a monospace voice:
 
 ### Voice Constraints
 
-- **Monospace only.** Do NOT apply voice faces to body text or headings. Instead, keep body as Inter, headings as Space Grotesk.
-- **Max 2 voices per block.** Use 3 only when explicitly contrasting human / AI / system actors.
-- **Radon is scarce.** Reserve for genuinely human content. Do NOT use Radon for emphasis or decoration. Instead, use weight or Krypton.
-- **Graceful fallback.** All voice tokens fall back to `var(--font-mono)` → system `monospace`.
+Voice faces: monospace only. Max 2 per block. Radon is scarce — not for emphasis. Fallback: `var(--font-mono)` → `monospace`.
 
 ---
 
@@ -196,22 +194,6 @@ Base unit: 8px. All spacing and line-heights snap to 8px grid multiples.
 | `--space-9` | 128px |
 | `--space-10` | 160px |
 
-```css
---space-0: 0px;
---space-px: 1px;
---space-0h: 4px;
---space-1: 8px;
---space-2: 16px;
---space-3: 24px;
---space-4: 32px;
---space-5: 48px;
---space-6: 64px;
---space-7: 80px;
---space-8: 96px;
---space-9: 128px;
---space-10: 160px;
-```
-
 | Purpose | Steps | Values |
 |---------|-------|--------|
 | Component padding | step 2–3 | 16–24px |
@@ -235,23 +217,6 @@ Minor Third (1.200), base 16px. Sizes integer-rounded. Line-heights 8px-snapped.
 | `--text-3xl` | 33px | 40px (`--lh-2xl`) | h2 major headings |
 | `--text-4xl` | 40px | 48px (`--lh-3xl`) | h1 page titles |
 
-```css
---text-xs: 11px;
---text-sm: 13px;
---text-base: 16px;
---text-lg: 19px;
---text-xl: 23px;
---text-2xl: 28px;
---text-3xl: 33px;
---text-4xl: 40px;
-
---lh-tight: 16px;
---lh-sm: 24px;
---lh-lg: 32px;
---lh-2xl: 40px;
---lh-3xl: 48px;
-```
-
 Do NOT use computed `line-height: 1.5`. Instead, assign `--lh-*` tokens.
 
 Apply `max-width: 66ch` to text containers.
@@ -267,16 +232,6 @@ Apply `max-width: 66ch` to text containers.
 | `--radius-xl` | 16px |
 | `--radius-2xl` | 24px |
 | `--radius-full` | 9999px |
-
-```css
---radius-none: 0px;
---radius-sm: 4px;
---radius-md: 8px;
---radius-lg: 12px;
---radius-xl: 16px;
---radius-2xl: 24px;
---radius-full: 9999px;
-```
 
 | Context | Adjustment | Radius |
 |---------|-----------|--------|
@@ -337,8 +292,6 @@ Do NOT use equal spacing within and between groups. Instead, ensure at least a 2
 
 ## Content Composition
 
-Rules for how prose, figures, code blocks, and interactive elements occupy the page.
-
 ### Page Reading Flow
 
 Content follows a single-column vertical flow. Block elements (figures, code blocks, admonitions) interrupt the prose column and span its full width.
@@ -387,15 +340,11 @@ Do NOT use `<img>` directly for diagrams or illustrations. Instead, wrap in `<fi
 
 ### Progressive Disclosure
 
-Three patterns for managing content density, mapped to Docusaurus primitives:
-
 | Pattern | Primitive | Use When |
 |---------|-----------|----------|
 | Collapsible depth | `<details>` / `<summary>` | Optional deep-dive, implementation detail, proof, or derivation |
 | Parallel alternatives | `<Tabs>` | Multiple equivalent approaches (languages, frameworks, OS) |
 | Semantic alert | Admonition (`:::type`) | Contextual warnings, tips, or prerequisites that interrupt flow |
-
-#### Selection criteria
 
 | Question | If Yes → |
 |----------|----------|
@@ -410,7 +359,7 @@ Do NOT nest disclosure patterns. A `<details>` inside a `<Tabs>` panel (or vice 
 
 ### Content Block Hierarchy
 
-Content occupies three tiers. Tiers 1 and 2 must be self-sufficient — a reader who ignores tier 3 still gets the complete argument.
+Content occupies three tiers; tiers 1–2 must be self-sufficient.
 
 | Tier | Elements | Role |
 |------|----------|------|
@@ -497,7 +446,62 @@ Do NOT apply background tints to admonitions. Instead, use `--surface-raised` fo
 
 ## Illustration System
 
-All illustrations, diagrams, and icons use a unified shape vocabulary derived from two parametric families. Curved forms are the default. Angular forms are reserved for high-arousal semantic states. See `ILLUSTRATION_GUIDE.md` for shape psychophysics theory and parametric math.
+Curved forms (Smooth Circuit) are default. Angular forms (Terminal Geometry) reserved for high-arousal states. See `ILLUSTRATION_GUIDE.md`.
+
+### Actor Primitives
+
+All actor primitives share a bounding-box grid for visual equal-standing.
+
+#### Bounding Box Grid
+
+| Primitive | Emoji Ref | Bounding Box | Semantic Color |
+|-----------|-----------|--------------|----------------|
+| `OperatorNode` | 🧑‍💻 | 40×40 (primary) / 32×32 (worker) | Neutral (`--visual-neutral`) |
+| `AgentNode` | 🤖 | 40×40 (primary) / 32×32 (worker) | Violet (`--visual-violet`) |
+| `PromptCard` | 💬 | 72×40 (fixed) | Indigo (`--visual-indigo`) |
+
+`PromptCard` is wider (72px) because it is a document artifact, not an actor. It participates
+in the 40px height grid of the actor nodes.
+
+All coordinates in `ActorNodes.tsx` are annotated: `// Computed via scripts/compute-actor-coords.js`.
+
+#### Size Encoding
+
+Hierarchy is expressed through **size only**, never through color.
+
+| Role | BB Size | Use |
+|------|---------|-----|
+| Primary / orchestrator | 40×40 | Top of hierarchy, one per level |
+| Worker / delegate | 32×32 | Bottom of hierarchy, multiple parallel |
+
+Do NOT distinguish orchestrator from worker agents by color. Use 40→32 size differential only.
+Do NOT place primary and worker actors in the same horizontal row without applying the size step.
+
+#### Construction
+
+**OperatorNode** — Smooth Circuit head, Terminal Geometry legs:
+- Head circle: `r = BB × 0.15`. Fill `--visual-bg-neutral`, stroke `--visual-neutral` 2px.
+- Shoulder U-path: Smooth Circuit (`stroke-linecap="round"` `stroke-linejoin="round"`). Span = BB × 0.90, corner radius = BB × 0.10.
+- Legs: two lines (Terminal Geometry, `stroke-linecap="square"`) spreading to BB base.
+
+**AgentNode** — Smooth Circuit throughout:
+- Head squircle: `rx = head_w × 0.25`. Fill `--visual-bg-violet`, stroke `--visual-violet` 2px.
+- Eyes: two solid circles, `fill="var(--visual-violet)"` (no stroke).
+- Mouth: rounded rect + 2 dividers (Terminal Geometry, rx=2). Fill `--visual-bg-cyan`, stroke/dividers `--visual-cyan` 1px.
+
+**PromptCard** — Smooth Circuit, positive-valence artifact:
+- Body rect: `rx="8"`. Fill `--visual-bg-indigo`, stroke `--visual-indigo` 1.5px.
+- Text stubs: 3 solid hairline rects at decreasing widths (44px → 36px → 28px).
+- Optional tail: small right-triangle at lower-left corner, pointing toward the sending operator.
+
+#### Communication Medium
+
+`PromptCard` is the only valid operator→agent communication artifact. Do NOT use other
+metaphors (looms, punch cards, pipes). Every edge connecting actor nodes carries either:
+- A `PromptCard` artifact (for human→agent or agent→agent delegation), or
+- A plain Bezier arc with arrowhead (for return flow / result propagation).
+
+---
 
 ### Shape Vocabulary
 
@@ -512,24 +516,9 @@ Do NOT apply angular containers (diamonds, sharp-cornered shapes) to success, AI
 
 ### Shape Selection Procedure
 
-When choosing a shape for a diagram element, follow these steps:
+Smooth Circuit for all hues except Error and Warning (Terminal Geometry).
 
-#### Step 1: Determine valence from semantic hue
-
-| Semantic Hue | Valence | Shape Family |
-|-------------|---------|-------------|
-| Success (H:155°) | Positive | Smooth Circuit |
-| Cyan (H:195°) | Positive | Smooth Circuit |
-| Indigo (H:250°) | Positive | Smooth Circuit |
-| Violet (H:285°) | Positive | Smooth Circuit |
-| Magenta (H:320°) | Positive | Smooth Circuit |
-| Lime (H:110°) | Neutral | Smooth Circuit |
-| Neutral | Neutral | Smooth Circuit |
-| Error (H:25°) | Negative | Terminal Geometry |
-| Warning (H:70°) | High-arousal | Terminal Geometry |
-| Rose (H:355°) | Active | Either (context-dependent) |
-
-#### Step 2: Select container shape
+#### Step 1: Select container shape
 
 | Content Type | Container | SVG Implementation |
 |-------------|-----------|-------------------|
@@ -551,10 +540,6 @@ When choosing a shape for a diagram element, follow these steps:
 | Bidirectional | Bezier with markers at both ends | `marker-start` + `marker-end` |
 | Optional / dashed | Bezier with dash array | `stroke-dasharray="6 4"` |
 
-Do NOT use straight-line connectors for happy-path data flow. Instead, use Bezier curves (`C` or `Q` commands).
-
-Do NOT use rounded caps on error/warning connectors. Instead, use `stroke-linecap="square"` and `stroke-linejoin="miter"`.
-
 ### Stroke Weight Scale
 
 | Token | Value | Purpose |
@@ -565,15 +550,6 @@ Do NOT use rounded caps on error/warning connectors. Instead, use `stroke-lineca
 | `--stroke-medium` | 2.5px | Container outlines, primary shapes |
 | `--stroke-heavy` | 3px | Emphasized elements, primary flow arrows |
 | `--stroke-accent` | 4px | Semantic accent strokes (1 per diagram max) |
-
-```css
---stroke-fine: 1px;
---stroke-light: 1.5px;
---stroke-default: 2px;
---stroke-medium: 2.5px;
---stroke-heavy: 3px;
---stroke-accent: 4px;
-```
 
 Do NOT exceed 4px stroke width. Instead, use fill-weight or size increase for emphasis.
 
@@ -619,14 +595,6 @@ Do NOT use `box-shadow` on diagram containers. Instead, use `border` with `--bor
 | `--icon-xl` | 48px | Diagram node icons |
 | `--icon-2xl` | 64px | Hero/feature icons |
 
-```css
---icon-sm: 16px;
---icon-md: 24px;
---icon-lg: 32px;
---icon-xl: 48px;
---icon-2xl: 64px;
-```
-
 All icons use a square viewBox matching their canvas (e.g., `viewBox="0 0 24 24"` for `--icon-md`). Content fills 80% of the canvas; 10% padding on each side.
 
 Do NOT create icons at arbitrary sizes. Instead, use `--icon-*` tokens.
@@ -640,12 +608,6 @@ Do NOT create icons at arbitrary sizes. Instead, use `--icon-*` tokens.
 | `stroke-width` | `2` (at 24px canvas) |
 | `stroke-linecap` | `round` (Smooth Circuit) or `square` (Terminal Geometry) |
 | `stroke-linejoin` | `round` (Smooth Circuit) or `miter` (Terminal Geometry) |
-
-Smooth Circuit icons (default): `stroke-linecap="round"` + `stroke-linejoin="round"`.
-
-Terminal Geometry icons (error, warning, code): `stroke-linecap="square"` + `stroke-linejoin="miter"`.
-
-Do NOT mix linecap/linejoin styles within a single icon. Choose one family based on semantic valence.
 
 ### Diagram Sizing
 
@@ -668,6 +630,159 @@ Every SVG diagram requires:
 3. Semantic color paired with a non-color indicator (shape difference, label text, or pattern)
 
 Do NOT rely on color alone to distinguish diagram elements. Instead, combine color + shape + label.
+
+---
+
+## Motion System
+
+Generated from `ANIMATION_GUIDE.md` Phase 2 (agent-executed math). Brand profile: productive style, medium arousal, medium pleasure. Do NOT override computed values. Re-run `ANIMATION_GUIDE.md` scripts if brand PAD profile changes.
+
+### Brand Motion Profile
+
+| PAD Axis | Level | Motion consequence |
+|----------|-------|--------------------|
+| Pleasure | Medium | Productive curves; slight warmth on diagram reveals |
+| Arousal | Low–Medium | Moderate duration (150–240ms); 80ms stagger |
+| Dominance | Medium | Ease-out settle; no spring bounce on standard UI |
+
+**Motion style:** Productive. Expressive curves reserved for actor diagram reveals only — never for UI chrome, buttons, or tables.
+
+### Motion Tokens
+
+```css
+/* Duration */
+--duration-instant:       70ms;   /* toggle, checkbox — at perception floor */
+--duration-fast:         110ms;   /* opacity/color, badge update */
+--duration-subtle:       150ms;   /* node entrance, icon swap */
+--duration-moderate:     240ms;   /* connector draw, widget reveal */
+--duration-deliberate:   400ms;   /* large panel, full-section reveal */
+--duration-ambient:      700ms;   /* background overlay — not user-triggered */
+
+/* Exit variants (×0.75 per NNGroup asymmetry rule) */
+--duration-fast-exit:     80ms;
+--duration-subtle-exit:  110ms;
+--duration-moderate-exit: 180ms;
+--duration-deliberate-exit: 300ms;
+
+/* Easing — productive style */
+--ease-enter:    cubic-bezier(0.00, 0.00, 0.38, 0.9); /* entrance: decelerate to rest */
+--ease-exit:     cubic-bezier(0.20, 0.00, 1.00, 0.9); /* exit: accelerate away */
+--ease-standard: cubic-bezier(0.20, 0.00, 0.38, 0.9); /* reposition within viewport */
+--ease-linear:   linear;                               /* spinners, progress bars only */
+
+/* Stagger */
+--motion-stagger-sm:  60ms;  /* 5–8 items */
+--motion-stagger-md:  80ms;  /* 3–4 items */
+--motion-stagger-lg: 100ms;  /* 2 items */
+
+/* Reveal offsets */
+--motion-reveal-y-scroll:  12px;   /* scroll-reveal: elements rise into viewport */
+--motion-reveal-y-load:    -8px;   /* page-load: elements settle downward */
+--motion-reveal-scale:     0.96;   /* modal/dialog only — never for lists */
+```
+
+Do NOT use the CSS `ease` keyword. Use `--ease-*` tokens exclusively.
+Do NOT animate `width`, `height`, `left`, `top`, `margin`, or `padding`. Use `opacity` and `transform` only.
+
+### Figure Animation Grammar
+
+Five archetypes. Each has a fixed animation grammar. Do NOT mix grammars.
+
+| Archetype | Trigger | Acts | Entrance | Idle | Budget |
+|-----------|---------|------|----------|------|--------|
+| **Actor diagram** | scroll phase 0→1 | 4–6 phase-gated | `fadeIn + translateY(12px)` per node at `--duration-subtle`; connectors draw via `stroke-dashoffset` at `--duration-moderate` | cursor-blink / status-pulse / ready-breathe per act | ≤1000ms story |
+| **Data viz** | scroll phase 0→1 | 2–3 | Containers simultaneous; connectors draw last | flow-drift (optional) | ≤600ms |
+| **Interactive widget** | scroll reveal (IO) | 1 | Unit `fadeIn + translateY(12px)` at `--duration-moderate` | none — user-driven | ≤300ms |
+| **Data table** | scroll reveal (IO) | 1 | Row stagger at `--motion-stagger-sm` (60ms/row) | `ping-once` on badges at row entry | ≤500ms |
+| **Sticky narrative** | chapter ID | N | Chapter transition at `--duration-subtle`; exit at `--duration-subtle-exit` | per-chapter idle | chapter-driven |
+
+**Entrance keyframe (shared by all archetypes):**
+
+```css
+@keyframes actEnter {
+  from { opacity: 0; transform: translateY(var(--motion-reveal-y-scroll)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* apply: animation: actEnter --duration-subtle --ease-enter both; */
+```
+
+**Connector draw-on:**
+
+```css
+/* set stroke-dasharray = stroke-dashoffset = el.getTotalLength() via JS on mount */
+@keyframes drawPath { to { stroke-dashoffset: 0; } }
+/* apply: animation: drawPath --duration-moderate --ease-enter both; */
+```
+
+### Act System
+
+An **act** is a discrete visual state of a figure. Acts advance monotonically as scroll phase increases — never reverse.
+
+```
+phase 0→1  (from ScrollDrivenFigure context, or chapter ID from NarrativeFigure)
+    │
+    ▼
+useActs(actDefs, phase) → { wasReached(id), isCurrentAct(id) }
+    │
+    ├── wasReached(id)    → element visible, settled appearance
+    ├── isCurrentAct(id)  → apply idle class
+    └── !wasReached(id)   → opacity: 0; pointer-events: none
+```
+
+Each `ActDef`: `{ id: string, threshold: number }` where threshold is 0–1 (phase-driven) or a chapter ID string (narrative-driven).
+
+**Do NOT** put act logic in CSS `animation-delay` chains. Use `useActs` + conditional class names. CSS modules define entrance keyframes; the hook controls when they fire.
+
+**Every act-state must be a visually complete, balanced composition.** Elements that arrive in later acts must have placeholder mass (ghost geometry, neutral fill) in earlier acts to preserve spatial balance. A diagram that looks broken at any act boundary violates this rule.
+
+### Idle Micro-animation Vocabulary
+
+All idle classes defined once in `custom.css`. Do NOT define idle keyframes per-component.
+
+| Class | Motion | Loop | Semantic use |
+|-------|--------|------|-------------|
+| `.idle-cursor-blink` | `opacity 1→0→1` step-end | 1000ms | Active authoring (PromptBubble during composing act) |
+| `.idle-status-pulse` | `opacity 1→0.5→1` ease-in-out | 2000ms | AI processing; connector during transit |
+| `.idle-flow-drift` | `translateX 0→2px→0` ease-in-out | 3000ms | Data moving through a channel |
+| `.idle-ready-breathe` | `scale 1→1.02→1` ease-in-out | 4000ms | Agent idle; system ready |
+| `.ping-once` | `scale 1→1.4; opacity 1→0` ease-out | 400ms, 1× | One-shot attention on act entry |
+
+Rules:
+- Max **2 idle loops** simultaneously per figure. `cursor-blink` and `status-pulse` never together.
+- `ping-once` is exempt (transient; `animation-iteration-count: 1`).
+- Remove idle classes via `useActs` when the act advances — do NOT let them run in settled state.
+
+### Stagger Order Rules
+
+| Content | Order |
+|---------|-------|
+| Actor diagram nodes | Data-flow order (source → sink) |
+| Connector drawing | After both connected nodes are settled |
+| Labels / legends | Always last, after the elements they label |
+| Data table rows | Top-to-bottom (reading order) |
+| Parallel equal-weight grid | Simultaneous — stagger implies false hierarchy |
+| Form fields | Top-to-bottom (completion order) |
+
+### Reduced-Motion Contract
+
+`ScrollDrivenFigure` enforces the entire contract at the wrapper level. Diagram components do NOT check `prefers-reduced-motion` directly.
+
+| Condition | Behavior |
+|-----------|----------|
+| `prefers-reduced-motion: reduce` | `ScrollDrivenFigure` sets `phase=1` on mount; all acts fire instantly; diagrams render in final settled state; idle loop classes removed |
+| No JavaScript | Diagrams render in final settled state (SSR default) |
+| No CSS scroll-timeline | `IntersectionObserver` fires `phase=1` on first intersection; entrance animations play time-based (correct degradation) |
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .idle-cursor-blink, .idle-status-pulse,
+  .idle-flow-drift, .idle-ready-breathe, .ping-once {
+    animation: none !important;
+  }
+}
+```
+
+Do NOT use `animation-duration: 0` — use `0.01ms`. Below 40ms, browsers may not fire `animationend` reliably.
 
 ---
 
