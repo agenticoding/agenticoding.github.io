@@ -1,0 +1,189 @@
+/* ==========================================================================
+   Motion Tokens
+   Productive style · Medium arousal · Medium pleasure
+   All durations and easings derived from ANIMATION_GUIDE.md formulas.
+   Only opacity and transform are animated — never layout properties.
+   ========================================================================== */
+
+:root {
+  /* --- Duration tokens -------------------------------------------------- */
+  --duration-instant:           70ms;
+  --duration-fast:             110ms;
+  --duration-subtle:           150ms;
+  --duration-moderate:         240ms;
+  --duration-deliberate:       400ms;
+  --duration-ambient:          700ms;
+
+  /* Exit durations (shorter than enter — perception asymmetry) */
+  --duration-fast-exit:         80ms;
+  --duration-subtle-exit:      110ms;
+  --duration-moderate-exit:    180ms;
+  --duration-deliberate-exit:  300ms;
+
+  /* --- Easing tokens ----------------------------------------------------- */
+  /* Enter: starts fast, decelerates into resting position */
+  --ease-enter:    cubic-bezier(0.00, 0.00, 0.38, 0.9);
+  /* Exit: starts slow, accelerates out of frame */
+  --ease-exit:     cubic-bezier(0.20, 0.00, 1.00, 0.9);
+  /* Standard: enters fast, eases to rest (for in-place state changes) */
+  --ease-standard: cubic-bezier(0.20, 0.00, 0.38, 0.9);
+  /* Linear: constant velocity — only for continuous ambient motion */
+  --ease-linear:   linear;
+
+  /* --- Stagger tokens ---------------------------------------------------- */
+  --motion-stagger-sm:  60ms;   /* 5–8 items */
+  --motion-stagger-md:  80ms;   /* 3–4 items */
+  --motion-stagger-lg: 100ms;   /* 2 items */
+
+  /* --- Reveal offset tokens ---------------------------------------------- */
+  --motion-reveal-y-load:    -8px;   /* Page load: elements settle downward */
+  --motion-reveal-y-scroll:  12px;   /* Scroll reveal: elements rise upward */
+  --motion-reveal-scale:     0.96;   /* Modal only: slight scale expand */
+
+  /* --- Stroke tokens (SVG diagram animations) ---------------------------- */
+  --stroke-fine:    1px;
+  --stroke-light:   1.5px;
+  --stroke-default: 2px;
+  --stroke-medium:  2.5px;
+  --stroke-heavy:   3px;
+  --stroke-accent:  4px;
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+
+/* Scroll reveal: element rises up into view from below */
+@keyframes reveal-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-reveal-y-scroll));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Page load: element settles downward into position */
+@keyframes reveal-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-reveal-y-load));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal reveal: element expands slightly as it fades in */
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(var(--motion-reveal-scale));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* SVG connector draw: path traces from start to end */
+@keyframes draw-path {
+  from {
+    stroke-dashoffset: var(--path-length);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* SVG node entrance: fade + rise */
+@keyframes diagram-node-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+/* Base reveal container — hidden until .reveal-is-visible is applied */
+.reveal {
+  opacity: 0;
+}
+
+/* Scroll-triggered reveal (IntersectionObserver adds .reveal-is-visible) */
+.reveal-scroll {
+  opacity: 0;
+}
+
+.reveal-scroll.reveal-is-visible {
+  animation: reveal-from-bottom var(--duration-deliberate) var(--ease-enter) both;
+}
+
+/* Page-load reveal (applied immediately on mount, no observer needed) */
+.reveal-page-load {
+  opacity: 0;
+  animation: reveal-from-top var(--duration-moderate) var(--ease-enter) both;
+}
+
+/* Triggered state — added by useScrollReveal when element enters viewport */
+.reveal-is-visible {
+  opacity: 1;
+}
+
+/* Stagger: children receive --stagger-index via JS; delay compounds per item */
+.stagger-item {
+  animation-delay: calc(var(--stagger-index, 0) * var(--motion-stagger-md));
+}
+
+/* SVG diagram node */
+.diagram-node {
+  opacity: 0;
+  animation: diagram-node-in var(--duration-moderate) var(--ease-enter) both;
+  animation-delay: calc(var(--stagger-index, 0) * var(--motion-stagger-sm));
+}
+
+/* SVG diagram connector — requires --path-length set inline on the element */
+.diagram-connector {
+  stroke-dasharray: var(--path-length);
+  stroke-dashoffset: var(--path-length);
+  animation: draw-path var(--duration-deliberate) var(--ease-enter) both;
+}
+
+/* ==========================================================================
+   Reduced Motion
+   Respects the OS-level "Reduce Motion" accessibility preference.
+   All durations collapse to near-zero; opacity/transform are reset.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0.01ms !important;
+  }
+
+  .reveal,
+  .reveal-scroll,
+  .reveal-page-load,
+  .diagram-node {
+    opacity: 1;
+    transform: none;
+  }
+
+  .diagram-connector {
+    stroke-dashoffset: 0;
+  }
+}
