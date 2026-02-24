@@ -24,7 +24,7 @@ export default function ReviewLensIcon({ className, size = 24 }: IconProps) {
       {/* Handle */}
       <line x1="14.6" y1="14.6" x2="21" y2="21" strokeWidth="2" />
       {/* Checkmark inside lens */}
-      <path d="M7,10 L9.5,12.5 L13.5,7" strokeWidth="1.5" />
+      <path d="M7,10 L9.5,12.5 L12.5,7.5" strokeWidth="1.5" />
     </svg>
   );
 }

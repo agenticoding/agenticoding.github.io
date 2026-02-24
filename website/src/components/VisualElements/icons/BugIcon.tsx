@@ -20,7 +20,7 @@ export default function BugIcon({ className, size = 24 }: IconProps) {
       aria-label="Bug icon"
     >
       {/* Head */}
-      <circle cx="12" cy="6.5" r="2.5" strokeWidth="2" />
+      <circle cx="12" cy="5.5" r="2.5" strokeWidth="2" />
       {/* Body */}
       <ellipse cx="12" cy="14" rx="5" ry="6" strokeWidth="2" />
       {/* Left antenna */}
