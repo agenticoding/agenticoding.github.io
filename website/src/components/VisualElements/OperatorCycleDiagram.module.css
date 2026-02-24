@@ -1,0 +1,121 @@
+/* ── OperatorCycleDiagram — Animation module ──────────────────────────────
+   Phase-driven connector animation (scroll-reversible). Opacity toggled by
+   act class; strokeDashoffset driven directly from scroll phase in TSX.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes actEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Phase nodes (circles + icons + labels) ── */
+.phaseNode {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.phaseNode.entered {
+  animation: actEnter 300ms var(--ease-enter) both;
+}
+
+/* ── Forward connectors (top, right, bottom) ── */
+.connector {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
+.connector.drawing {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
+
+/* ── Return connector (Validate → Research) ── */
+.returnPath {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
+.returnPath.drawing {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
+
+/* ── Center iterate label ── */
+.cycleLabel {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.cycleLabel.settled {
+  animation: actEnter 300ms var(--ease-enter) both;
+}
+
+/* ── Description grid ── */
+.descGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin: var(--space-3) 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 300ms var(--ease-enter), transform 300ms var(--ease-enter);
+}
+.descGrid.descVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.descCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.descLabel {
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  font-feature-settings: var(--font-mono-features);
+  line-height: 1.25;
+}
+
+.descText {
+  font-size: var(--text-sm);
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+/* ── Mobile: single column ── */
+@media (max-width: 639px) {
+  .descGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Reduced-motion overrides ──
+   ScrollDrivenFigure sets phase=1 on mount, which fires all acts.
+   These rules prevent entrance animations from playing and ensure
+   a fully settled static appearance. Token is hidden (no travel metaphor). */
+@media (prefers-reduced-motion: reduce) {
+  .phaseNode {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .connector,
+  .connector.drawing {
+    opacity: 0.5;
+    stroke-dashoffset: 0 !important;
+  }
+  .returnPath,
+  .returnPath.drawing {
+    opacity: 0.5;
+    stroke-dashoffset: 0 !important;
+  }
+  .cycleLabel {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .descGrid {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

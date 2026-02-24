@@ -1,0 +1,48 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-3) 0;
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-2);
+  opacity: 0.4;
+  transform: translateY(6px);
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
+.iconWrapper {
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-heading);
+  line-height: 1.25;
+}
+
+.description {
+  font-size: var(--text-sm);
+  color: var(--text-body);
+  line-height: 1.5;
+}
