@@ -959,16 +959,32 @@ div[class*='announcementBar'] {
   0%   { transform: scale(1); opacity: 1; }
   100% { transform: scale(1.4); opacity: 0; }
 }
+@keyframes idleArmRock {
+  0%, 45%, 100% { transform: rotate(0deg); }
+  20%           { transform: rotate(-4deg); }
+}
+@keyframes idlePalmWave {
+  0%, 5%    { transform: rotate(0deg);   }
+  12%       { transform: rotate(-18deg); }
+  19%       { transform: rotate(16deg);  }
+  26%       { transform: rotate(-14deg); }
+  33%       { transform: rotate(10deg);  }
+  40%       { transform: rotate(-4deg);  }
+  45%, 100% { transform: rotate(0deg);   }
+}
 
 .idle-cursor-blink  { animation: idleCursorBlink  1000ms step-end infinite; }
 .idle-status-pulse  { animation: idleStatusPulse  2000ms ease-in-out infinite; }
 .idle-flow-drift    { animation: idleFlowDrift    3000ms ease-in-out infinite; }
 .idle-ready-breathe { animation: idleReadyBreathe 4000ms ease-in-out infinite; }
 .ping-once          { animation: pingOnce 400ms var(--ease-exit) 1 both; }
+.idle-arm-rock      { animation: idleArmRock  5000ms ease-in-out infinite; }
+.idle-palm-wave     { animation: idlePalmWave 5000ms ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   .idle-cursor-blink, .idle-status-pulse,
-  .idle-flow-drift, .idle-ready-breathe, .ping-once {
+  .idle-flow-drift, .idle-ready-breathe, .ping-once,
+  .idle-arm-rock, .idle-palm-wave {
     animation: none !important;
   }
 }
