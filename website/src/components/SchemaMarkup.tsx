@@ -33,11 +33,21 @@ interface FAQData {
   questions: FAQItem[];
 }
 
-type SchemaType = 'definition' | 'article' | 'howto' | 'faq';
+interface PersonData {
+  name: string;
+  jobTitle: string;
+  worksFor: string;
+  url: string;
+  sameAs: string[];
+  knowsAbout: string[];
+  alumniOf?: string[];
+}
+
+type SchemaType = 'definition' | 'article' | 'howto' | 'faq' | 'person';
 
 interface SchemaMarkupProps {
   type: SchemaType;
-  data: DefinitionData | ArticleData | HowToData | FAQData;
+  data: DefinitionData | ArticleData | HowToData | FAQData | PersonData;
 }
 
 function generateDefinitionSchema(data: DefinitionData) {
@@ -93,6 +103,28 @@ function generateHowToSchema(data: HowToData) {
   };
 }
 
+function generatePersonSchema(data: PersonData) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: data.name,
+    jobTitle: data.jobTitle,
+    worksFor: {
+      '@type': 'Organization',
+      name: data.worksFor,
+    },
+    url: data.url,
+    sameAs: data.sameAs,
+    knowsAbout: data.knowsAbout,
+    ...(data.alumniOf && {
+      alumniOf: data.alumniOf.map((org) => ({
+        '@type': 'Organization',
+        name: org,
+      })),
+    }),
+  };
+}
+
 function generateFAQSchema(data: FAQData) {
   return {
     '@context': 'https://schema.org',
@@ -126,6 +158,9 @@ export default function SchemaMarkup({
       break;
     case 'faq':
       schema = generateFAQSchema(data as FAQData);
+      break;
+    case 'person':
+      schema = generatePersonSchema(data as PersonData);
       break;
     default:
       throw new Error(`Unknown schema type: ${type}`);
