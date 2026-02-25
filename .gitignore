@@ -35,6 +35,9 @@ node_modules/
 # Generated content
 scripts/output/
 
+# Noto Emoji SVG cache (fetched at runtime)
+scripts/.noto-cache/
+
 # Screenshots
 *.png
 *.jpg
