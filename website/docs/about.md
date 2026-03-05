@@ -38,11 +38,11 @@ export const personData = {
 
 ## Author
 
+I'm **Ofri Wolfus**, Senior Software Architect at Applied Materials and an ex-Google engineer (Google APIs for Mac, WebKit renderer contributions, Chrome BiDi/RTL). I created [ChunkHound](https://chunkhound.github.io) and [ArguSeek](https://github.com/ArguSeek/arguseek) — the open-source tools used as reference implementations throughout this course.
+
 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2.5rem' }}>
   <AuthorWaveNode />
 </div>
-
-I'm **Ofri Wolfus**, Senior Software Architect at Applied Materials and an ex-Google engineer (Google APIs for Mac, WebKit renderer contributions, Chrome BiDi/RTL). I created [ChunkHound](https://chunkhound.github.io) and [ArguSeek](https://github.com/ArguSeek/arguseek) — the open-source tools used as reference implementations throughout this course.
 
 Prior to my current role, I was Co-Founder & CTO of Ovvio.io (real-time collaborative work management) and first employee at Photomyne, where I scaled cloud infrastructure to 100M photos and 10M installs and wrote on-device neural network inference pre-TensorFlow. I co-founded EasyFit Orthopedics, where I designed, built, and patented a smart prosthetic leg interface (WO2015103506A1) — hardware, electronics, and embedded software. I was also an early contributor to Growl and Adium, two foundational Mac open-source projects.
 
@@ -54,7 +54,7 @@ BS Computer Science, Bar-Ilan University. 2 patents. [LinkedIn](https://www.link
 
 **[ArguSeek](https://github.com/ArguSeek/arguseek)** — The colleague who always knows what's happening outside the building. When your AI assistant needs current information — is this library still maintained? what changed in the latest API version? any known CVEs? — ArguSeek runs parallel web searches, synthesizes 12+ sources in about 40 seconds, and flags promotional content automatically. Fast breadth over slow depth, for the hundreds of micro-decisions that make up a real coding day. The domain grounding tool used throughout this course. ([GitHub](https://github.com/ArguSeek/arguseek))
 
-**[GoatDB](https://goatdb.dev)** — Embedded distributed document DB built on version-control principles rather than traditional database techniques. Cryptographically signed commits, three-way merges, and automatic conflict resolution for live data. TypeScript-first with React hooks. Works offline, syncs on reconnect, self-heals from the commit graph. **500+ GitHub stars**. ([GitHub](https://github.com/goatplatform/goatdb))
+**[GoatDB](https://goatdb.dev)** — The entire backend in a single import. GoatDB collapses database, server, and sync layer into one TypeScript module — no SQL, no REST endpoints, no separate infrastructure to provision. Define a schema, call `useQuery`, and your UI stays in sync across devices, offline included. Under the hood: a Git-style commit graph with three-way merges gives every document a full version history and automatic conflict resolution, while cryptographic signatures let clients restore crashed servers from their own replicas. Ship a single Deno binary on a $5 VM and you have a production-grade, self-healing backend. Ideal for the kind of fast-iteration, single-tenant apps that agentic workflows produce — because the less operational surface area an AI has to manage, the more reliably it ships. **500+ GitHub stars.** ([GitHub](https://github.com/goatplatform/goatdb))
 
 ## Why This Reference
 
@@ -64,7 +64,11 @@ I taught iOS, Android, and web development courses at John Bryce (2013–2016), 
 
 ## Built With
 
-This site is built with [Docusaurus](https://docusaurus.io) — an open-source static site generator maintained by Meta.
+**Platform:** [Docusaurus](https://docusaurus.io) — open-source static site generator by Meta. Presentations powered by [Reveal.js](https://revealjs.com) by Hakim El Hattab. Diagrams rendered with [Mermaid](https://mermaid.js.org) by Knut Sveidqvist.
+
+**Typography:** Body text set in [Inter](https://rsms.me/inter/) by Rasmus Andersson. Headings in [Space Grotesk](https://floriankarsten.github.io/space-grotesk/) by Florian Karsten. Code rendered in [Monaspace](https://monaspace.githubnext.com/) by GitHub Next — a superfamily of five metrics-compatible monospace typefaces (Neon, Argon, Xenon, Radon, Krypton) used as a semantic voice system throughout the course. All fonts self-hosted under SIL OFL 1.1.
+
+**Illustrations:** Diagrams derived from [Noto Emoji SVG](https://github.com/adobe-fonts/noto-emoji-svg) by Adobe.
 
 ## Copyright
 

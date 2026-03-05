@@ -1,0 +1,136 @@
+/* ── PlanExecuteDiagram — Animation module ────────────────────────────────────
+   Scroll-driven act system. Mirrors IntroHookDiagram animation patterns.
+   Keyframes redefined locally per CSS Modules scoping.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes actEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes drawPath {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── Plan card ── */
+.planCard {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.planCard.entered {
+  animation: actEnter 300ms var(--ease-enter) both;
+}
+
+/* ── Actor labels group ── */
+.labels {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.labels.entered {
+  animation: actEnter 300ms var(--ease-enter) both;
+}
+
+/* ── Handoff arc (plan card → orchestrator) ── */
+.handoffArc {
+  opacity: 0;
+}
+.handoffArc.arcDraw {
+  opacity: 1;
+  animation: drawPath 500ms var(--ease-enter) both;
+}
+
+/* ── Branch arcs (orchestrator → workers) ── */
+.branchArc {
+  opacity: 0;
+}
+.branchArc.branchDraw {
+  opacity: 1;
+}
+
+/* ── Merge arcs (workers → merge node) ── */
+.mergeArc {
+  opacity: 0;
+}
+.mergeArc.mergeDraw {
+  opacity: 1;
+}
+
+/* ── Orchestrator node ── */
+.actorNode {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.actorNode.entered {
+  animation: actEnter 300ms var(--ease-enter) both;
+}
+
+/* ── Worker nodes ── */
+.workerNode {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.workerNode.workerEntered {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* ── Worker labels ── */
+.workerLabel {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.workerLabel.workerLabelEntered {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* ── Merge node (scale-in on complete act) ── */
+.mergeNode {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.mergeNode.mergeEntered {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms var(--ease-enter), transform 300ms var(--ease-enter);
+}
+
+/* ── Prompt icon ── */
+.promptIcon {
+  animation: actEnter 300ms var(--ease-enter) both;
+}
+
+/* ── Ghost worker placeholders (visible before execute, fade on bloom) ── */
+.ghostWorker       { opacity: 0; }
+.ghostWorkerShown  { opacity: 0.45; transition: opacity 300ms var(--ease-enter); }
+.ghostWorkerHidden { opacity: 0;    transition: opacity 200ms var(--ease-exit); }
+
+/* ── Static fallback card (reduced-motion only) ── */
+.staticCard {
+  display: none;
+}
+
+/* ── Reduced-motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+  .handoffArc              { opacity: 0.35; stroke-dashoffset: 0 !important; }
+  .handoffArc.arcDraw      { animation: none; }
+  .branchArc               { opacity: 0.35; stroke-dashoffset: 0 !important; }
+  .branchArc.branchDraw    { /* no-op */ }
+  .mergeArc                { opacity: 0.35; stroke-dashoffset: 0 !important; }
+  .mergeArc.mergeDraw      { /* no-op */ }
+  .planCard,
+  .actorNode,
+  .workerNode,
+  .workerLabel,
+  .mergeNode,
+  .labels                  { opacity: 1; transform: none; animation: none; transition: none; }
+  .promptIcon              { display: none; }
+  .staticCard              { display: block; }
+  .ghostWorker,
+  .ghostWorkerShown,
+  .ghostWorkerHidden       { opacity: 0 !important; }
+}

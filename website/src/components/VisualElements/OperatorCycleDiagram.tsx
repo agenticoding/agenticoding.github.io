@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import styles from './OperatorCycleDiagram.module.css';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
+import { NotoEmoji } from './ActorNodes';
 
 // Layout — ViewBox 560×280
 //
@@ -17,8 +18,20 @@ import { useActs } from '../../hooks/useActs';
 //   Plan bottom   (400,86)    Execute top   (400,194)
 //   Execute left  (378,216)   Validate right(182,216)
 //   Validate top  (160,194)   Research bottom(160,86)
+//
+// Nodes render without background circles — icons are 36×36 (ICON_HALF = 18)
+// All four phases use viewBox="0 0 128 128"
 
 const R = 22;
+
+const ICON_HALF = 18;
+
+const EMOJI: Record<string, string> = {
+  research: '1f52c',
+  plan:     '1f4d1',
+  execute:  '1f916',
+  validate: '1f4cf',
+};
 
 const NODES = [
   {
@@ -35,8 +48,8 @@ const NODES = [
     label: 'Plan',
     cx: 400, cy: 64,
     labelAbove: true,
-    color: 'var(--visual-violet)',
-    bgColor: 'var(--visual-bg-violet)',
+    color: 'var(--visual-cyan)',
+    bgColor: 'var(--visual-bg-cyan)',
     description: 'Design changes strategically — explore when uncertain, be directive when clear',
   },
   {
@@ -44,8 +57,8 @@ const NODES = [
     label: 'Execute',
     cx: 400, cy: 216,
     labelAbove: false,
-    color: 'var(--visual-cyan)',
-    bgColor: 'var(--visual-bg-cyan)',
+    color: 'var(--visual-violet)',
+    bgColor: 'var(--visual-bg-violet)',
     description: 'Run agents supervised or autonomous based on trust and task criticality',
   },
   {
@@ -53,8 +66,8 @@ const NODES = [
     label: 'Validate',
     cx: 160, cy: 216,
     labelAbove: false,
-    color: 'var(--visual-success)',
-    bgColor: 'var(--visual-bg-success)',
+    color: 'var(--visual-warning)',
+    bgColor: 'var(--visual-bg-warning)',
     description: 'Verify against your mental model, then iterate or regenerate',
   },
 ] as const;
@@ -80,63 +93,6 @@ const FWD_PHASE_END   = 0.40;
 const FWD_STAGGER     = 0.04;
 const RET_PHASE_START = 0.45;
 const RET_PHASE_END   = 0.62;
-
-// ── Inline icon content (path data from icon components, no foreignObject) ──
-
-function renderResearch(color: string) {
-  return (
-    <g fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="10" cy="10" r="6.5" strokeWidth="2" />
-      <line x1="14.6" y1="14.6" x2="21" y2="21" strokeWidth="2" />
-      <line x1="7" y1="8" x2="13" y2="8" strokeWidth="1" />
-      <line x1="6" y1="10" x2="14" y2="10" strokeWidth="1" />
-      <line x1="7" y1="12" x2="13" y2="12" strokeWidth="1" />
-    </g>
-  );
-}
-
-function renderPlan(color: string) {
-  return (
-    <g fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round">
-      {/* Row 1 — checked */}
-      <path d="M 3,5 L 5,7 L 8,3" strokeWidth="2" />
-      <line x1="10" y1="5" x2="21" y2="5" strokeWidth="2" />
-      {/* Row 2 — checked */}
-      <path d="M 3,12 L 5,14 L 8,10" strokeWidth="2" />
-      <line x1="10" y1="12" x2="18" y2="12" strokeWidth="2" />
-      {/* Row 3 — pending */}
-      <circle cx="5.5" cy="19" r="1.5" strokeWidth="1.5" />
-      <line x1="10" y1="19" x2="16" y2="19" strokeWidth="2" />
-    </g>
-  );
-}
-
-function renderExecute(color: string) {
-  return (
-    // Terminal Geometry — retains square caps/miter joins per ExecuteIcon
-    <g fill="none" stroke={color} strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter">
-      <path d="M3,8 L10,12 L3,16" />
-      <line x1="12" y1="16" x2="21" y2="16" />
-    </g>
-  );
-}
-
-function renderValidate(color: string) {
-  return (
-    <g fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="6" x2="12" y2="21" strokeWidth="2" />
-      <line x1="3" y1="9" x2="21" y2="9" strokeWidth="2" />
-      <line x1="9" y1="21" x2="15" y2="21" strokeWidth="2" />
-      <circle cx="12" cy="9" r="1.5" fill={color} stroke="none" />
-      <line x1="5" y1="9" x2="5" y2="15" strokeWidth="1.5" />
-      <line x1="2" y1="15" x2="8" y2="15" strokeWidth="2" />
-      <line x1="19" y1="9" x2="19" y2="17" strokeWidth="1.5" />
-      <line x1="16" y1="17" x2="22" y2="17" strokeWidth="2" />
-    </g>
-  );
-}
-
-const ICON_RENDERERS = [renderResearch, renderPlan, renderExecute, renderValidate];
 
 // ── Component ──────────────────────────────────────────────────────────────
 
@@ -262,22 +218,7 @@ export default function OperatorCycleDiagram() {
             className={clsx(styles.phaseNode, nodesReached && styles.entered)}
             style={nodesReached ? { animationDelay: `${i * 80}ms` } : undefined}
           >
-            {/* Tinted circle with semantic stroke */}
-            <circle
-              cx={node.cx} cy={node.cy} r={R}
-              fill={node.bgColor}
-              stroke={node.color}
-              strokeWidth={1.5}
-            />
-            {/* Icon: nested SVG (viewBox 24×24) centered in circle — no foreignObject */}
-            <svg
-              x={node.cx - 12} y={node.cy - 12}
-              width={24} height={24}
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              {ICON_RENDERERS[i](node.color)}
-            </svg>
+            <NotoEmoji codepoint={EMOJI[node.id]} x={node.cx - ICON_HALF} y={node.cy - ICON_HALF} size={ICON_HALF * 2} />
             {/* Phase label — above top-row nodes, below bottom-row nodes */}
             <text
               x={node.cx} y={node.labelAbove ? node.cy - R - 8 : node.cy + R + 14}

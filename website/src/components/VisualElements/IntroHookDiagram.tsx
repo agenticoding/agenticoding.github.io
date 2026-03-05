@@ -1,22 +1,28 @@
 import React, { useRef, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import styles from './IntroHookDiagram.module.css';
-import { OperatorNode, AgentNode, PromptIcon } from './ActorNodes';
+import { OperatorNode, AgentNode, PromptIcon, NotoEmoji } from './ActorNodes';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 
 // Layout — ViewBox 560×264 (fan: symmetric ±22.6° about orchestrator centre y=108)
 //
-// Operator:     BB x=70  y=88  size=40 → right shoulder (108, 108)
-// Orchestrator: BB x=250 y=88  size=40 → left shoulder (243, 108); right shoulder (288, 108)
-// W1 (branch):  BB x=435 y=24  size=32 → left edge (437, 40)
-// W2 (tests):   BB x=475 y=96  size=32 → left edge (477, 112)
-// W3 (review):  BB x=435 y=160 size=32 → left edge (437, 176)
+// Shoulder formula:
+//   parent_x = BB_x + (viewBox_x / 128) × size
+//   parent_y = BB_y + (viewBox_y / 128) × size
+// AgentNode arms: x=4.25–124, y=53.05–108 → arm center viewBox y=(53.05+108)/2=80.5
+// OperatorNode face widest at viewBox (121.6, 62.9) → parent (108, 108) for size=40 at y=88.
 //
-// Main arc:  M 108 108 Q 178 48 243 108
-// Fan W1:    M 288 108 Q 345 60 437 40
-// Fan W2:    M 288 108 Q 375 108 477 112
-// Fan W3:    M 288 108 Q 345 156 437 176
+// Operator:     BB x=70  y=88  size=40 → right shoulder (108, 108)
+// Orchestrator: BB x=250 y=88  size=40 → left shoulder (251, 113); right shoulder (289, 113)
+// W1 (branch):  BB x=435 y=24  size=32 → left edge (436, 44)
+// W2 (tests):   BB x=475 y=96  size=32 → left edge (476, 116)
+// W3 (review):  BB x=435 y=160 size=32 → left edge (436, 180)
+//
+// Main arc:  M 108 108 Q 180 48 251 113
+// Fan W1:    M 289 113 Q 345 62 436 44
+// Fan W2:    M 289 113 Q 375 113 476 116
+// Fan W3:    M 289 113 Q 345 158 436 180
 //
 // Lightbulb: globe center (90, 55), r=13; cap x=82 y=68 w=16 h=5 rx=2
 // Ghost workers: AgentNode S=32 squircle outline at worker positions, opacity 0.28 → 0 on dispatch
@@ -31,11 +37,11 @@ const BULB_RAYS = [
   { x1: 101, y1: 44, x2: 105, y2: 40, dx:  1, dy: -1 },  // θ=+45°
 ] as const;
 
-const ARC_D    = 'M 108 108 Q 178 48 243 108';
-const TRAVEL_D = 'M 90 73 Q 178 40 243 108';
-const FAN1_D   = 'M 288 108 Q 345 60 437 40';
-const FAN2_D   = 'M 288 108 Q 375 108 477 112';
-const FAN3_D   = 'M 288 108 Q 345 156 437 176';
+const ARC_D    = 'M 108 108 Q 180 48 251 113';
+const TRAVEL_D = 'M 90 73 Q 180 40 251 113';
+const FAN1_D   = 'M 289 113 Q 345 62 436 44';
+const FAN2_D   = 'M 289 113 Q 375 113 476 116';
+const FAN3_D   = 'M 289 113 Q 345 158 436 180';
 
 const DISPATCH_START = 0.80;
 const DISPATCH_END   = 0.995;
@@ -121,7 +127,7 @@ export default function IntroHookDiagram() {
     if (!composingReached) return null;
     if (!travelingReached) return { x: 90, y: 73, opacity: 1 };
     const path = travelPathRef.current;
-    if (!path) return { x: 243, y: 108, opacity: 0 };       // fallback: arc end
+    if (!path) return { x: 251, y: 113, opacity: 0 };       // fallback: arc end
     const t = Math.min((phase - 0.6) / 0.20, 1);           // 0.6→0.80 maps to 0→1
     const opacity = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
     const pt = path.getPointAtLength(t * path.getTotalLength());
@@ -202,24 +208,9 @@ export default function IntroHookDiagram() {
             </line>
           </g>
         ))}
-        {/* Globe */}
-        <circle cx={90} cy={55} r={13}
-          fill="var(--visual-bg-warning)" stroke="var(--visual-warning)" strokeWidth={1.5} />
-        {/* Cap — x=82 y=68 w=16 h=5 rx=2 */}
-        <rect x={82} y={68} width={16} height={5} rx={2}
-          fill="var(--visual-bg-warning)" stroke="var(--visual-warning)" strokeWidth={1.5} />
-        {/* Question mark — Radon (human-actor voice), fontSize=13 centered at globe (cx=90,cy=55,r=13).
-            80%-fill rule: cap-h≈10px < 20.8px limit. fontWeight=400 (only weight Radon ships). */}
-        <text
-          x={90}
-          y={55}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize={13}
-          fontWeight={400}
-          fill="var(--visual-warning)"
-          style={{ fontFamily: 'var(--font-mono-human)', fontFeatureSettings: 'var(--font-mono-features)' }}
-        >?</text>
+        {/* IdeaIcon — globe center lands at (90, 55) matching BULB_RAYS geometry.
+            x = 90 − size/2 = 70; y chosen so globe center (64/128 × size) ≈ 55. */}
+        <NotoEmoji codepoint="1f4a1" x={70} y={41} size={40} />
       </g>
 
       {/* Guide arc — operator → orchestrator */}

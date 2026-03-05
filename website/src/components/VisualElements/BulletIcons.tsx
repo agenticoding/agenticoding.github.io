@@ -1,12 +1,51 @@
 import React, { useRef, useEffect } from 'react';
 import styles from './BulletIcons.module.css';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
-import ClockIcon from './icons/ClockIcon';
-import BugIcon from './icons/BugIcon';
-import ReviewLensIcon from './icons/ReviewLensIcon';
-import PlanExecuteIcon from './icons/PlanExecuteIcon';
-import ArchitectIcon from './icons/ArchitectIcon';
-import PencilIcon from './icons/PencilIcon';
+import { AgentNode } from './ActorNodes';
+
+function StopwatchBulletIcon({ size = 24 }: { className?: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 128 128">
+      <image href="/img/emoji/u23f1.svg" width={128} height={128} />
+    </svg>
+  );
+}
+
+function BugBulletIcon({ size = 24 }: { className?: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 128 128">
+      <image href="/img/emoji/u1f41e.svg" width={128} height={128} />
+    </svg>
+  );
+}
+
+function ReviewBulletIcon({ size = 24 }: { className?: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 128 128">
+      <image href="/img/emoji/u1f50d.svg" width={128} height={128} />
+    </svg>
+  );
+}
+
+function AgentBulletIcon({ size = 24 }: { className?: string; size?: number }) {
+  return <AgentNode x={0} y={0} size={size} />;
+}
+
+function ArchitectBulletIcon({ size = 24 }: { className?: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 128 128">
+      <image href="/img/emoji/u1f4d0.svg" width={128} height={128} />
+    </svg>
+  );
+}
+
+function DesignBulletIcon({ size = 24 }: { className?: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 128 128">
+      <image href="/img/emoji/u1f58c.svg" width={128} height={128} />
+    </svg>
+  );
+}
 
 interface Bullet {
   icon: React.ComponentType<{ className?: string; size?: number }>;
@@ -17,37 +56,37 @@ interface Bullet {
 
 const BULLETS: Bullet[] = [
   {
-    icon: ClockIcon,
+    icon: StopwatchBulletIcon,
     hue: 'var(--visual-indigo)',
     label: 'Onboard to unfamiliar codebases',
     description: '5–10× faster using systematic agentic research and grounding',
   },
   {
-    icon: BugIcon,
+    icon: BugBulletIcon,
     hue: 'var(--visual-warning)',
     label: 'Debug production issues',
     description: 'by delegating log analysis, root cause investigation, and diagnostic scripts to agents',
   },
   {
-    icon: ReviewLensIcon,
+    icon: ReviewBulletIcon,
     hue: 'var(--visual-success)',
     label: 'Review code without confirmation bias',
     description: '— fresh context, evidence-based validation, no line-by-line slog',
   },
   {
-    icon: PlanExecuteIcon,
+    icon: AgentBulletIcon,
     hue: 'var(--visual-violet)',
     label: 'Plan and execute features',
     description: 'with parallel sub-agents across isolated branches and contexts',
   },
   {
-    icon: ArchitectIcon,
-    hue: 'var(--visual-cyan)',
+    icon: ArchitectBulletIcon,
+    hue: 'var(--visual-indigo)',
     label: 'Architect agent-friendly codebases',
     description: 'where constraints are co-located with code and good patterns compound',
   },
   {
-    icon: PencilIcon,
+    icon: DesignBulletIcon,
     hue: 'var(--visual-magenta)',
     label: 'Generate complete design systems',
     description: 'from computed first principles — brand palettes, typography scales, spatial grids, and illustrations derived by code rather than guessed',

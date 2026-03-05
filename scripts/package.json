@@ -11,7 +11,8 @@
     "generate-podcast-audio-only": "node generate-podcast.js --audio-only",
     "generate-social-card": "node generate-social-card.js",
     "generate-favicons": "node generate-favicons.js",
-    "generate-brand-assets": "node generate-social-card.js && node generate-favicons.js"
+    "generate-brand-assets": "node generate-social-card.js && node generate-favicons.js",
+    "fetch-emoji": "node fetch-emoji.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

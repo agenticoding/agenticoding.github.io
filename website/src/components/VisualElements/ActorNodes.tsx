@@ -1,52 +1,8 @@
 import React from 'react';
 
-// Computed via scripts/compute-actor-coords.js
-
-type ActorSize = 40 | 32 | 14;
-
-export interface OperatorNodeProps { x: number; y: number; size?: ActorSize; }
-export interface AgentNodeProps    { x: number; y: number; size?: ActorSize; }
+export interface OperatorNodeProps { x: number; y: number; size?: number; }
+export interface AgentNodeProps    { x: number; y: number; size?: number; }
 export interface PromptBubbleProps { x: number; y: number; showCursor?: boolean; }
-
-// ── OperatorNode S=40 ──
-const OP_40 = {
-  headCx: 20, headCy: 9, headR: 8,
-  bodyPath: 'M 2 40 C 2 29.65, 12 17, 20 17 C 28 17, 38 29.65, 38 40 Z',
-  eyeR: 1.41, eyeY: 7.08, eyeLx: 17.67, eyeRx: 22.33,
-  smilePath: 'M 17.2 11.4 Q 20 12.68 22.8 11.4',
-} as const;
-
-// ── OperatorNode S=32 ──
-const OP_32 = {
-  headCx: 16, headCy: 7.2, headR: 6.4,
-  bodyPath: 'M 1.6 32 C 1.6 23.72, 9.6 13.6, 16 13.6 C 22.4 13.6, 30.4 23.72, 30.4 32 Z',
-  eyeR: 1.13, eyeY: 5.66, eyeLx: 14.14, eyeRx: 17.86,
-  smilePath: 'M 13.76 9.12 Q 16 10.14 18.24 9.12',
-} as const;
-
-// ── AgentNode S=40 ──
-const AGENT_40 = {
-  headX: 3, headY: 3, headW: 34, headH: 34, headRx: 8.5,
-  eyeR: 3, eyeY: 15.92, eyeLx: 12.52, eyeRx: 27.48,
-  mouthX: 7.08, mouthY: 25.1, mouthW: 25.84, mouthH: 5.44,
-  dividers: [15.61, 24.13] as const,
-} as const;
-
-// ── AgentNode S=32 ──
-const AGENT_32 = {
-  headX: 2.4, headY: 2.4, headW: 27.2, headH: 27.2, headRx: 6.8,
-  eyeR: 2.4, eyeY: 12.74, eyeLx: 10.02, eyeRx: 21.98,
-  mouthX: 5.66, mouthY: 20.08, mouthW: 20.67, mouthH: 4.35,
-  dividers: [12.48, 19.3] as const,
-} as const;
-
-// ── AgentNode S=14 ──
-const AGENT_14 = {
-  headX: 1.05, headY: 1.05, headW: 11.9, headH: 11.9, headRx: 2.98,
-  eyeR: 1.05, eyeY: 5.57, eyeLx: 4.38, eyeRx: 9.62,
-  mouthX: 2.48, mouthY: 8.79, mouthW: 9.04, mouthH: 1.9,
-  dividers: [5.46, 8.45] as const,
-} as const;
 
 // ── PromptBubble (40×18 body, same card shape as TravelingPromptCard) ──
 // Cursor bar: active authoring signal.
@@ -60,13 +16,6 @@ const BUBBLE_GEOM = {
   cursor: { x: 23, y: 9, w: 2, h: 6, rx: 1 },
 } as const;
 
-// ── IdeaIcon S=32 ──
-// All coords computed via scripts/compute-actor-coords.js
-const IDEA_32 = {
-  globeR: 12, globeCx: 16, globeCy: 14,
-  capX: 10, capY: 27, capW: 12, capH: 4, capRx: 2,
-} as const;
-
 // ── TravelingPromptCard (36×20, centered at 0,0 for animateMotion origin) ──
 // All coords computed via scripts/compute-actor-coords.js
 const TCARD_GEOM = {
@@ -77,84 +26,36 @@ const TCARD_GEOM = {
   ] as const,
 } as const;
 
-// ── IdeaIcon ─────────────────────────────────────────────────────────────────
-// Shape essence traced from 💡 (Lightbulb emoji).
-// Globe: smooth circle (Smooth Circuit). Base cap: slight rx (positive valence).
-// Represents pre-prompt idea — uses indigo to signal proto-prompt continuity.
-export function IdeaIcon({ x, y }: { x: number; y: number }) {
-  const g = IDEA_32;
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <circle
-        cx={g.globeCx} cy={g.globeCy} r={g.globeR}
-        fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5}
-      />
-      <rect
-        x={g.capX} y={g.capY} width={g.capW} height={g.capH} rx={g.capRx}
-        fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5}
-      />
-    </g>
-  );
+// ── OperatorNode ─────────────────────────────────────────────────────────────
+// 🤓 Noto emoji u1f913. Delegates to NotoEmoji.
+export function OperatorNode({ x, y, size = 40 }: OperatorNodeProps) {
+  return <NotoEmoji codepoint="1f913" x={x} y={y} size={size} />;
 }
 
-// ── OperatorNode ─────────────────────────────────────────────────────────────
-// Shape essence traced from 🧑 (gender-free Person emoji).
-// Body: smooth cubic Bezier bust silhouette, Smooth Circuit throughout.
-// Head: circle with eyes (filled dots) + curved smile (organic, vs AI's terminal mouth).
-export function OperatorNode({ x, y, size = 40 }: OperatorNodeProps) {
-  const g = size === 40 ? OP_40 : OP_32;
-  const sw = size === 40 ? 2 : 1.5;
+// ── NotoEmoji ─────────────────────────────────────────────────────────────────
+// Renders a Noto emoji SVG via <image> for gradient-def ID isolation.
+// Files live in /img/emoji/u{codepoint}.svg (fetched via scripts/fetch-emoji.js).
+// Assumes baseUrl="/". See docusaurus.config.ts.
+export interface NotoEmojiProps { codepoint: string; x: number; y: number; size?: number; }
+
+export function NotoEmoji({ codepoint, x, y, size = 40 }: NotoEmojiProps) {
   return (
-    <g transform={`translate(${x},${y})`}>
-      <path
-        d={g.bodyPath}
-        fill="var(--visual-bg-neutral)" stroke="var(--visual-neutral)" strokeWidth={sw}
-        strokeLinecap="round" strokeLinejoin="round"
-      />
-      <circle
-        cx={g.headCx} cy={g.headCy} r={g.headR}
-        fill="var(--visual-bg-neutral)" stroke="var(--visual-neutral)" strokeWidth={sw}
-      />
-      <circle cx={g.eyeLx} cy={g.eyeY} r={g.eyeR} fill="var(--visual-neutral)" />
-      <circle cx={g.eyeRx} cy={g.eyeY} r={g.eyeR} fill="var(--visual-neutral)" />
-      <path
-        d={g.smilePath}
-        fill="none" stroke="var(--visual-neutral)" strokeWidth={sw * 0.6} strokeLinecap="round"
-      />
-    </g>
+    <svg x={x} y={y} width={size} height={size} viewBox="0 0 128 128">
+      <image href={`/img/emoji/u${codepoint}.svg`} width={128} height={128} />
+    </svg>
   );
 }
 
 // ── AgentNode ─────────────────────────────────────────────────────────────────
-// Head squircle: Smooth Circuit. Eyes: solid dots. Mouth: Terminal Geometry.
+// Original Google Noto 🤖 emoji (u1f916). Delegates to NotoEmoji.
 export function AgentNode({ x, y, size = 40 }: AgentNodeProps) {
-  const g = size === 40 ? AGENT_40 : size === 32 ? AGENT_32 : AGENT_14;
-  const sw = size === 40 ? 2 : size === 32 ? 1.5 : 1;
-  const mouthSw = size === 14 ? 0.75 : 1;
-  const mouthRx = size === 14 ? 1 : 2;
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <rect
-        x={g.headX} y={g.headY} width={g.headW} height={g.headH} rx={g.headRx}
-        fill="var(--visual-bg-violet)" stroke="var(--visual-violet)" strokeWidth={sw}
-      />
-      <circle cx={g.eyeLx} cy={g.eyeY} r={g.eyeR} fill="var(--visual-violet)" />
-      <circle cx={g.eyeRx} cy={g.eyeY} r={g.eyeR} fill="var(--visual-violet)" />
-      <rect
-        x={g.mouthX} y={g.mouthY} width={g.mouthW} height={g.mouthH} rx={mouthRx}
-        fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)" strokeWidth={mouthSw}
-      />
-      {g.dividers.map((dx, i) => (
-        <line key={i} x1={dx} y1={g.mouthY} x2={dx} y2={g.mouthY + g.mouthH}
-          stroke="var(--visual-cyan)" strokeWidth={mouthSw} />
-      ))}
-    </g>
-  );
+  return <NotoEmoji codepoint="1f916" x={x} y={y} size={size} />;
 }
 
 // ── AuthorWaveNode ────────────────────────────────────────────────────────────
 // 🙋🏻‍♂️ Emoji-style waving figure — author greeting the reader. Used on the about page.
-// Paths inlined from u1f64b_1f3fb_200d_2642.svg (128×128 viewBox).
+// Paths inlined from /img/emoji/u1f64b_1f3fb_200d_2642.svg (128×128 viewBox).
+// Fills use flat colors (no gradients) per design system; hairHighlights omitted.
 // Draw order: shirt/body → head/face → arm assembly (hand in front of head).
 // LEFT hand waves (viewer perspective) — animations use negative rotations.
 export function AuthorWaveNode({ className }: { className?: string }) {

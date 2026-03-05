@@ -457,7 +457,7 @@ All actor primitives share a bounding-box grid for visual equal-standing.
 | Primitive | Emoji Ref | Bounding Box | Semantic Color |
 |-----------|-----------|--------------|----------------|
 | `OperatorNode` | 🧑‍💻 | 40×40 (primary) / 32×32 (worker) | Neutral (`--visual-neutral`) |
-| `AgentNode` | 🤖 | 40×40 (primary) / 32×32 (worker) | Violet (`--visual-violet`) |
+| `AgentNode` | 🤖 | 40×40 (primary) / 32×32 (worker) | Original emoji palette (hardcoded) |
 | `PromptCard` | 💬 | 72×40 (fixed) | Indigo (`--visual-indigo`) |
 
 `PromptCard` is wider (72px) because it is a document artifact, not an actor. It participates
@@ -484,10 +484,15 @@ Do NOT place primary and worker actors in the same horizontal row without applyi
 - Shoulder U-path: Smooth Circuit (`stroke-linecap="round"` `stroke-linejoin="round"`). Span = BB × 0.90, corner radius = BB × 0.10.
 - Legs: two lines (Terminal Geometry, `stroke-linecap="square"`) spreading to BB base.
 
-**AgentNode** — Smooth Circuit throughout:
-- Head squircle: `rx = head_w × 0.25`. Fill `--visual-bg-violet`, stroke `--visual-violet` 2px.
-- Eyes: two solid circles, `fill="var(--visual-violet)"` (no stroke).
-- Mouth: rounded rect + 2 dividers (Terminal Geometry, rx=2). Fill `--visual-bg-cyan`, stroke/dividers `--visual-cyan` 1px.
+**AgentNode** — Original Google Noto 🤖 emoji (`/img/emoji/u1f916.svg`):
+- Delegates to `NotoEmoji` component with `codepoint="1f916"`.
+- Uses original emoji gradients and hardcoded colors (`#C62828` red, `#90A4AE` gray).
+- Intentional exception to flat-construction constraint #4 — the robot is a branded identity element.
+- Gradient ID isolation is automatic; SVG `<image>` renders as a separate document.
+
+**NotoEmoji** — Generic wrapper for any Noto emoji:
+- `<NotoEmoji codepoint="1f4a1" x={...} y={...} size={40} />` renders `/img/emoji/u1f4a1.svg`.
+- Add new emojis via `node scripts/fetch-emoji.js <codepoint>` — caches raw in `scripts/.noto-cache/`, writes cleaned SVG to `website/static/img/emoji/u{cp}.svg`.
 
 **PromptCard** — Smooth Circuit, positive-valence artifact:
 - Body rect: `rx="8"`. Fill `--visual-bg-indigo`, stroke `--visual-indigo` 1.5px.
@@ -585,7 +590,16 @@ Do NOT use `box-shadow` on diagram containers. Instead, use `border` with `--bor
 
 ## Icon & Diagram Geometry
 
-### Icon Canvas
+### Icon Tiers
+
+| Tier | Canvas / viewBox | Style | Use |
+|------|-----------------|-------|-----|
+| UI icon | `0 0 24 24` | Outline stroke (`currentColor`) | Inline text, buttons, nav, phase indicators |
+| Illustration icon | `0 0 128 128` | Flat filled (Noto emoji style) | Bullet icons, feature cards, hero callouts |
+
+Both tiers share `--icon-*` size tokens for rendered width/height. The viewBox is fixed per tier; scaling is via `width`/`height` attributes.
+
+### Icon Sizes
 
 | Token | Value | Purpose |
 |-------|-------|---------|
@@ -595,11 +609,9 @@ Do NOT use `box-shadow` on diagram containers. Instead, use `border` with `--bor
 | `--icon-xl` | 48px | Diagram node icons |
 | `--icon-2xl` | 64px | Hero/feature icons |
 
-All icons use a square viewBox matching their canvas (e.g., `viewBox="0 0 24 24"` for `--icon-md`). Content fills 80% of the canvas; 10% padding on each side.
-
 Do NOT create icons at arbitrary sizes. Instead, use `--icon-*` tokens.
 
-### Icon Construction
+### UI Icon Construction
 
 | Property | Value |
 |----------|-------|
@@ -608,6 +620,45 @@ Do NOT create icons at arbitrary sizes. Instead, use `--icon-*` tokens.
 | `stroke-width` | `2` (at 24px canvas) |
 | `stroke-linecap` | `round` (Smooth Circuit) or `square` (Terminal Geometry) |
 | `stroke-linejoin` | `round` (Smooth Circuit) or `miter` (Terminal Geometry) |
+
+### Illustration Icon Construction
+
+Illustration icons follow a Noto Color Emoji–inspired flat construction standard. All 128×128 viewBox icons must comply.
+
+#### Core Principles
+
+1. **Flat fills only** — solid color shapes. No tonal gradation within the same structural part.
+2. **Layered silhouette** — 3–5 overlapping filled shapes that read as a bold silhouette at 32px.
+3. **Geometric simplicity** — minimize path points; prefer arcs and clean curves over organic detail.
+4. **Achromatic structure + chromatic accent** — neutral fills for structure, `currentColor` for the one semantic layer.
+
+#### Fill Budget
+
+Maximum 4 distinct fill values per icon:
+
+| Slot | Fill | Neutral shade | Role |
+|------|------|---------------|------|
+| Body | hardcoded hex | neutral-600 (`#666666`) | Primary structural mass |
+| Detail | hardcoded hex | neutral-900 (`#2b2b2b`) | Dark accents, internal features |
+| Secondary | hardcoded hex | neutral-300 (`#b7b7b7`) | Secondary body, bezels, minor marks |
+| Accent | `currentColor` | inherited from parent | Semantic tint (solid or `opacity="0.15"` wash) |
+
+Slot usage: Body + Accent are required. Detail and Secondary are optional. Total ≤ 4.
+
+#### Accent Layer
+
+- Every illustration icon MUST have ≥1 element with `fill="currentColor"`.
+- Two permitted opacity values: `1` (solid accent) and `0.15` (tinted wash). No other opacities.
+- Do NOT hardcode semantic hex colors (e.g., `#ad3735`). Use `currentColor` so the parent assigns meaning via `--visual-*`.
+- Structural fills must be opaque. A path that serves as backdrop for other visible elements (e.g., a clock face behind tick marks) must use a neutral hex fill, not a `currentColor` wash. Reserve `opacity="0.15"` washes for overlay accents that layer on top of opaque structure (e.g., a tinted face layered over a `#666666` body).
+
+#### Banned Techniques
+
+- Highlight fills (lighter neutral on darker to simulate reflection)
+- Shadow ridge fills (darker neutral alongside structural neutral to simulate depth)
+- Multiple tonal layers on the same part (e.g., neutral-100 + -300 + -500 + -600 on one object)
+- SVG filters, gradients, or opacity shading on neutral fills
+- neutral-50 (`#f5f5f5`), neutral-100 (`#e8e8e8`), neutral-400 (`#9b9b9b`), neutral-500 (`#808080`) as fill colors — these exist only for 3D simulation
 
 ### Diagram Sizing
 

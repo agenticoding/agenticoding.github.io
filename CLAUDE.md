@@ -76,3 +76,7 @@ npm run deploy                       # Deploy to GitHub Pages
 ## Design System
 
 Read DESIGN_SYSTEM.md whenever visual work is involved
+
+## Noto Emoji
+
+To add a new emoji figure: `node scripts/fetch-emoji.js <codepoint>`, then use `<NotoEmoji codepoint="..." x={...} y={...} />` from `ActorNodes.tsx`. SVGs land in `website/static/img/emoji/`.
