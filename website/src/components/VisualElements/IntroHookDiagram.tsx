@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import styles from './IntroHookDiagram.module.css';
-import { OperatorNode, AgentNode, PromptIcon, NotoEmoji } from './ActorNodes';
+import { OperatorNode, AgentNode, NotoEmoji } from './ActorNodes';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 
@@ -251,7 +251,7 @@ export default function IntroHookDiagram() {
       {mainPromptPos && (
         <g transform={`translate(${mainPromptPos.x}, ${mainPromptPos.y})`} style={{ opacity: mainPromptPos.opacity }}>
           <g className={styles.promptIcon}>
-            <PromptIcon />
+            <NotoEmoji codepoint="1f4ac" x={-11} y={-11} size={22} />
           </g>
         </g>
       )}
@@ -260,7 +260,7 @@ export default function IntroHookDiagram() {
       {fanPromptPositions.map((pos, i) => pos && (
         <g key={i} transform={`translate(${pos.x}, ${pos.y})`} style={{ opacity: pos.opacity }}>
           <g className={styles.promptIcon}>
-            <PromptIcon />
+            <NotoEmoji codepoint="1f4ac" x={-11} y={-11} size={22} />
           </g>
         </g>
       ))}
@@ -295,7 +295,7 @@ export default function IntroHookDiagram() {
         >You</text>
         <text
           x={270} y={144}
-          fill="var(--visual-violet)"
+          fill="var(--visual-magenta)"
           style={{ fontFamily: 'var(--font-mono)' }}
           fontSize={11} fontWeight={500} textAnchor="middle"
         >Orchestrator</text>
@@ -316,14 +316,9 @@ export default function IntroHookDiagram() {
         >{fan.label}</text>
       ))}
 
-      {/* Reduced-motion fallback: static card at arc midpoint (177, 78) */}
+      {/* Reduced-motion fallback: static emoji at arc midpoint (177, 78) */}
       <g className={styles.staticCard}>
-        <g transform="translate(177, 78)">
-          <rect x={-18} y={-10} width={36} height={20} rx={8}
-            fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5} />
-          <rect x={-9} y={-4} width={18} height={2} rx={1} fill="var(--visual-indigo)" />
-          <rect x={-6} y={2}  width={12} height={2} rx={1} fill="var(--visual-indigo)" />
-        </g>
+        <NotoEmoji codepoint="1f4ac" x={166} y={67} size={22} />
       </g>
     </svg>
   );

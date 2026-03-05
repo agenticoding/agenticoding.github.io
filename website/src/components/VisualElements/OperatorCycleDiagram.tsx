@@ -57,8 +57,8 @@ const NODES = [
     label: 'Execute',
     cx: 400, cy: 216,
     labelAbove: false,
-    color: 'var(--visual-violet)',
-    bgColor: 'var(--visual-bg-violet)',
+    color: 'var(--visual-magenta)',
+    bgColor: 'var(--visual-bg-magenta)',
     description: 'Run agents supervised or autonomous based on trust and task criticality',
   },
   {
