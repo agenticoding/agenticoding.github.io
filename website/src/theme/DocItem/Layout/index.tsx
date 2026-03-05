@@ -56,7 +56,7 @@ export default function DocItemLayout({ children }: Props): ReactNode {
           <article>
             <div className={styles.docHeader}>
               <DocBreadcrumbs />
-              {customFrontMatter.presentation !== false && (
+              {false && customFrontMatter.presentation !== false && (
                 <div className={styles.presentationToggleWrapper}>
                   <PresentationToggle lessonPath={lessonPath} />
                 </div>
