@@ -66,15 +66,16 @@ export default function ScrollDrivenFigure({
       return () => io.disconnect();
     }
 
-    // CSS drives the visual animation; mirror scroll progress to JS context so child
-    // components can read animationPhase. document.scroll is the spec-correct target for
-    // the view() timeline scroller; window.resize handles viewport-dimension changes.
+    const mountBottom = el.getBoundingClientRect().bottom;
+
     const computePhase = () => {
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      // entry 0% = rect.bottom === vh, cover N% = rect.top === vh * phaseEnd
-      const start = vh;
-      const end = vh * phaseEnd;
+      // phase=0 anchor: viewport edge for below-fold elements, mount position for above-fold.
+      // phase=1 anchor: CSS cover <phaseEnd×100>% endpoint.
+      const start = Math.min(mountBottom, vh);
+      const end = (vh + rect.height) * (1 - phaseEnd);
+      if (start <= end) { setPhase(1); return; }
       const raw = (rect.bottom - start) / (end - start);
       setPhase(Math.min(1, Math.max(0, raw)));
     };
@@ -86,7 +87,7 @@ export default function ScrollDrivenFigure({
       document.removeEventListener('scroll', computePhase);
       window.removeEventListener('resize', computePhase);
     };
-  }, []);
+  }, [phaseEnd]);
 
   const figureClass = [
     styles.figure,
@@ -103,7 +104,11 @@ export default function ScrollDrivenFigure({
   return (
     <AnimationPhaseContext.Provider value={phase}>
       <figure className={figureClass}>
-        <div ref={innerRef} className={innerClass}>
+        <div
+          ref={innerRef}
+          className={innerClass}
+          style={{ animationRange: `entry 0% cover ${phaseEnd * 100}%` } as React.CSSProperties}
+        >
           {children}
         </div>
         {caption && <figcaption className={styles.figcaption}>{caption}</figcaption>}
