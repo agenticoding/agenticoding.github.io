@@ -4,6 +4,7 @@ import styles from './IntroHookDiagram.module.css';
 import { OperatorNode, AgentNode, NotoEmoji } from './ActorNodes';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
+import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 
 // Layout — ViewBox 560×264 (fan: symmetric ±22.6° about orchestrator centre y=108)
 //
@@ -42,10 +43,6 @@ const TRAVEL_D = 'M 90 73 Q 180 40 251 113';
 const FAN1_D   = 'M 289 113 Q 345 62 436 44';
 const FAN2_D   = 'M 289 113 Q 375 113 476 116';
 const FAN3_D   = 'M 289 113 Q 345 158 436 180';
-
-const DISPATCH_START = 0.80;
-const DISPATCH_END   = 0.995;
-const PHASE_STAGGER  = 0.04;   // ≈ 80 ms / 400 ms × 0.195 phase range
 
 const ACTS = [
   { id: 'arc',          threshold: 0    },
@@ -89,38 +86,27 @@ export default function IntroHookDiagram() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
-  // Set stroke-dasharray/offset from computed path length on mount
+  // Guide arc init only — CSS drawPath animation handles drawing.
+  // useStrokeDraw cannot be used here because the CSS animation would conflict
+  // with imperative strokeDashoffset updates.
   useEffect(() => {
-    for (const p of [arcPathRef.current, fan1Ref.current, fan2Ref.current, fan3Ref.current]) {
-      if (!p) continue;
-      const len = p.getTotalLength();
-      p.style.strokeDasharray = `${len}`;
-      p.style.strokeDashoffset = `${len}`;
-    }
+    const p = arcPathRef.current;
+    if (!p) return;
+    const len = p.getTotalLength();
+    p.style.strokeDasharray = `${len}`;
+    p.style.strokeDashoffset = `${len}`;
   }, []);
+
+  // Fan arcs: scroll-driven stroke draw, staggered start phases
+  const fan1T = useStrokeDraw(fan1Ref as React.RefObject<SVGGeometryElement | null>, phase, 0.80, 0.995);
+  const fan2T = useStrokeDraw(fan2Ref as React.RefObject<SVGGeometryElement | null>, phase, 0.84, 0.995);
+  const fan3T = useStrokeDraw(fan3Ref as React.RefObject<SVGGeometryElement | null>, phase, 0.88, 0.995);
+  const fanTs = [fan1T, fan2T, fan3T];
 
   const composingReached = wasReached('composing');
   const travelingReached = wasReached('traveling');
   const dispatchReached  = wasReached('dispatch');
   const dispatched       = dispatchReached;
-
-  // Per-arc staggered t: maps phase into [0,1] with each arc offset by PHASE_STAGGER
-  const fanT = (i: number) => {
-    const start = DISPATCH_START + i * PHASE_STAGGER;
-    const range = DISPATCH_END - start;
-    return Math.min(Math.max((phase - start) / range, 0), 1);
-  };
-
-  // Drive fan arc strokeDashoffset directly from scroll phase (keeps tip in sync with prompt)
-  useEffect(() => {
-    fanRefs.forEach((ref, i) => {
-      const path = ref.current;
-      if (!path) return;
-      const len = path.getTotalLength();
-      const t = fanT(i);
-      path.style.strokeDashoffset = `${len * (1 - t)}`;
-    });
-  }, [phase]);
 
   // Main prompt position: idle at path start, then scroll-interpolated along arc
   const mainPromptPos = (() => {
@@ -139,7 +125,7 @@ export default function IntroHookDiagram() {
     if (!dispatchReached) return null;
     const path = fanRefs[i].current;
     if (!path) return null;
-    const t = fanT(i);
+    const t = fanTs[i];
     if (t <= 0) return null;
     const opacity = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
     const pt = path.getPointAtLength(t * path.getTotalLength());
