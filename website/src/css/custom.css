@@ -179,6 +179,14 @@
   --ifm-background-surface-color: var(--surface-raised);
   --ifm-container-width-xl: 960px; /* Reference-book prose width (~67ch at 16px) */
 
+  /* === ADMONITIONS — Flat construction, 3px accent border ===
+     Colors are set per-variant below. These tokens fix structure for all variants. */
+  --ifm-alert-shadow: none;
+  --ifm-alert-border-radius: 0px;
+  --ifm-alert-border-left-width: 3px;
+  --ifm-alert-padding-vertical: var(--space-2);
+  --ifm-alert-padding-horizontal: var(--space-2);
+
   /* === UTILITY TOKENS === */
   --code-bg: var(--neutral-50);
   --text-subtle: var(--neutral-500);
@@ -271,6 +279,61 @@
   --announcement-bg: #ffe3c3;  /* warning-100 */
   --announcement-text: #402400; /* warning-900 */
 }
+
+/* ========================================================================
+   ADMONITIONS — Design system color alignment
+   ========================================================================
+   --ifm-alert-foreground-color drives heading label text + SVG icon fill.
+   color: var(--text-body) resets body prose to achromatic (overrides .alert).
+   .alert__heading restores the semantic color to the label.
+   Dark mode self-adapts: --visual-*, --surface-raised, --text-body all
+   re-declare in [data-theme='dark'] so no separate dark rules are needed.
+   ======================================================================== */
+
+.alert--secondary { /* :::note */
+  --ifm-alert-foreground-color: var(--visual-neutral);
+  --ifm-alert-background-color: var(--surface-raised);
+  --ifm-alert-border-color: var(--visual-neutral);
+  --ifm-alert-background-color-highlight: var(--surface-muted);
+  color: var(--text-body);
+}
+.alert--secondary .alert__heading { color: var(--visual-neutral); }
+
+.alert--success { /* :::tip */
+  --ifm-alert-foreground-color: var(--visual-cyan);
+  --ifm-alert-background-color: var(--surface-raised);
+  --ifm-alert-border-color: var(--visual-cyan);
+  --ifm-alert-background-color-highlight: var(--surface-muted);
+  color: var(--text-body);
+}
+.alert--success .alert__heading { color: var(--visual-cyan); }
+
+.alert--info { /* :::info */
+  --ifm-alert-foreground-color: var(--visual-indigo);
+  --ifm-alert-background-color: var(--surface-raised);
+  --ifm-alert-border-color: var(--visual-indigo);
+  --ifm-alert-background-color-highlight: var(--surface-muted);
+  color: var(--text-body);
+}
+.alert--info .alert__heading { color: var(--visual-indigo); }
+
+.alert--warning { /* :::warning, :::caution */
+  --ifm-alert-foreground-color: var(--visual-warning);
+  --ifm-alert-background-color: var(--surface-raised);
+  --ifm-alert-border-color: var(--visual-warning);
+  --ifm-alert-background-color-highlight: var(--surface-muted);
+  color: var(--text-body);
+}
+.alert--warning .alert__heading { color: var(--visual-warning); }
+
+.alert--danger { /* :::danger */
+  --ifm-alert-foreground-color: var(--visual-error);
+  --ifm-alert-background-color: var(--surface-raised);
+  --ifm-alert-border-color: var(--visual-error);
+  --ifm-alert-background-color-highlight: var(--surface-muted);
+  color: var(--text-body);
+}
+.alert--danger .alert__heading { color: var(--visual-error); }
 
 /* ========================================================================
    DARK MODE — Optimized Colors for Dark Backgrounds
