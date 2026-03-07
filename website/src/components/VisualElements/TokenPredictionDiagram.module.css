@@ -1,0 +1,33 @@
+/* TokenPredictionDiagram.module.css
+ *
+ * Static diagram — all connections permanently visible.
+ * Single idle loop: gear spin (machinery metaphor).
+ */
+
+/* ── Keyframes ────────────────────────────────────────────────────────────── */
+
+@keyframes gearSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Component ────────────────────────────────────────────────────────────── */
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+.gear {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: gearSpin 2.5s linear infinite;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .gear { animation: none; }
+}

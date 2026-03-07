@@ -6,25 +6,33 @@ sidebar_custom_props:
 title: 'LLMs Demystified'
 ---
 
+import ParadigmShiftDiagram from '@site/src/components/VisualElements/ParadigmShiftDiagram';
+import TokenPredictionDiagram from '@site/src/components/VisualElements/TokenPredictionDiagram';
+import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
+
 Welcome to the future of software engineering. This course teaches you to **operate AI agents** that autonomously execute complex development tasks - from specification to deployment.
 
 ## The Paradigm Shift
 
-Software engineering is undergoing a fundamental transformation, similar to how power tools revolutionized construction.
+Software engineering is undergoing a fundamental transformation, similar to how industrial manufacturing replaced artisan workshops.
 
-**Construction transformation:**
+**Manufacturing transformation:**
 
-- **Hand tools era:** Carpenters shaped every piece manually through craftsmanship
-- **Power tools era:** Craftsmen design projects, operate machines, verify output
-- **Result:** Massive gains in bandwidth, repeatability, and precision
+- **Workshop era:** Artisans shaped every piece by hand — skill bottlenecked throughput
+- **Factory era:** Engineers design products, configure machines, verify output at scale
+- **Result:** Orders-of-magnitude gains in throughput, consistency, and precision
 
 **Software engineering transformation:**
 
 - **Traditional:** Engineers write code line-by-line, focusing on syntax and implementation details
-- **Agent-driven:** Engineers orchestrate AI agents that autonomously execute tasks, focusing on architecture and verification
-- **Result:** Same gains - bandwidth, repeatability, precision through configuration
+- **Agent-driven:** Engineers design systems, configure agents, verify output at scale
+- **Result:** Same gains — throughput, consistency, precision through specification
 
-**A gain in bandwidth and creativity, rather than loss of control.**
+<ScrollDrivenFigure phaseEnd={0.75} caption="From artisan to factory owner.">
+  <ParadigmShiftDiagram />
+</ScrollDrivenFigure>
+
+**A gain in throughput and creativity, not a loss of control.**
 
 ## First Principles: Understanding the Machinery
 
@@ -38,6 +46,11 @@ A Large Language Model is a statistical pattern matcher built on [transformer ar
 - **Processes ~200K tokens** of context (working memory)
 - **Samples from probability distributions** learned from training data
 - **Has zero consciousness, intent, or feelings**
+
+<figure>
+  <TokenPredictionDiagram />
+  <figcaption>Each new token is predicted from <em>all</em> previous tokens in the context window — the sequence grows one token at a time, feeding back as input for the next prediction.</figcaption>
+</figure>
 
 :::tip[What's a Token?]
 A **token** is the atomic unit of an LLM - the "pixel" of text processing. Averages ~3-4 characters, but varies widely: common short words are single tokens (`"the"`, `"is"`), while longer or rare words split into subwords using algorithms like [Byte-Pair Encoding](https://en.wikipedia.org/wiki/Byte-pair_encoding).

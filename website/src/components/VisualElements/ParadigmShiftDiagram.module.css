@@ -1,0 +1,55 @@
+/* Scene A: visible by default (SSR safe), transitions out */
+.sceneA {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+.sceneA.sceneAOut {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 300ms var(--ease-exit), transform 300ms var(--ease-exit);
+}
+
+/* Scene B: hidden by default, transitions in */
+.sceneB {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 250ms var(--ease-exit), transform 250ms var(--ease-exit);
+}
+.sceneB.sceneBIn {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms var(--ease-enter), transform 300ms var(--ease-enter);
+}
+
+/* Ghost agent placeholder — fades in with Scene B, fades out on dispatch */
+.ghostAgent       { opacity: 0; }
+.ghostAgentShown  { opacity: 0.45; transition: opacity 300ms var(--ease-enter); }
+.ghostAgentHidden { opacity: 0;    transition: opacity 200ms var(--ease-exit); }
+
+/* Agent node — hidden until dispatch */
+.agentNode   { opacity: 0; }
+.agentNodeIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+
+/* Factory node — hidden until converge */
+.factoryNode    { opacity: 0; }
+.factoryNodeIn  { opacity: 1; transition: opacity 300ms var(--ease-enter); }
+
+/* Connector — opacity-gated until its act fires */
+.connector        { opacity: 0; transition: opacity 200ms var(--ease-exit); }
+.connectorDrawing { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sceneA,
+  .sceneA.sceneAOut { opacity: 0; transform: none; transition: none; }
+  .sceneB,
+  .sceneB.sceneBIn  { opacity: 1; transform: none; transition: none; }
+  .ghostAgent, .ghostAgentShown, .ghostAgentHidden { opacity: 0 !important; }
+  .agentNode, .agentNodeIn     { opacity: 1; transition: none; }
+  .factoryNode, .factoryNodeIn { opacity: 1; transition: none; }
+  .connector, .connectorDrawing {
+    opacity: 0.5;
+    stroke-dashoffset: 0 !important;
+    transition: none;
+  }
+}
