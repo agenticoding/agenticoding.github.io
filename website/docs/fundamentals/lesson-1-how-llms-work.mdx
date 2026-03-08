@@ -8,6 +8,7 @@ title: 'LLMs Demystified'
 
 import ParadigmShiftDiagram from '@site/src/components/VisualElements/ParadigmShiftDiagram';
 import TokenPredictionDiagram from '@site/src/components/VisualElements/TokenPredictionDiagram';
+import ExecutionLoopDiagram from '@site/src/components/VisualElements/ExecutionLoopDiagram';
 import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
 
 Welcome to the future of software engineering. This course teaches you to **operate AI agents** that autonomously execute complex development tasks - from specification to deployment.
@@ -76,6 +77,10 @@ Think of it like an incredibly sophisticated autocomplete - one that's read most
 | "The agent reasons"     | Breaking down problems into sequential token predictions that build on each other |
 
 ### Agent Software = Body (Execution Layer)
+
+<ScrollDrivenFigure phaseEnd={0.75} caption="Predict, execute, observe, repeat.">
+  <ExecutionLoopDiagram />
+</ScrollDrivenFigure>
 
 The LLM alone can only generate text. Plain old, **deterministic**, agent software wraps the LLM to enable **action**:
 
