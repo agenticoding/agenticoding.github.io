@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-cli/schema.json",
+  "productName": "Agentic Coding",
+  "version": "0.1.0",
+  "identifier": "ai.agenticoding.desktop",
+  "build": {
+    "beforeBuildCommand": "cd website && TAURI_BUILD=1 npm run build",
+    "beforeDevCommand": "cd website && npm run start",
+    "devUrl": "http://localhost:3000",
+    "frontendDist": "../website/build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Agentic Coding",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' asset:; connect-src 'self'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "signingIdentity": "-"
+    }
+  }
+}
