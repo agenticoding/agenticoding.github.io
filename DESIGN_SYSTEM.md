@@ -458,10 +458,6 @@ All actor primitives share a bounding-box grid for visual equal-standing.
 |-----------|-----------|--------------|----------------|
 | `OperatorNode` | 🧑‍💻 | 40×40 (primary) / 32×32 (worker) | Neutral (`--visual-neutral`) |
 | `AgentNode` | 🤖 | 40×40 (primary) / 32×32 (worker) | Original emoji palette (hardcoded) |
-| `PromptCard` | 💬 | 72×40 (fixed) | Indigo (`--visual-indigo`) |
-
-`PromptCard` is wider (72px) because it is a document artifact, not an actor. It participates
-in the 40px height grid of the actor nodes.
 
 All coordinates in `ActorNodes.tsx` are annotated: `// Computed via scripts/compute-actor-coords.js`.
 
@@ -494,17 +490,32 @@ Do NOT place primary and worker actors in the same horizontal row without applyi
 - `<NotoEmoji codepoint="1f4a1" x={...} y={...} size={40} />` renders `/img/emoji/u1f4a1.svg`.
 - Add new emojis via `node scripts/fetch-emoji.js <codepoint>` — caches raw in `scripts/.noto-cache/`, writes cleaned SVG to `website/static/img/emoji/u{cp}.svg`.
 
-**PromptCard** — Smooth Circuit, positive-valence artifact:
-- Body rect: `rx="8"`. Fill `--visual-bg-indigo`, stroke `--visual-indigo` 1.5px.
-- Text stubs: 3 solid hairline rects at decreasing widths (44px → 36px → 28px).
-- Optional tail: small right-triangle at lower-left corner, pointing toward the sending operator.
+#### Emoji Node Rendering
+
+ALL `NotoEmoji` instances render **bare** — no background `<rect>`, no filled container, no exceptions.
+
+- The emoji IS the node. Its bounding box IS the hit area.
+- Do NOT wrap `NotoEmoji` in a colored `<rect>`, `<circle>`, or any other filled shape.
+- Do NOT add squircle or pill containers behind emoji nodes — those are structural region shapes (see Shape Selection Procedure).
+
+#### Ghost Placeholders
+
+Ghost placeholders provide spatial mass before a node enters, preserving layout balance (per the "every act-state must be visually complete" rule).
+
+- **Construction:** dashed-stroke rect (`strokeDasharray="3 4"`, `strokeWidth={1}`), semantic background fill (`--visual-bg-{hue}`), semantic stroke (`--visual-{hue}`).
+- **Size:** matches the emoji's bounding box (or the head portion for actor primitives with body geometry).
+- **Lifecycle:** `ghostShown` → visible while node is pending; `ghostHidden` → `opacity: 0` when node enters.
+- The ghost is the ONLY rect. The settled node is a bare emoji with no background shape.
 
 #### Communication Medium
 
-`PromptCard` is the only valid operator→agent communication artifact. Do NOT use other
-metaphors (looms, punch cards, pipes). Every edge connecting actor nodes carries either:
-- A `PromptCard` artifact (for human→agent or agent→agent delegation), or
+> **Note:** `PromptCard` was renamed to `PromptIcon`. `TravelingPromptCard` is its animated variant — used for delegation-flow motion along an edge path; not a separate primitive.
+
+Every edge connecting actor nodes carries either:
+- A `PromptIcon` artifact (36×20 centered prompt card, used in delegation flows), or
 - A plain Bezier arc with arrowhead (for return flow / result propagation).
+
+Do NOT use other metaphors (looms, punch cards, pipes) for prompt artifacts.
 
 ---
 
@@ -528,13 +539,15 @@ Smooth Circuit for all hues except Error and Warning (Terminal Geometry).
 | Content Type | Container | SVG Implementation |
 |-------------|-----------|-------------------|
 | System node / module | Squircle | `<rect rx="10">` (40px box) or superellipse `<path>` |
-| Agent / AI process | Circle or pill | `<circle>` or `<rect rx="50%">` |
+| Agent / AI process region | Circle or pill | `<circle>` or `<rect rx="50%">` |
 | Data / knowledge | Rounded rect | `<rect rx="8">` |
-| Human actor | Circle or squircle | `<circle>` or `<rect rx="10">` |
+| Human actor region | Circle or squircle | `<circle>` or `<rect rx="10">` |
 | Generic container | Squircle | `<rect rx="10">` to `<rect rx="14">` |
 | Code / terminal | Diamond or sharp rect | `<polygon>` (4-point) or `<rect rx="2">` |
 | Error state | Sharp rect or diamond | `<rect rx="2">` or `<polygon>` |
 | Warning state | Triangle or diamond | `<polygon>` (3-point up) |
+
+> **Note:** These containers describe **structural regions and grouping shapes** — not per-node backgrounds. Emoji icon nodes always render bare (see Actor Primitives → Emoji Node Rendering). `AgentNode` is a bare 🤖 emoji, not a circle container; "Agent / AI process region" refers to a panel or zone grouping multiple agent nodes.
 
 #### Step 3: Choose connector style
 
@@ -792,11 +805,14 @@ All idle classes defined once in `custom.css`. Do NOT define idle keyframes per-
 
 | Class | Motion | Loop | Semantic use |
 |-------|--------|------|-------------|
-| `.idle-cursor-blink` | `opacity 1→0→1` step-end | 1000ms | Active authoring (PromptBubble during composing act) |
+| `.idle-cursor-blink` | `opacity 1→0→1` step-end | 1000ms | Active authoring (prompt artifact during composing act) |
 | `.idle-status-pulse` | `opacity 1→0.5→1` ease-in-out | 2000ms | AI processing; connector during transit |
 | `.idle-flow-drift` | `translateX 0→2px→0` ease-in-out | 3000ms | Data moving through a channel |
 | `.idle-ready-breathe` | `scale 1→1.02→1` ease-in-out | 4000ms | Agent idle; system ready |
 | `.ping-once` | `scale 1→1.4; opacity 1→0` ease-out | 400ms, 1× | One-shot attention on act entry |
+| `.idle-arm-rock` | `rotate 0→-4°→0` ease-in-out | 5000ms | Human authoring; developer working |
+| `.idle-palm-wave` | `rotate 0→±18°→0` ease-in-out | 5000ms | Greeting; interaction acknowledgement |
+| `.idle-gear-spin` | `rotate 0→360°` linear | 2500ms | Mechanical processing; LLM inference engine |
 
 Rules:
 - Max **2 idle loops** simultaneously per figure. `cursor-blink` and `status-pulse` never together.
@@ -827,7 +843,8 @@ Rules:
 ```css
 @media (prefers-reduced-motion: reduce) {
   .idle-cursor-blink, .idle-status-pulse,
-  .idle-flow-drift, .idle-ready-breathe, .ping-once {
+  .idle-flow-drift, .idle-ready-breathe, .ping-once,
+  .idle-arm-rock, .idle-palm-wave, .idle-gear-spin {
     animation: none !important;
   }
 }

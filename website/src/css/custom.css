@@ -131,6 +131,21 @@
   --ifm-font-family-monospace: var(--font-mono);
   --ifm-h1-font-size: var(--text-4xl); /* 40px — design system h1 token */
 
+  /* === FLAT CONSTRUCTION — Kill all Infima shadows globally ===
+     Design System Constraint #4: no gradients, shadows, or glows.
+     Navbar and alert shadows are already overridden below; this covers
+     code blocks, dropdowns, and any other component using these tokens. */
+  --ifm-global-shadow-lw: none;
+  --ifm-global-shadow-md: none;
+  --ifm-global-shadow-tl: none;
+
+  /* === CODE BLOCK TOKENS — Design system alignment ===
+     Code blocks: angular (0px radius), background: --surface-muted.
+     --ifm-code-border-radius also applies to inline <code> via Infima,
+     so inline radius is set separately below via direct selector. */
+  --ifm-code-border-radius: 0;  /* Constraint #7: angular forms for code */
+  --ifm-code-background: var(--surface-muted); /* neutral-100 (#e8e8e8) */
+
   /* === NAVBAR — Flat, line-based (Design System rule #4) === */
   --ifm-navbar-background-color: var(--surface-page);
   --ifm-navbar-shadow: none;
@@ -171,7 +186,7 @@
   --text-heading: var(--neutral-900);    /* #2b2b2b */
   --text-body: var(--neutral-700);       /* #505050 */
   --text-muted: var(--neutral-500);      /* #808080 */
-  --border-default: var(--neutral-200);  /* #d4d4d4 */
+  --border-default: var(--neutral-300);  /* #b7b7b7 — structural container borders */
   --border-subtle: var(--neutral-200);   /* #d4d4d4 — hairline dividers */
 
   /* Map to Infima layout variables */
@@ -217,7 +232,10 @@
   /* === VISUAL ELEMENT COLORS — Diagram & illustration palette ===
      Role names for universal UI concepts (error, warning, success).
      Hue names for categorical diagram palette (cyan, indigo, etc.).
-     See DESIGN_SYSTEM.md "Semantic Meaning Map" for hue→meaning. */
+     See DESIGN_SYSTEM.md "Semantic Meaning Map" for hue→meaning.
+     NOTE: src/prism-theme.ts hardcodes hex equivalents of these tokens
+     (prism-react-renderer requires JS objects, not CSS custom properties).
+     If values here change, update prism-theme.ts to match. */
 
   /* Role-based (universal UI) */
   --visual-error: var(--semantic-error);      /* #ee0028 — Danger, critical */
@@ -404,6 +422,8 @@
 
   /* === TYPOGRAPHY & CODE === */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  /* Inline <code> background — achromatic token, replaces rgba(255,255,255,0.1) */
+  --ifm-code-background: var(--surface-muted); /* neutral-800 (#3d3d3d) */
 
   /* === DOC SIDEBAR — Dark mode === */
   --ifm-menu-link-sublist-icon-filter: none;
@@ -502,11 +522,11 @@ article h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 2rem auto;
-  padding: 1.5rem;
+  margin: var(--space-4) auto;
+  padding: var(--space-3);
   background: var(--ifm-background-surface-color);
-  border-radius: 8px;
-  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
   text-align: center;
 }
 
@@ -522,10 +542,10 @@ article h1 {
    ======================================================================== */
 
 .visual-container {
-  margin: 2rem 0;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid var(--ifm-color-emphasis-300);
+  margin: var(--space-4) 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
 }
 
 .visual-container--cyan {
@@ -848,9 +868,17 @@ article a {
   text-underline-offset: 2px;
 }
 
-/* Code block styling */
+/* Code block — flat construction: border replaces shadow for visual separation */
 .theme-code-block {
-  margin: 2rem 0;
+  margin: var(--space-4) 0;
+  border: 1px solid var(--border-default);
+  border-radius: 0;
+}
+
+/* Inline <code> — badge-scale radius, not container-scale */
+:not(pre) > code {
+  border-radius: var(--radius-sm); /* 4px — badge/input token */
+  border: none;                    /* Infima adds a faint border; remove it */
 }
 
 /* Font features for all monospace containers */
@@ -1035,6 +1063,9 @@ div[class*='announcementBar'] {
   40%       { transform: rotate(-4deg);  }
   45%, 100% { transform: rotate(0deg);   }
 }
+@keyframes idleGearSpin {
+  to { transform: rotate(360deg); }
+}
 
 .idle-cursor-blink  { animation: idleCursorBlink  1000ms step-end infinite; }
 .idle-status-pulse  { animation: idleStatusPulse  2000ms ease-in-out infinite; }
@@ -1043,11 +1074,12 @@ div[class*='announcementBar'] {
 .ping-once          { animation: pingOnce 400ms var(--ease-exit) 1 both; }
 .idle-arm-rock      { animation: idleArmRock  5000ms ease-in-out infinite; }
 .idle-palm-wave     { animation: idlePalmWave 5000ms ease-in-out infinite; }
+.idle-gear-spin     { animation: idleGearSpin 2500ms linear infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   .idle-cursor-blink, .idle-status-pulse,
   .idle-flow-drift, .idle-ready-breathe, .ping-once,
-  .idle-arm-rock, .idle-palm-wave {
+  .idle-arm-rock, .idle-palm-wave, .idle-gear-spin {
     animation: none !important;
   }
 }
