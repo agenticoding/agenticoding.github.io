@@ -1,8 +1,12 @@
-import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import { lightTheme, darkTheme } from './src/prism-theme';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+
+const isTauri = process.env.TAURI_BUILD === '1';
+const editUrl = isTauri ? undefined :
+  'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/';
 
 const config: Config = {
   title: 'Agentic Coding',
@@ -20,8 +24,8 @@ const config: Config = {
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
-  // Analytics
-  scripts: [
+  // Analytics (stripped in Tauri builds — no network assumption)
+  scripts: isTauri ? [] : [
     {
       src: 'https://cloud.umami.is/script.js',
       defer: true,
@@ -36,7 +40,7 @@ const config: Config = {
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
-  onBrokenLinks: 'warn',
+  onBrokenLinks: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -109,8 +113,7 @@ const config: Config = {
             '**/__tests__/**',
             '**/CLAUDE.md', // Exclude AI agent instructions from build
           ],
-          editUrl:
-            'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/',
+          editUrl,
           showLastUpdateTime: false,
           showLastUpdateAuthor: false,
         },
@@ -132,8 +135,7 @@ const config: Config = {
         path: 'prompts',
         routeBasePath: 'prompts',
         sidebarPath: './sidebarsPrompts.ts',
-        editUrl:
-          'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/',
+        editUrl,
         showLastUpdateTime: false,
         showLastUpdateAuthor: false,
       },
@@ -145,8 +147,7 @@ const config: Config = {
         path: 'developer-tools',
         routeBasePath: 'developer-tools',
         sidebarPath: './sidebarsDeveloperTools.ts',
-        editUrl:
-          'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/',
+        editUrl,
         showLastUpdateTime: false,
         showLastUpdateAuthor: false,
       },
@@ -200,8 +201,8 @@ const config: Config = {
       items: [], // All navigation moved to sidebar
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: lightTheme,
+      darkTheme: darkTheme,
       additionalLanguages: [
         'bash',
         'python',
