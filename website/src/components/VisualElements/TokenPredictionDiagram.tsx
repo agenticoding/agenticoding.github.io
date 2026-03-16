@@ -1,5 +1,5 @@
-'use client';
 import React from 'react';
+import clsx from 'clsx';
 import { NotoEmoji } from './ActorNodes';
 import styles from './TokenPredictionDiagram.module.css';
 
@@ -66,7 +66,7 @@ export default function TokenPredictionDiagram() {
         x={PILL_X + PILL_W / 2}
         y={PILL_YS[0] - 8}
         textAnchor="middle"
-        fontFamily="var(--font-mono)"
+        fontFamily="var(--font-mono-spec)"
         fontSize="9"
         fill="var(--text-muted)"
         letterSpacing="0.3"
@@ -77,7 +77,7 @@ export default function TokenPredictionDiagram() {
         x={LLM_CX}
         y={LLM_Y - 8}
         textAnchor="middle"
-        fontFamily="var(--font-mono)"
+        fontFamily="var(--font-mono-spec)"
         fontSize="9"
         fill="var(--visual-violet)"
       >
@@ -87,7 +87,7 @@ export default function TokenPredictionDiagram() {
         x={OUT_CX}
         y={OUT_Y - 8}
         textAnchor="middle"
-        fontFamily="var(--font-mono)"
+        fontFamily="var(--font-mono-keyword)"
         fontSize="9"
         fill="var(--visual-violet)"
       >
@@ -113,7 +113,7 @@ export default function TokenPredictionDiagram() {
             y={PILL_CYS[i]}
             textAnchor="middle"
             dominantBaseline="middle"
-            fontFamily="var(--font-mono)"
+            fontFamily="var(--font-mono-keyword)"
             fontSize="9"
             fill="var(--text-muted)"
           >
@@ -131,7 +131,7 @@ export default function TokenPredictionDiagram() {
           x2={SPINE_X}
           y2={cy}
           stroke="var(--visual-violet)"
-          strokeWidth="1"
+          strokeWidth="2"
         />
       ))}
 
@@ -142,7 +142,7 @@ export default function TokenPredictionDiagram() {
         x2={SPINE_X}
         y2={PILL_CYS[4]}
         stroke="var(--visual-violet)"
-        strokeWidth="1"
+        strokeWidth="2"
       />
 
       {/* ── Arrow: spine → LLM ──────────────────────────────────────────── */}
@@ -152,22 +152,14 @@ export default function TokenPredictionDiagram() {
         x2={LLM_X - 2}
         y2={LLM_CY}
         stroke="var(--visual-violet)"
-        strokeWidth="1"
+        strokeWidth="2"
         markerEnd="url(#tpd-arr)"
       />
 
-      {/* ── LLM squircle node ────────────────────────────────────────────── */}
-      <rect
-        x={LLM_X}
-        y={LLM_Y}
-        width={LLM_SIZE}
-        height={LLM_SIZE}
-        rx={LLM_RX}
-        fill="var(--visual-bg-violet)"
-        stroke="var(--visual-violet)"
-        strokeWidth="1"
-      />
-      <g className={styles.gear}>
+      {/* ── LLM node ─────────────────────────────────────────────────────── */}
+      {/* idle-gear-spin is a global class (custom.css) so the keyframe lives once;
+          styles.gear sets transform-origin for the correct pivot center. */}
+      <g className={clsx(styles.gear, 'idle-gear-spin')}>
         <NotoEmoji codepoint="2699" x={LLM_X + 8} y={LLM_Y + 8} size={48} />
       </g>
 
@@ -178,7 +170,7 @@ export default function TokenPredictionDiagram() {
         x2={OUT_X - 2}
         y2={OUT_CY}
         stroke="var(--visual-violet)"
-        strokeWidth="1.5"
+        strokeWidth="2"
         markerEnd="url(#tpd-arr)"
       />
 
@@ -200,7 +192,7 @@ export default function TokenPredictionDiagram() {
           y={OUT_CY + 14}
           textAnchor="middle"
           dominantBaseline="middle"
-          fontFamily="var(--font-mono)"
+          fontFamily="var(--font-mono-keyword)"
           fontSize="11"
           fontWeight="600"
           fill="var(--visual-violet)"

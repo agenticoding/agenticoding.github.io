@@ -9,20 +9,15 @@ export type ActDef = { id: string; threshold: number };
  * render and can reverse when phase decreases. Enforce monotonicity at the call site
  * with a useRef guard when one-way semantics are required.
  */
-export function useActs(actDefs: ActDef[], phase: number) {
+export function useActs(actDefs: readonly ActDef[], phase: number) {
   const sorted = useMemo(
     () => [...actDefs].sort((a, b) => a.threshold - b.threshold),
     [actDefs],
   );
 
-  const reachedIds = useMemo(
-    () => new Set(sorted.filter((a) => phase >= a.threshold).map((a) => a.id)),
-    [sorted, phase],
-  );
-
-  const currentActId = useMemo(() => {
+  const [reachedIds, currentActId] = useMemo(() => {
     const r = sorted.filter((a) => phase >= a.threshold);
-    return r.length ? r[r.length - 1].id : null;
+    return [new Set(r.map((a) => a.id)), r.length ? r[r.length - 1].id : null] as const;
   }, [sorted, phase]);
 
   const wasReached = useCallback((id: string) => reachedIds.has(id), [reachedIds]);

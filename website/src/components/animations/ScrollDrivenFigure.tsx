@@ -6,6 +6,7 @@ import React, {
   useState,
   type ReactNode,
 } from 'react';
+import clsx from 'clsx';
 import styles from './ScrollDrivenFigure.module.css';
 
 // Context: 0.0 (not yet visible) → 1.0 (fully scrolled through)
@@ -17,6 +18,8 @@ interface ScrollDrivenFigureProps {
   caption?: string;
   className?: string;
   phaseEnd?: number;
+  earlyStart?: boolean;
+  skipReveal?: boolean;
 }
 
 function supportsScrollTimeline(): boolean {
@@ -29,6 +32,8 @@ export default function ScrollDrivenFigure({
   caption,
   className,
   phaseEnd = 0.5,
+  earlyStart = false,
+  skipReveal = false,
 }: ScrollDrivenFigureProps) {
   const innerRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState(0);
@@ -66,14 +71,14 @@ export default function ScrollDrivenFigure({
       return () => io.disconnect();
     }
 
-    const mountBottom = el.getBoundingClientRect().bottom;
-
     const computePhase = () => {
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      // phase=0 anchor: viewport edge for below-fold elements, mount position for above-fold.
-      // phase=1 anchor: CSS cover <phaseEnd×100>% endpoint.
-      const start = Math.min(mountBottom, vh);
+      // earlyStart=false (default): animation begins as the element's bottom enters the viewport
+      //   (start = vh). Good for below-fold figures — they start animating on first scroll-into-view.
+      // earlyStart=true: animation begins when the element's top reaches the viewport bottom
+      //   (start = vh + height). Good for figures that may already be partially visible on load.
+      const start = earlyStart ? vh + rect.height : vh;
       const end = (vh + rect.height) * (1 - phaseEnd);
       if (start <= end) { setPhase(1); return; }
       const raw = (rect.bottom - start) / (end - start);
@@ -82,24 +87,16 @@ export default function ScrollDrivenFigure({
 
     document.addEventListener('scroll', computePhase, { passive: true });
     window.addEventListener('resize', computePhase, { passive: true });
+    computePhase();
 
     return () => {
       document.removeEventListener('scroll', computePhase);
       window.removeEventListener('resize', computePhase);
     };
-  }, [phaseEnd]);
+  }, [phaseEnd, earlyStart]);
 
-  const figureClass = [
-    styles.figure,
-    noScrollTimeline ? styles.noScrollTimeline : '',
-    className ?? '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const innerClass = [styles.inner, revealed ? styles.revealed : '']
-    .filter(Boolean)
-    .join(' ');
+  const figureClass = clsx(styles.figure, noScrollTimeline && styles.noScrollTimeline, className);
+  const innerClass  = clsx(styles.inner, revealed && styles.revealed, skipReveal && styles.skipReveal);
 
   return (
     <AnimationPhaseContext.Provider value={phase}>

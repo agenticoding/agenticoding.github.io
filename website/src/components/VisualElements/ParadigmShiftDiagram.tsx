@@ -5,6 +5,7 @@ import { OperatorNode, AgentNode, NotoEmoji } from './ActorNodes';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
+import { CONNECTOR_STYLE } from './diagramConstants';
 
 // Layout — ViewBox 480×264
 //
@@ -36,16 +37,9 @@ const AGENT_POSITIONS = [
   { x: 320, y: 92 },
 ] as const;
 
-const CONNECTOR_STYLE = {
-  stroke: 'var(--text-muted)',
-  strokeWidth: 1.5,
-  strokeLinecap: 'round' as const,
-  fill: 'none',
-};
-
 export default function ParadigmShiftDiagram() {
   const phase = useAnimationPhase();
-  const { wasReached } = useActs(ACTS as unknown as { id: string; threshold: number }[], phase);
+  const { wasReached } = useActs(ACTS, phase);
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -56,19 +50,19 @@ export default function ParadigmShiftDiagram() {
   const convergeVisible = mounted && phase >= 0.55;
 
   // 6 connector refs — fan (L/C/R) then converge (L/C/R)
-  const fanLRef  = useRef<SVGPathElement>(null);
-  const fanCRef  = useRef<SVGPathElement>(null);
-  const fanRRef  = useRef<SVGPathElement>(null);
-  const convLRef = useRef<SVGPathElement>(null);
-  const convCRef = useRef<SVGPathElement>(null);
-  const convRRef = useRef<SVGPathElement>(null);
+  const fanLRef  = useRef<SVGGeometryElement>(null);
+  const fanCRef  = useRef<SVGGeometryElement>(null);
+  const fanRRef  = useRef<SVGGeometryElement>(null);
+  const convLRef = useRef<SVGGeometryElement>(null);
+  const convCRef = useRef<SVGGeometryElement>(null);
+  const convRRef = useRef<SVGGeometryElement>(null);
 
-  useStrokeDraw(fanLRef  as React.RefObject<SVGGeometryElement | null>, phase, 0.35, 0.50);
-  useStrokeDraw(fanCRef  as React.RefObject<SVGGeometryElement | null>, phase, 0.35, 0.50);
-  useStrokeDraw(fanRRef  as React.RefObject<SVGGeometryElement | null>, phase, 0.35, 0.50);
-  useStrokeDraw(convLRef as React.RefObject<SVGGeometryElement | null>, phase, 0.55, 0.70);
-  useStrokeDraw(convCRef as React.RefObject<SVGGeometryElement | null>, phase, 0.55, 0.70);
-  useStrokeDraw(convRRef as React.RefObject<SVGGeometryElement | null>, phase, 0.55, 0.70);
+  useStrokeDraw(fanLRef,  phase, 0.35, 0.50);
+  useStrokeDraw(fanCRef,  phase, 0.35, 0.50);
+  useStrokeDraw(fanRRef,  phase, 0.35, 0.50);
+  useStrokeDraw(convLRef, phase, 0.55, 0.70);
+  useStrokeDraw(convCRef, phase, 0.55, 0.70);
+  useStrokeDraw(convRRef, phase, 0.55, 0.70);
 
   return (
     <svg

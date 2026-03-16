@@ -1,21 +1,8 @@
 import React from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 export interface OperatorNodeProps { x: number; y: number; size?: number; }
 export interface AgentNodeProps    { x: number; y: number; size?: number; }
-export interface PromptBubbleProps { x: number; y: number; showCursor?: boolean; }
-
-// ── PromptBubble (40×18 body, same card shape as TravelingPromptCard) ──
-// Cursor bar: active authoring signal.
-// All coords computed via scripts/compute-actor-coords.js
-const BUBBLE_GEOM = {
-  W: 40, H: 18, rx: 9,
-  stubs: [
-    { x: 8, y: 6,  w: 20, h: 2, rx: 1 },
-    { x: 8, y: 11, w: 14, h: 2, rx: 1 },
-  ] as const,
-  cursor: { x: 23, y: 9, w: 2, h: 6, rx: 1 },
-} as const;
-
 // ── TravelingPromptCard (36×20, centered at 0,0 for animateMotion origin) ──
 // All coords computed via scripts/compute-actor-coords.js
 const TCARD_GEOM = {
@@ -35,13 +22,13 @@ export function OperatorNode({ x, y, size = 40 }: OperatorNodeProps) {
 // ── NotoEmoji ─────────────────────────────────────────────────────────────────
 // Renders a Noto emoji SVG via <image> for gradient-def ID isolation.
 // Files live in /img/emoji/u{codepoint}.svg (fetched via scripts/fetch-emoji.js).
-// Assumes baseUrl="/". See docusaurus.config.ts.
 export interface NotoEmojiProps { codepoint: string; x: number; y: number; size?: number; }
 
 export function NotoEmoji({ codepoint, x, y, size = 40 }: NotoEmojiProps) {
+  const base = useBaseUrl('/img/emoji');
   return (
     <svg x={x} y={y} width={size} height={size} viewBox="0 0 128 128">
-      <image href={`/img/emoji/u${codepoint}.svg`} width={128} height={128} />
+      <image href={`${base}/u${codepoint}.svg`} width={128} height={128} />
     </svg>
   );
 }
@@ -93,29 +80,6 @@ export function AuthorWaveNode({ className }: { className?: string }) {
         </g>
       </g>
     </svg>
-  );
-}
-
-// ── PromptBubble ──────────────────────────────────────────────────────────────
-// Body: Smooth Circuit (rx=9). Matches TravelingPromptCard shape (no tail).
-// 2 text stubs + optional cursor bar signal message-in-composition.
-export function PromptBubble({ x, y, showCursor = true }: PromptBubbleProps) {
-  const g = BUBBLE_GEOM;
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <rect
-        x={0} y={0} width={g.W} height={g.H} rx={g.rx}
-        fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5}
-      />
-      {g.stubs.map((s, i) => (
-        <rect key={i} x={s.x} y={s.y} width={s.w} height={s.h} rx={s.rx}
-          fill="var(--visual-indigo)" />
-      ))}
-      {showCursor && (
-        <rect x={g.cursor.x} y={g.cursor.y} width={g.cursor.w} height={g.cursor.h}
-          rx={g.cursor.rx} fill="var(--visual-indigo)" />
-      )}
-    </g>
   );
 }
 

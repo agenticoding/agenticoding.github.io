@@ -5,6 +5,7 @@ import { NotoEmoji } from './ActorNodes';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
+import { CONNECTOR_STYLE, GHOST_STYLE, ARROWHEAD_POINTS, arrowOpacity } from './diagramConstants';
 
 // Layout — ViewBox 480×264
 //
@@ -25,18 +26,9 @@ const ACTS = [
   { id: 'loop',    threshold: 0.85 },
 ] as const;
 
-const CONNECTOR_STYLE = {
-  stroke: 'var(--text-muted)',
-  strokeWidth: 1.5,
-  strokeLinecap: 'round' as const,
-  fill: 'none',
-};
-
-const arrowOpacity = (t: number) => Math.min(Math.max((t - 0.85) / 0.15, 0), 1);
-
 export default function ExecutionLoopDiagram() {
   const phase = useAnimationPhase();
-  const { wasReached } = useActs(ACTS as unknown as { id: string; threshold: number }[], phase);
+  const { wasReached } = useActs(ACTS, phase);
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -45,18 +37,18 @@ export default function ExecutionLoopDiagram() {
   const executeReached = mounted && wasReached('execute');
   const observeReached = mounted && wasReached('observe');
 
-  // Arc visibility windows
-  const arc1Visible = mounted && phase >= 0.20;
-  const arc2Visible = mounted && phase >= 0.45;
-  const arc3Visible = mounted && phase >= 0.65;
+  // Arc visibility — mirrors node thresholds via wasReached() to stay in sync with ACTS
+  const arc1Visible = mounted && wasReached('predict');
+  const arc2Visible = mounted && wasReached('execute');
+  const arc3Visible = mounted && wasReached('observe');
 
-  const arc1Ref = useRef<SVGPathElement>(null);
-  const arc2Ref = useRef<SVGPathElement>(null);
-  const arc3Ref = useRef<SVGPathElement>(null);
+  const arc1Ref = useRef<SVGGeometryElement>(null);
+  const arc2Ref = useRef<SVGGeometryElement>(null);
+  const arc3Ref = useRef<SVGGeometryElement>(null);
 
-  const t1 = useStrokeDraw(arc1Ref as React.RefObject<SVGGeometryElement | null>, phase, 0.20, 0.40);
-  const t2 = useStrokeDraw(arc2Ref as React.RefObject<SVGGeometryElement | null>, phase, 0.45, 0.65);
-  const t3 = useStrokeDraw(arc3Ref as React.RefObject<SVGGeometryElement | null>, phase, 0.65, 0.85);
+  const t1 = useStrokeDraw(arc1Ref, phase, 0.20, 0.40);
+  const t2 = useStrokeDraw(arc2Ref, phase, 0.45, 0.65);
+  const t3 = useStrokeDraw(arc3Ref, phase, 0.65, 0.85);
 
   return (
     <svg
@@ -70,12 +62,6 @@ export default function ExecutionLoopDiagram() {
     >
       {/* ── Brain node (LLM) — always visible ─────────────────────────── */}
       <g className={clsx(styles.node, styles.nodeIn)}>
-        <rect
-          x={216} y={32} width={48} height={48} rx={12}
-          fill="var(--visual-bg-violet)"
-          stroke="var(--visual-violet)"
-          strokeWidth={1.5}
-        />
         <NotoEmoji codepoint="1f9e0" x={220} y={36} size={40} />
       </g>
 
@@ -96,7 +82,7 @@ export default function ExecutionLoopDiagram() {
         className={clsx(styles.connector, arc1Visible && styles.connectorDrawing)}
       />
       <g transform="translate(336,152) rotate(89)" style={{ opacity: arrowOpacity(t1) }}>
-        <polygon points="-8,-4 0,0 -8,4" fill="var(--text-muted)" />
+        <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
       </g>
 
       {/* ── Execute ghost placeholder ─────────────────────────────────── */}
@@ -104,8 +90,7 @@ export default function ExecutionLoopDiagram() {
         x={312} y={152} width={48} height={48} rx={12}
         fill="var(--visual-bg-cyan)"
         stroke="var(--visual-cyan)"
-        strokeWidth={1}
-        strokeDasharray="3 4"
+        {...GHOST_STYLE}
         className={clsx(
           styles.ghost,
           mounted && !executeReached && styles.ghostShown,
@@ -115,12 +100,6 @@ export default function ExecutionLoopDiagram() {
 
       {/* ── Execute node (Body) ───────────────────────────────────────── */}
       <g className={clsx(styles.node, executeReached && styles.nodeIn)}>
-        <rect
-          x={312} y={152} width={48} height={48} rx={12}
-          fill="var(--visual-bg-cyan)"
-          stroke="var(--visual-cyan)"
-          strokeWidth={1.5}
-        />
         <NotoEmoji codepoint="1f9be" x={316} y={156} size={40} />
       </g>
 
@@ -141,7 +120,7 @@ export default function ExecutionLoopDiagram() {
         className={clsx(styles.connector, arc2Visible && styles.connectorDrawing)}
       />
       <g transform="translate(168,176) rotate(-149)" style={{ opacity: arrowOpacity(t2) }}>
-        <polygon points="-8,-4 0,0 -8,4" fill="var(--text-muted)" />
+        <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
       </g>
 
       {/* ── Observe ghost placeholder ─────────────────────────────────── */}
@@ -149,8 +128,7 @@ export default function ExecutionLoopDiagram() {
         x={120} y={152} width={48} height={48} rx={12}
         fill="var(--visual-bg-indigo)"
         stroke="var(--visual-indigo)"
-        strokeWidth={1}
-        strokeDasharray="3 4"
+        {...GHOST_STYLE}
         className={clsx(
           styles.ghost,
           mounted && !observeReached && styles.ghostShown,
@@ -160,12 +138,6 @@ export default function ExecutionLoopDiagram() {
 
       {/* ── Observe node (Result) ─────────────────────────────────────── */}
       <g className={clsx(styles.node, observeReached && styles.nodeIn)}>
-        <rect
-          x={120} y={152} width={48} height={48} rx={12}
-          fill="var(--visual-bg-indigo)"
-          stroke="var(--visual-indigo)"
-          strokeWidth={1.5}
-        />
         <NotoEmoji codepoint="1f440" x={124} y={156} size={40} />
       </g>
 
@@ -186,7 +158,7 @@ export default function ExecutionLoopDiagram() {
         className={clsx(styles.connector, arc3Visible && styles.connectorDrawing)}
       />
       <g transform="translate(216,56) rotate(-17)" style={{ opacity: arrowOpacity(t3) }}>
-        <polygon points="-8,-4 0,0 -8,4" fill="var(--text-muted)" />
+        <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
       </g>
     </svg>
   );

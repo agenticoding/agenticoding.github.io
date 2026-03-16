@@ -17,6 +17,13 @@
   transform: translateY(0);
 }
 
+/* Opt-out: children manage their own opacity; container stays fully visible */
+.inner.skipReveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
 /* When the feature is unsupported, show content immediately */
 .noScrollTimeline .inner {
   opacity: 1;
@@ -34,6 +41,12 @@
     /* animation-range set inline by the component (tracks phaseEnd prop) */
     /* Override JS-transition fallback — CSS drives this entirely */
     transition: none;
+  }
+
+  .inner.skipReveal {
+    animation-name: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -55,10 +68,5 @@
     opacity: 1;
     transform: none;
     transition: none;
-  }
-
-  .inner.revealed {
-    opacity: 1;
-    transform: none;
   }
 }

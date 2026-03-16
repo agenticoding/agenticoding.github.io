@@ -4,12 +4,6 @@
  * Single idle loop: gear spin (machinery metaphor).
  */
 
-/* ── Keyframes ────────────────────────────────────────────────────────────── */
-
-@keyframes gearSpin {
-  to { transform: rotate(360deg); }
-}
-
 /* ── Component ────────────────────────────────────────────────────────────── */
 
 .diagram {
@@ -23,11 +17,4 @@
 .gear {
   transform-box: fill-box;
   transform-origin: center;
-  animation: gearSpin 2.5s linear infinite;
-}
-
-/* ── Reduced motion ─────────────────────────────────────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  .gear { animation: none; }
 }

@@ -26,9 +26,8 @@ export function usePhaseProgress(
 
   useEffect(() => {
     if (!cbRef.current) return;
-    const clampedT = Math.min(1, Math.max(0, (phase - start) / (end - start)));
-    cbRef.current(clampedT);
-  }, [phase, start, end]);
+    cbRef.current(t);
+  }, [phase, start, end]); // eslint-disable-line react-hooks/exhaustive-deps — t is derived from these deps; cbRef avoids stale closure without being listed
 
   return t;
 }
