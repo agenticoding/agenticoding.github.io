@@ -1,0 +1,53 @@
+/* Row-level fade-in */
+.row    { opacity: 0; transition: opacity 200ms var(--ease-exit); }
+.rowIn  { opacity: 1; transition: opacity 300ms var(--ease-enter); }
+
+/* Ghost placeholders */
+.ghost       { opacity: 0; }
+.ghostShown  { opacity: 0.45; transition: opacity 300ms var(--ease-enter); }
+.ghostHidden { opacity: 0;    transition: opacity 200ms var(--ease-exit); }
+
+/* Structural elements — always visible */
+.arrowLine { stroke: var(--text-muted); } /* fill:none from CONNECTOR_STYLE; stroke kept for CSS specificity */
+.arrowHead { fill: var(--text-muted); }
+
+/* Sticky HTML column headers
+   Requires no overflow:auto/hidden on any ancestor — such ancestors break
+   position:sticky. Infima <article> is fine today; verify if layout changes. */
+.stickyHeader {
+  position: sticky;
+  top: var(--ifm-navbar-height, 0px);
+  z-index: 2;
+  padding-bottom: var(--space-2);
+  background: var(--surface-page);
+}
+
+.wrapper { width: 100%; }
+
+.columnItem {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-0h);
+  padding-top: var(--space-1);
+}
+
+.columnEmoji {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.columnLabel {
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row, .rowIn { opacity: 1; transition: none; }
+  .ghost, .ghostShown, .ghostHidden { opacity: 0 !important; }
+}

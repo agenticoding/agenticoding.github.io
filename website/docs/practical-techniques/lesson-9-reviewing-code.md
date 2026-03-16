@@ -13,7 +13,7 @@ You've completed the implementation. Tests pass. The agent executed your plan su
 
 This is the **Validate** phase from [Lesson 3's four-phase workflow](../methodology/lesson-3-high-level-methodology.md)—the systematic quality gate before shipping. Code review catches the probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, edge cases handled incorrectly, patterns that don't quite fit your codebase.
 
-The key insight: **review in a fresh context, separate from where the code was written.** This prevents confirmation bias and leverages the stateless nature of agents from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.md) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.md). An agent reviewing its own work in the same conversation will defend its decisions. An agent in a fresh context analyzes objectively, without attachment to prior choices.
+The key insight: **review in a fresh context, separate from where the code was written.** This prevents confirmation bias and leverages the stateless nature of agents from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.mdx) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.mdx). An agent reviewing its own work in the same conversation will defend its decisions. An agent in a fresh context analyzes objectively, without attachment to prior choices.
 
 :::info Agent-Only vs Mixed Codebases: A Critical Distinction
 

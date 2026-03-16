@@ -44,7 +44,7 @@ When tests become the optimization target, agents optimize for passing tests rat
 
 :::
 
-Apply the same planning and execution methodology from [Lesson 7](./lesson-7-planning-execution.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.md) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.md)—the agent doesn't carry assumptions or defend prior decisions between contexts.
+Apply the same planning and execution methodology from [Lesson 7](./lesson-7-planning-execution.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.mdx) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.mdx)—the agent doesn't carry assumptions or defend prior decisions between contexts.
 
 ## The three-context workflow:
 

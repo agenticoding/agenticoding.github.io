@@ -1,0 +1,79 @@
+.container {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-left: none; /* intentional — per-entry accent stripes (::before) cover the left edge */
+  border-radius: 0;
+  overflow: hidden;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.entry {
+  position: relative;
+  padding: var(--space-1) var(--space-2);
+  padding-left: calc(var(--space-2) + var(--stroke-heavy));
+  color: var(--text-body);
+}
+
+.entry::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: var(--stroke-heavy);
+  background-color: var(--entry-accent, transparent);
+}
+
+.entry::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--stroke-heavy);
+  right: 0;
+  height: 1px;
+  background-color: var(--border-subtle);
+}
+
+.entry:last-child::after {
+  display: none;
+}
+
+.roleLabel {
+  font-family: var(--font-mono-spec);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-0h);
+  margin-bottom: var(--space-0h);
+}
+
+.roleLabel img {
+  display: block;
+  flex-shrink: 0;
+}
+
+.contentSystem,
+.contentUser,
+.contentAgent,
+.contentToolResult {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.contentSystem    { font-family: var(--font-mono); }
+.contentUser      { font-family: var(--font-mono-human); }
+.contentAgent     { font-family: var(--font-mono-ai); }
+.contentToolResult{ font-family: var(--font-mono); }
+
+.accentSystem     { font-family: var(--font-mono-spec); }
+.accentToolResult { font-family: var(--font-mono-keyword); }
+
+.jsonKey    { color: var(--visual-cyan); font-family: var(--font-mono-keyword); }
+.jsonString { color: var(--visual-indigo); }
+.jsonNumber { color: var(--visual-indigo); }
+.jsonBool,
+.jsonNull   { color: var(--visual-indigo); }
+.jsonPunc   { color: var(--text-muted); }

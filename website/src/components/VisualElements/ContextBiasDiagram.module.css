@@ -1,0 +1,48 @@
+/* Nodes (headers, agent/verdict emojis) */
+.node   { opacity: 0; transition: opacity 200ms var(--ease-exit); }
+.nodeIn { opacity: 1; transition: opacity 300ms var(--ease-enter); }
+
+/* Stack entry stagger */
+.entry   { opacity: 0; transition: opacity 200ms var(--ease-exit); }
+.entryIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+
+/* Per-entry ghost placeholders — spatial placeholders, no transform */
+.entryGhost       { opacity: 0; }
+.entryGhostShown  { opacity: 0.45; transition: opacity 200ms var(--ease-enter); }
+.entryGhostHidden { opacity: 0;    transition: opacity 150ms var(--ease-exit); }
+
+/* Ghost placeholders for agents/verdicts — no transform */
+.ghost       { opacity: 0; }
+.ghostShown  { opacity: 0.45; transition: opacity 300ms var(--ease-enter); }
+.ghostHidden { opacity: 0;    transition: opacity 200ms var(--ease-exit); }
+
+/* Connector lines and U-curve bracket */
+.connector        { opacity: 0; }
+.connectorDrawing { opacity: 1; transition: opacity 200ms var(--ease-enter); }
+
+/* Generic labels (header text, bracket annotations) */
+.label   { opacity: 0; transition: opacity 150ms var(--ease-exit); }
+.labelIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+
+/* Same-code bezier connector + label */
+.sameCodeLink   { opacity: 0; }
+.sameCodeLinkIn { opacity: 1; transition: opacity 350ms var(--ease-enter); }
+
+/* Verdict text */
+.verdictText   { opacity: 0; transition: opacity 200ms var(--ease-exit); }
+.verdictTextIn { opacity: 1; transition: opacity 300ms var(--ease-enter); }
+
+@media (prefers-reduced-motion: reduce) {
+  .node, .nodeIn                                   { opacity: 1; transition: none; }
+  .entry, .entryIn                                 { opacity: 1; transition: none; }
+  .entryGhost, .entryGhostShown, .entryGhostHidden { opacity: 0 !important; transition: none; }
+  .ghost, .ghostShown, .ghostHidden                { opacity: 0 !important; }
+  .connector, .connectorDrawing {
+    opacity: 0.5;
+    stroke-dashoffset: 0 !important;
+    transition: none;
+  }
+  .label, .labelIn                                 { opacity: 1; transition: none; }
+  .sameCodeLink, .sameCodeLinkIn                   { opacity: 1; transition: none; }
+  .verdictText, .verdictTextIn                     { opacity: 1; transition: none; }
+}

@@ -6,7 +6,36 @@ sidebar_custom_props:
 title: 'Agents Demystified'
 ---
 
-import AbstractShapesVisualization from '@site/src/components/VisualElements/AbstractShapesVisualization';
+import ContextBiasDiagram from '@site/src/components/VisualElements/ContextBiasDiagram';
+import AgentLoopDiagram from '@site/src/components/VisualElements/AgentLoopDiagram';
+import ContextStreamBlock from '@site/src/components/VisualElements/ContextStreamBlock';
+import SequenceDiagram from '@site/src/components/VisualElements/SequenceDiagram';
+import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
+import { emailValidationStream } from '@site/src/components/VisualElements/contextStreamData';
+
+export const SEQ_COLUMNS = [
+  { id: 'user',  label: 'User',       emoji: '1f913', color: 'neutral' },
+  { id: 'agent', label: 'Agent (LLM)', emoji: '1f916', color: 'magenta' },
+  { id: 'tools', label: 'Tools',       emoji: '1f6e0', color: 'cyan' },
+];
+
+export const SEQ_ROWS = [
+  { type: 'note',    on: 'agent', text: 'System Prompt', subtext: 'Defines tools & behavior' },
+  { type: 'message', from: 'user',  to: 'agent', label: 'User Prompt', sublabel: '"Add input validation to registration"' },
+  { type: 'note',    on: 'agent', text: 'Decides to use Grep tool' },
+  { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Grep' },
+  { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: 'Grep results added to context as text', dashed: true },
+  { type: 'note',    on: 'agent', text: 'Decides to Read file' },
+  { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Read' },
+  { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: 'File contents added to context as text', dashed: true },
+  { type: 'note',    on: 'agent', text: 'Decides to Edit file' },
+  { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Edit' },
+  { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: '"Edit successful" added to context', dashed: true },
+  { type: 'note',    on: 'agent', text: 'Decides to run tests via Bash' },
+  { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Bash' },
+  { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: 'Test output added to context', dashed: true },
+  { type: 'message', from: 'agent', to: 'user',  label: 'Agent Response', sublabel: '"Task complete"' },
+];
 
 In Lesson 1, we established that **LLMs are brains** (token prediction engines) and **agent frameworks are bodies** (execution layers). Now let's understand how these components work together to create autonomous coding agents that can complete complex tasks.
 
@@ -16,25 +45,11 @@ An agent isn't just an LLM responding to prompts. It's a **feedback loop** that 
 
 ### Basic Loop: Perceive → Reason → Act → Verify → Iterate
 
-```mermaid
-flowchart TD
-    Start([User Task]) --> Perceive[Perceive<br/>Read context: files, state, history]
-    Perceive --> Reason[Reason<br/>LLM generates plan and next action]
-    Reason --> Act[Act<br/>Execute tool: Read, Edit, Bash, etc.]
-    Act --> Observe[Observe<br/>Process tool output]
-    Observe --> Verify{Verify<br/>Goal achieved?}
-    Verify -->|No| Iterate[Iterate]
-    Iterate --> Perceive
-    Verify -->|Yes| Complete([Complete])
-
-    classDef workflow fill:#00b2b2,stroke:#007576,stroke-width:2px,color:#fff
-    classDef decision fill:#009393,stroke:#007576,stroke-width:2px,color:#fff
-    classDef endpoint fill:#007576,stroke:#005c5c,stroke-width:3px,color:#fff
-
-    class Perceive,Reason,Act,Observe,Iterate workflow
-    class Verify decision
-    class Start,Complete endpoint
-```
+{/* earlyStart: figure may be partially visible on load, so animation phase starts earlier.
+    skipReveal: child component manages its own opacity; no container fade-in needed. */}
+<ScrollDrivenFigure phaseEnd={0.585} earlyStart skipReveal caption="Perceive, reason, act, observe, verify — iterate until done.">
+  <AgentLoopDiagram />
+</ScrollDrivenFigure>
 
 **Key distinction:** A chat interface requires you to manually execute actions between prompts. An agent **autonomously loops** through this cycle.
 
@@ -66,28 +81,14 @@ No magic, no separate reasoning engine, no hidden state. When you interact with 
 
 Every agent interaction follows this pattern:
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant A as Agent (LLM)
-    participant T as Tools
-
-    Note over A: System Prompt<br/>Sets up agent behavior, defines tools
-    U->>A: User Prompt<br/>"Add input validation to registration"
-    Note over A: Decides to use Grep tool
-    A->>T: <tool_call>Grep</tool_call>
-    T->>A: Tool Result<br/>Grep results added to context as text
-    Note over A: Decides to Read file
-    A->>T: <tool_call>Read</tool_call>
-    T->>A: Tool Result<br/>File contents added to context as text
-    Note over A: Decides to Edit file
-    A->>T: <tool_call>Edit</tool_call>
-    T->>A: Tool Result<br/>"Edit successful" added to context
-    Note over A: Decides to run tests via Bash
-    A->>T: <tool_call>Bash</tool_call>
-    T->>A: Tool Result<br/>Test output added to context
-    A->>U: Agent Response<br/>"Task complete"
-```
+{/* phaseEnd: scroll 0.7 viewport-heights past entry trigger to animate all 14 sequence rows */}
+<ScrollDrivenFigure phaseEnd={0.7} earlyStart skipReveal caption="Everything is text flowing through a context window.">
+  <SequenceDiagram
+    ariaLabel="Agent interaction sequence: user sends prompt, agent calls tools, returns result"
+    columns={SEQ_COLUMNS}
+    rows={SEQ_ROWS}
+  />
+</ScrollDrivenFigure>
 
 :::tip[Reasoning is Just Text]
 The agent doesn't "think" separately from its output. When you see the agent reasoning ("I should check the validation logic..."), that's not internal thought - it's text being generated in the context, visible to both you and the LLM itself.
@@ -99,74 +100,7 @@ The agent doesn't "think" separately from its output. When you see the agent rea
 
 When you ask Claude Code to "Add email validation to the registration endpoint," the context window contains a single, continuous text stream. Here's exactly what flows through the agent's context - system instructions, your task, tool calls, results, and responses all as text:
 
-```
-SYSTEM: You are Claude Code, an AI coding assistant. You have access to these tools:
-- Read(file_path): Read a file
-- Edit(file_path, old_string, new_string): Edit a file
-- Bash(command): Run a shell command
-- Grep(pattern, path): Search for pattern in files
-[... more tool descriptions ...]
-
-USER: Add email validation to the registration endpoint
-
-ASSISTANT: I'll search for the registration endpoint first.
-<tool_use>
-  <tool_name>Grep</tool_name>
-  <parameters>
-    <pattern>register</pattern>
-    <glob>**/*.ts</glob>
-  </parameters>
-</tool_use>
-
-TOOL_RESULT: Found in:
-- src/routes/auth.ts:12: router.post('/register', userHandler.register)
-- src/handlers/user.ts:45: export async function register(req, res) {
-
-ASSISTANT: Found the endpoint. Let me read the handler to see current validation.
-<tool_use>
-  <tool_name>Read</tool_name>
-  <parameters>
-    <file_path>src/handlers/user.ts</file_path>
-  </parameters>
-</tool_use>
-
-TOOL_RESULT: [file contents showing no email validation]
-
-ASSISTANT: No validation present. I'll add email validation using Zod.
-<tool_use>
-  <tool_name>Edit</tool_name>
-  <parameters>
-    <file_path>src/handlers/user.ts</file_path>
-    <old_string>export async function register(req, res) {
-  const { email, password } = req.body;
-  await db.users.create({ email, password });</old_string>
-    <new_string>const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8)
-});
-
-export async function register(req, res) {
-  const { email, password } = registerSchema.parse(req.body);
-  await db.users.create({ email, password });</new_string>
-  </parameters>
-</tool_use>
-
-TOOL_RESULT: Edit successful
-
-ASSISTANT: Validation added. Running tests to verify.
-<tool_use>
-  <tool_name>Bash</tool_name>
-  <parameters>
-    <command>npm test user.test.ts</command>
-  </parameters>
-</tool_use>
-
-TOOL_RESULT: PASS src/handlers/user.test.ts
-  ✓ rejects invalid email (12ms)
-  ✓ rejects short password (8ms)
-
-ASSISTANT: Email validation successfully added to the registration endpoint.
-```
+<ContextStreamBlock entries={emailValidationStream} />
 
 This entire conversation - system instructions, your task, tool calls, results, and responses - exists as **one continuous text stream** in the LLM's context window.
 
@@ -191,7 +125,12 @@ The LLM doesn't "remember" previous conversations. It has no hidden internal sta
 
 **Unbiased code review:** The agent can critically audit its own work. Don't reveal code authorship, and it applies full scrutiny with no defensive bias.
 
-<AbstractShapesVisualization />
+{/* phaseEnd: scroll 0.6 viewport-heights past entry trigger to animate all 12 context entries + verdict connectors */}
+<ScrollDrivenFigure phaseEnd={0.6} earlyStart skipReveal caption="Same code, same model — different context produces a different solution class.">
+  <ContextBiasDiagram />
+</ScrollDrivenFigure>
+
+The accumulated context pushes the actual code into what transformers treat as a low-attention zone — the **[U-shaped attention curve](/methodology/lesson-5-grounding#the-scale-problem-context-window-limits)** means the beginning and end of context get strong attention while the middle gets skimmed. Fresh context eliminates this problem entirely.
 
 The same code that gets "looks sound overall" in one context triggers "Critical security vulnerabilities: localStorage exposes tokens to XSS attacks" in a fresh context. This enables Generate → Review → Iterate workflows where the agent writes code then objectively audits it, or multi-perspective analysis (security review in one context, performance in another).
 
@@ -248,7 +187,7 @@ Open three tabs, run agents on different projects (refactoring in `project-a`, d
 
 **CLI agents unlock parallelism** without managing conversation threads or multiple IDE instances.
 
-:::tip Preview: Lesson 7
+:::tip Preview: [Lesson 7 — Planning & Execution](../practical-techniques/lesson-7-planning-execution.md)
 We'll dive deep into **Planning & Execution** strategies in Lesson 7, including how to structure concurrent work across multiple agents, when to parallelize vs. serialize tasks, and how to coordinate complex multi-project workflows.
 :::
 

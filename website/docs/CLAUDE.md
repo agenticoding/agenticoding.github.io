@@ -63,12 +63,6 @@ sidebar_position: X
 ## Content
 
 [Main lesson content with examples]
-
-## Key Takeaways
-
-- Summary point 1
-- Summary point 2
-- Summary point 3
 ```
 
 ## Code Examples
@@ -149,4 +143,4 @@ Each lesson should reference prerequisites when needed:
 
 - Build on previous concepts
 - Reference earlier examples when relevant
-- Link to related lessons: `[See Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.md)`
+- Link to related lessons: `[See Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.mdx)`
