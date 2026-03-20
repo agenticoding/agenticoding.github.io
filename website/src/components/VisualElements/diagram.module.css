@@ -1,0 +1,77 @@
+/* ── diagram.module.css — Shared animation primitives ────────────────────────
+   import shared from './diagram.module.css' and use shared.node,
+   shared.ghost, etc. Diagram-local modules shrink to only diagram-specific
+   styles; anything listed here is not repeated there.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Ghost placeholders — dashed rects shown before a node appears */
+.ghost       { opacity: 0; }
+.ghostShown  { opacity: 0.45; transition: opacity 300ms var(--ease-enter); }
+.ghostHidden { opacity: 0;    transition: opacity 200ms var(--ease-exit); }
+
+/* Nodes */
+.node   { opacity: 0; }
+.nodeIn { opacity: 1; transition: opacity 300ms var(--ease-enter); }
+
+/* Connector arcs — opacity-gated until stroke-draw starts */
+.connector        { opacity: 0; transition: opacity 200ms var(--ease-exit); }
+.connectorDrawing { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+
+/* Labels */
+.label   { opacity: 0; }
+.labelIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+
+/* CSS-animation-driven arc draw — used by guide/handoff arcs in IntroHook and PlanExecute. */
+@keyframes drawPath {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Worker nodes — bloom out on dispatch, staggered via inline transitionDelay */
+.workerNode {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.workerNode.workerEntered {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* Worker labels — appear after nodes, staggered via inline transitionDelay */
+.workerLabel {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.workerLabel.workerLabelEntered {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* Act-enter animation — translateY(12px) slide-up.
+   Apply shared.actEntered directly in TSX on the conditional class:
+     className={clsx(styles.actorBase, reached && shared.actEntered)} */
+@keyframes actEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.actEntered {
+  animation: actEnter 300ms var(--ease-enter) both;
+}
+
+/* ── Reduced-motion master block ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .node, .nodeIn                    { opacity: 1; transition: none; }
+  .ghost, .ghostShown, .ghostHidden { opacity: 0 !important; }
+  .label, .labelIn                  { opacity: 1; transition: none; }
+  .connector, .connectorDrawing {
+    opacity: 0.4;
+    stroke-dashoffset: 0 !important;
+    transition: none;
+  }
+  .actEntered { animation: none; }
+  .workerNode,
+  .workerLabel { opacity: 1; transform: none; transition: none; }
+}
