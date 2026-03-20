@@ -1,10 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import clsx from 'clsx';
 import styles from './IntroHookDiagram.module.css';
+import shared from './diagram.module.css';
 import { OperatorNode, AgentNode, NotoEmoji } from './ActorNodes';
+import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
+import { useMounted } from '../../hooks/useMounted';
+import { promptFadeOpacity } from './diagramConstants';
 
 // Layout — ViewBox 560×264 (fan: symmetric ±22.6° about orchestrator centre y=108)
 //
@@ -71,7 +75,8 @@ const FAN_ARCS: FanSpec[] = [
 
 export default function IntroHookDiagram() {
   const phase = useAnimationPhase();
-  const { wasReached, isCurrentAct } = useActs(ACTS as unknown as { id: string; threshold: number }[], phase);
+  const { wasReached, isCurrentAct } = useActs(ACTS, phase);
+  const mounted = useMounted();
 
   const arcPathRef    = useRef<SVGPathElement>(null);
   const travelPathRef = useRef<SVGPathElement>(null);
@@ -79,12 +84,6 @@ export default function IntroHookDiagram() {
   const fan2Ref       = useRef<SVGPathElement>(null);
   const fan3Ref       = useRef<SVGPathElement>(null);
   const fanRefs       = [fan1Ref, fan2Ref, fan3Ref];
-
-  // Keep lightbulb and ghost workers hidden until mount so the client has computed
-  // the correct phase. ideaBulb / ghostWorker default to opacity:0; the *Visible /
-  // *Shown classes make them explicit once safe.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
 
   // Guide arc init only — CSS drawPath animation handles drawing.
   // useStrokeDraw cannot be used here because the CSS animation would conflict
@@ -105,8 +104,7 @@ export default function IntroHookDiagram() {
 
   const composingReached = wasReached('composing');
   const travelingReached = wasReached('traveling');
-  const dispatchReached  = wasReached('dispatch');
-  const dispatched       = dispatchReached;
+  const dispatched       = wasReached('dispatch');
 
   // Main prompt position: idle at path start, then scroll-interpolated along arc
   const mainPromptPos = (() => {
@@ -115,19 +113,19 @@ export default function IntroHookDiagram() {
     const path = travelPathRef.current;
     if (!path) return { x: 251, y: 113, opacity: 0 };       // fallback: arc end
     const t = Math.min((phase - 0.6) / 0.20, 1);           // 0.6→0.80 maps to 0→1
-    const opacity = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
+    const opacity = promptFadeOpacity(t);
     const pt = path.getPointAtLength(t * path.getTotalLength());
     return { x: pt.x, y: pt.y, opacity };
   })();
 
   // Fan prompt positions: scroll-interpolated along each fan arc, staggered per arc
   const fanPromptPositions = FAN_ARCS.map((_, i) => {
-    if (!dispatchReached) return null;
+    if (!dispatched) return null;
     const path = fanRefs[i].current;
     if (!path) return null;
     const t = fanTs[i];
     if (t <= 0) return null;
-    const opacity = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
+    const opacity = promptFadeOpacity(t);
     const pt = path.getPointAtLength(t * path.getTotalLength());
     return { x: pt.x, y: pt.y, opacity };
   });
@@ -151,19 +149,12 @@ export default function IntroHookDiagram() {
           fading out as the real workers bloom in on dispatch. Shape matches the
           AgentNode S=32 head squircle (headX=2.4 headY=2.4 headW=27.2 headH=27.2 rx=6.8). */}
       {FAN_ARCS.map((fan, i) => (
-        <rect
+        <Ghost
           key={`ghost-${i}`}
           x={fan.workerX + 2.4} y={fan.workerY + 2.4}
           width={27.2} height={27.2} rx={6.8}
-          fill="var(--visual-bg-violet)"
-          stroke="var(--visual-violet)"
-          strokeWidth={1}
-          strokeDasharray="3 4"
-          className={clsx(
-            styles.ghostWorker,
-            mounted && !dispatched && styles.ghostWorkerShown,
-            dispatched && styles.ghostWorkerHidden,
-          )}
+          fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
+          mounted={mounted} reached={dispatched}
           style={dispatched ? { transitionDelay: `${fan.nodeDelay}ms` } : undefined}
         />
       ))}
@@ -227,7 +218,7 @@ export default function IntroHookDiagram() {
       ))}
 
       {/* Operator */}
-      <g className={clsx(styles.actorNode, wasReached('operator') && styles.entered)}>
+      <g className={clsx(styles.actorNode, wasReached('operator') && shared.actEntered)}>
         <OperatorNode x={70} y={88} size={40} />
       </g>
 
@@ -236,7 +227,7 @@ export default function IntroHookDiagram() {
           because CSS `transform` (from actEnter) would override the SVG attribute. */}
       {mainPromptPos && (
         <g transform={`translate(${mainPromptPos.x}, ${mainPromptPos.y})`} style={{ opacity: mainPromptPos.opacity }}>
-          <g className={styles.promptIcon}>
+          <g className={shared.actEntered}>
             <NotoEmoji codepoint="1f4ac" x={-11} y={-11} size={22} />
           </g>
         </g>
@@ -245,7 +236,7 @@ export default function IntroHookDiagram() {
       {/* Fan dispatch prompts — one per worker, scroll-driven */}
       {fanPromptPositions.map((pos, i) => pos && (
         <g key={i} transform={`translate(${pos.x}, ${pos.y})`} style={{ opacity: pos.opacity }}>
-          <g className={styles.promptIcon}>
+          <g className={shared.actEntered}>
             <NotoEmoji codepoint="1f4ac" x={-11} y={-11} size={22} />
           </g>
         </g>
@@ -254,7 +245,7 @@ export default function IntroHookDiagram() {
       {/* Orchestrator */}
       <g className={clsx(
         styles.actorNode,
-        wasReached('orchestrator') && styles.entered,
+        wasReached('orchestrator') && shared.actEntered,
         isCurrentAct('orchestrator') && 'idle-ready-breathe',
       )}>
         <AgentNode x={250} y={88} size={40} />
@@ -264,7 +255,7 @@ export default function IntroHookDiagram() {
       {FAN_ARCS.map((fan, i) => (
         <g
           key={i}
-          className={clsx(styles.workerNode, dispatched && styles.workerEntered)}
+          className={clsx(shared.workerNode, dispatched && shared.workerEntered)}
           style={{ transitionDelay: dispatched ? `${fan.nodeDelay}ms` : undefined }}
         >
           <AgentNode x={fan.workerX} y={fan.workerY} size={32} />
@@ -272,7 +263,7 @@ export default function IntroHookDiagram() {
       ))}
 
       {/* Permanent orientation labels */}
-      <g className={clsx(styles.labels, wasReached('labels') && styles.entered)}>
+      <g className={clsx(styles.labels, wasReached('labels') && shared.actEntered)}>
         <text
           x={90} y={144}
           fill="var(--visual-neutral)"
@@ -292,7 +283,7 @@ export default function IntroHookDiagram() {
         <text
           key={i}
           x={fan.labelX} y={fan.labelY}
-          className={clsx(styles.workerLabel, dispatched && styles.workerLabelEntered)}
+          className={clsx(shared.workerLabel, dispatched && shared.workerLabelEntered)}
           fill="var(--visual-neutral)"
           style={{
             fontFamily: 'var(--font-mono)',

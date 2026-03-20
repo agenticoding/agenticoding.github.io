@@ -1,9 +1,23 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import clsx from 'clsx';
 import styles from './PlanExecuteDiagram.module.css';
+import shared from './diagram.module.css';
 import { AgentNode, PromptIcon } from './ActorNodes';
+import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
+import { useStrokeDraw } from '../../hooks/useStrokeDraw';
+import { useMounted } from '../../hooks/useMounted';
+import { promptFadeOpacity } from './diagramConstants';
+
+// Intentionally lighter than CONNECTOR_STYLE: --border-subtle color, thinner stroke
+const DASHED_CONNECTOR = {
+  fill: 'none',
+  stroke: 'var(--border-subtle)',
+  strokeWidth: 1,
+  strokeDasharray: '4 6',
+  strokeLinecap: 'round' as const,
+};
 
 // Layout — ViewBox 560×264
 //
@@ -76,7 +90,8 @@ const BRANCHES: BranchSpec[] = [
 
 export default function PlanExecuteDiagram() {
   const phase = useAnimationPhase();
-  const { wasReached, isCurrentAct } = useActs(ACTS as unknown as { id: string; threshold: number }[], phase);
+  const { wasReached, isCurrentAct } = useActs(ACTS, phase);
+  const mounted = useMounted();
 
   const handoffRef = useRef<SVGPathElement>(null);
   const branch1Ref = useRef<SVGPathElement>(null);
@@ -88,54 +103,32 @@ export default function PlanExecuteDiagram() {
   const branchRefs = [branch1Ref, branch2Ref, branch3Ref];
   const mergeRefs  = [merge1Ref, merge2Ref, merge3Ref];
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-
-  // Initialise stroke-dasharray/offset from computed length on mount
+  // Handoff arc: CSS-animation-driven (not scroll-driven) — needs manual dasharray init
   useEffect(() => {
-    for (const p of [
-      handoffRef.current,
-      branch1Ref.current, branch2Ref.current, branch3Ref.current,
-      merge1Ref.current,  merge2Ref.current,  merge3Ref.current,
-    ]) {
-      if (!p) continue;
-      const len = p.getTotalLength();
-      p.style.strokeDasharray  = `${len}`;
-      p.style.strokeDashoffset = `${len}`;
-    }
+    const p = handoffRef.current;
+    if (!p) return;
+    const len = p.getTotalLength();
+    p.style.strokeDasharray  = `${len}`;
+    p.style.strokeDashoffset = `${len}`;
   }, []);
+
+  // Branch arcs: scroll-driven via useStrokeDraw (replaces manual phase useEffect)
+  const b1t = useStrokeDraw(branch1Ref as React.RefObject<SVGGeometryElement | null>, phase, FORK_START,                   EXECUTE_START);
+  const b2t = useStrokeDraw(branch2Ref as React.RefObject<SVGGeometryElement | null>, phase, FORK_START + PHASE_STAGGER,    EXECUTE_START + PHASE_STAGGER);
+  const b3t = useStrokeDraw(branch3Ref as React.RefObject<SVGGeometryElement | null>, phase, FORK_START + 2 * PHASE_STAGGER, EXECUTE_START + 2 * PHASE_STAGGER);
+
+  // Merge arcs: scroll-driven via useStrokeDraw
+  const m1t = useStrokeDraw(merge1Ref as React.RefObject<SVGGeometryElement | null>, phase, CONVERGE_START,                   COMPLETE_START);
+  const m2t = useStrokeDraw(merge2Ref as React.RefObject<SVGGeometryElement | null>, phase, CONVERGE_START + PHASE_STAGGER,    COMPLETE_START + PHASE_STAGGER);
+  const m3t = useStrokeDraw(merge3Ref as React.RefObject<SVGGeometryElement | null>, phase, CONVERGE_START + 2 * PHASE_STAGGER, COMPLETE_START + 2 * PHASE_STAGGER);
+
+  const branchTs = [b1t, b2t, b3t];
+  const mergeTs  = [m1t, m2t, m3t];
 
   const forkReached     = wasReached('fork');
   const executeReached  = wasReached('execute');
   const convergeReached = wasReached('converge');
   const completeReached = wasReached('complete');
-
-  // Per-arc scroll-driven t in [0,1], staggered by PHASE_STAGGER
-  const branchArcT = (i: number) => {
-    const start = FORK_START + i * PHASE_STAGGER;
-    const span  = EXECUTE_START - FORK_START;
-    return Math.min(Math.max((phase - start) / span, 0), 1);
-  };
-
-  const mergeArcT = (i: number) => {
-    const start = CONVERGE_START + i * PHASE_STAGGER;
-    const span  = COMPLETE_START - CONVERGE_START;
-    return Math.min(Math.max((phase - start) / span, 0), 1);
-  };
-
-  // Drive branch and merge arc strokeDashoffset from scroll phase
-  useEffect(() => {
-    branchRefs.forEach((ref, i) => {
-      const path = ref.current;
-      if (!path) return;
-      path.style.strokeDashoffset = `${path.getTotalLength() * (1 - branchArcT(i))}`;
-    });
-    mergeRefs.forEach((ref, i) => {
-      const path = ref.current;
-      if (!path) return;
-      path.style.strokeDashoffset = `${path.getTotalLength() * (1 - mergeArcT(i))}`;
-    });
-  }, [phase]);
 
   // Branch prompt positions: travel along branch arcs during execute phase
   const branchPromptPositions = BRANCHES.map((_, i) => {
@@ -146,7 +139,7 @@ export default function PlanExecuteDiagram() {
     const span  = CONVERGE_START - EXECUTE_START;
     const t = Math.min(Math.max((phase - start) / span, 0), 1);
     if (t <= 0) return null;
-    const opacity = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
+    const opacity = promptFadeOpacity(t);
     const pt = path.getPointAtLength(t * path.getTotalLength());
     return { x: pt.x, y: pt.y, opacity };
   });
@@ -156,9 +149,9 @@ export default function PlanExecuteDiagram() {
     if (!convergeReached) return null;
     const path = mergeRefs[i].current;
     if (!path) return null;
-    const t = mergeArcT(i);
+    const t = mergeTs[i];
     if (t <= 0) return null;
-    const opacity = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
+    const opacity = promptFadeOpacity(t);
     const pt = path.getPointAtLength(t * path.getTotalLength());
     return { x: pt.x, y: pt.y, opacity };
   });
@@ -175,25 +168,18 @@ export default function PlanExecuteDiagram() {
     >
       {/* Ghost worker placeholders — provide rightward visual mass before execute act */}
       {BRANCHES.map((branch, i) => (
-        <rect
+        <Ghost
           key={`ghost-${i}`}
           x={branch.workerX + 2.4} y={branch.workerY + 2.4}
           width={27.2} height={27.2} rx={6.8}
-          fill="var(--visual-bg-violet)"
-          stroke="var(--visual-violet)"
-          strokeWidth={1}
-          strokeDasharray="3 4"
-          className={clsx(
-            styles.ghostWorker,
-            mounted && !executeReached && styles.ghostWorkerShown,
-            executeReached && styles.ghostWorkerHidden,
-          )}
+          fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
+          mounted={mounted} reached={executeReached}
           style={executeReached ? { transitionDelay: `${branch.nodeDelay}ms` } : undefined}
         />
       ))}
 
       {/* Plan card — checklist artifact */}
-      <g className={clsx(styles.planCard, wasReached('plan') && styles.entered)}>
+      <g className={clsx(styles.planCard, wasReached('plan') && shared.actEntered)}>
         <rect x={16} y={80} width={66} height={72} rx={8}
           fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5} />
         {/* Title line */}
@@ -217,52 +203,41 @@ export default function PlanExecuteDiagram() {
         />
       </g>
 
-      {/* Handoff arc — plan card → orchestrator */}
+      {/* Handoff arc: stroke overrides DASHED_CONNECTOR for higher contrast. */}
       <path
         ref={handoffRef}
         className={clsx(styles.handoffArc, wasReached('handoff') && styles.arcDraw)}
         d={HANDOFF_D}
-        fill="none"
+        {...DASHED_CONNECTOR}
         stroke="var(--border-default)"
-        strokeWidth={1}
-        strokeDasharray="4 6"
-        strokeLinecap="round"
       />
 
-      {/* Branch arcs — orchestrator → workers, JS-driven dashoffset */}
+      {/* Branch arcs — orchestrator → workers, scroll-driven dashoffset */}
       {BRANCHES.map((branch, i) => (
         <path
           key={i}
           ref={branchRefs[i]}
-          className={clsx(styles.branchArc, forkReached && styles.branchDraw)}
+          className={clsx(shared.connector, forkReached && shared.connectorDrawing)}
           d={branch.branchD}
-          fill="none"
-          stroke="var(--border-subtle)"
-          strokeWidth={1}
-          strokeDasharray="4 6"
-          strokeLinecap="round"
+          {...DASHED_CONNECTOR}
         />
       ))}
 
-      {/* Merge arcs — workers → merge node, JS-driven dashoffset */}
+      {/* Merge arcs — workers → merge node, scroll-driven dashoffset */}
       {BRANCHES.map((branch, i) => (
         <path
           key={i}
           ref={mergeRefs[i]}
-          className={clsx(styles.mergeArc, convergeReached && styles.mergeDraw)}
+          className={clsx(shared.connector, convergeReached && shared.connectorDrawing)}
           d={branch.mergeD}
-          fill="none"
-          stroke="var(--border-subtle)"
-          strokeWidth={1}
-          strokeDasharray="4 6"
-          strokeLinecap="round"
+          {...DASHED_CONNECTOR}
         />
       ))}
 
       {/* Orchestrator */}
       <g className={clsx(
         styles.actorNode,
-        wasReached('handoff') && styles.entered,
+        wasReached('handoff') && shared.actEntered,
         isCurrentAct('handoff') && 'idle-ready-breathe',
       )}>
         <AgentNode x={155} y={100} size={40} />
@@ -272,7 +247,7 @@ export default function PlanExecuteDiagram() {
       {BRANCHES.map((branch, i) => (
         <g
           key={i}
-          className={clsx(styles.workerNode, executeReached && styles.workerEntered)}
+          className={clsx(shared.workerNode, executeReached && shared.workerEntered)}
           style={{ transitionDelay: executeReached ? `${branch.nodeDelay}ms` : undefined }}
         >
           <AgentNode x={branch.workerX} y={branch.workerY} size={32} />
@@ -282,7 +257,7 @@ export default function PlanExecuteDiagram() {
       {/* Branch prompts — travel along branch arcs during execute phase */}
       {branchPromptPositions.map((pos, i) => pos && (
         <g key={i} transform={`translate(${pos.x}, ${pos.y})`} style={{ opacity: pos.opacity }}>
-          <g className={styles.promptIcon}>
+          <g className={shared.actEntered}>
             <PromptIcon />
           </g>
         </g>
@@ -291,7 +266,7 @@ export default function PlanExecuteDiagram() {
       {/* Merge prompts — travel along merge arcs during converge phase */}
       {mergePromptPositions.map((pos, i) => pos && (
         <g key={i} transform={`translate(${pos.x}, ${pos.y})`} style={{ opacity: pos.opacity }}>
-          <g className={styles.promptIcon}>
+          <g className={shared.actEntered}>
             <PromptIcon />
           </g>
         </g>
@@ -309,7 +284,7 @@ export default function PlanExecuteDiagram() {
       </g>
 
       {/* Permanent orientation labels */}
-      <g className={clsx(styles.labels, wasReached('handoff') && styles.entered)}>
+      <g className={clsx(styles.labels, wasReached('handoff') && shared.actEntered)}>
         <text
           x={49} y={162}
           fill="var(--visual-indigo)"
@@ -329,7 +304,7 @@ export default function PlanExecuteDiagram() {
         <text
           key={i}
           x={branch.labelX} y={branch.labelY}
-          className={clsx(styles.workerLabel, executeReached && styles.workerLabelEntered)}
+          className={clsx(shared.workerLabel, executeReached && shared.workerLabelEntered)}
           fill="var(--visual-neutral)"
           style={{
             fontFamily: 'var(--font-mono)',

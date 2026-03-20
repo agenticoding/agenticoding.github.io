@@ -1,15 +1,9 @@
 /* ── IntroHookDiagram — Animation module ─────────────────────────────────────
-   Act-gated keyframes. Durations are intentionally longer than global tokens
-   to match the scroll-driven pacing of this specific diagram.
+   actEnter keyframe and shared ghost/node/connector classes are in diagram.module.css.
+   Only IntroHook-specific classes live here.
    ─────────────────────────────────────────────────────────────────────────── */
 
-@keyframes actEnter {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes drawPath {
-  to { stroke-dashoffset: 0; }
-}
+/* drawPath, workerNode, workerLabel are in diagram.module.css (shared) */
 
 /* ── Guide arc (operator → orchestrator) ── */
 .guideArc {
@@ -28,57 +22,17 @@
   opacity: 1;
 }
 
-/* ── Actor nodes (operator, orchestrator) ── */
+/* ── Actor nodes (operator, orchestrator) — base state; shared.actEntered drives animation ── */
 .actorNode {
   opacity: 0;
   transform: translateY(12px);
 }
-.actorNode.entered {
-  animation: actEnter 300ms var(--ease-enter) both;
-}
 
-/* ── Worker nodes ── */
-.workerNode {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
-}
-.workerNode.workerEntered {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
-}
-
-/* ── Labels ── */
+/* ── Labels — base state; shared.actEntered drives animation ── */
 .labels {
   opacity: 0;
   transform: translateY(12px);
 }
-.labels.entered {
-  animation: actEnter 300ms var(--ease-enter) both;
-}
-
-/* ── Worker labels ── */
-.workerLabel {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
-}
-.workerLabel.workerLabelEntered {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
-}
-
-/* ── Prompt icon (unified: replaces PromptBubble + TravelingPromptCard) ── */
-.promptIcon {
-  animation: actEnter 300ms var(--ease-enter) both;
-}
-
-/* ── Ghost worker placeholders (visible before dispatch, fade on dispatch) ── */
-.ghostWorker       { opacity: 0; }
-.ghostWorkerShown  { opacity: 0.45; transition: opacity 300ms var(--ease-enter); }
-.ghostWorkerHidden { opacity: 0;    transition: opacity 200ms var(--ease-exit); }
 
 /* ── Static fallback card (reduced-motion only) ── */
 .staticCard {
@@ -97,15 +51,9 @@
   .fanArc           { opacity: 0.35; stroke-dashoffset: 0 !important; }
   .fanArc.fanDraw   { animation: none; }
   .actorNode,
-  .workerNode,
-  .workerLabel,
   .labels           { opacity: 1; transform: none; animation: none; transition: none; }
-  .promptIcon       { display: none; }
   .staticCard       { display: block; }
   .ideaBulb,
   .ideaBulbVisible,
   .ideaBulbFadeOut  { opacity: 0; }  /* final settled state; static card serves as fallback */
-  .ghostWorker,
-  .ghostWorkerShown,
-  .ghostWorkerHidden { opacity: 0 !important; }
 }

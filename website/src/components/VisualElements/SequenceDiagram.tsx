@@ -2,9 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './SequenceDiagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useAnimationContext } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
-import { CONNECTOR_STYLE, GHOST_STYLE, ARROWHEAD_POINTS, ARROWHEAD_POINTS_REV } from './diagramConstants';
+import { useMounted } from '../../hooks/useMounted';
+import { Ghost, ghostClass } from './Ghost';
+import { CONNECTOR_STYLE, GHOST_CONNECTOR_STYLE, ARROWHEAD_POINTS, ARROWHEAD_POINTS_REV } from './diagramConstants';
 
 // Fixed layout constants (all in SVG user units ≈ CSS px after ResizeObserver)
 const HEADER_H   = 96;   // height of sticky HTML header zone (CSS px) — 80 content + 16 bottom pad (--space-2)
@@ -39,13 +41,15 @@ interface Props {
 
 export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
   const emojiBase = useBaseUrl('/img/emoji');
-  const phase = useAnimationPhase();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const { phase, phaseEnd } = useAnimationContext();
+  const mounted = useMounted();
 
   // Measure container so viewBox width = container CSS width.
   const containerRef = useRef<HTMLDivElement>(null);
   const [viewW, setViewW] = useState<number | null>(null);
+  const [viewportH, setViewportH] = useState(() =>
+    typeof window !== 'undefined' ? window.innerHeight : 900,
+  );
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -53,13 +57,23 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
     update(el.getBoundingClientRect().width);
     const ro = new ResizeObserver(([entry]) => update(entry.contentRect.width));
     ro.observe(el);
-    return () => ro.disconnect();
+    const onResize = () => setViewportH(window.innerHeight);
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => { ro.disconnect(); window.removeEventListener('resize', onResize); };
   }, []);
 
-  const actDefs = useMemo(() => rows.map((_, i) => ({
-    id: `row-${i}`,
-    threshold: rows.length > 1 ? 0.05 + (i / (rows.length - 1)) * 0.85 : 0.05,
-  })), [rows]);
+  const actDefs = useMemo(() => {
+    const bodyH   = PAD_V_TOP + rows.length * ROW_STEP + PAD_V_BOT;
+    const totalH  = HEADER_H + bodyH;
+    // Total scroll distance over which phase runs 0→1.
+    const animDist = phaseEnd * (viewportH + totalH);
+    return rows.map((_, i) => ({
+      id: `row-${i}`,
+      // factor=1.2: row is ~80–165px inside the viewport when its fade begins,
+      // making the transition clearly visible as it scrolls up from the bottom.
+      threshold: Math.min(0.95, (HEADER_H + PAD_V_TOP + i * ROW_STEP + ROW_STEP / 2) / animDist * 1.2),
+    }));
+  }, [rows, phaseEnd, viewportH]);
   const { wasReached } = useActs(actDefs, phase);
 
   if (viewW === null) {
@@ -154,17 +168,12 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
             return (
               <React.Fragment key={`row-${i}`}>
                 {/* Ghost placeholder */}
-                <rect
+                <Ghost
                   x={cx - noteW / 2} y={y - noteH / 2}
                   width={noteW} height={noteH} rx={NOTE_RX}
-                  className={clsx(
-                    styles.ghost,
-                    mounted && !visible && styles.ghostShown,
-                    visible && styles.ghostHidden,
-                  )}
                   fill={`var(--visual-bg-${color})`}
                   stroke={`var(--visual-${color})`}
-                  {...GHOST_STYLE}
+                  mounted={mounted} reached={visible}
                 />
                 {/* Real row */}
                 <g className={clsx(styles.row, visible && styles.rowIn)}>
@@ -207,13 +216,8 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
               {/* Ghost placeholder */}
               <line
                 x1={x1} y1={y} x2={tipX} y2={y}
-                className={clsx(
-                  styles.ghost,
-                  mounted && !visible && styles.ghostShown,
-                  visible && styles.ghostHidden,
-                )}
-                {...CONNECTOR_STYLE}
-                strokeDasharray={GHOST_STYLE.strokeDasharray}
+                className={ghostClass(mounted, visible)}
+                {...GHOST_CONNECTOR_STYLE}
               />
               {/* Real row */}
               <g className={clsx(styles.row, visible && styles.rowIn)}>

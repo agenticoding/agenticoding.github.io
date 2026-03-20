@@ -1,10 +1,13 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './ContextBiasDiagram.module.css';
+import shared from './diagram.module.css';
 import { NotoEmoji } from './ActorNodes';
+import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
-import { CONNECTOR_STYLE, GHOST_STYLE, ARROWHEAD_POINTS_SM, arrowOpacity } from './diagramConstants';
+import { useMounted } from '../../hooks/useMounted';
+import { CONNECTOR_STYLE, ARROWHEAD_POINTS_SM, arrowOpacity } from './diagramConstants';
 
 // ── Layout ───────────────────────────────────────────────────────────────────
 // ViewBox 640×484
@@ -111,17 +114,14 @@ const PHASE = {
 
 export default function ContextBiasDiagram() {
   const phase = useAnimationPhase();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const mounted = useMounted();
 
   const headersVisible      = mounted && phase >= PHASE.headers;
   const leftConnL1Visible   = mounted && phase >= PHASE.leftConn1;
   const leftAgentVisible    = mounted && phase >= PHASE.leftAgent;
-  const leftConnL2Visible   = mounted && phase >= PHASE.leftAgent;
   const leftVerdictVisible  = mounted && phase >= PHASE.leftVerdict;
   const rightConnR1Visible  = mounted && phase >= PHASE.rightConn1;
   const rightAgentVisible   = mounted && phase >= PHASE.rightAgent;
-  const rightConnR2Visible  = mounted && phase >= PHASE.rightAgent;
   const rightVerdictVisible = mounted && phase >= PHASE.rightVerdict;
   const sameCodeVisible     = mounted && phase >= PHASE.sameCode;
 
@@ -138,16 +138,12 @@ export default function ContextBiasDiagram() {
   function renderGhosts(entries: StackEntry[], sx: number, prefix: string) {
     return entries.map((entry, i) => {
       const entryVisible = mounted && phase >= entry.threshold;
-      const ghostVisible = mounted && !entryVisible;
       return (
-        <rect key={`${prefix}${i}`} x={sx} y={entry.y} width={SW} height={entry.h} rx={2}
+        <Ghost
+          key={`${prefix}${i}`}
+          x={sx} y={entry.y} width={SW} height={entry.h} rx={2}
           fill={ROLE_BG[entry.role]} stroke={ROLE_COLOR[entry.role]}
-          {...GHOST_STYLE}
-          className={clsx(
-            styles.entryGhost,
-            ghostVisible && styles.entryGhostShown,
-            entryVisible && styles.entryGhostHidden,
-          )}
+          mounted={mounted} reached={entryVisible}
         />
       );
     });
@@ -169,20 +165,20 @@ export default function ContextBiasDiagram() {
       {/* ── Headers ──────────────────────────────────────────────────────────── */}
       <rect x={SX_L} y={8} width={SW} height={20} rx={3}
         fill="var(--visual-bg-warning)" stroke="var(--visual-warning)" strokeWidth={1.5}
-        className={clsx(styles.node, headersVisible && styles.nodeIn)}
+        className={clsx(shared.node, headersVisible && shared.nodeIn)}
       />
       <text x={CX_L} y={23} textAnchor="middle" fontSize={10} fontWeight={600}
         fill="var(--visual-warning)" fontFamily="var(--font-mono-spec)"
-        className={clsx(styles.label, headersVisible && styles.labelIn)}
+        className={clsx(shared.label, headersVisible && shared.labelIn)}
       >accumulated context</text>
 
       <rect x={SX_R} y={8} width={SW} height={20} rx={3}
         fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)" strokeWidth={1.5}
-        className={clsx(styles.node, headersVisible && styles.nodeIn)}
+        className={clsx(shared.node, headersVisible && shared.nodeIn)}
       />
       <text x={CX_R} y={23} textAnchor="middle" fontSize={10} fontWeight={600}
         fill="var(--visual-cyan)" fontFamily="var(--font-mono-spec)"
-        className={clsx(styles.label, headersVisible && styles.labelIn)}
+        className={clsx(shared.label, headersVisible && shared.labelIn)}
       >fresh context</text>
 
       {/* ── Left entry ghosts ────────────────────────────────────────────────── */}
@@ -259,53 +255,43 @@ export default function ContextBiasDiagram() {
       {/* ── Left verdict section ─────────────────────────────────────────────── */}
 
       {/* Ghost agent */}
-      <rect x={CX_L - 20} y={AGENT_Y} width={40} height={40} rx={8}
+      <Ghost x={CX_L - 20} y={AGENT_Y} width={40} height={40} rx={8}
         fill="var(--visual-bg-magenta)" stroke="var(--visual-magenta)"
-        {...GHOST_STYLE}
-        className={clsx(
-          styles.ghost,
-          mounted && !leftAgentVisible && styles.ghostShown,
-          leftAgentVisible && styles.ghostHidden,
-        )}
+        mounted={mounted} reached={leftAgentVisible}
       />
 
       {/* Connector L1: stack bottom → agent */}
       {/* Arrowhead 5×5 (vs 8×8 in other diagrams) — compact layout, shorter connector */}
       <line ref={connL1Ref} x1={CX_L} y1={STACK_BOT} x2={CX_L} y2={AGENT_Y}
         {...CONNECTOR_STYLE}
-        className={clsx(styles.connector, leftConnL1Visible && styles.connectorDrawing)}
+        className={clsx(shared.connector, leftConnL1Visible && shared.connectorDrawing)}
       />
       <g transform={`translate(${CX_L},${AGENT_Y}) rotate(90)`} style={{ opacity: arrowOpacity(tL1) }}>
         <polygon points={ARROWHEAD_POINTS_SM} fill="var(--text-muted)" />
       </g>
 
       {/* Left agent */}
-      <g className={clsx(styles.node, leftAgentVisible && styles.nodeIn)}>
+      <g className={clsx(shared.node, leftAgentVisible && shared.nodeIn)}>
         <NotoEmoji codepoint="1f916" x={CX_L - 20} y={AGENT_Y} size={EMOJI_SIZE} />
       </g>
 
       {/* Ghost verdict */}
-      <rect x={CX_L - 20} y={VERDICT_Y} width={40} height={40} rx={8}
+      <Ghost x={CX_L - 20} y={VERDICT_Y} width={40} height={40} rx={8}
         fill="var(--visual-bg-warning)" stroke="var(--visual-warning)"
-        {...GHOST_STYLE}
-        className={clsx(
-          styles.ghost,
-          mounted && !leftVerdictVisible && styles.ghostShown,
-          leftVerdictVisible && styles.ghostHidden,
-        )}
+        mounted={mounted} reached={leftVerdictVisible}
       />
 
       {/* Connector L2: agent bottom → verdict */}
       <line ref={connL2Ref} x1={CX_L} y1={AGENT_Y + EMOJI_SIZE} x2={CX_L} y2={VERDICT_Y}
         {...CONNECTOR_STYLE}
-        className={clsx(styles.connector, leftConnL2Visible && styles.connectorDrawing)}
+        className={clsx(shared.connector, leftAgentVisible && shared.connectorDrawing)}
       />
       <g transform={`translate(${CX_L},${VERDICT_Y}) rotate(90)`} style={{ opacity: arrowOpacity(tL2) }}>
         <polygon points={ARROWHEAD_POINTS_SM} fill="var(--text-muted)" />
       </g>
 
       {/* Left verdict: ⚠️ */}
-      <g className={clsx(styles.node, leftVerdictVisible && styles.nodeIn)}>
+      <g className={clsx(shared.node, leftVerdictVisible && shared.nodeIn)}>
         <NotoEmoji codepoint="26a0" x={CX_L - 20} y={VERDICT_Y} size={EMOJI_SIZE} />
       </g>
       <text x={CX_L} y={456} textAnchor="middle" fontSize={10} fontWeight={600}
@@ -316,52 +302,42 @@ export default function ContextBiasDiagram() {
       {/* ── Right verdict section ─────────────────────────────────────────────── */}
 
       {/* Ghost agent */}
-      <rect x={CX_R - 20} y={AGENT_Y} width={40} height={40} rx={8}
+      <Ghost x={CX_R - 20} y={AGENT_Y} width={40} height={40} rx={8}
         fill="var(--visual-bg-magenta)" stroke="var(--visual-magenta)"
-        {...GHOST_STYLE}
-        className={clsx(
-          styles.ghost,
-          mounted && !rightAgentVisible && styles.ghostShown,
-          rightAgentVisible && styles.ghostHidden,
-        )}
+        mounted={mounted} reached={rightAgentVisible}
       />
 
       {/* Connector R1: stack bottom → agent */}
       <line ref={connR1Ref} x1={CX_R} y1={STACK_BOT} x2={CX_R} y2={AGENT_Y}
         {...CONNECTOR_STYLE}
-        className={clsx(styles.connector, rightConnR1Visible && styles.connectorDrawing)}
+        className={clsx(shared.connector, rightConnR1Visible && shared.connectorDrawing)}
       />
       <g transform={`translate(${CX_R},${AGENT_Y}) rotate(90)`} style={{ opacity: arrowOpacity(tR1) }}>
         <polygon points={ARROWHEAD_POINTS_SM} fill="var(--text-muted)" />
       </g>
 
       {/* Right agent */}
-      <g className={clsx(styles.node, rightAgentVisible && styles.nodeIn)}>
+      <g className={clsx(shared.node, rightAgentVisible && shared.nodeIn)}>
         <NotoEmoji codepoint="1f916" x={CX_R - 20} y={AGENT_Y} size={EMOJI_SIZE} />
       </g>
 
       {/* Ghost verdict */}
-      <rect x={CX_R - 20} y={VERDICT_Y} width={40} height={40} rx={8}
+      <Ghost x={CX_R - 20} y={VERDICT_Y} width={40} height={40} rx={8}
         fill="var(--visual-bg-error)" stroke="var(--visual-error)"
-        {...GHOST_STYLE}
-        className={clsx(
-          styles.ghost,
-          mounted && !rightVerdictVisible && styles.ghostShown,
-          rightVerdictVisible && styles.ghostHidden,
-        )}
+        mounted={mounted} reached={rightVerdictVisible}
       />
 
       {/* Connector R2: agent bottom → verdict */}
       <line ref={connR2Ref} x1={CX_R} y1={AGENT_Y + EMOJI_SIZE} x2={CX_R} y2={VERDICT_Y}
         {...CONNECTOR_STYLE}
-        className={clsx(styles.connector, rightConnR2Visible && styles.connectorDrawing)}
+        className={clsx(shared.connector, rightAgentVisible && shared.connectorDrawing)}
       />
       <g transform={`translate(${CX_R},${VERDICT_Y}) rotate(90)`} style={{ opacity: arrowOpacity(tR2) }}>
         <polygon points={ARROWHEAD_POINTS_SM} fill="var(--text-muted)" />
       </g>
 
       {/* Right verdict: 🚨 */}
-      <g className={clsx(styles.node, rightVerdictVisible && styles.nodeIn)}>
+      <g className={clsx(shared.node, rightVerdictVisible && shared.nodeIn)}>
         <NotoEmoji codepoint="1f6a8" x={CX_R - 20} y={VERDICT_Y} size={EMOJI_SIZE} />
       </g>
       <text x={CX_R} y={456} textAnchor="middle" fontSize={10} fontWeight={600}

@@ -1,11 +1,13 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import clsx from 'clsx';
-import styles from './ExecutionLoopDiagram.module.css';
+import shared from './diagram.module.css';
 import { NotoEmoji } from './ActorNodes';
+import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
-import { CONNECTOR_STYLE, GHOST_STYLE, ARROWHEAD_POINTS, arrowOpacity } from './diagramConstants';
+import { useMounted } from '../../hooks/useMounted';
+import { CONNECTOR_STYLE, ARROWHEAD_POINTS, arrowOpacity } from './diagramConstants';
 
 // Layout — ViewBox 480×264
 //
@@ -29,18 +31,11 @@ const ACTS = [
 export default function ExecutionLoopDiagram() {
   const phase = useAnimationPhase();
   const { wasReached } = useActs(ACTS, phase);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const mounted = useMounted();
 
-  const brainVisible   = true; // act 0 — brain visible immediately
   const predictReached = mounted && wasReached('predict');
   const executeReached = mounted && wasReached('execute');
   const observeReached = mounted && wasReached('observe');
-
-  // Arc visibility — mirrors node thresholds via wasReached() to stay in sync with ACTS
-  const arc1Visible = mounted && wasReached('predict');
-  const arc2Visible = mounted && wasReached('execute');
-  const arc3Visible = mounted && wasReached('observe');
 
   const arc1Ref = useRef<SVGGeometryElement>(null);
   const arc2Ref = useRef<SVGGeometryElement>(null);
@@ -61,7 +56,7 @@ export default function ExecutionLoopDiagram() {
       style={{ display: 'block', maxWidth: '480px', margin: '0 auto' }}
     >
       {/* ── Brain node (LLM) — always visible ─────────────────────────── */}
-      <g className={clsx(styles.node, styles.nodeIn)}>
+      <g className={clsx(shared.node, shared.nodeIn)}>
         <NotoEmoji codepoint="1f9e0" x={220} y={36} size={40} />
       </g>
 
@@ -71,7 +66,7 @@ export default function ExecutionLoopDiagram() {
         fill="var(--visual-violet)"
         style={{ fontFamily: 'var(--font-mono-ai)' }}
         fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(styles.label, predictReached && styles.labelIn)}
+        className={clsx(shared.label, predictReached && shared.labelIn)}
       >predict</text>
 
       {/* ── Arc 1: brain → execute ────────────────────────────────────── */}
@@ -79,27 +74,20 @@ export default function ExecutionLoopDiagram() {
         ref={arc1Ref}
         d="M 264 56 Q 335.2 77.6 335.95 147"
         {...CONNECTOR_STYLE}
-        className={clsx(styles.connector, arc1Visible && styles.connectorDrawing)}
+        className={clsx(shared.connector, predictReached && shared.connectorDrawing)}
       />
       <g transform="translate(336,152) rotate(89)" style={{ opacity: arrowOpacity(t1) }}>
         <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
       </g>
 
       {/* ── Execute ghost placeholder ─────────────────────────────────── */}
-      <rect
-        x={312} y={152} width={48} height={48} rx={12}
-        fill="var(--visual-bg-cyan)"
-        stroke="var(--visual-cyan)"
-        {...GHOST_STYLE}
-        className={clsx(
-          styles.ghost,
-          mounted && !executeReached && styles.ghostShown,
-          executeReached && styles.ghostHidden,
-        )}
+      <Ghost x={312} y={152} width={48} height={48} rx={12}
+        fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)"
+        mounted={mounted} reached={executeReached}
       />
 
       {/* ── Execute node (Body) ───────────────────────────────────────── */}
-      <g className={clsx(styles.node, executeReached && styles.nodeIn)}>
+      <g className={clsx(shared.node, executeReached && shared.nodeIn)}>
         <NotoEmoji codepoint="1f9be" x={316} y={156} size={40} />
       </g>
 
@@ -109,7 +97,7 @@ export default function ExecutionLoopDiagram() {
         fill="var(--visual-cyan)"
         style={{ fontFamily: 'var(--font-mono-ai)' }}
         fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(styles.label, executeReached && styles.labelIn)}
+        className={clsx(shared.label, executeReached && shared.labelIn)}
       >execute</text>
 
       {/* ── Arc 2: execute → observe ──────────────────────────────────── */}
@@ -117,27 +105,20 @@ export default function ExecutionLoopDiagram() {
         ref={arc2Ref}
         d="M 312 176 Q 240 220 172.27 178.61"
         {...CONNECTOR_STYLE}
-        className={clsx(styles.connector, arc2Visible && styles.connectorDrawing)}
+        className={clsx(shared.connector, executeReached && shared.connectorDrawing)}
       />
       <g transform="translate(168,176) rotate(-149)" style={{ opacity: arrowOpacity(t2) }}>
         <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
       </g>
 
       {/* ── Observe ghost placeholder ─────────────────────────────────── */}
-      <rect
-        x={120} y={152} width={48} height={48} rx={12}
-        fill="var(--visual-bg-indigo)"
-        stroke="var(--visual-indigo)"
-        {...GHOST_STYLE}
-        className={clsx(
-          styles.ghost,
-          mounted && !observeReached && styles.ghostShown,
-          observeReached && styles.ghostHidden,
-        )}
+      <Ghost x={120} y={152} width={48} height={48} rx={12}
+        fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)"
+        mounted={mounted} reached={observeReached}
       />
 
       {/* ── Observe node (Result) ─────────────────────────────────────── */}
-      <g className={clsx(styles.node, observeReached && styles.nodeIn)}>
+      <g className={clsx(shared.node, observeReached && shared.nodeIn)}>
         <NotoEmoji codepoint="1f440" x={124} y={156} size={40} />
       </g>
 
@@ -147,7 +128,7 @@ export default function ExecutionLoopDiagram() {
         fill="var(--visual-indigo)"
         style={{ fontFamily: 'var(--font-mono-ai)' }}
         fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(styles.label, observeReached && styles.labelIn)}
+        className={clsx(shared.label, observeReached && shared.labelIn)}
       >observe</text>
 
       {/* ── Arc 3: observe → brain ────────────────────────────────────── */}
@@ -155,7 +136,7 @@ export default function ExecutionLoopDiagram() {
         ref={arc3Ref}
         d="M 144 152 Q 144.8 77.6 211.22 57.45"
         {...CONNECTOR_STYLE}
-        className={clsx(styles.connector, arc3Visible && styles.connectorDrawing)}
+        className={clsx(shared.connector, observeReached && shared.connectorDrawing)}
       />
       <g transform="translate(216,56) rotate(-17)" style={{ opacity: arrowOpacity(t3) }}>
         <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />

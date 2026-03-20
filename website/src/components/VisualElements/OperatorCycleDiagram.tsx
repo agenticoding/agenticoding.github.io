@@ -1,9 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './OperatorCycleDiagram.module.css';
+import shared from './diagram.module.css';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
+import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { NotoEmoji } from './ActorNodes';
+import { ARROWHEAD_POINTS, arrowOpacity, CONNECTOR_STYLE } from './diagramConstants';
+import { useMounted } from '../../hooks/useMounted';
 
 // Layout — ViewBox 560×280
 //
@@ -88,73 +92,33 @@ const ACTS = [
   { id: 'settle',  threshold: 0.65 },
 ] as const;
 
-const FWD_PHASE_START = 0.15;
-const FWD_PHASE_END   = 0.40;
-const FWD_STAGGER     = 0.04;
-const RET_PHASE_START = 0.45;
-const RET_PHASE_END   = 0.62;
+const FWD_STAGGER = 0.04;
 
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function OperatorCycleDiagram() {
   const phase = useAnimationPhase();
-  const { wasReached } = useActs(
-    ACTS as unknown as { id: string; threshold: number }[],
-    phase,
-  );
+  const mounted = useMounted();
+  const { wasReached } = useActs(ACTS, phase);
 
-  // Refs for connector paths (dasharray/dashoffset computed on mount)
-  const fwdRef0 = useRef<SVGPathElement>(null);
-  const fwdRef1 = useRef<SVGPathElement>(null);
-  const fwdRef2 = useRef<SVGPathElement>(null);
-  const fwdRefs = [fwdRef0, fwdRef1, fwdRef2];
+  // Refs for connector paths
+  const fwdRef0   = useRef<SVGPathElement>(null);
+  const fwdRef1   = useRef<SVGPathElement>(null);
+  const fwdRef2   = useRef<SVGPathElement>(null);
+  const fwdRefs   = [fwdRef0, fwdRef1, fwdRef2];
   const returnRef = useRef<SVGPathElement>(null);
 
-  // Refs for standalone arrowhead polygons
-  const arrowRef0 = useRef<SVGGElement>(null);
-  const arrowRef1 = useRef<SVGGElement>(null);
-  const arrowRef2 = useRef<SVGGElement>(null);
-  const arrowRefs = [arrowRef0, arrowRef1, arrowRef2];
-  const arrowReturnRef = useRef<SVGGElement>(null);
+  // useStrokeDraw handles both init (dasharray/offset) and phase-driven drawing
+  // Each fwd connector starts FWD_STAGGER later but ends at the same phase (0.40)
+  const t0  = useStrokeDraw(fwdRef0,   phase, 0.15,                 0.40);
+  const t1  = useStrokeDraw(fwdRef1,   phase, 0.15 + FWD_STAGGER,   0.40);
+  const t2  = useStrokeDraw(fwdRef2,   phase, 0.15 + 2*FWD_STAGGER, 0.40);
+  const tRet = useStrokeDraw(returnRef, phase, 0.45,                 0.62);
 
-  // Mount: compute strokeDasharray from path geometry
-  useEffect(() => {
-    for (const ref of [...fwdRefs, returnRef]) {
-      const p = ref.current;
-      if (!p) continue;
-      p.style.strokeDasharray = `${p.getTotalLength()}`;
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Phase-driven: drive strokeDashoffset and arrowhead opacity from scroll phase (reverses on scroll-up)
-  useEffect(() => {
-    fwdRefs.forEach((ref, i) => {
-      const p = ref.current;
-      if (!p) return;
-      const len = parseFloat(p.style.strokeDasharray || '0');
-      if (!len) return;
-      const start = FWD_PHASE_START + i * FWD_STAGGER;
-      const t = Math.min(Math.max((phase - start) / (FWD_PHASE_END - start), 0), 1);
-      p.style.strokeDashoffset = `${len * (1 - t)}`;
-      const arrowG = arrowRefs[i].current;
-      if (arrowG) arrowG.style.opacity = `${Math.min(Math.max((t - 0.85) / 0.15, 0), 1)}`;
-    });
-    const rp = returnRef.current;
-    if (rp) {
-      const len = parseFloat(rp.style.strokeDasharray || '0');
-      if (len) {
-        const t = Math.min(Math.max((phase - RET_PHASE_START) / (RET_PHASE_END - RET_PHASE_START), 0), 1);
-        rp.style.strokeDashoffset = `${len * (1 - t)}`;
-        const arrowG = arrowReturnRef.current;
-        if (arrowG) arrowG.style.opacity = `${Math.min(Math.max((t - 0.85) / 0.15, 0), 1)}`;
-      }
-    }
-  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const nodesReached   = wasReached('nodes');
-  const forwardReached = wasReached('forward');
-  const returnReached  = wasReached('return');
-  const settleReached  = wasReached('settle');
+  const nodesReached   = mounted && wasReached('nodes');
+  const forwardReached = mounted && wasReached('forward');
+  const returnReached  = mounted && wasReached('return');
+  const settleReached  = mounted && wasReached('settle');
 
   return (
     <div>
@@ -173,49 +137,43 @@ export default function OperatorCycleDiagram() {
           <path
             key={i}
             ref={fwdRefs[i]}
-            className={clsx(styles.connector, forwardReached && styles.drawing)}
+            className={clsx(shared.connector, forwardReached && shared.connectorDrawing)}
             d={conn.d}
-            fill="none"
-            stroke="var(--text-muted)"
-            strokeWidth={1.5}
-            strokeLinecap="round"
+            {...CONNECTOR_STYLE}
           />
         ))}
 
         {/* Return connector — Validate → Research — draws on `return` act */}
         <path
           ref={returnRef}
-          className={clsx(styles.returnPath, returnReached && styles.drawing)}
+          className={clsx(shared.connector, returnReached && shared.connectorDrawing)}
           d={RETURN_D}
-          fill="none"
-          stroke="var(--text-muted)"
-          strokeWidth={1.5}
-          strokeLinecap="round"
+          {...CONNECTOR_STYLE}
         />
 
-        {/* Standalone arrowheads — phase-driven opacity so they appear when line arrives */}
+        {/* Standalone arrowheads — opacity driven by useStrokeDraw t values */}
         {/* R→P: tip at (378,64), pointing right (rotate 0°) */}
-        <g ref={arrowRef0} transform="translate(378,64) rotate(0)"  style={{ opacity: 0 }}>
-          <polygon points="-8,-4 0,0 -8,4" fill="var(--text-muted)" />
+        <g transform="translate(378,64) rotate(0)" style={{ opacity: arrowOpacity(t0) }}>
+          <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
         </g>
         {/* P→E: tip at (400,194), pointing down (rotate 90°) */}
-        <g ref={arrowRef1} transform="translate(400,194) rotate(90)" style={{ opacity: 0 }}>
-          <polygon points="-8,-4 0,0 -8,4" fill="var(--text-muted)" />
+        <g transform="translate(400,194) rotate(90)" style={{ opacity: arrowOpacity(t1) }}>
+          <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
         </g>
         {/* E→V: tip at (182,216), pointing left (rotate 180°) */}
-        <g ref={arrowRef2} transform="translate(182,216) rotate(180)" style={{ opacity: 0 }}>
-          <polygon points="-8,-4 0,0 -8,4" fill="var(--text-muted)" />
+        <g transform="translate(182,216) rotate(180)" style={{ opacity: arrowOpacity(t2) }}>
+          <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
         </g>
         {/* V→R: tip at (160,86), pointing up (rotate 270°) */}
-        <g ref={arrowReturnRef} transform="translate(160,86) rotate(270)" style={{ opacity: 0 }}>
-          <polygon points="-8,-4 0,0 -8,4" fill="var(--text-muted)" />
+        <g transform="translate(160,86) rotate(270)" style={{ opacity: arrowOpacity(tRet) }}>
+          <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
         </g>
 
         {/* Phase nodes — staggered entrance on `nodes` act */}
         {NODES.map((node, i) => (
           <g
             key={node.id}
-            className={clsx(styles.phaseNode, nodesReached && styles.entered)}
+            className={clsx(styles.phaseNode, nodesReached && shared.actEntered)}
             style={nodesReached ? { animationDelay: `${i * 80}ms` } : undefined}
           >
             <NotoEmoji codepoint={EMOJI[node.id]} x={node.cx - ICON_HALF} y={node.cy - ICON_HALF} size={ICON_HALF * 2} />
@@ -239,7 +197,7 @@ export default function OperatorCycleDiagram() {
         {/* Center "iterate" label — appears on `settle` act */}
         <text
           x={280} y={140}
-          className={clsx(styles.cycleLabel, settleReached && styles.settled)}
+          className={clsx(styles.cycleLabel, settleReached && shared.actEntered)}
           fill="var(--text-muted)"
           textAnchor="middle"
           dominantBaseline="middle"

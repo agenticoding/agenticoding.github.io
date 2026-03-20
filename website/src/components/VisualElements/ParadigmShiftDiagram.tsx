@@ -1,10 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './ParadigmShiftDiagram.module.css';
+import shared from './diagram.module.css';
 import { OperatorNode, AgentNode, NotoEmoji } from './ActorNodes';
+import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
+import { usePhaseProgress } from '../../hooks/usePhaseProgress';
+import { useMounted } from '../../hooks/useMounted';
 import { CONNECTOR_STYLE } from './diagramConstants';
 
 // Layout — ViewBox 480×264
@@ -40,14 +44,21 @@ const AGENT_POSITIONS = [
 export default function ParadigmShiftDiagram() {
   const phase = useAnimationPhase();
   const { wasReached } = useActs(ACTS, phase);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const mounted = useMounted();
 
   const transitioned    = mounted && wasReached('transition');
   const dispatched      = mounted && wasReached('dispatch');
   const converged       = mounted && wasReached('converge');
   const fanVisible      = mounted && phase >= 0.35;
   const convergeVisible = mounted && phase >= 0.55;
+
+  // Operator moves from Scene A → Scene B position as the user scrolls.
+  // Window [0.18, 0.35]: starts before the scene crossfade (0.25) and
+  // settles just after, so the operator leads the transition visually.
+  const moveT  = usePhaseProgress(phase, 0.18, 0.35);
+  const opX    = 186 + (220 - 186) * moveT;  // 186 → 220
+  const opY    = 90  + (16  - 90)  * moveT;  // 90  → 16
+  const opSize = Math.round(44 + (40 - 44) * moveT);  // 44  → 40
 
   // 6 connector refs — fan (L/C/R) then converge (L/C/R)
   const fanLRef  = useRef<SVGGeometryElement>(null);
@@ -70,7 +81,7 @@ export default function ParadigmShiftDiagram() {
       width="100%"
       height="auto"
       role="img"
-      aria-label="Paradigm shift: operator with hand saw crossfades into a vertical hierarchy — operator directing three agents that collectively feed a factory below."
+      aria-label="Paradigm shift: the same operator moves from working with hand tools to directing three agents that collectively feed a factory below."
       xmlns="http://www.w3.org/2000/svg"
       style={{ display: 'block', maxWidth: '480px', margin: '0 auto' }}
     >
@@ -79,7 +90,6 @@ export default function ParadigmShiftDiagram() {
         className={clsx(styles.sceneA, transitioned && styles.sceneAOut)}
         style={{ transformOrigin: '240px 132px' }}
       >
-        <OperatorNode x={186} y={90} size={44} />
         <NotoEmoji codepoint="1fa9a" x={248} y={98} size={36} />
         <text
           x={240} y={178}
@@ -94,24 +104,14 @@ export default function ParadigmShiftDiagram() {
         className={clsx(styles.sceneB, transitioned && styles.sceneBIn)}
         style={{ transformOrigin: '240px 132px' }}
       >
-        {/* Tier 1 — Operator */}
-        <OperatorNode x={220} y={16} size={40} />
-
         {/* Ghost agent placeholders — visual mass before dispatch */}
         {AGENT_POSITIONS.map((agent, i) => (
-          <rect
+          <Ghost
             key={`ghost-${i}`}
             x={agent.x + 2} y={agent.y + 2}
             width={28} height={28} rx={6}
-            fill="var(--visual-bg-violet)"
-            stroke="var(--visual-violet)"
-            strokeWidth={1}
-            strokeDasharray="3 4"
-            className={clsx(
-              styles.ghostAgent,
-              mounted && !dispatched && styles.ghostAgentShown,
-              dispatched && styles.ghostAgentHidden,
-            )}
+            fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
+            mounted={mounted} reached={dispatched}
           />
         ))}
 
@@ -120,19 +120,19 @@ export default function ParadigmShiftDiagram() {
           ref={fanLRef}
           d="M 240 56 Q 192 72 144 92"
           {...CONNECTOR_STYLE}
-          className={clsx(styles.connector, fanVisible && styles.connectorDrawing)}
+          className={clsx(shared.connector, fanVisible && shared.connectorDrawing)}
         />
         <path
           ref={fanCRef}
           d="M 240 56 L 240 92"
           {...CONNECTOR_STYLE}
-          className={clsx(styles.connector, fanVisible && styles.connectorDrawing)}
+          className={clsx(shared.connector, fanVisible && shared.connectorDrawing)}
         />
         <path
           ref={fanRRef}
           d="M 240 56 Q 288 72 336 92"
           {...CONNECTOR_STYLE}
-          className={clsx(styles.connector, fanVisible && styles.connectorDrawing)}
+          className={clsx(shared.connector, fanVisible && shared.connectorDrawing)}
         />
 
         {/* Tier 2 — Agents */}
@@ -147,34 +147,27 @@ export default function ParadigmShiftDiagram() {
           ref={convLRef}
           d="M 144 124 Q 192 144 240 160"
           {...CONNECTOR_STYLE}
-          className={clsx(styles.connector, convergeVisible && styles.connectorDrawing)}
+          className={clsx(shared.connector, convergeVisible && shared.connectorDrawing)}
         />
         <path
           ref={convCRef}
           d="M 240 124 L 240 160"
           {...CONNECTOR_STYLE}
-          className={clsx(styles.connector, convergeVisible && styles.connectorDrawing)}
+          className={clsx(shared.connector, convergeVisible && shared.connectorDrawing)}
         />
         <path
           ref={convRRef}
           d="M 336 124 Q 288 144 240 160"
           {...CONNECTOR_STYLE}
-          className={clsx(styles.connector, convergeVisible && styles.connectorDrawing)}
+          className={clsx(shared.connector, convergeVisible && shared.connectorDrawing)}
         />
 
         {/* Ghost factory placeholder — visual mass before converge */}
-        <rect
+        <Ghost
           x={208} y={164}
           width={64} height={64} rx={10}
-          fill="var(--visual-bg-violet)"
-          stroke="var(--visual-violet)"
-          strokeWidth={1}
-          strokeDasharray="3 4"
-          className={clsx(
-            styles.ghostAgent,
-            mounted && !converged && styles.ghostAgentShown,
-            converged && styles.ghostAgentHidden,
-          )}
+          fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
+          mounted={mounted} reached={converged}
         />
 
         {/* Tier 3 — Factory */}
@@ -190,6 +183,9 @@ export default function ParadigmShiftDiagram() {
           fontSize={11} fontWeight={500} textAnchor="middle"
         >You + agent factory</text>
       </g>
+
+      {/* Persistent operator — stays visible throughout, moves between scenes */}
+      <OperatorNode x={opX} y={opY} size={opSize} />
     </svg>
   );
 }
