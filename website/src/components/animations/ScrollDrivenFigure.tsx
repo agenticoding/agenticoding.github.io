@@ -9,9 +9,12 @@ import React, {
 import clsx from 'clsx';
 import styles from './ScrollDrivenFigure.module.css';
 
-// Context: 0.0 (not yet visible) → 1.0 (fully scrolled through)
-const AnimationPhaseContext = createContext<number>(0);
-export const useAnimationPhase = () => useContext(AnimationPhaseContext);
+// Context: phase 0.0 (not yet visible) → 1.0 (fully scrolled through)
+interface AnimCtx { phase: number; phaseEnd: number; }
+const AnimationPhaseContext = createContext<AnimCtx>({ phase: 0, phaseEnd: 0.5 });
+export const useAnimationPhase = () => useContext(AnimationPhaseContext).phase;
+/** Full context — use when children need phaseEnd to self-calibrate thresholds. */
+export const useAnimationContext = () => useContext(AnimationPhaseContext);
 
 interface ScrollDrivenFigureProps {
   children: ReactNode;
@@ -19,9 +22,10 @@ interface ScrollDrivenFigureProps {
   className?: string;
   phaseEnd?: number;
   earlyStart?: boolean;
-  skipReveal?: boolean;
 }
 
+// Capability heuristic: browsers that support scroll-timeline handle JS scroll listeners well.
+// Older browsers fall back to the lightweight IntersectionObserver path.
 function supportsScrollTimeline(): boolean {
   if (typeof CSS === 'undefined' || typeof CSS.supports !== 'function') return false;
   return CSS.supports('animation-timeline', 'scroll()');
@@ -33,12 +37,9 @@ export default function ScrollDrivenFigure({
   className,
   phaseEnd = 0.5,
   earlyStart = false,
-  skipReveal = false,
 }: ScrollDrivenFigureProps) {
   const innerRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState(0);
-  const [revealed, setRevealed] = useState(false);
-  const [noScrollTimeline, setNoScrollTimeline] = useState(false);
 
   useEffect(() => {
     const el = innerRef.current;
@@ -47,20 +48,16 @@ export default function ScrollDrivenFigure({
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) {
       setPhase(1);
-      setRevealed(true);
       return;
     }
 
-    const cssSupported = supportsScrollTimeline();
+    const modernScroll = supportsScrollTimeline();
 
-    if (!cssSupported) {
-      setNoScrollTimeline(true);
-
-      // Fallback: IntersectionObserver one-shot reveal
+    if (!modernScroll) {
+      // Older browsers: one-shot IntersectionObserver instead of scroll listener
       const io = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            setRevealed(true);
             setPhase(1);
             io.disconnect();
           }
@@ -70,6 +67,13 @@ export default function ScrollDrivenFigure({
       io.observe(el);
       return () => io.disconnect();
     }
+
+    // effectiveStart is locked on the first scroll/resize event (not mount) so that
+    // child components with deferred heights (e.g. ResizeObserver-driven) are fully
+    // rendered before we snapshot position. Mount only handles the "already scrolled
+    // past" edge case.
+    let isMount = true;
+    let effectiveStart: number | null = null;
 
     const computePhase = () => {
       const rect = el.getBoundingClientRect();
@@ -82,33 +86,52 @@ export default function ScrollDrivenFigure({
       const end = (vh + rect.height) * (1 - phaseEnd);
       if (start <= end) { setPhase(1); return; }
       const raw = (rect.bottom - start) / (end - start);
-      setPhase(Math.min(1, Math.max(0, raw)));
+
+      if (isMount) {
+        isMount = false;
+        // Only snap to 1 if already scrolled past; leave everything else at phase=0.
+        if (raw >= 1) setPhase(1);
+        return;
+      }
+
+      // First scroll/resize: lock effectiveStart now that heights are stable.
+      // If element is already in the animation window, anchor here so phase=0 at
+      // this position and the animation plays forward from first scroll.
+      // If element is below fold (raw ≤ 0), use original start — no adjustment needed.
+      if (effectiveStart === null) {
+        effectiveStart = (raw > 0 && raw < 1) ? rect.bottom : start;
+      }
+
+      const denom = end - effectiveStart;
+      const adjRaw = denom <= 0 ? 0 : (rect.bottom - effectiveStart) / denom;
+      setPhase(Math.min(1, Math.max(0, adjRaw)));
+    };
+
+    const onResize = () => {
+      // Re-anchor effectiveStart on next scroll so resized layout is used.
+      effectiveStart = null;
+      computePhase();
     };
 
     document.addEventListener('scroll', computePhase, { passive: true });
-    window.addEventListener('resize', computePhase, { passive: true });
+    window.addEventListener('resize', onResize, { passive: true });
     computePhase();
 
     return () => {
       document.removeEventListener('scroll', computePhase);
-      window.removeEventListener('resize', computePhase);
+      window.removeEventListener('resize', onResize);
     };
   }, [phaseEnd, earlyStart]);
 
-  const figureClass = clsx(styles.figure, noScrollTimeline && styles.noScrollTimeline, className);
-  const innerClass  = clsx(styles.inner, revealed && styles.revealed, skipReveal && styles.skipReveal);
+  const figureClass = clsx(styles.figure, className);
 
   return (
-    <AnimationPhaseContext.Provider value={phase}>
+    <AnimationPhaseContext.Provider value={{ phase, phaseEnd }}>
       <figure className={figureClass}>
-        <div
-          ref={innerRef}
-          className={innerClass}
-          style={{ animationRange: `entry 0% cover ${phaseEnd * 100}%` } as React.CSSProperties}
-        >
+        <div ref={innerRef} className={styles.inner}>
           {children}
         </div>
-        {caption && <figcaption className={styles.figcaption}>{caption}</figcaption>}
+        {caption && <figcaption>{caption}</figcaption>}
       </figure>
     </AnimationPhaseContext.Provider>
   );

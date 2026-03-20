@@ -4,69 +4,8 @@
   margin-block: var(--space-4);
 }
 
-/* Base state: hidden before scroll drives it in */
 .inner {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-/* Fallback: IO has revealed it */
-.inner.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Opt-out: children manage their own opacity; container stays fully visible */
-.inner.skipReveal {
+  /* Baseline opacity/transform for the inner wrapper (referenced in ScrollDrivenFigure.tsx) */
   opacity: 1;
   transform: none;
-  transition: none;
-}
-
-/* When the feature is unsupported, show content immediately */
-.noScrollTimeline .inner {
-  opacity: 1;
-  transform: none;
-  transition: none;
-}
-
-/* Scroll-driven path — only applied when CSS supports it */
-@supports (animation-timeline: scroll()) {
-  .inner {
-    animation-name: scrollReveal;
-    animation-fill-mode: both;
-    animation-timing-function: linear;
-    animation-timeline: view();
-    /* animation-range set inline by the component (tracks phaseEnd prop) */
-    /* Override JS-transition fallback — CSS drives this entirely */
-    transition: none;
-  }
-
-  .inner.skipReveal {
-    animation-name: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes scrollReveal {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-  .inner {
-    animation: none;
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
 }
