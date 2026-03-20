@@ -1066,6 +1066,63 @@ div[class*='announcementBar'] {
 @keyframes idleGearSpin {
   to { transform: rotate(360deg); }
 }
+@keyframes idleStopwatchHand {
+  to { transform: rotate(360deg); }
+}
+@keyframes idleBugLegsA {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(8deg); }
+}
+@keyframes idleBugLegsB {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-8deg); }
+}
+@keyframes idleBugAntennae {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(5deg); }
+  75%      { transform: rotate(-5deg); }
+}
+@keyframes idleMagnifySearch {
+  0%     { transform: translate( 0px,  0.7px); }
+  12.5%  { transform: translate( 0.5px,0.5px); }
+  25%    { transform: translate( 0.7px,0px); }
+  37.5%  { transform: translate( 0.5px,-0.5px); }
+  50%    { transform: translate( 0px, -0.7px); }
+  62.5%  { transform: translate(-0.5px,-0.5px); }
+  75%    { transform: translate(-0.7px, 0px); }
+  87.5%  { transform: translate(-0.5px, 0.5px); }
+  100%   { transform: translate( 0px,  0.7px); }
+}
+@keyframes idleBrushArc {
+  from { transform: rotate(-3.9deg); }
+  to   { transform: rotate(3.9deg); }
+}
+/* Ruler – tick-mark sweep, forward then reverse (5000ms cycle).
+   Each tick fires twice: fwd pass (delays 0→10) then return pass (delays 10→0).
+   Two separate `animation` layers are required so that each tick element can
+   receive two independent `animationDelay` values (one per direction) via
+   inline style. Do not collapse the dual `animation` shorthand into one. */
+@keyframes idleRulerTick {
+  0%, 100% { opacity: 0.35; }
+  10%       { opacity: 1; }
+  20%       { opacity: 0.35; }
+}
+/* Robot – teeth progress-bar sweep */
+@keyframes idleRobotTeeth {
+  0%        { opacity: 0.35; }
+  10%       { opacity: 1; }
+  20%, 100% { opacity: 0.35; }
+}
+/* Robot – eye blink */
+@keyframes idleRobotBlink {
+  0%, 16%, 100% { opacity: 0; }
+  8%            { opacity: 1; }
+}
+/* Robot – antenna sparks */
+@keyframes idleRobotSpark {
+  0%, 30%  { opacity: 0; transform: scale(0); }
+  15%      { opacity: 1; transform: scale(1); }
+}
 
 .idle-cursor-blink  { animation: idleCursorBlink  1000ms step-end infinite; }
 .idle-status-pulse  { animation: idleStatusPulse  2000ms ease-in-out infinite; }
@@ -1075,11 +1132,62 @@ div[class*='announcementBar'] {
 .idle-arm-rock      { animation: idleArmRock  5000ms ease-in-out infinite; }
 .idle-palm-wave     { animation: idlePalmWave 5000ms ease-in-out infinite; }
 .idle-gear-spin     { animation: idleGearSpin 2500ms linear infinite; }
+.idle-stopwatch-hand {
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+  animation: idleStopwatchHand 10s linear infinite;
+}
+.idle-bug-legs-a {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: idleBugLegsA 800ms ease-in-out infinite;
+}
+.idle-bug-legs-b {
+  transform-box: fill-box;
+  transform-origin: 100% 50%;
+  animation: idleBugLegsB 800ms ease-in-out infinite;
+}
+.idle-bug-antennae {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: idleBugAntennae 1200ms ease-in-out infinite;
+}
+.idle-magnify-search {
+  animation: idleMagnifySearch 4500ms linear infinite;
+}
+.idle-brush-arc {
+  transform-box: fill-box;
+  transform-origin: 43% 68%; /* pivot ≈ (55, 87) in 128×128 viewBox — the ferrule */
+  animation: idleBrushArc 2800ms ease-in-out infinite alternate;
+}
+/* DO NOT deduplicate — two animation layers needed for independent per-tick delay offsets (fwd/bwd) */
+.idle-ruler-tick {
+  animation: idleRulerTick 5000ms linear infinite,
+             idleRulerTick 5000ms linear infinite;
+}
+.idle-robot-teeth {
+  animation: idleRobotTeeth 2500ms linear infinite;
+}
+.idle-robot-blink {
+  opacity: 0;
+  animation: idleRobotBlink 5000ms linear infinite;
+}
+.idle-robot-spark {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: idleRobotSpark 2500ms ease-in-out infinite;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .idle-cursor-blink, .idle-status-pulse,
   .idle-flow-drift, .idle-ready-breathe, .ping-once,
-  .idle-arm-rock, .idle-palm-wave, .idle-gear-spin {
+  .idle-arm-rock, .idle-palm-wave, .idle-gear-spin,
+  .idle-stopwatch-hand,
+  .idle-bug-legs-a, .idle-bug-legs-b, .idle-bug-antennae,
+  .idle-magnify-search,
+  .idle-brush-arc,
+  .idle-ruler-tick,
+  .idle-robot-teeth, .idle-robot-blink, .idle-robot-spark {
     animation: none !important;
   }
 }
