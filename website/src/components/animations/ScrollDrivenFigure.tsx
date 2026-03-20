@@ -103,7 +103,9 @@ export default function ScrollDrivenFigure({
       }
 
       const denom = end - effectiveStart;
-      const adjRaw = denom <= 0 ? 0 : (rect.bottom - effectiveStart) / denom;
+      // denom < 0 when effectiveStart > end (tall element already past its animation range);
+      // division yields > 1, which the clamp below collapses to 1 — intentional.
+      const adjRaw = denom === 0 ? 1 : (rect.bottom - effectiveStart) / denom;
       setPhase(Math.min(1, Math.max(0, adjRaw)));
     };
 
