@@ -7,7 +7,7 @@ You are implementing UI for a monochrome-first design system. Color exists only 
 1. **Achromatic base** — Use pure gray for all surfaces, borders, and text. Do NOT use tinted neutrals. Instead, use the neutral palette (C:0.000) for all non-semantic elements.
 2. **Color = meaning** — Apply chromatic color only for semantic callouts, diagrams, status indicators, and data viz. Before using any color, answer: "what does this hue mean here?" If there is no semantic answer, use neutral gray instead.
 3. **Equal hue standing** — All 9 chromatic hues have equal weight. Do NOT treat any single hue as "the brand color." Instead, select hue based on semantic meaning (see Color Selection Procedure).
-4. **Flat construction** — Do NOT use gradients, shadows, or glows. Instead, use solid fills, clean borders (1px solid), and whitespace for visual hierarchy.
+4. **Flat construction** — Do NOT use gradients, shadows, or glows. Instead, use solid fills, clean borders (1px solid), and whitespace for visual hierarchy. Exception: All emoji representations (Noto SVGs via `scripts/fetch-emoji.js`, custom inline SVG recreations, or `<img>` fallbacks) are exempt — emoji visuals must never be modified to conform to this system.
 5. **Typographic interaction** — Identify interactive elements by typography and shape. Use underlines + font-weight for links. Use dark/light fills for buttons. Do NOT rely on color to signal interactivity. Instead, use shape, weight, and underlines.
 6. **Color budget: 60-30-10** — 60% achromatic surfaces, 30% elevated gray, 10% semantic color. Default to 95/5 for content pages. Reserve 60-30-10 for diagram-heavy pages only.
 7. **Curved default, angular accent** — Use rounded forms (squircle containers, Bezier connectors) as the default shape vocabulary. Reserve angular forms (diamonds, chevrons, sharp miters) for high-arousal semantic states (error, warning, code). Do NOT mix angular containers with positive-valence content. Instead, match shape curvature to semantic valence (see Illustration System).
@@ -482,13 +482,17 @@ Do NOT place primary and worker actors in the same horizontal row without applyi
 
 **AgentNode** — Original Google Noto 🤖 emoji (`/img/emoji/u1f916.svg`):
 - Delegates to `NotoEmoji` component with `codepoint="1f916"`.
-- Uses original emoji gradients and hardcoded colors (`#C62828` red, `#90A4AE` gray).
-- Intentional exception to flat-construction constraint #4 — the robot is a branded identity element.
 - Gradient ID isolation is automatic; SVG `<image>` renders as a separate document.
 
 **NotoEmoji** — Generic wrapper for any Noto emoji:
 - `<NotoEmoji codepoint="1f4a1" x={...} y={...} size={40} />` renders `/img/emoji/u1f4a1.svg`.
 - Add new emojis via `node scripts/fetch-emoji.js <codepoint>` — caches raw in `scripts/.noto-cache/`, writes cleaned SVG to `website/static/img/emoji/u{cp}.svg`.
+
+#### Animated Emoji: `NotoEmoji` vs Hand-Coded Components
+
+Use **`NotoEmoji`** (via `<image>`) for static emoji nodes. The SVG renders as an opaque sub-document — individual paths inside it are not accessible to the parent SVG's CSS or SMIL, so per-path animation is impossible.
+
+Use a **hand-coded component** (e.g. `AuthorWaveNode`) when the emoji needs animation. Inline the paths directly into the parent SVG so CSS transforms and `className` can target individual elements. Obtain source paths from the Noto SVG (via `scripts/fetch-emoji.js`); simplify fills to flat colors (no gradients) and omit any paths not visible at the target size.
 
 #### Emoji Node Rendering
 
@@ -636,7 +640,7 @@ Do NOT create icons at arbitrary sizes. Instead, use `--icon-*` tokens.
 
 ### Illustration Icon Construction
 
-Illustration icons follow a Noto Color Emoji–inspired flat construction standard. All 128×128 viewBox icons must comply.
+Illustration icons follow a Noto Color Emoji–inspired flat construction standard. All 128×128 viewBox icons must comply. This section applies to *custom* illustration icons — emoji representations (fetched, inlined, or recreated from Noto) are exempt per constraint #4.
 
 #### Core Principles
 

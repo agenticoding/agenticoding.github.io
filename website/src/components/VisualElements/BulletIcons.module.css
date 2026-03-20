@@ -10,39 +10,29 @@
   flex-direction: row;
   align-items: flex-start;
   gap: var(--space-2);
-  opacity: 0.4;
-  transform: translateY(6px);
-  will-change: opacity, transform;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .item {
-    opacity: 1 !important;
-    transform: none !important;
-    will-change: auto;
-  }
-}
-
-.iconWrapper {
+/* Emoji SVG components render without a className — enforce layout here. */
+.item > svg {
   flex-shrink: 0;
-  line-height: 0;
+  display: block;
 }
 
 .text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-0h);
 }
 
 .label {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--text-base);
   color: var(--text-heading);
-  line-height: 1.25;
+  line-height: var(--lh-sm);
 }
 
 .description {
   font-size: var(--text-sm);
   color: var(--text-body);
-  line-height: 1.5;
+  line-height: var(--lh-sm);
 }
