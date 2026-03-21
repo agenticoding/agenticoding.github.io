@@ -22,6 +22,7 @@ import ThreeContextWorkflow from '../VisualElements/ThreeContextWorkflow';
 import ContextWindowMeter from '../VisualElements/ContextWindowMeter';
 import AbstractShapesVisualization from '../VisualElements/AbstractShapesVisualization';
 import PlanningStrategyComparison from '../VisualElements/PlanningStrategyComparison';
+import ExecutionModeComparison from '../VisualElements/ExecutionModeComparison';
 import CompoundQualityVisualization from '../VisualElements/CompoundQualityVisualization';
 import KnowledgeExpansionDiamond from '../VisualElements/KnowledgeExpansionDiamond';
 import SystemFlowDiagram from '../VisualElements/SystemFlowDiagram';
@@ -95,6 +96,7 @@ const VISUAL_COMPONENTS = {
   ContextWindowMeter,
   AbstractShapesVisualization,
   PlanningStrategyComparison,
+  ExecutionModeComparison,
   CompoundQualityVisualization,
   KnowledgeExpansionDiamond,
   SystemFlowDiagram,
