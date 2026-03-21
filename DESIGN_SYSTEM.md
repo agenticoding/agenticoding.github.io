@@ -11,7 +11,7 @@ You are implementing UI for a monochrome-first design system. Color exists only 
 5. **Typographic interaction** — Identify interactive elements by typography and shape. Use underlines + font-weight for links. Use dark/light fills for buttons. Do NOT rely on color to signal interactivity. Instead, use shape, weight, and underlines.
 6. **Color budget: 60-30-10** — 60% achromatic surfaces, 30% elevated gray, 10% semantic color. Default to 95/5 for content pages. Reserve 60-30-10 for diagram-heavy pages only.
 7. **Curved default, angular accent** — Use rounded forms (squircle containers, Bezier connectors) as the default shape vocabulary. Reserve angular forms (diamonds, chevrons, sharp miters) for high-arousal semantic states (error, warning, code). Do NOT mix angular containers with positive-valence content. Instead, match shape curvature to semantic valence (see Illustration System).
-8. **Motion is purposive** — Every animated element must answer: "what does this motion orient, teach, or confirm?" If no answer, use no animation. Do NOT animate for decoration. Reserve looping motion (idle states) for semantic signals only: active authoring, AI processing, data flow, system readiness. Max 2 simultaneous idle loops per figure.
+8. **Motion is purposive** — Every animated element must answer: "what does this motion orient, teach, or confirm?" If no answer, use no animation. Do NOT animate for decoration. Reserve looping motion (idle states) for semantic signals only: active authoring, AI processing, data flow, system readiness. Max 2 simultaneous idle loop *classes* per figure (staggered DOM instances of the same animation class count as 1).
 9. **Static completeness** — Design the final settled state first. Animation reveals content; it does not define it. Every figure must communicate its full concept in the phase=1 state with no motion.
 
 ---
@@ -819,7 +819,7 @@ All idle classes defined once in `custom.css`. Do NOT define idle keyframes per-
 | `.idle-gear-spin` | `rotate 0→360°` linear | 2500ms | Mechanical processing; LLM inference engine |
 
 Rules:
-- Max **2 idle loops** simultaneously per figure. `cursor-blink` and `status-pulse` never together.
+- Max **2 idle loop classes** simultaneously per figure. Staggered instances of the same class on multiple DOM elements count as 1. `cursor-blink` and `status-pulse` never together.
 - `ping-once` is exempt (transient; `animation-iteration-count: 1`).
 - Remove idle classes via `useActs` when the act advances — do NOT let them run in settled state.
 

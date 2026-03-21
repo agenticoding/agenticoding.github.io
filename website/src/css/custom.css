@@ -1097,6 +1097,10 @@ div[class*='announcementBar'] {
   from { transform: rotate(-3.9deg); }
   to   { transform: rotate(3.9deg); }
 }
+@keyframes idleMicroscopeRock {
+  from { transform: rotate(-2deg); }
+  to   { transform: rotate(2deg); }
+}
 /* Ruler – tick-mark sweep, forward then reverse (5000ms cycle).
    Each tick fires twice: fwd pass (delays 0→10) then return pass (delays 10→0).
    Two separate `animation` layers are required so that each tick element can
@@ -1160,10 +1164,27 @@ div[class*='announcementBar'] {
   transform-origin: 43% 68%; /* pivot ≈ (55, 87) in 128×128 viewBox — the ferrule */
   animation: idleBrushArc 2800ms ease-in-out infinite alternate;
 }
+.idle-microscope-rock {
+  transform-box: fill-box;
+  transform-origin: 50% 95%; /* pivot near base plate bottom */
+  animation: idleMicroscopeRock 3500ms ease-in-out infinite alternate;
+}
 /* DO NOT deduplicate — two animation layers needed for independent per-tick delay offsets (fwd/bwd) */
 .idle-ruler-tick {
   animation: idleRulerTick 5000ms linear infinite,
              idleRulerTick 5000ms linear infinite;
+}
+/* Bookmark tabs – rests at full opacity, brief dip sweeps top→bottom then bottom→top.
+   Inverted from idleRulerTick: rest is 1.0, event is a dim dip.
+   DO NOT deduplicate — two animation layers needed for independent per-tab delay offsets (fwd/bwd) */
+@keyframes idleBookmarkTab {
+  0%, 100% { opacity: 1; }
+  10%       { opacity: 0.4; }
+  20%       { opacity: 1; }
+}
+.idle-bookmark-tab {
+  animation: idleBookmarkTab 4000ms linear infinite,
+             idleBookmarkTab 4000ms linear infinite;
 }
 .idle-robot-teeth {
   animation: idleRobotTeeth 2500ms linear infinite;
@@ -1178,6 +1199,57 @@ div[class*='announcementBar'] {
   animation: idleRobotSpark 2500ms ease-in-out infinite;
 }
 
+@keyframes idleCompassNeedle {
+  from { transform: rotate(-15deg); }
+  to   { transform: rotate(15deg); }
+}
+@keyframes idleBullseyeRing {
+  0%, 100% { opacity: 1; }
+  20%      { opacity: 0.45; }
+  40%      { opacity: 1; }
+}
+.idle-compass-needle {
+  /* view-box (not fill-box): needle <g> bbox doesn't cover the compass center,
+     so we pivot at the SVG viewBox arc center (62.37, 65.63 from the outer ring path) */
+  transform-box: view-box;
+  transform-origin: 62.37px 65.63px;
+  animation: idleCompassNeedle 4000ms ease-in-out infinite alternate;
+}
+.idle-bullseye-ring {
+  animation: idleBullseyeRing 5000ms ease-in-out infinite;
+}
+@keyframes idleAirStripe {
+  0%, 100% { opacity: 0; transform: translate(0, 0); }
+  50%      { opacity: 0.8; transform: translate(-4px, 4px); }
+}
+.idle-air-stripe {
+  animation: idleAirStripe 2000ms ease-in-out infinite;
+}
+@keyframes idleBabysitRock {
+  from { transform: rotate(-6deg); }
+  to   { transform: rotate(6deg); }
+}
+.idle-babysit-rock {
+  /* view-box (not fill-box): pivot is bottom-center of the 128×128 viewBox (64, 124),
+     outside the figure's own bbox */
+  transform-box: view-box;
+  transform-origin: 64px 124px;
+  animation: idleBabysitRock 4000ms ease-in-out infinite alternate;
+}
+
+/* Wordmark headings */
+.wordmark-heading {
+  display: block;
+  height: 80px;
+  margin: 0 auto var(--space-2);
+}
+.wordmark-heading-sm {
+  height: 72px;
+}
+[data-theme='dark'] .wordmark-light { display: none; }
+[data-theme='light'] .wordmark-dark,
+html:not([data-theme='dark']) .wordmark-dark { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .idle-cursor-blink, .idle-status-pulse,
   .idle-flow-drift, .idle-ready-breathe, .ping-once,
@@ -1185,9 +1257,11 @@ div[class*='announcementBar'] {
   .idle-stopwatch-hand,
   .idle-bug-legs-a, .idle-bug-legs-b, .idle-bug-antennae,
   .idle-magnify-search,
-  .idle-brush-arc,
-  .idle-ruler-tick,
-  .idle-robot-teeth, .idle-robot-blink, .idle-robot-spark {
+  .idle-brush-arc, .idle-microscope-rock,
+  .idle-ruler-tick, .idle-bookmark-tab,
+  .idle-robot-teeth, .idle-robot-blink, .idle-robot-spark,
+  .idle-compass-needle, .idle-bullseye-ring,
+  .idle-air-stripe, .idle-babysit-rock {
     animation: none !important;
   }
 }
