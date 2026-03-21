@@ -326,6 +326,15 @@
 }
 .alert--success .alert__heading { color: var(--visual-cyan); }
 
+/* Docusaurus Details component renders as <details class="alert alert--info ...">
+   and sets border: 1px solid var(--ifm-alert-border-color) — so it inherits indigo
+   (#307ac0) by default. Target via HTML tag + Infima class (both are non-hashed)
+   to reset border and decoration color to neutral. */
+details.alert {
+  --docusaurus-details-decoration-color: var(--border-default);
+  border-color: var(--border-default);
+}
+
 .alert--info { /* :::info */
   --ifm-alert-foreground-color: var(--visual-indigo);
   --ifm-alert-background-color: var(--surface-raised);
@@ -891,6 +900,33 @@ code, pre, kbd, [class*="codeBlock"] {
 .mono-spec { font-family: var(--font-mono-spec); }
 .mono-human { font-family: var(--font-mono-human); }
 .mono-keyword { font-family: var(--font-mono-keyword); }
+
+/* Prompt example block — Neon base, Krypton highlights */
+.prompt-example {
+  font-family: var(--font-mono);
+  font-feature-settings: var(--font-mono-features);
+  font-size: var(--text-sm);
+  line-height: var(--lh-md);
+  color: var(--text-body);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-3) 0;
+}
+
+.prompt-example p {
+  margin: 0;
+}
+
+.prompt-example code {
+  font-family: var(--font-mono-keyword);
+  font-feature-settings: var(--font-mono-features);
+  background: none;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
 
 /* ========================================================================
    DOC SIDEBAR — Design system conformance

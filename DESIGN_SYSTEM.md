@@ -123,7 +123,7 @@ Color encodes *category*. Typeface encodes *speaker*. These axes are orthogonal 
 
 | Face | Voice | Apply To |
 |------|-------|----------|
-| **Neon** | System / neutral | Source code, terminal output, config files, tool invocations. Default for all `<code>`. |
+| **Neon** | System / neutral | Source code, terminal output, config files. Default for all `<code>` and prompt block base text. |
 | **Argon** | AI agent | LLM responses, agent reasoning traces, AI-generated explanations, ghost text. |
 | **Xenon** | Authoritative / structural | Spec IDs, schema keys, API contracts, system boundary labels, constraint rules. |
 | **Radon** | Human / informal | Code comments, developer notes, prompt drafts, TODO markers. |
@@ -133,17 +133,62 @@ Color encodes *category*. Typeface encodes *speaker*. These axes are orthogonal 
 
 **Code blocks:** Neon base. Comments in Radon. Keywords in Krypton. AI output in Argon.
 
-**Prompt templates:** Human text in Radon. Placeholders in Xenon. Expected AI response in Argon.
+**Prompt blocks:** Five classes, each assigned two voices (max-2 constraint applies per block):
+
+| Class | Base | Highlight | Highlight tokens |
+|-------|------|-----------|-----------------|
+| Example | Neon | Krypton | Tool names, file paths, HTTP codes/headers, library names, protocol refs, search queries |
+| Template | Neon | Xenon | Placeholders (`$VAR`, `{VAR}`, `[name]`), deliverable filenames, section headers |
+| Command | Krypton | Xenon | URLs, file paths, `@element-refs` |
+| Response | Argon | Krypton | Code tokens within AI-generated text |
+| Constraint | Neon | Xenon | `DO NOT`, `ALWAYS`, `Instead` — rule-enforcement keywords |
+
+Radon appears inline only for persona attribution — the "You are a [role]" identity string — never as a block base. Apply as `<code class="mono-human">` within a Neon block.
 
 **Spec tables:** Spec IDs in Xenon. Verification methods in Neon. Rationale in Argon.
 
 **Diagram labels:** System/boundary names in Xenon. Agent labels in Argon. Human actors in Radon. Data flows in Krypton.
 
-**Inline code:** Default Neon. Override via utility class: `<code class="mono-ai">`, `<code class="mono-spec">`, etc.
+**Inline code:** Default Neon. Override via utility class: `<code class="mono-ai">`, `<code class="mono-spec">`, etc. Inside `.prompt-example`, bare `<code>` defaults to Krypton — no class needed. Override to Xenon with `<code class="mono-spec">` for Template/Constraint highlights.
 
 ### Voice Constraints
 
 Voice faces: monospace only. Max 2 per block. Radon is scarce — not for emphasis. Fallback: `var(--font-mono)` → `monospace`.
+
+### Prompt Block Component
+
+Use `<div className="prompt-example">` for all inline prompt illustrations in MDX docs. Do NOT use fenced code blocks for prompt examples — they lose the typographic voice layer.
+
+**CSS class: `.prompt-example`** (defined in `website/src/css/custom.css`)
+- Base font: `--font-mono` (Neon)
+- `<code>` children default to `--font-mono-keyword` (Krypton) — correct for Example and Command classes
+- Override for Template/Constraint class: add `className="mono-spec"` to placeholder or constraint-keyword `<code>` elements (Xenon)
+- Override for Response class: add `className="mono-ai"` to the `<div>` itself (Argon base)
+
+```jsx
+{/* Example class — Krypton highlights */}
+<div className="prompt-example">
+  Use <code>ChunkHound</code> to search for <code>"error patterns"</code> in our codebase.
+</div>
+
+{/* Template class — Xenon placeholders */}
+<div className="prompt-example">
+  Analyze <code className="mono-spec">$FAILURE_DESCRIPTION</code> and propose a fix.
+</div>
+
+{/* Constraint class — Xenon enforcement keywords */}
+<div className="prompt-example">
+  <code className="mono-spec">Do NOT</code> store passwords in plain text.
+  <code className="mono-spec">Instead</code>, use bcrypt with <code>10 salt rounds</code>.
+</div>
+
+{/* Response class — Argon base */}
+<div className="mono-ai prompt-example">
+  I found 3 locations where raw errors leak: <code>auth.ts:47</code>, <code>users.ts:112</code>…
+</div>
+```
+
+For line breaks within a prompt block: use `<br />` only for **intentional structural breaks** (one requirement per line in Exact/Command prompts). Prose-style prompts (Exploration) wrap freely — no `<br />`.
 
 ---
 
