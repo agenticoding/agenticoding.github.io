@@ -1,0 +1,42 @@
+<svg width="280" height="64" viewBox="0 0 280 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#14B8A6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Logo Symbol (48x48, centered vertically at y=8) -->
+  <g transform="translate(8, 8)">
+    <!-- Background circle -->
+    <circle cx="24" cy="24" r="21.6" fill="url(#gradient)" opacity="0.1"/>
+
+    <!-- Magnifying glass handle -->
+    <path
+      d="M 31.2 31.2 L 38.4 38.4"
+      stroke="url(#gradient)"
+      stroke-width="2.88"
+      stroke-linecap="round"
+    />
+
+    <!-- Main circle of magnifying glass -->
+    <circle
+      cx="21.6"
+      cy="21.6"
+      r="12"
+      stroke="url(#gradient)"
+      stroke-width="2.88"
+      fill="none"
+    />
+
+    <!-- Three dots inside representing multiple sources -->
+    <circle cx="16.8" cy="19.2" r="1.44" fill="#14B8A6"/>
+    <circle cx="21.6" cy="21.6" r="1.44" fill="#14B8A6"/>
+    <circle cx="26.4" cy="24" r="1.44" fill="#14B8A6"/>
+  </g>
+
+  <!-- Wordmark Text -->
+  <text x="76" y="45" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="40">
+    <tspan fill="#10B981">Argu</tspan><tspan fill="#14B8A6">Seek</tspan>
+  </text>
+</svg>
