@@ -6,78 +6,61 @@ sidebar_custom_props:
 title: 'Four-Phase Workflow'
 ---
 
-import WorkflowCircle from '@site/src/components/VisualElements/WorkflowCircle';
+import OperatorCycleDiagram from '@site/src/components/VisualElements/OperatorCycleDiagram';
+import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
 import PlanningStrategyComparison from '@site/src/components/VisualElements/PlanningStrategyComparison';
+import BookmarkTabsEmoji from '@site/src/components/VisualElements/BookmarkTabsEmoji';
+import RobotEmoji from '@site/src/components/VisualElements/RobotEmoji';
+import StraightRulerEmoji from '@site/src/components/VisualElements/StraightRulerEmoji';
+import MicroscopeEmoji from '@site/src/components/VisualElements/MicroscopeEmoji';
+import ExecutionModeComparison from '@site/src/components/VisualElements/ExecutionModeComparison';
+import AirplaneEmoji from '@site/src/components/VisualElements/AirplaneEmoji';
+import BabysitEmoji from '@site/src/components/VisualElements/BabysitEmoji';
+import CompassEmoji from '@site/src/components/VisualElements/CompassEmoji';
+import BullseyeEmoji from '@site/src/components/VisualElements/BullseyeEmoji';
 
-The hardest part of working with AI agents isn't learning new tools or writing better prompts. It's letting go.
+[Lessons 1–2](../fundamentals/lesson-1-how-llms-work.mdx) established the operator mindset — you're directing tools, not writing every line. This lesson makes that practical: a systematic workflow for maintaining architectural control while delegating implementation at scale.
 
-For your entire career, your value has been in the details. You've built your reputation on writing clean code, spotting subtle bugs, understanding every line you ship. You've internalized that good engineers understand their code deeply, own their implementations, and take pride in craftsmanship.
+The core challenge: you can't read, verify, and mentally own 2,000 lines of generated implementation the way you owned 200 lines you wrote yourself. You ensure quality differently — by thinking systematically: Does this fit the architecture? Does it follow our patterns? Does the behavior match my mental model?
 
-AI agents force you to operate differently. You can't understand every line at the scale agents produce code. You can't read, verify, and mentally own 2,000 lines of generated implementation the way you owned 200 lines you wrote yourself. If you try, you'll burn out or become the bottleneck that negates every productivity gain the agent provides.
+You read _selectively_. When an agent generates 50 files, you review at the system level: module responsibilities, inputs and outputs, state management, integration points. You spot-check where your mental model says "this is risky."
 
-The shift required is psychological as much as methodological. You're moving from **craftsman to operator**, from **implementer to orchestrator**, from **writing code to directing systems**. Your value moves up the stack—from syntax to structure, from loops to logic, from implementation details to architectural decisions.
+Here's the counterintuitive reality: **properly prompted AI-generated code is often easier to read than hand-written code**. LLMs follow patterns with mechanical precision. When you provide quality patterns and clear constraints, they replicate them perfectly. Your job shifts from ensuring every implementation detail is correct to ensuring the patterns themselves are correct.
 
-This doesn't mean you stop caring about quality. It means you ensure quality differently. You stop validating correctness by reading every line and start validating correctness by thinking systematically: Does this fit the architecture? Does it follow our patterns? Does it handle the risks I identified? Does the behavior match my mental model of how this system should work?
-
-Your focus shifts from the code itself to two higher-level concerns: **the context you provide** (what patterns, constraints, and examples guide the agent) and **the prompts you craft** (what architectural requirements and integration points you specify). Get these right, and you can confidently ship thousands of lines of generated code. Get them wrong, and you'll waste time fixing, refactoring, and second-guessing.
-
-This lesson teaches the systematic workflow that makes this mindset shift practical: Research > Plan > Execute > Validate. It's how you maintain architectural control while delegating implementation, how you ensure quality without reading every character, and how you scale your impact beyond what you could personally type.
-
-## The Operator Mindset
-
-Before diving into the workflow, let's be explicit about the role shift. When working with AI agents at scale, you're not doing the same job faster—you're doing a different job.
-
-**Traditional developer workflow:**
-
-- Write code
-- Test code
-- Review code
-- Debug code
-- Refactor code
-
-**Operator workflow:**
-
-- Map the system (modules, boundaries, data flow)
-- Research existing patterns and constraints
-- Plan the change at the architecture level
-- Direct the agent with precise context
-- Validate behavior against your mental model
-
-Notice what's missing from the second list: writing implementation code, reading every line, debugging syntax errors. The agent handles those. Your cognitive load shifts entirely to system-level thinking—module boundaries and responsibilities, inputs and outputs, state management, and the contracts between components.
-
-This doesn't mean you never read code. It means you read _selectively_. When an agent generates 50 files, you don't review them line by line. You review at the system level: Are module responsibilities correct? Do inputs and outputs match expectations? Is state managed where it should be? Do the integration points work? You spot-check where your mental model says "this is risky" or "this is too complex."
-
-Here's the counterintuitive reality: **properly prompted AI-generated code is often easier to read than hand-written code**. LLMs follow patterns with mechanical precision across thousands of lines. When you provide quality patterns and clear constraints, they replicate them perfectly. You're not sacrificing quality by delegating to agents—you're achieving structural consistency at a scale individual craftsmanship can't match. Your job shifts from ensuring every implementation detail is correct to ensuring the patterns themselves are correct.
-
-Your mental model is your blueprint. The workflow below is your process for ensuring quality without drowning in detail.
-
-**One thing doesn't change: you own the results.** Machines can't be held accountable—they execute instructions. Every line of agent-generated code ships under your name. This is the engineer's responsibility, and it remains yours regardless of which tool writes the implementation.
+**One thing doesn't change: you own the results.** Every line of agent-generated code ships under your name, regardless of which tool writes the implementation.
 
 ## The Four-Phase Workflow
 
 Every significant agent interaction should follow this pattern:
 
-<WorkflowCircle />
+<ScrollDrivenFigure phaseEnd={0.5}>
+  <OperatorCycleDiagram />
+</ScrollDrivenFigure>
 
 Each phase has a distinct purpose, and skipping any one of them dramatically increases your failure rate. Let's walk through each phase in detail.
 
-## Phase 1: Research (Grounding)
+## <MicroscopeEmoji size={28} /> Phase 1: Research (Grounding) {#phase-1-research-grounding}
 
 You wouldn't start coding in a new codebase without first learning the architecture, patterns, and conventions. And you probably keep Google and Stack Overflow open while you work. Your agent needs the same context.
 
 This is **grounding**—the bridge between the general-purpose knowledge and patterns embedded in the model and the actual real-world context it needs to operate in. Without grounding, agents hallucinate patterns, invent inconsistent APIs, and miss your existing implementations.
 
-### Code Research: [ChunkHound](https://chunkhound.github.io/)
+<a href="https://chunkhound.github.io/" target="_blank" rel="noopener noreferrer" style={{display:'block',textAlign:'center',marginBottom:'var(--space-2)'}}>
+  <img src="/img/wordmarks/chunkhound.svg" alt="ChunkHound" className="wordmark-heading wordmark-light" />
+  <img src="/img/wordmarks/chunkhound-dark.svg" alt="ChunkHound" className="wordmark-heading wordmark-dark" />
+</a>
 
 For code context, you need semantic code search. [ChunkHound](https://chunkhound.github.io/) performs **code deep research**—answering architectural questions like "How is authentication handled?" or "What's the error handling pattern?" instead of just keyword matching. It retrieves the relevant patterns and implementations from your codebase.
 
-### Domain Research: [ArguSeek](https://github.com/ArguSeek/arguseek)
+<a href="https://github.com/ArguSeek/arguseek" target="_blank" rel="noopener noreferrer" style={{display:'block',textAlign:'center',marginBottom:'var(--space-2)'}}>
+  <img src="/img/wordmarks/arguseek.svg" alt="ArguSeek" className="wordmark-heading wordmark-heading-sm" />
+</a>
 
 For domain knowledge, ArguSeek pulls information from Google directly and efficiently into your context. Need the latest API docs? Best practices from a specific framework? An algorithm buried in a 50-page research paper PDF? A solution from a GitHub issue? ArguSeek retrieves it and makes it available to your agent—no manual tab-switching, copy-pasting, or context reconstruction.
 
 **We'll cover both tools in detail in Lesson 5.** For now, understand the principle: ground your agent in both your codebase and domain knowledge before planning changes.
 
-## Phase 2: Plan (Strategic Decision)
+## <BookmarkTabsEmoji size={28} /> Phase 2: Plan (Strategic Decision) {#phase-2-plan-strategic-decision}
 
 With research complete, you now plan the change. Planning isn't a single approach—it's a strategic choice based on whether you know the solution or need to discover it.
 
@@ -89,30 +72,25 @@ With research complete, you now plan the change. Planning isn't a single approac
 
 <!-- presentation-only-end -->
 
-**Exploration Planning:** Use this when the solution space is unclear or you need to discover the best approach. Rather than dictating a solution, frame the problem space and steer the agent to research your codebase patterns (via ChunkHound) and domain knowledge (via ArguSeek), explore alternatives, and iterate with you through reasoning-action cycles. You're discovering the approach together.
+<CompassEmoji size={22} /> **Exploration Planning:** Use this when the solution space is unclear or you need to discover the best approach. Rather than dictating a solution, frame the problem space and steer the agent to research your codebase patterns (via ChunkHound) and domain knowledge (via ArguSeek), explore alternatives, and iterate with you through reasoning-action cycles. You're discovering the approach together.
 
 This approach has higher cost and time investment, but it discovers better solutions, catches architectural issues early, and helps you build a clearer mental model before committing to implementation.
 
-```markdown
-Our Express API has inconsistent error handling—some endpoints return raw errors,
-others JSON, and stack traces leak to production. Use ChunkHound to search for
-"error handling patterns" and "error response format" in our codebase.
-Use ArguSeek to research Express error handling best practices and RFC 7807.
-Analyze what you find, propose 2-3 standardization approaches with trade-offs,
-and recommend one.
-```
+<div className="prompt-example">
+Our <code>Express</code> API has inconsistent error handling—some endpoints return raw errors, others JSON, and stack traces leak to production. Use <code>ChunkHound</code> to search for <code>"error handling patterns"</code> and <code>"error response format"</code> in our codebase. Use <code>ArguSeek</code> to research <code>Express</code> error handling best practices and <code>RFC 7807</code>. Analyze what you find, propose 2-3 standardization approaches with trade-offs, and recommend one.
+</div>
 
-**Exact Planning:** Use this when you know the solution and can articulate it precisely. Be directive. Define the task with specificity, specify integration points and patterns to follow, provide explicit constraints and requirements, list edge cases you've identified, and define clear acceptance criteria. The agent executes along a predetermined path.
+<BullseyeEmoji size={22} /> **Exact Planning:** Use this when you know the solution and can articulate it precisely. Be directive. Define the task with specificity, specify integration points and patterns to follow, provide explicit constraints and requirements, list edge cases you've identified, and define clear acceptance criteria. The agent executes along a predetermined path.
 
 This approach is faster and more cost-effective, but requires upfront clarity and architectural certainty—if your plan is wrong or incomplete, the generated code will be wrong. Use exact planning when you've already done the architectural thinking and just need reliable, consistent implementation.
 
-```markdown
-Add rate limiting middleware to /api/\* using Redis.
-Follow the pattern in src/middleware/auth.ts.
-Authenticated users: 1000 req/hour, anonymous: 100 req/hour, admins unlimited.
-Return 429 with Retry-After header.
-Fail open if Redis is down - log warning but allow request through.
-```
+<div className="prompt-example">
+Add rate limiting middleware to <code>/api/*</code> using <code>Redis</code>.<br />
+Follow the pattern in <code>src/middleware/auth.ts</code>.<br />
+Authenticated users: <code>1000 req/hour</code>, anonymous: <code>100 req/hour</code>, admins unlimited.<br />
+Return <code>429</code> with <code>Retry-After</code> header.<br />
+Fail open if <code>Redis</code> is down - log warning but allow request through.
+</div>
 
 ### Building Your Mental Model
 
@@ -199,7 +177,7 @@ This template provides a solid baseline for any planning task. In [Lesson 4: Pro
 
 :::
 
-## Phase 3: Execute (Two Execution Modes)
+## <RobotEmoji size={28} /> Phase 3: Execute (Two Execution Modes) {#phase-3-execute-two-execution-modes}
 
 <!-- presentation-only-start -->
 
@@ -207,13 +185,15 @@ This template provides a solid baseline for any planning task. In [Lesson 4: Pro
 
 <!-- presentation-only-end -->
 
+<ExecutionModeComparison />
+
 With your plan complete, you execute—but how you interact with the agent during execution fundamentally changes your productivity. There are two modes: supervised (actively watching and steering) and autonomous (fire-and-forget). Most engineers start with supervised mode to build trust, then gradually shift to autonomous mode as they develop stronger grounding and planning skills. Here's the counterintuitive truth: the real productivity gain isn't about finishing individual tasks faster. It's about working on multiple projects simultaneously and maintaining extremely long work stretches. That's where 10x productivity actually hides.
 
-### Supervised Mode ("Babysitting")
+### <BabysitEmoji size={22} /> Supervised Mode ("Babysitting")
 
 In supervised mode, you actively monitor the agent as it works. You watch each action, review intermediate outputs, steer when it drifts, and intervene when it makes mistakes. This gives you maximum control and precision—you catch issues immediately and guide the agent toward the right solution in real time. The cost is massive: your throughput tanks because you're blocked while the agent works. You can't context-switch to another task, you can't step away, and you're burning your most valuable resource (attention) on implementation details. Use this mode when you're learning how agents behave, when working on critical security-sensitive code, or when tackling complex problems where you need to build your mental model as the agent explores. This is your training ground for developing the trust and intuition that eventually allows you to let go.
 
-### Autonomous Mode ("Autopilot" / "YOLO")
+### <AirplaneEmoji size={22} /> Autonomous Mode ("Autopilot" / "YOLO")
 
 In autonomous mode, you give the agent a well-defined task from your plan, let it run, and check the results when it's done. You're not watching it work. You're doing other things—working on a different project, attending a meeting, cooking dinner, running errands. You might check your phone occasionally to see if it's blocked or needs clarification, but mostly you're away. This is where the real productivity transformation happens, and it's not what most people think. Yes, sometimes the agent finishes a task faster than you would manually. But that's not the point. The point is **parallel work** and **continuous output**. You can have three agents running simultaneously on different projects. You can maintain 8-hour stretches of productive output while only spending 2 hours at your keyboard. You can genuinely multitask in software development for the first time in history. Even if you could hand-code something in 20 minutes and the agent takes 30, autonomous mode wins if it means you're cooking dinner instead of being blocked. This mode depends entirely on excellent grounding (Phase 1) and planning (Phase 2). If you skip those phases, the agent will drift, hallucinate, and produce garbage. If you do them well, you can trust the agent to execute correctly without supervision. Your goal is to maximize time in autonomous mode—that's where you become genuinely more productive, not just slightly faster.
 
@@ -221,7 +201,7 @@ In autonomous mode, you give the agent a well-defined task from your plan, let i
 Autonomous mode isn't about speed per task. It's about working on multiple tasks simultaneously while living your life. A senior engineer running three autonomous agents in parallel while attending meetings and cooking dinner ships more code than the same engineer babysitting one agent through a single task. That's the actual game changer.
 :::
 
-## Phase 4: Validate (The Iteration Decision)
+## <StraightRulerEmoji size={28} /> Phase 4: Validate (The Iteration Decision) {#phase-4-validate-the-iteration-decision}
 
 The agent completed. Here's the reality: **LLMs are probabilistic machines that almost never produce 100% perfect output on first pass.** This isn't failure—it's expected behavior.
 
