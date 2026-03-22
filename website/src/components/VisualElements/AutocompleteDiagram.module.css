@@ -1,0 +1,15 @@
+/* AutocompleteDiagram.module.css
+ *
+ * IDE autocomplete metaphor — context ribbon + probability dropdown.
+ * Cursor blink uses the global idle-cursor-blink class (custom.css).
+ */
+
+/* ── Component ────────────────────────────────────────────────────────────── */
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 560px;
+  margin-inline: auto;
+}
