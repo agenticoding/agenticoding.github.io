@@ -6,9 +6,19 @@ sidebar_custom_props:
 title: 'Prompting 101'
 ---
 
+import PromptExample from '@site/src/components/PromptExample';
+import AutocompleteDiagram from '@site/src/components/VisualElements/AutocompleteDiagram';
+import CrossEmoji from '@site/src/components/VisualElements/CrossEmoji';
+import CheckEmoji from '@site/src/components/VisualElements/CheckEmoji';
+
 AI coding assistants aren't conversational partners—they're sophisticated pattern completion engines. Understanding this fundamental distinction changes how you prompt.
 
 Think of prompting as drawing the beginning of a pattern. The model predicts and completes what comes next based on statistical patterns from its training data. Your prompt isn't a request; it's the start of a sequence the model will finish.
+
+<figure>
+  <AutocompleteDiagram />
+  <figcaption>The model scores every possible next token against the full context and selects the highest-probability candidate — one token at a time.</figcaption>
+</figure>
 
 ## Clear Instruction-Based Prompting
 
@@ -18,24 +28,24 @@ Skip pleasantries. AI models don't need "please" or "thank you"—these tokens d
 
 Start the pattern you want completed. Use direct, action-oriented language.
 
-**Ineffective:**
+<CrossEmoji size={18} /> **Ineffective:**
 
-```
-Could you help me write a function to validate email addresses?
-Thanks in advance!
-```
+<PromptExample>
+<code className="mono-human">Could you help me write a function to validate email addresses?<br />
+Thanks in advance!</code>
+</PromptExample>
 
-**Effective:**
+<CheckEmoji size={18} /> **Effective:**
 
-```
-Write a TypeScript function that validates email addresses per RFC 5322.
-Handle edge cases:
-- Multiple @ symbols (invalid)
-- Missing domain (invalid)
-- Plus addressing (valid)
-
-Return { valid: boolean, reason?: string }
-```
+<PromptExample>
+Write a <code>TypeScript</code> function that validates email addresses per <code>RFC 5322</code>.<br />
+Handle edge cases:<br />
+- Multiple @ symbols (invalid)<br />
+- Missing domain (invalid)<br />
+- Plus addressing (valid)<br />
+<br />
+Return <code>{"{ valid: boolean, reason?: string }"}</code>
+</PromptExample>
 
 The effective prompt draws the beginning of a precise pattern: TypeScript function signature, validation rules, return type. The model completes this pattern with matching code.
 
@@ -76,13 +86,13 @@ Strong verbs establish clear patterns:
 
 **Specificity compounds effectiveness:**
 
-```
-Refactor UserRepository to use dependency injection:
-1. Extract database connection to IDatabaseAdapter interface
-2. Inject adapter via constructor
-3. Update all 7 query methods to use adapter.execute()
+<PromptExample>
+Refactor <code>UserRepository</code> to use dependency injection:<br />
+1. Extract database connection to <code>IDatabaseAdapter</code> interface<br />
+2. Inject adapter via constructor<br />
+3. Update all 7 query methods to use <code>adapter.execute()</code><br />
 4. Add unit tests mocking the adapter
-```
+</PromptExample>
 
 This defines the refactoring pattern completely. No guessing required.
 
@@ -90,25 +100,25 @@ This defines the refactoring pattern completely. No guessing required.
 
 Without constraints, the model fills gaps with assumptions. Define boundaries explicitly.
 
-**Unconstrained:**
+<CrossEmoji size={18} /> **Unconstrained:**
 
-```
+<PromptExample>
 Add authentication to the API
-```
+</PromptExample>
 
 What authentication? JWT? OAuth? Session tokens? Which endpoints?
 
-**Constrained:**
+<CheckEmoji size={18} /> **Constrained:**
 
-```
-Add JWT authentication to the API:
-- Do NOT modify existing session middleware
-- Use jsonwebtoken library
-- Protect all /api/v1/* endpoints except /api/v1/auth/login
-- Token expiry: 24 hours
-- Store user ID and role in payload
-- Return 401 for missing/invalid tokens
-```
+<PromptExample>
+Add <code>JWT</code> authentication to the API:<br />
+- Do NOT modify existing session middleware<br />
+- Use <code>jsonwebtoken</code> library<br />
+- Protect all <code>/api/v1/*</code> endpoints except <code>/api/v1/auth/login</code><br />
+- Token expiry: <code>24 hours</code><br />
+- Store user ID and role in payload<br />
+- Return <code>401</code> for missing/invalid tokens
+</PromptExample>
 
 Now the completion space is well-defined.
 
@@ -120,20 +130,20 @@ Personas work by biasing vocabulary distribution. Writing "You are a security en
 
 **Example: Generic prompt**
 
-```
+<PromptExample>
 Review this authentication code for issues.
-```
+</PromptExample>
 
 Result: Generic advice like "Check for proper validation and error handling"
 
 **Example: Security-focused prompt**
 
-```
-You are a security engineer conducting a code review.
-Review this authentication code. Flag vulnerabilities:
-SQL injection, XSS, auth bypasses, secrets in code.
+<PromptExample>
+<code className="mono-human">You are a security engineer conducting a code review.</code><br />
+Review this authentication code. Flag vulnerabilities:<br />
+<code>SQL injection</code>, <code>XSS</code>, auth bypasses, secrets in code.<br />
 Assume adversarial input and untrusted networks.
-```
+</PromptExample>
 
 Result: Targeted security analysis identifying specific vulnerabilities with mitigation strategies
 
@@ -147,25 +157,25 @@ When tasks require multiple steps, you often need control over the execution pat
 
 CoT defines each step the model must execute in sequence. You're not asking for reasoning—you're dictating the path.
 
-**Without CoT:**
+<CrossEmoji size={18} /> **Without CoT:**
 
-```
-Debug the failing test in UserService.test.ts
-```
+<PromptExample>
+Debug the failing test in <code>UserService.test.ts</code>
+</PromptExample>
 
-**With CoT:**
+<CheckEmoji size={18} /> **With CoT:**
 
-```
-Debug the failing test in UserService.test.ts:
-
-1. Read the test file, identify which test is failing
-2. Analyze test assertion: expected vs actual values
-3. Trace code path through UserService to find the bug
-4. Explain root cause
-5. Propose fix
-
+<PromptExample>
+Debug the failing test in <code>UserService.test.ts</code>:<br />
+<br />
+1. Read the test file, identify which test is failing<br />
+2. Analyze test assertion: expected vs actual values<br />
+3. Trace code path through <code>UserService</code> to find the bug<br />
+4. Explain root cause<br />
+5. Propose fix<br />
+<br />
 Provide your conclusions with evidence.
-```
+</PromptExample>
 
 **Why CoT gives you control:**
 
@@ -188,35 +198,35 @@ This matters for token efficiency and grounding. Well-structured prompts help th
 
 ### Markdown for Hierarchical Organization
 
-```markdown
-# Task: Implement OAuth 2.0 Client Credentials Flow
-
-## Requirements
-
-- Support multiple authorization servers (configurable)
-- Cache tokens until expiry (Redis)
-- Auto-retry on 401 with token refresh
-- Expose as Express middleware
-
-## Implementation Steps
-
-1. Create OAuthClient class with getToken() method
-2. Implement token caching with TTL
-3. Add retry logic with exponential backoff
-4. Write middleware injecting token into req.context
-
-## Testing
-
-- Unit tests for OAuthClient
-- Integration tests against mock OAuth server
-- Error cases: network failure, invalid credentials, expired tokens
-
-## Constraints
-
-- Use axios for HTTP requests
-- Use ioredis for caching
+<PromptExample>
+<code className="mono-spec"># Task:</code> Implement <code>OAuth 2.0</code> Client Credentials Flow<br />
+<br />
+<code className="mono-spec">## Requirements</code><br />
+<br />
+- Support multiple authorization servers (configurable)<br />
+- Cache tokens until expiry (<code>Redis</code>)<br />
+- Auto-retry on <code>401</code> with token refresh<br />
+- Expose as <code>Express</code> middleware<br />
+<br />
+<code className="mono-spec">## Implementation Steps</code><br />
+<br />
+1. Create <code>OAuthClient</code> class with <code>getToken()</code> method<br />
+2. Implement token caching with TTL<br />
+3. Add retry logic with exponential backoff<br />
+4. Write middleware injecting token into req.context<br />
+<br />
+<code className="mono-spec">## Testing</code><br />
+<br />
+- Unit tests for <code>OAuthClient</code><br />
+- Integration tests against mock OAuth server<br />
+- Error cases: network failure, invalid credentials, expired tokens<br />
+<br />
+<code className="mono-spec">## Constraints</code><br />
+<br />
+- Use <code>axios</code> for HTTP requests<br />
+- Use <code>ioredis</code> for caching<br />
 - No global state—client must be instantiated
-```
+</PromptExample>
 
 The structure makes requirements scannable and draws attention to distinct sections: what to build, how to build it, how to test it, what to avoid.
 
@@ -228,25 +238,25 @@ AI models have predictable failure modes. Understanding these helps you prompt d
 
 LLMs struggle with negation because attention mechanisms treat "NOT" as just another token competing for weight. When "NOT" receives low attention during processing, the model focuses on the concepts mentioned ("passwords", "plain text") rather than their negation—a phenomenon called "affirmation bias." The model's token generation fundamentally leans toward positive selection (what to include) rather than negative exclusion (what to avoid).
 
-**Risky:**
+<CrossEmoji size={18} /> **Risky:**
 
-```
-Write a user registration endpoint.
-Do NOT store passwords in plain text.
-```
+<PromptExample>
+Write a user registration endpoint.<br />
+<code className="mono-spec">Do NOT</code> store passwords in plain text.
+</PromptExample>
 
 The model might miss "NOT" and generate plain text password storage because attention focuses on "passwords" + "plain text" while ignoring the negation.
 
-**Better—Negation then positive opposite:**
+<CheckEmoji size={18} /> **Better—Negation then positive opposite:**
 
-```
-Write a user registration endpoint.
-
-Password handling:
-Do NOT store passwords in plain text.
-Instead, always store passwords as hashed values.
-Use bcrypt with 10 salt rounds before storing.
-```
+<PromptExample>
+Write a user registration endpoint.<br />
+<br />
+Password handling:<br />
+<code className="mono-spec">Do NOT</code> store passwords in plain text.<br />
+<code className="mono-spec">Instead</code>, <code className="mono-spec">always</code> store passwords as hashed values.<br />
+Use <code>bcrypt</code> with <code>10 salt rounds</code> before storing.
+</PromptExample>
 
 This pattern works by:
 
@@ -258,30 +268,30 @@ This pattern works by:
 
 LLMs are probabilistic text predictors, not calculators. They're terrible at arithmetic.
 
-**Don't rely on LLMs for math:**
+<CrossEmoji size={18} /> **Don't rely on LLMs for math:**
 
-```
-Calculate the optimal cache size for 1M users with 2KB average data per user,
+<PromptExample>
+Calculate the optimal cache size for 1M users with 2KB average data per user,<br />
 assuming 80% hit rate and 4GB available memory.
-```
+</PromptExample>
 
 The model will generate plausible-sounding numbers that may be completely wrong.
 
-**Instead, have the model write code:**
+<CheckEmoji size={18} /> **Instead, have the model write code:**
 
-```
-Write a Python function that calculates optimal cache size.
-
-Inputs:
-- user_count: number of users
-- avg_data_per_user_kb: average data size in KB
-- hit_rate: cache hit rate (0.0 to 1.0)
-- available_memory_gb: available memory in GB
-
-Return optimal cache size in MB with reasoning.
-
+<PromptExample>
+Write a <code>Python</code> function that calculates optimal cache size.<br />
+<br />
+Inputs:<br />
+- user_count: number of users<br />
+- avg_data_per_user_kb: average data size in KB<br />
+- hit_rate: cache hit rate (0.0 to 1.0)<br />
+- available_memory_gb: available memory in GB<br />
+<br />
+Return optimal cache size in MB with reasoning.<br />
+<br />
 Include unit tests validating the calculation.
-```
+</PromptExample>
 
 ## Key Takeaways
 
