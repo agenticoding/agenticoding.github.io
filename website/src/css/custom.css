@@ -1270,6 +1270,36 @@ div[class*='announcementBar'] {
 .idle-air-stripe {
   animation: idleAirStripe 2000ms ease-in-out infinite;
 }
+@keyframes idleCrossShake {
+  /* Wag (translateX + rotateZ) occupies the first ~13% of the cycle; rest is idle. */
+  0%   { transform: translateX(0)    rotateZ(0deg); }
+  3%   { transform: translateX(-4px) rotateZ(-5deg); }
+  7%   { transform: translateX(4px)  rotateZ(5deg); }
+  10%  { transform: translateX(-3px) rotateZ(-3deg); }
+  13%  { transform: translateX(0)    rotateZ(0deg); }
+  100% { transform: translateX(0)    rotateZ(0deg); }
+}
+.idle-cross-shake {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: idleCrossShake 5000ms ease-in-out infinite;
+}
+
+@keyframes idleCheckBreathe {
+  /* Heartbeat double-pulse: large beat → small beat → long rest. */
+  0%   { transform: scale(1); }
+  8%   { transform: scale(1.12); }
+  16%  { transform: scale(1); }
+  22%  { transform: scale(1.06); }
+  30%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+.idle-check-breathe {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: idleCheckBreathe 3200ms ease-in-out infinite;
+}
+
 @keyframes idleBabysitRock {
   from { transform: rotate(-6deg); }
   to   { transform: rotate(6deg); }
@@ -1306,7 +1336,8 @@ html:not([data-theme='dark']) .wordmark-dark { display: none; }
   .idle-ruler-tick, .idle-bookmark-tab,
   .idle-robot-teeth, .idle-robot-blink, .idle-robot-spark,
   .idle-compass-needle, .idle-bullseye-ring,
-  .idle-air-stripe, .idle-babysit-rock {
+  .idle-air-stripe, .idle-babysit-rock,
+  .idle-cross-shake, .idle-check-breathe {
     animation: none !important;
   }
 }
