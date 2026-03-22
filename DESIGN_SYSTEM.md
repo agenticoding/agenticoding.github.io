@@ -142,8 +142,9 @@ Color encodes *category*. Typeface encodes *speaker*. These axes are orthogonal 
 | Command | Krypton | Xenon | URLs, file paths, `@element-refs` |
 | Response | Argon | Krypton | Code tokens within AI-generated text |
 | Constraint | Neon | Xenon | `DO NOT`, `ALWAYS`, `Instead` — rule-enforcement keywords |
+| Human | Radon | — | Human-voice text: persona attribution ("You are a [role]"), conversational/polite phrasing, natural-language requests |
 
-Radon appears inline only for persona attribution — the "You are a [role]" identity string — never as a block base. Apply as `<code class="mono-human">` within a Neon block.
+Radon marks any text written in a human voice — persona strings, polite conversational prompts, natural-language requests. It is never used for technical content. Apply as `<code class="mono-human">` within a Neon block. Radon is scarce: one span per block maximum.
 
 **Spec tables:** Spec IDs in Xenon. Verification methods in Neon. Rationale in Argon.
 
@@ -153,11 +154,17 @@ Radon appears inline only for persona attribution — the "You are a [role]" ide
 
 ### Voice Constraints
 
-Voice faces: monospace only. Max 2 per block. Radon is scarce — not for emphasis. Fallback: `var(--font-mono)` → `monospace`.
+Voice faces: monospace only. Max 2 per block. Radon is scarce — human voice only, never for emphasis or technical content. Fallback: `var(--font-mono)` → `monospace`.
 
 ### Prompt Block Component
 
-Use `<div className="prompt-example">` for all inline prompt illustrations in MDX docs. Do NOT use fenced code blocks for prompt examples — they lose the typographic voice layer.
+Use `<PromptExample>` for all inline prompt illustrations in MDX docs. Do NOT use fenced code blocks for prompt examples — they lose the typographic voice layer.
+
+```tsx
+import PromptExample from '@site/src/components/PromptExample';
+```
+
+The component renders a `<div className="prompt-example">` and **automatically colorizes markdown structural punctuation** (`#`, `##`, `-`, `1.`) in cyan (`--visual-cyan`) by wrapping them in `<span className="md-punct">`. No manual `<span>` needed — just use the component.
 
 **CSS class: `.prompt-example`** (defined in `website/src/css/custom.css`)
 - Base font: `--font-mono` (Neon)
@@ -167,26 +174,34 @@ Use `<div className="prompt-example">` for all inline prompt illustrations in MD
 
 ```jsx
 {/* Example class — Krypton highlights */}
-<div className="prompt-example">
+<PromptExample>
   Use <code>ChunkHound</code> to search for <code>"error patterns"</code> in our codebase.
-</div>
+</PromptExample>
 
 {/* Template class — Xenon placeholders */}
-<div className="prompt-example">
+<PromptExample>
   Analyze <code className="mono-spec">$FAILURE_DESCRIPTION</code> and propose a fix.
-</div>
+</PromptExample>
 
 {/* Constraint class — Xenon enforcement keywords */}
-<div className="prompt-example">
+<PromptExample>
   <code className="mono-spec">Do NOT</code> store passwords in plain text.
   <code className="mono-spec">Instead</code>, use bcrypt with <code>10 salt rounds</code>.
-</div>
+</PromptExample>
 
-{/* Response class — Argon base */}
+{/* Human class — Radon for human-voice text */}
+<PromptExample>
+  <code className="mono-human">Could you help me write a function to validate email addresses?<br />
+  Thanks in advance!</code>
+</PromptExample>
+
+{/* Response class — Argon base (pass className via wrapper if needed) */}
 <div className="mono-ai prompt-example">
   I found 3 locations where raw errors leak: <code>auth.ts:47</code>, <code>users.ts:112</code>…
 </div>
 ```
+
+**`.md-punct`** — Applied automatically by `<PromptExample>` to leading markdown structural characters (`#`, `##`, `-`, `1.`). Color: `var(--visual-cyan)`. Do not apply manually.
 
 For line breaks within a prompt block: use `<br />` only for **intentional structural breaks** (one requirement per line in Exact/Command prompts). Prose-style prompts (Exploration) wrap freely — no `<br />`.
 

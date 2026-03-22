@@ -928,6 +928,15 @@ code, pre, kbd, [class*="codeBlock"] {
   font-size: inherit;
 }
 
+/* Voice overrides inside prompt blocks — higher specificity than .prompt-example code */
+.prompt-example code.mono-spec   { font-family: var(--font-mono-spec); }
+.prompt-example code.mono-human  { font-family: var(--font-mono-human); }
+.prompt-example code.mono-ai     { font-family: var(--font-mono-ai); }
+
+.prompt-example .md-punct {
+  color: var(--visual-cyan);
+}
+
 /* ========================================================================
    DOC SIDEBAR — Design system conformance
    ========================================================================
