@@ -29,7 +29,7 @@ The same engineering standards—DRY, YAGNI, architecture, maintainability, read
 
 ## The Review Prompt Template
 
-This template integrates techniques from [Lesson 4: Prompting 101](../methodology/lesson-4-prompting-101.md). Understanding **why** each element exists lets you adapt this pattern for other review tasks (security audits, performance analysis, architectural review).
+This template integrates techniques from [Lesson 4: Prompting 101](../methodology/lesson-4-prompting-101.mdx). Understanding **why** each element exists lets you adapt this pattern for other review tasks (security audits, performance analysis, architectural review).
 
 ```markdown
 You are an expert code reviewer. Analyze the current changeset and provide a critical review.
@@ -102,7 +102,7 @@ Traditional PR descriptions optimize for one audience or the other—too verbose
 
 ### The Advanced Prompt Pattern
 
-This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.md), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.md), and [Lesson 7 (Planning & Execution)](./lesson-7-planning-execution.md):
+This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.mdx), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.md), and [Lesson 7 (Planning & Execution)](./lesson-7-planning-execution.md):
 
 <DualOptimizedPR />
 
@@ -116,7 +116,7 @@ This sub-agent capability is unique to [Claude Code CLI](/developer-tools/cli-co
 
 **Multi-source grounding ([Lesson 5](../methodology/lesson-5-grounding.md#production-pattern-multi-source-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
 
-**Structured prompting ([Lesson 4](../methodology/lesson-4-prompting-101.md)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
+**Structured prompting ([Lesson 4](../methodology/lesson-4-prompting-101.mdx)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
 
 **Evidence requirements ([Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
 

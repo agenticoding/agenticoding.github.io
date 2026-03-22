@@ -77,7 +77,7 @@ Now the agent must read the endpoint implementation, trace execution, and cite s
 
 **Combining with Chain-of-Thought:**
 
-Evidence requirements work independently or combined with step-by-step instructions. For complex debugging, use both—[Chain-of-Thought](../methodology/lesson-4-prompting-101.md#chain-of-thought-paving-a-clear-path) controls the execution path while evidence requirements ensure each step is grounded:
+Evidence requirements work independently or combined with step-by-step instructions. For complex debugging, use both—[Chain-of-Thought](../methodology/lesson-4-prompting-101.mdx#chain-of-thought-paving-a-clear-path) controls the execution path while evidence requirements ensure each step is grounded:
 
 ```
 Debug the failing test in UserService.test.ts:
@@ -130,7 +130,7 @@ Use ArguSeek, validate the approach against current security best practices.
 
 ### Glance Over Suggested Changes
 
-Before autonomous execution, review the plan to catch architectural mismatches and scope issues. This applies [Lesson 4's constraint principles](../methodology/lesson-4-prompting-101.md#constraints-as-guardrails) during plan review—you're validating that the agent's proposed approach is sufficiently constrained and grounded before it executes.
+Before autonomous execution, review the plan to catch architectural mismatches and scope issues. This applies [Lesson 4's constraint principles](../methodology/lesson-4-prompting-101.mdx#constraints-as-guardrails) during plan review—you're validating that the agent's proposed approach is sufficiently constrained and grounded before it executes.
 
 **What you're checking:**
 

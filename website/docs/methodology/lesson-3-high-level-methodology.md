@@ -18,6 +18,7 @@ import AirplaneEmoji from '@site/src/components/VisualElements/AirplaneEmoji';
 import BabysitEmoji from '@site/src/components/VisualElements/BabysitEmoji';
 import CompassEmoji from '@site/src/components/VisualElements/CompassEmoji';
 import BullseyeEmoji from '@site/src/components/VisualElements/BullseyeEmoji';
+import PromptExample from '@site/src/components/PromptExample';
 
 [Lessons 1–2](../fundamentals/lesson-1-how-llms-work.mdx) established the operator mindset — you're directing tools, not writing every line. This lesson makes that practical: a systematic workflow for maintaining architectural control while delegating implementation at scale.
 
@@ -76,21 +77,21 @@ With research complete, you now plan the change. Planning isn't a single approac
 
 This approach has higher cost and time investment, but it discovers better solutions, catches architectural issues early, and helps you build a clearer mental model before committing to implementation.
 
-<div className="prompt-example">
+<PromptExample>
 Our <code>Express</code> API has inconsistent error handling—some endpoints return raw errors, others JSON, and stack traces leak to production. Use <code>ChunkHound</code> to search for <code>"error handling patterns"</code> and <code>"error response format"</code> in our codebase. Use <code>ArguSeek</code> to research <code>Express</code> error handling best practices and <code>RFC 7807</code>. Analyze what you find, propose 2-3 standardization approaches with trade-offs, and recommend one.
-</div>
+</PromptExample>
 
 <BullseyeEmoji size={22} /> **Exact Planning:** Use this when you know the solution and can articulate it precisely. Be directive. Define the task with specificity, specify integration points and patterns to follow, provide explicit constraints and requirements, list edge cases you've identified, and define clear acceptance criteria. The agent executes along a predetermined path.
 
 This approach is faster and more cost-effective, but requires upfront clarity and architectural certainty—if your plan is wrong or incomplete, the generated code will be wrong. Use exact planning when you've already done the architectural thinking and just need reliable, consistent implementation.
 
-<div className="prompt-example">
+<PromptExample>
 Add rate limiting middleware to <code>/api/*</code> using <code>Redis</code>.<br />
 Follow the pattern in <code>src/middleware/auth.ts</code>.<br />
 Authenticated users: <code>1000 req/hour</code>, anonymous: <code>100 req/hour</code>, admins unlimited.<br />
 Return <code>429</code> with <code>Retry-After</code> header.<br />
 Fail open if <code>Redis</code> is down - log warning but allow request through.
-</div>
+</PromptExample>
 
 ### Building Your Mental Model
 
@@ -173,7 +174,7 @@ Ask your clarifying questions first, then provide the plan.
 
 </details>
 
-This template provides a solid baseline for any planning task. In [Lesson 4: Prompting 101](./lesson-4-prompting-101.md), you'll learn the prompt engineering principles behind this structure so you can construct your own custom planning prompts rather than relying on templates.
+This template provides a solid baseline for any planning task. In [Lesson 4: Prompting 101](./lesson-4-prompting-101.mdx), you'll learn the prompt engineering principles behind this structure so you can construct your own custom planning prompts rather than relying on templates.
 
 :::
 
@@ -235,4 +236,4 @@ This workflow is the strategic framework. But strategy means nothing without exe
 
 ---
 
-**Next:** [Lesson 4: Prompting 101](./lesson-4-prompting-101.md) - Learn the specific techniques for crafting effective prompts that get reliable results.
+**Next:** [Lesson 4: Prompting 101](./lesson-4-prompting-101.mdx) - Learn the specific techniques for crafting effective prompts that get reliable results.

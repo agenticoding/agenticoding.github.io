@@ -122,7 +122,7 @@ AI agents can simulate actual user behavior by giving them a task and the tools 
 
 **The workflow:** Use agents for discovery, then solidify findings into deterministic tests. Agents explore the unknown; deterministic tests prevent backsliding on the known.
 
-When prompting agents for simulation testing, apply the techniques from [Lesson 4](../methodology/lesson-4-prompting-101.md)—clear instructions, specific constraints, expected outputs—to craft effective exploration prompts that guide agents toward high-value edge case discovery.
+When prompting agents for simulation testing, apply the techniques from [Lesson 4](../methodology/lesson-4-prompting-101.mdx)—clear instructions, specific constraints, expected outputs—to craft effective exploration prompts that guide agents toward high-value edge case discovery.
 
 :::tip Connecting Agents to Your Product
 
@@ -171,17 +171,17 @@ When tests fail, apply the same four-phase workflow from [Lesson 3](../methodolo
 
 ### The Diagnostic Prompt Pattern
 
-This diagnostic prompt applies techniques from [Lesson 4](../methodology/lesson-4-prompting-101.md): [Chain-of-Thought](../methodology/lesson-4-prompting-101.md#chain-of-thought-paving-a-clear-path) sequential steps, [constraints](../methodology/lesson-4-prompting-101.md#constraints-as-guardrails) requiring evidence, and [structured format](../methodology/lesson-4-prompting-101.md#applying-structure-to-prompts). Understanding why each element exists lets you adapt this pattern for other diagnostic tasks.
+This diagnostic prompt applies techniques from [Lesson 4](../methodology/lesson-4-prompting-101.mdx): [Chain-of-Thought](../methodology/lesson-4-prompting-101.mdx#chain-of-thought-paving-a-clear-path) sequential steps, [constraints](../methodology/lesson-4-prompting-101.mdx#constraints-as-guardrails) requiring evidence, and [structured format](../methodology/lesson-4-prompting-101.mdx#applying-structure-to-prompts). Understanding why each element exists lets you adapt this pattern for other diagnostic tasks.
 
 <TestFailureDiagnosis />
 
 **Why this works:**
 
-- **Fenced code block** (``````) preserves error formatting and prevents the LLM from interpreting failure messages as instructions ([structured format](../methodology/lesson-4-prompting-101.md#applying-structure-to-prompts))
-- **"Use the code research"** is an explicit grounding directive—forces codebase search instead of hallucination from training patterns ([constraints](../methodology/lesson-4-prompting-101.md#constraints-as-guardrails))
-- **DIAGNOSE numbered steps** implement [Chain-of-Thought](../methodology/lesson-4-prompting-101.md#chain-of-thought-paving-a-clear-path), forcing sequential analysis (can't jump to "root cause" without examining test intent first)
-- **"Understand the intention"** (step 2) ensures the agent articulates WHY the test exists, not just WHAT it does—critical for [CoT reasoning](../methodology/lesson-4-prompting-101.md#chain-of-thought-paving-a-clear-path)
-- **DETERMINE binary decision** [constrains output](../methodology/lesson-4-prompting-101.md#constraints-as-guardrails) to "bug vs outdated test" instead of open-ended conclusions
+- **Fenced code block** (``````) preserves error formatting and prevents the LLM from interpreting failure messages as instructions ([structured format](../methodology/lesson-4-prompting-101.mdx#applying-structure-to-prompts))
+- **"Use the code research"** is an explicit grounding directive—forces codebase search instead of hallucination from training patterns ([constraints](../methodology/lesson-4-prompting-101.mdx#constraints-as-guardrails))
+- **DIAGNOSE numbered steps** implement [Chain-of-Thought](../methodology/lesson-4-prompting-101.mdx#chain-of-thought-paving-a-clear-path), forcing sequential analysis (can't jump to "root cause" without examining test intent first)
+- **"Understand the intention"** (step 2) ensures the agent articulates WHY the test exists, not just WHAT it does—critical for [CoT reasoning](../methodology/lesson-4-prompting-101.mdx#chain-of-thought-paving-a-clear-path)
+- **DETERMINE binary decision** [constrains output](../methodology/lesson-4-prompting-101.mdx#constraints-as-guardrails) to "bug vs outdated test" instead of open-ended conclusions
 - **"Provide evidence"** requires file paths and line numbers—concrete proof via [require evidence](./lesson-7-planning-execution.md#require-evidence-to-force-grounding), not vague assertions
 
 You can adapt this for performance issues, security vulnerabilities, or deployment failures by changing the diagnostic steps while preserving the structure: sequential CoT → constrained decision → evidence requirement.
