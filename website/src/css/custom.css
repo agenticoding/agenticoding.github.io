@@ -354,3 +354,24 @@ div[class*='announcementBar'] {
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 2px 12px rgba(234, 88, 12, 0.3);
 }
+
+/* ========================================================================
+   LOCALE DROPDOWN - Click-only behavior (disable hover)
+   ========================================================================
+   Override Docusaurus default hover behavior for the language selector.
+   The dropdown now only opens on click, not on hover.
+   ======================================================================== */
+
+/* Disable hover behavior for locale dropdown */
+.navbar__item.dropdown.dropdown--hoverable:has([class*='iconLanguage']) .dropdown__menu {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s;
+}
+
+/* Show dropdown only when explicitly shown (via click/keyboard) */
+.navbar__item.dropdown.dropdown--hoverable.dropdown--show:has([class*='iconLanguage']) .dropdown__menu {
+  visibility: visible;
+  opacity: 1;
+}
+
