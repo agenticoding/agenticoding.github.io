@@ -1,0 +1,34 @@
+{
+  "version.label": {
+    "message": "הבא",
+    "description": "The label for version current"
+  },
+  "sidebar.promptsSidebar.category.Testing": {
+    "message": "טסטים",
+    "description": "The label for category 'Testing' in sidebar 'promptsSidebar'"
+  },
+  "sidebar.promptsSidebar.category.Code Review": {
+    "message": "קוד ריביו",
+    "description": "The label for category 'Code Review' in sidebar 'promptsSidebar'"
+  },
+  "sidebar.promptsSidebar.category.Pull Requests": {
+    "message": "Pull Requests",
+    "description": "The label for category 'Pull Requests' in sidebar 'promptsSidebar'"
+  },
+  "sidebar.promptsSidebar.category.Debugging": {
+    "message": "דיבאגינג",
+    "description": "The label for category 'Debugging' in sidebar 'promptsSidebar'"
+  },
+  "sidebar.promptsSidebar.category.Onboarding": {
+    "message": "אונבורדינג",
+    "description": "The label for category 'Onboarding' in sidebar 'promptsSidebar'"
+  },
+  "sidebar.promptsSidebar.category.Specifications": {
+    "message": "ספציפיקציות",
+    "description": "The label for category 'Specifications' in sidebar 'promptsSidebar'"
+  },
+  "sidebar.promptsSidebar.doc.Overview": {
+    "message": "סקירה כללית",
+    "description": "The label for the doc item 'Overview' in sidebar 'promptsSidebar', linking to the doc index"
+  }
+}

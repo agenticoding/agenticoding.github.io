@@ -57,12 +57,22 @@ const config: Config = {
 
   onBrokenLinks: 'warn',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+  // Internationalization configuration for English and Hebrew
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en', 'he'],
+    localeConfigs: {
+      en: {
+        label: 'English',
+        direction: 'ltr',
+        htmlLang: 'en-US',
+      },
+      he: {
+        label: 'עברית',
+        direction: 'rtl',
+        htmlLang: 'he',
+      },
+    },
   },
 
   markdown: {
@@ -138,7 +148,7 @@ const config: Config = {
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
         hashed: true,
-        language: ['en'],
+        language: ['en', 'he'],
         highlightSearchTermsOnTargetPage: true,
         explicitSearchResultPath: true,
         indexBlog: false,
@@ -204,6 +214,10 @@ const config: Config = {
           docId: 'faq',
           position: 'left',
           label: 'FAQ',
+        },
+        {
+          type: 'localeDropdown',
+          position: 'right',
         },
         {
           href: 'https://github.com/agenticoding/agenticoding.github.io',

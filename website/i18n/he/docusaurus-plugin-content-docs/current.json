@@ -1,0 +1,18 @@
+{
+  "version.label": {
+    "message": "הבא",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Fundamentals": {
+    "message": "יסודות",
+    "description": "The label for category 'Fundamentals' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Methodology": {
+    "message": "מתודולוגיה",
+    "description": "The label for category 'Methodology' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Practical Techniques": {
+    "message": "טכניקות מעשיות",
+    "description": "The label for category 'Practical Techniques' in sidebar 'tutorialSidebar'"
+  }
+}
