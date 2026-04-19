@@ -368,5 +368,173 @@
   "theme.tags.tagsPageTitle": {
     "message": "תגיות",
     "description": "The title of the tag list page"
+  },
+  "homepage.layout.title": {
+    "message": "שליטה בקידוד אגנטי",
+    "description": "The browser tab title for the homepage"
+  },
+  "homepage.layout.description": {
+    "message": "שלטו בקידוד אגנטי עם מתודולוגיה מובנית שהוכיחה את עצמה על מונו-ריפּו ארגוניים. חינמי, רישיון MIT, עם פודקאסטים, מצגות ופרומפטים מוכנים לפרודקשן.",
+    "description": "The meta description for the homepage"
+  },
+  "homepage.hero.badge.openSource": {
+    "message": "קוד פתוח",
+    "description": "The 'Open Source' label in the hero badge"
+  },
+  "homepage.hero.title": {
+    "message": "שליטה בקידוד אגנטי",
+    "description": "The main hero heading"
+  },
+  "homepage.hero.subtitle": {
+    "message": "מתודולוגיה מובנית שהוכיחה את עצמה על מונו-ריפּו ארגוניים עם מיליוני שורות קוד",
+    "description": "The hero subtitle"
+  },
+  "homepage.hero.cta.startLearning": {
+    "message": "להתחיל ללמוד",
+    "description": "The primary CTA button in the hero"
+  },
+  "homepage.hero.cta.browsePrompts": {
+    "message": "לעיין בפרומפטים",
+    "description": "The secondary CTA button in the hero"
+  },
+  "homepage.hero.stats.faq": {
+    "message": "שאלות נפוצות",
+    "description": "The FAQ link label in the hero stats bar"
+  },
+  "homepage.hero.stats.lessons": {
+    "message": "{count} שיעורים",
+    "description": "The lesson count in the hero stats bar"
+  },
+  "homepage.hero.stats.prompts": {
+    "message": "{count} פרומפטים לפרודקשן",
+    "description": "The prompt count in the hero stats bar"
+  },
+  "homepage.terminal.link": {
+    "message": "← מספריית הפרומפטים",
+    "description": "The link at the bottom of the terminal window (arrow direction flipped for RTL)"
+  },
+  "homepage.modules.title": {
+    "message": "מה לומדים",
+    "description": "The 'What You'll Learn' section heading"
+  },
+  "homepage.modules.subtitle": {
+    "message": "{count} שיעורים שמכסים מחקר, תכנון, ביצוע ותבניות אימות",
+    "description": "The subtitle under the modules section heading"
+  },
+  "homepage.modules.moduleLabel": {
+    "message": "מודול {number}",
+    "description": "The module number label on each module card"
+  },
+  "homepage.modules.1.title": {
+    "message": "יסודות",
+    "description": "Module 1 title: Fundamentals"
+  },
+  "homepage.modules.1.topic1": {
+    "message": "מאחורי הקלעים של LLM: קונטקסט, קשב, מגבלות טוקנים",
+    "description": "Module 1 topic 1"
+  },
+  "homepage.modules.1.topic2": {
+    "message": "מה נשבר: הזיות, סחף קוד, ריפקטור",
+    "description": "Module 1 topic 2"
+  },
+  "homepage.modules.1.topic3": {
+    "message": "ניהול קונטקסט ואינטגרציית RAG",
+    "description": "Module 1 topic 3"
+  },
+  "homepage.modules.2.title": {
+    "message": "מתודולוגיה",
+    "description": "Module 2 title: Methodology"
+  },
+  "homepage.modules.2.topic1": {
+    "message": "מבנה Prompting: אילוצים, דוגמאות, שרשרת חשיבה",
+    "description": "Module 2 topic 1"
+  },
+  "homepage.modules.2.topic2": {
+    "message": "עיגון: הטמעת קונטקסט שנשאר איתנו",
+    "description": "Module 2 topic 2"
+  },
+  "homepage.modules.2.topic3": {
+    "message": "תבניות איטרציה: תכנון, ביצוע, אימות",
+    "description": "Module 2 topic 3"
+  },
+  "homepage.modules.3.title": {
+    "message": "טכניקות מעשיות",
+    "description": "Module 3 title: Practical Techniques"
+  },
+  "homepage.modules.3.topic1": {
+    "message": "אינטגרציית CI ותבניות סקירה אוטומטית",
+    "description": "Module 3 topic 1"
+  },
+  "homepage.modules.3.topic2": {
+    "message": "יצירת בדיקות ואסטרטגיות כיסוי",
+    "description": "Module 3 topic 2"
+  },
+  "homepage.modules.3.topic3": {
+    "message": "סשני דיבאג: כש-AI מחמיר את המצב",
+    "description": "Module 3 topic 3"
+  },
+  "homepage.formats.title": {
+    "message": "ללמוד בדרך שלך",
+    "description": "The 'Learn Your Way' section heading"
+  },
+  "homepage.formats.subtitle": {
+    "message": "כל שיעור, שלושה פורמטים",
+    "description": "The subtitle under the formats section heading"
+  },
+  "homepage.formats.docs.title": {
+    "message": "מסמכים לרפרנס",
+    "description": "The Reference Docs format card title"
+  },
+  "homepage.formats.docs.description": {
+    "message": "לסמן. לחזור כשצריך.",
+    "description": "The Reference Docs format card description"
+  },
+  "homepage.formats.podcasts.title": {
+    "message": "פודקאסטים",
+    "description": "The Podcasts format card title"
+  },
+  "homepage.formats.podcasts.description": {
+    "message": "בדרך לעבודה, חדר כושר, טיול עם הכלב.",
+    "description": "The Podcasts format card description"
+  },
+  "homepage.formats.presentations.title": {
+    "message": "מצגות",
+    "description": "The Presentations format card title"
+  },
+  "homepage.formats.presentations.description": {
+    "message": "לשתף עם הצוות.",
+    "description": "The Presentations format card description"
+  },
+  "homepage.ecosystem.title": {
+    "message": "מערכת אקולוגית בקוד פתוח",
+    "description": "The 'Open Source Ecosystem' section heading"
+  },
+  "homepage.ecosystem.subtitle": {
+    "message": "כלים מוכנים לפרודקשן שמיישמים את מתודולוגיית הקורס",
+    "description": "The subtitle under the ecosystem section heading"
+  },
+  "homepage.ecosystem.chunkhound.tagline": {
+    "message": "אל תחפשו את הקוד שלכם. חקרו אותו.",
+    "description": "ChunkHound project tagline"
+  },
+  "homepage.ecosystem.arguseek.tagline": {
+    "message": "מחקר רחב, לא דוחות עמוקים",
+    "description": "ArguSeek project tagline"
+  },
+  "homepage.ecosystem.toolbox.title": {
+    "message": "ארגז כלים נבחר",
+    "description": "The Curated Toolbox card title"
+  },
+  "homepage.ecosystem.toolbox.tagline": {
+    "message": "כלי CLI מודרניים לפיתוח AI-first",
+    "description": "The Curated Toolbox card tagline"
+  },
+  "homepage.ecosystem.integrationNote": {
+    "message": "שכבת המחקר שמעגנת את הסוכנים שלכם במציאות",
+    "description": "The integration note below the ecosystem grid"
+  },
+  "homepage.ecosystem.disclosureNote": {
+    "message": "ChunkHound ו-ArguSeek נוצרו על ידי מחבר הקורס.",
+    "description": "The author disclosure note in the ecosystem section"
   }
 }

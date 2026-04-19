@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import {translate} from '@docusaurus/Translate';
 import sidebars from '../../sidebars';
 import promptsSidebars from '../../sidebarsPrompts';
 
@@ -68,7 +69,7 @@ function TerminalWindow() {
           {': File paths, line numbers, root cause'}
         </pre>
         <Link to="/prompts" className={styles.terminalLink}>
-          From the Prompt Library →
+          {translate({id: 'homepage.terminal.link', message: 'From the Prompt Library →'})}
         </Link>
       </div>
     </div>
@@ -90,7 +91,7 @@ function HomepageHeader() {
               className={styles.heroBadge}
             >
               <GitHubIcon />
-              <span>Open Source</span>
+              <span>{translate({id: 'homepage.hero.badge.openSource', message: 'Open Source'})}</span>
               <span className={styles.badgeSeparator}>·</span>
               <span>MIT</span>
               {stars !== null && (
@@ -102,21 +103,20 @@ function HomepageHeader() {
               )}
             </a>
             <Heading as="h1" className="hero__title">
-              Master Agentic Coding
+              {translate({id: 'homepage.hero.title', message: 'Master Agentic Coding'})}
             </Heading>
             <p className="hero__subtitle">
-              Structured methodology proven on enterprise mono-repos with
-              millions of lines of code
+              {translate({id: 'homepage.hero.subtitle', message: 'Structured methodology proven on enterprise mono-repos with millions of lines of code'})}
             </p>
             <div className={styles.buttons}>
               <Link className="button button--secondary button--lg" to="/docs">
-                Start Learning
+                {translate({id: 'homepage.hero.cta.startLearning', message: 'Start Learning'})}
               </Link>
               <Link
                 className={clsx('button button--lg', styles.buttonOutline)}
                 to="/prompts"
               >
-                Browse Prompts
+                {translate({id: 'homepage.hero.cta.browsePrompts', message: 'Browse Prompts'})}
               </Link>
             </div>
             <div className={styles.heroStats}>
@@ -124,15 +124,15 @@ function HomepageHeader() {
                 to="/docs/faq"
                 className={styles.heroStatLink}
               >
-                FAQ
+                {translate({id: 'homepage.hero.stats.faq', message: 'FAQ'})}
               </Link>
               <span className={styles.statsSeparator}>|</span>
               <Link to="/docs" className={styles.heroStatLink}>
-                {LESSON_COUNT} Lessons
+                {translate({id: 'homepage.hero.stats.lessons', message: '{count} Lessons'}, {count: LESSON_COUNT})}
               </Link>
               <span className={styles.statsSeparator}>|</span>
               <Link to="/prompts" className={styles.heroStatLink}>
-                {PROMPT_COUNT} Production Prompts
+                {translate({id: 'homepage.hero.stats.prompts', message: '{count} Production Prompts'}, {count: PROMPT_COUNT})}
               </Link>
             </div>
           </div>
@@ -492,10 +492,10 @@ function EcosystemTools() {
     <section id="ecosystem" className={styles.companionSection}>
       <div className="container">
         <Heading as="h2" className={styles.sectionTitle}>
-          Open Source Ecosystem
+          {translate({id: 'homepage.ecosystem.title', message: 'Open Source Ecosystem'})}
         </Heading>
         <p className={styles.sectionSubtitle}>
-          Production-ready tools that apply course methodology
+          {translate({id: 'homepage.ecosystem.subtitle', message: 'Production-ready tools that apply course methodology'})}
         </p>
         <div className={styles.ecosystemGrid}>
           <a
@@ -509,7 +509,7 @@ function EcosystemTools() {
               <ExternalLinkIcon />
             </div>
             <p className={styles.projectTagline}>
-              Don&apos;t search your code. Research it.
+              {translate({id: 'homepage.ecosystem.chunkhound.tagline', message: "Don't search your code. Research it."})}
             </p>
             <span className={styles.projectScale}>10K–1M+ LOC</span>
           </a>
@@ -525,7 +525,7 @@ function EcosystemTools() {
               <ExternalLinkIcon />
             </div>
             <p className={styles.projectTagline}>
-              Wide research, not deep reports
+              {translate({id: 'homepage.ecosystem.arguseek.tagline', message: 'Wide research, not deep reports'})}
             </p>
             <span className={styles.projectScale}>
               12–100+ sources per query
@@ -539,11 +539,11 @@ function EcosystemTools() {
             <div className={styles.projectHeader}>
               <div className={styles.toolboxTitle}>
                 <ToolboxIcon />
-                <span>Curated Toolbox</span>
+                <span>{translate({id: 'homepage.ecosystem.toolbox.title', message: 'Curated Toolbox'})}</span>
               </div>
             </div>
             <p className={styles.projectTagline}>
-              Modern CLI tools for AI-first development
+              {translate({id: 'homepage.ecosystem.toolbox.tagline', message: 'Modern CLI tools for AI-first development'})}
             </p>
             <span className={styles.projectScale}>
               ripgrep, fzf, lazygit...
@@ -551,10 +551,10 @@ function EcosystemTools() {
           </Link>
         </div>
         <p className={styles.integrationNote}>
-          The research layer that anchors your agents in reality
+          {translate({id: 'homepage.ecosystem.integrationNote', message: 'The research layer that anchors your agents in reality'})}
         </p>
         <p className={styles.disclosureNote}>
-          <em>ChunkHound and ArguSeek are created by the course author.</em>
+          <em>{translate({id: 'homepage.ecosystem.disclosureNote', message: 'ChunkHound and ArguSeek are created by the course author.'})}</em>
         </p>
       </div>
     </section>
@@ -572,7 +572,7 @@ function ModuleCard({ number, title, topics, link }: ModuleCardProps) {
   return (
     <Link to={link} className={styles.moduleCard}>
       <div className={styles.moduleHeader}>
-        <div className={styles.moduleNumber}>Module {number}</div>
+        <div className={styles.moduleNumber}>{translate({id: 'homepage.modules.moduleLabel', message: 'Module {number}'}, {number})}</div>
         <div className={styles.formatBadges}>
           <span className={styles.formatBadge} title="Podcast available">
             <HeadphonesIcon />
@@ -598,31 +598,31 @@ function CourseModules() {
   const modules = [
     {
       number: 1,
-      title: 'Fundamentals',
+      title: translate({id: 'homepage.modules.1.title', message: 'Fundamentals'}),
       topics: [
-        'LLM internals: context, attention, token limits',
-        'What breaks: hallucinations, code drift, refactoring',
-        'Context management and RAG integration',
+        translate({id: 'homepage.modules.1.topic1', message: 'LLM internals: context, attention, token limits'}),
+        translate({id: 'homepage.modules.1.topic2', message: 'What breaks: hallucinations, code drift, refactoring'}),
+        translate({id: 'homepage.modules.1.topic3', message: 'Context management and RAG integration'}),
       ],
       link: '/docs/fundamentals/lesson-1-how-llms-work',
     },
     {
       number: 2,
-      title: 'Methodology',
+      title: translate({id: 'homepage.modules.2.title', message: 'Methodology'}),
       topics: [
-        'Prompt structure: constraints, examples, chain-of-thought',
-        'Grounding: embedding context that persists',
-        'Iteration patterns: plan, execute, verify',
+        translate({id: 'homepage.modules.2.topic1', message: 'Prompt structure: constraints, examples, chain-of-thought'}),
+        translate({id: 'homepage.modules.2.topic2', message: 'Grounding: embedding context that persists'}),
+        translate({id: 'homepage.modules.2.topic3', message: 'Iteration patterns: plan, execute, verify'}),
       ],
       link: '/docs/methodology/lesson-3-high-level-methodology',
     },
     {
       number: 3,
-      title: 'Practical Techniques',
+      title: translate({id: 'homepage.modules.3.title', message: 'Practical Techniques'}),
       topics: [
-        'CI integration and automated review patterns',
-        'Test generation and coverage strategies',
-        'Debugging sessions: when AI makes it worse',
+        translate({id: 'homepage.modules.3.topic1', message: 'CI integration and automated review patterns'}),
+        translate({id: 'homepage.modules.3.topic2', message: 'Test generation and coverage strategies'}),
+        translate({id: 'homepage.modules.3.topic3', message: 'Debugging sessions: when AI makes it worse'}),
       ],
       link: '/docs/practical-techniques/lesson-6-project-onboarding',
     },
@@ -632,11 +632,10 @@ function CourseModules() {
     <section className={styles.modulesSection}>
       <div className="container">
         <Heading as="h2" className={styles.sectionTitle}>
-          What You&apos;ll Learn
+          {translate({id: 'homepage.modules.title', message: "What You'll Learn"})}
         </Heading>
         <p className={styles.sectionSubtitle}>
-          {LESSON_COUNT} lessons covering research, planning, execution, and
-          validation patterns
+          {translate({id: 'homepage.modules.subtitle', message: '{count} lessons covering research, planning, execution, and validation patterns'}, {count: LESSON_COUNT})}
         </p>
         <div className={styles.modulesGrid}>
           {modules.map((module) => (
@@ -654,34 +653,34 @@ function LearningFormats() {
     <section className={styles.formatsSection}>
       <div className="container">
         <Heading as="h2" className={styles.sectionTitle}>
-          Learn Your Way
+          {translate({id: 'homepage.formats.title', message: 'Learn Your Way'})}
         </Heading>
-        <p className={styles.sectionSubtitle}>Every lesson, three formats</p>
+        <p className={styles.sectionSubtitle}>{translate({id: 'homepage.formats.subtitle', message: 'Every lesson, three formats'})}</p>
         <div className={styles.formatsGrid}>
           <div className={styles.formatCard}>
             <BookmarkIcon />
             <Heading as="h3" className={styles.formatTitle}>
-              Reference Docs
+              {translate({id: 'homepage.formats.docs.title', message: 'Reference Docs'})}
             </Heading>
             <p className={styles.formatDescription}>
-              Bookmark it. Jump back in when you need it.
+              {translate({id: 'homepage.formats.docs.description', message: 'Bookmark it. Jump back in when you need it.'})}
             </p>
           </div>
           <div className={styles.formatCard}>
             <HeadphonesIcon />
             <Heading as="h3" className={styles.formatTitle}>
-              Podcasts
+              {translate({id: 'homepage.formats.podcasts.title', message: 'Podcasts'})}
             </Heading>
             <p className={styles.formatDescription}>
-              Commute, gym, walking the dog.
+              {translate({id: 'homepage.formats.podcasts.description', message: 'Commute, gym, walking the dog.'})}
             </p>
           </div>
           <div className={styles.formatCard}>
             <PresentationIcon />
             <Heading as="h3" className={styles.formatTitle}>
-              Presentations
+              {translate({id: 'homepage.formats.presentations.title', message: 'Presentations'})}
             </Heading>
-            <p className={styles.formatDescription}>Share with your team.</p>
+            <p className={styles.formatDescription}>{translate({id: 'homepage.formats.presentations.description', message: 'Share with your team.'})}</p>
           </div>
         </div>
       </div>
@@ -692,8 +691,8 @@ function LearningFormats() {
 export default function Home(): ReactNode {
   return (
     <Layout
-      title="Master Agentic Coding"
-      description="Master agentic coding with a structured methodology proven on enterprise mono-repos. Free, MIT licensed, with podcasts, slides, and production-ready prompts."
+      title={translate({id: 'homepage.layout.title', message: 'Master Agentic Coding'})}
+      description={translate({id: 'homepage.layout.description', message: 'Master agentic coding with a structured methodology proven on enterprise mono-repos. Free, MIT licensed, with podcasts, slides, and production-ready prompts.'})}
     >
       <HomepageHeader />
       <main>

@@ -163,7 +163,11 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  text-align: left;
+  /* rtl:ignore */
+  text-align: left; 
+  /* rtl:ignore */
+  direction: ltr; 
+
 }
 
 .terminalHeader {
@@ -202,6 +206,7 @@
 .terminalBody {
   padding: 1.25rem 1.5rem;
   background: #1e1e1e;
+
 }
 
 .terminalCode {
@@ -212,7 +217,8 @@
   margin: 0;
   white-space: pre-wrap;
   background: transparent;
-  text-align: left;
+  /* rtl:ignore */
+  text-align: left; 
 }
 
 .terminalKeyword {
@@ -632,6 +638,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.5rem;
+  /* rtl:ignore */
+  direction: ltr; 
 }
 
 .projectTitle {
