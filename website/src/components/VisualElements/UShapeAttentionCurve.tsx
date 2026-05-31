@@ -3,419 +3,316 @@ import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './UShapeAttentionCurve.module.css';
 
 interface UShapeAttentionCurveProps extends PresentationAwareProps {
-  initialContextFill?: number; // Percentage of context window used (0-100)
+  initialContextFill?: number; // 0-100, default 30
+}
+
+const PLOT_LEFT = 60;
+const PLOT_RIGHT = 760;
+const PLOT_TOP = 30;
+const PLOT_BOT = 260;
+const PLOT_W = PLOT_RIGHT - PLOT_LEFT; // 700
+const PLOT_H = PLOT_BOT - PLOT_TOP;   // 230
+const DOT_COUNT = 9;
+const DOT_SIZE = 10;
+
+// Returns { danger, cyanOpacity } so dots can be rendered as layered rects
+// matching the background zone fade approach exactly.
+function getDotLayers(frac: number, deadCenterStart: number, deadCenterEnd: number, jCurveStrength: number): { danger: boolean; cyanOpacity: number } {
+  if (frac >= deadCenterStart && frac <= deadCenterEnd) return { danger: true, cyanOpacity: 0 };
+  if (frac >= 0.80) return { danger: false, cyanOpacity: 1 };
+  if (frac <= 0.20) return { danger: false, cyanOpacity: 1 - jCurveStrength };
+  return { danger: false, cyanOpacity: 0 };
+}
+
+function getSeverity(contextFill: number): { tier: string; desc: string; color: string } {
+  if (contextFill <= 20) {
+    return { tier: 'MANAGEABLE', desc: 'middle receives moderate attention', color: 'var(--visual-success)' };
+  }
+  if (contextFill <= 50) {
+    return { tier: 'SIGNIFICANT', desc: 'middle content often missed on inferential tasks', color: 'var(--visual-warning)' };
+  }
+  return { tier: 'SEVERE', desc: 'middle invisible — only recency remains reliable', color: 'var(--visual-error)' };
 }
 
 export default function UShapeAttentionCurve({
   initialContextFill = 30,
   compact = false,
 }: UShapeAttentionCurveProps) {
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
-  const [contextFill, setContextFill] = useState(initialContextFill);
-  const [animatedPath, setAnimatedPath] = useState<string>('');
-  const [animatedEndX, setAnimatedEndX] = useState<number>(0);
-  const [animatedMiddleX, setAnimatedMiddleX] = useState<number>(0);
-  const previousPathRef = useRef<string>('');
-  const animationFrameRef = useRef<number | null>(null);
+  const [contextFill, setContextFill] = useState(Math.max(0, Math.min(100, initialContextFill)));
 
-  // SVG dimensions
-  const width = 800;
-  const height = 300;
-  const padding = 70;
+  const fillRatio = contextFill / 100;
 
-  // Calculate curve parameters based on context fill percentage
-  // More context = deeper U (worse middle attention) AND wider span (longer context)
-  const curveDepth = 50 + (contextFill / 100) * 100; // Range: 50-150
+  // Zone boundary math
+  const deadCenterHalf = fillRatio * 0.15;
+  const deadCenterStart = 0.5 - deadCenterHalf;
+  const deadCenterEnd = 0.5 + deadCenterHalf;
 
-  // Calculate available width for curve
-  const availableWidth = width - 2 * padding;
+  // Fixed zone boundaries
+  const primacyEnd = PLOT_LEFT + 0.20 * PLOT_W;       // x=200
+  const recencyStart = PLOT_LEFT + 0.80 * PLOT_W;     // x=620
+  const deadStart = PLOT_LEFT + deadCenterStart * PLOT_W;
+  const deadEnd = PLOT_LEFT + deadCenterEnd * PLOT_W;
 
-  // Non-linear mapping for visual clarity: 90% context uses full available width
-  const getVisualWidth = (contextPercent: number): number => {
-    if (contextPercent <= 30) return 0.3;
-    if (contextPercent <= 60) return 0.3 + (contextPercent - 30) * (0.3 / 30);
-    return 0.6 + (contextPercent - 60) * (0.4 / 30);
-  };
+  // J-curve strength (extracted for use in both zone backgrounds and dot colors)
+  const jCurveStrength = Math.max(0, fillRatio - 0.5) * 2; // 0 at ≤50%, 1 at 100%
 
-  const scaledWidth = availableWidth * getVisualWidth(contextFill);
+  // Dot positions
+  const dots = Array.from({ length: DOT_COUNT }, (_, i) => {
+    const frac = i / (DOT_COUNT - 1);
+    const dotX = PLOT_LEFT + frac * PLOT_W;
 
-  // Define the U-shaped curve using cubic Bézier
-  // Start high (left), dip low (middle), end high (right)
-  const startX = padding;
-  const startY = padding;
-  const endX = startX + scaledWidth;
-  const endY = padding;
-  const middleX = (startX + endX) / 2; // Middle of the actual curve span
-  const middleY = padding + curveDepth;
+    const maxDrop = fillRatio * 0.85;
 
-  // Cubic Bézier path: smooth curve through three points
-  // Use proportional control points for smooth curves at all widths
-  const controlOffset = scaledWidth / 6; // 1/3 of half-width for smooth shoulders
-  const verticalSmoothing = (middleY - startY) * 0.3; // 30% interpolation for gentle transitions
+    // Base symmetric U-shape
+    const distFromCenter = 1 - Math.abs(frac - 0.5) * 2; // 0 at edges, 1 at center
+    let drop = distFromCenter ** 2 * maxDrop;
 
-  const curvePath = `
-    M ${startX},${startY}
-    C ${startX + controlOffset},${startY + verticalSmoothing} ${middleX - controlOffset},${middleY} ${middleX},${middleY}
-    C ${middleX + controlOffset},${middleY} ${endX - controlOffset},${startY + verticalSmoothing} ${endX},${endY}
-  `.trim();
+    // J-curve: primacy decays at high fill (left edge droops, right stays high)
+    const primacyDecay = (1 - frac) * jCurveStrength * 0.3;  // max at start, zero at end
+    drop = Math.min(drop + primacyDecay, 0.95);
 
-  // Animate path morphing for Safari compatibility
+    const dotY = PLOT_TOP + drop * PLOT_H;
+    const layers = getDotLayers(frac, deadCenterStart, deadCenterEnd, jCurveStrength);
+    return { dotX, dotY, ...layers };
+  });
+
+  const polylinePoints = dots
+    .map(d => `${d.dotX},${d.dotY}`)
+    .join(' ');
+
+  const severity = getSeverity(contextFill);
+
+  // Crossfade state: keep outgoing tier alive for 250ms during transition
+  type Severity = ReturnType<typeof getSeverity>;
+  const [displayed, setDisplayed] = useState<Severity>(severity);
+  const [outgoing, setOutgoing] = useState<Severity | null>(null);
+  const displayedRef = useRef(displayed);
+  displayedRef.current = displayed;
+
   useEffect(() => {
-    // Initialize on first render
-    if (!previousPathRef.current) {
-      previousPathRef.current = curvePath;
-      setAnimatedPath(curvePath);
-      setAnimatedEndX(endX);
-      setAnimatedMiddleX(middleX);
-      return;
+    if (severity.tier === displayedRef.current.tier) return;
+    const prev = displayedRef.current;
+    setOutgoing(prev);
+    setDisplayed(severity);
+    const t = setTimeout(() => setOutgoing(null), 250);
+    return () => clearTimeout(t);
+  }, [severity.tier]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Zone visibility fade: animate entrance and leave when zone crosses the 60px threshold
+  const zoneWidth = deadEnd - deadStart;
+  const isWide = zoneWidth >= 60;
+  const [zoneShown, setZoneShown] = useState(isWide);
+  const [zoneFade, setZoneFade] = useState<'in' | 'out' | null>(null);
+  const prevIsWideRef = useRef(isWide);
+
+  useEffect(() => {
+    if (isWide === prevIsWideRef.current) return;
+    prevIsWideRef.current = isWide;
+    if (isWide) {
+      setZoneShown(true);
+      setZoneFade('in');
+      const t = setTimeout(() => setZoneFade(null), 250);
+      return () => clearTimeout(t);
+    } else {
+      setZoneFade('out');
+      const t = setTimeout(() => { setZoneShown(false); setZoneFade(null); }, 250);
+      return () => clearTimeout(t);
     }
+  }, [isWide]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // If path hasn't changed, skip animation
-    if (previousPathRef.current === curvePath) {
-      return;
+  // Desc visibility fade: animate entrance and leave when zone crosses the 120px threshold
+  const isDescWide = zoneWidth >= 120;
+  const [descShown, setDescShown] = useState(isDescWide);
+  const [descFade, setDescFade] = useState<'in' | 'out' | null>(null);
+  const prevIsDescWideRef = useRef(isDescWide);
+
+  useEffect(() => {
+    if (isDescWide === prevIsDescWideRef.current) return;
+    prevIsDescWideRef.current = isDescWide;
+    if (isDescWide) {
+      setDescShown(true);
+      setDescFade('in');
+      const t = setTimeout(() => setDescFade(null), 250);
+      return () => clearTimeout(t);
+    } else {
+      setDescFade('out');
+      const t = setTimeout(() => { setDescShown(false); setDescFade(null); }, 250);
+      return () => clearTimeout(t);
     }
-
-    // Parse path coordinates using regex
-    const parsePathCoords = (path: string): number[] => {
-      const matches = path.match(/[\d.]+/g);
-      return matches ? matches.map(Number) : [];
-    };
-
-    const startCoords = parsePathCoords(previousPathRef.current);
-    const endCoords = parsePathCoords(curvePath);
-
-    // Animation parameters
-    const duration = 600; // 600ms to match CSS timing
-    const startTime = performance.now();
-
-    // Cubic bezier easing function matching CSS cubic-bezier(0.4, 0, 0.2, 1)
-    const cubicBezier = (
-      p1x: number,
-      p1y: number,
-      p2x: number,
-      p2y: number
-    ) => {
-      // Binary search to find t for given x
-      const getTForX = (x: number): number => {
-        let t = x;
-        for (let i = 0; i < 8; i++) {
-          const slope =
-            3 * p1x * (1 - t) ** 2 +
-            6 * (p2x - p1x) * t * (1 - t) +
-            3 * (1 - p2x) * t ** 2;
-          if (slope === 0) break;
-          const currentX =
-            3 * (1 - t) ** 2 * t * p1x + 3 * (1 - t) * t ** 2 * p2x + t ** 3;
-          t -= (currentX - x) / slope;
-        }
-        return t;
-      };
-
-      return (x: number): number => {
-        if (x === 0 || x === 1) return x;
-        const t = getTForX(x);
-        return 3 * (1 - t) ** 2 * t * p1y + 3 * (1 - t) * t ** 2 * p2y + t ** 3;
-      };
-    };
-
-    const easing = cubicBezier(0.4, 0, 0.2, 1);
-
-    // Animation loop
-    const animate = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easing(progress);
-
-      // Interpolate coordinates
-      const interpolatedCoords = startCoords.map((start, i) => {
-        const end = endCoords[i];
-        return start + (end - start) * easedProgress;
-      });
-
-      // Reconstruct path string
-      const [m1, m2, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12] =
-        interpolatedCoords;
-      const interpolatedPath = `M ${m1},${m2} C ${c1},${c2} ${c3},${c4} ${c5},${c6} C ${c7},${c8} ${c9},${c10} ${c11},${c12}`;
-
-      setAnimatedPath(interpolatedPath);
-      setAnimatedEndX(c11); // Track the animated endpoint X coordinate
-      setAnimatedMiddleX(c5); // Track the animated middle point X coordinate
-
-      if (progress < 1) {
-        animationFrameRef.current = requestAnimationFrame(animate);
-      } else {
-        previousPathRef.current = curvePath;
-        setAnimatedEndX(endX); // Ensure final position is exact
-        setAnimatedMiddleX(middleX); // Ensure final position is exact
-      }
-    };
-
-    // Start animation
-    animationFrameRef.current = requestAnimationFrame(animate);
-
-    // Cleanup on unmount or when curvePath changes
-    return () => {
-      if (animationFrameRef.current !== null) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [curvePath, endX, middleX]);
-
-  // Area fill path (curve + bottom edge for filled area)
-  // Use animatedEndX to keep the right edge synchronized during transitions
-  const currentEndX = animatedEndX || endX;
-  const currentMiddleX = animatedMiddleX || middleX;
-  const areaPath = `
-    ${animatedPath || curvePath}
-    L ${currentEndX},${height - padding}
-    L ${startX},${height - padding}
-    Z
-  `.trim();
-
-  // Define gradient for attention levels
-  const gradientId = 'attentionGradient';
-
-  const contextLevels = [
-    { label: 'Light (30%)', value: 30 },
-    { label: 'Medium (60%)', value: 60 },
-    { label: 'Heavy (90%)', value: 90 },
-  ];
+  }, [isDescWide]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className={containerClassName}>
-      {!compact && (
-        <div className={styles.header}>
-          <h4 className={styles.title}>Context Window Attention Curve</h4>
-          <span className={styles.subtitle}>
-            Information at the beginning and end gets strong attention, middle
-            gets skimmed
-          </span>
-        </div>
-      )}
-
+    <div className={`${styles.container} ${compact ? styles.compact : ''}`}>
       <svg
         className={styles.svg}
-        viewBox={`0 0 ${width} ${height}`}
+        viewBox="0 0 800 320"
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="U-shaped attention curve showing high attention at start and end, low attention in middle"
+        aria-label="Attention curve showing how attention distributes across context window"
       >
-        {/* Define gradient for the curve */}
-        <defs>
-          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop
-              offset="0%"
-              stopColor="var(--visual-success)"
-              stopOpacity="0.8"
-            />
-            <stop
-              offset="50%"
-              stopColor="var(--visual-error)"
-              stopOpacity="0.6"
-            />
-            <stop
-              offset="100%"
-              stopColor="var(--visual-success)"
-              stopOpacity="0.8"
-            />
-          </linearGradient>
+        {/* Zone backgrounds */}
+        {/* Primacy: neutral base + cyan overlay fading with jCurveStrength */}
+        <rect x={PLOT_LEFT} y={PLOT_TOP} width={primacyEnd - PLOT_LEFT} height={PLOT_H} fill="var(--surface-muted)" />
+        <rect x={PLOT_LEFT} y={PLOT_TOP} width={primacyEnd - PLOT_LEFT} height={PLOT_H} fill="var(--visual-bg-cyan)" opacity={1 - jCurveStrength} />
+        {/* Middle-left */}
+        <rect x={primacyEnd} y={PLOT_TOP} width={Math.max(0, deadStart - primacyEnd)} height={PLOT_H} fill="var(--surface-muted)" />
+        {/* Dead center */}
+        <rect x={deadStart} y={PLOT_TOP} width={Math.max(0, deadEnd - deadStart)} height={PLOT_H} fill="var(--visual-bg-error)" />
+        {/* Middle-right */}
+        <rect x={deadEnd} y={PLOT_TOP} width={Math.max(0, recencyStart - deadEnd)} height={PLOT_H} fill="var(--surface-muted)" />
+        {/* Recency: always cyan */}
+        <rect x={recencyStart} y={PLOT_TOP} width={PLOT_RIGHT - recencyStart} height={PLOT_H} fill="var(--visual-bg-cyan)" />
 
-          {/* Gradient for area fill */}
-          <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop
-              offset="0%"
-              stopColor="var(--visual-cyan)"
-              stopOpacity="0.3"
-            />
-            <stop
-              offset="100%"
-              stopColor="var(--visual-cyan)"
-              stopOpacity="0.05"
-            />
-          </linearGradient>
-        </defs>
-
-        {/* Background grid for reference */}
-        {/* Static baseline showing full available width */}
+        {/* Y-axis */}
         <line
-          x1={padding}
-          y1={height - padding}
-          x2={width - padding}
-          y2={height - padding}
-          stroke="var(--ifm-color-emphasis-200)"
-          strokeWidth="1"
-          opacity="0.5"
+          x1={PLOT_LEFT} y1={PLOT_TOP}
+          x2={PLOT_LEFT} y2={PLOT_BOT}
+          stroke="var(--border-subtle)"
+          strokeWidth={1}
         />
 
-        {/* Dynamic baseline showing active context span */}
-        <line
-          x1={startX}
-          y1={height - padding}
-          x2={currentEndX}
-          y2={height - padding}
-          stroke="var(--ifm-color-emphasis-400)"
-          strokeWidth="2"
-          strokeDasharray="4 4"
-        />
-
-        {/* Filled area under curve */}
-        <path
-          d={areaPath}
-          fill="url(#areaGradient)"
-          className={styles.areaFill}
-        />
-
-        {/* The U-shaped curve line */}
-        <path
-          d={animatedPath || curvePath}
+        {/* Polyline connecting dot centers */}
+        <polyline
+          points={polylinePoints}
+          stroke="var(--border-emphasis)"
+          strokeWidth={2}
           fill="none"
-          stroke={`url(#${gradientId})`}
-          strokeWidth="4"
           strokeLinecap="round"
-          className={styles.curve}
+          strokeLinejoin="round"
         />
 
-        {/* Attention level markers */}
-        {/* Start - High attention */}
-        <circle
-          cx={startX}
-          cy={startY}
-          r="8"
-          fill="var(--visual-success)"
-          className={styles.marker}
-        />
+        {/* Dots: neutral base + cyan overlay (mirrors zone background layering) */}
+        {dots.map((dot, i) => (
+          <g key={i}>
+            <rect
+              x={dot.dotX - DOT_SIZE / 2}
+              y={dot.dotY - DOT_SIZE / 2}
+              width={DOT_SIZE}
+              height={DOT_SIZE}
+              rx={4}
+              className={dot.danger ? styles.dotDanger : styles.dot}
+            />
+            {!dot.danger && dot.cyanOpacity > 0 && (
+              <rect
+                x={dot.dotX - DOT_SIZE / 2}
+                y={dot.dotY - DOT_SIZE / 2}
+                width={DOT_SIZE}
+                height={DOT_SIZE}
+                rx={4}
+                className={styles.dotCyan}
+                opacity={dot.cyanOpacity}
+              />
+            )}
+          </g>
+        ))}
 
-        {/* Middle - Low attention */}
-        <circle
-          cx={middleX}
-          cy={middleY}
-          r="8"
-          fill="var(--visual-error)"
-          className={styles.marker}
-        />
+        {/* Y-axis labels */}
+        <text x={PLOT_LEFT - 8} y={PLOT_TOP + 4} textAnchor="end" className={styles.axisLabel}>High</text>
+        <text x={PLOT_LEFT - 8} y={PLOT_BOT}     textAnchor="end" className={styles.axisLabel}>Low</text>
 
-        {/* End - High attention */}
-        <circle
-          cx={endX}
-          cy={endY}
-          r="8"
-          fill="var(--visual-success)"
-          className={styles.marker}
-        />
-
-        {/* Labels */}
+        {/* X-axis zone labels */}
         <text
-          x={startX}
-          y={height - padding + 30}
-          textAnchor="middle"
-          className={styles.label}
-        >
-          Start
-        </text>
-        <text
-          x={startX}
-          y={height - padding + 50}
-          textAnchor="middle"
-          className={styles.sublabel}
-        >
-          (Primacy)
-        </text>
-
-        <text
-          x={currentMiddleX}
-          y={height - padding + 30}
-          textAnchor="middle"
-          className={styles.label}
-        >
-          Middle
-        </text>
-        <text
-          x={currentMiddleX}
-          y={height - padding + 50}
-          textAnchor="middle"
-          className={styles.sublabel}
-        >
-          (Lost in Middle)
-        </text>
-
-        <text
-          x={currentEndX}
-          y={height - padding + 30}
-          textAnchor="middle"
-          className={styles.label}
-        >
-          End
-        </text>
-        <text
-          x={currentEndX}
-          y={height - padding + 50}
-          textAnchor="middle"
-          className={styles.sublabel}
-        >
-          (Recency)
-        </text>
-
-        {/* Y-axis label */}
-        <text
-          x={padding - 40}
-          y={padding}
+          x={(PLOT_LEFT + primacyEnd) / 2}
+          y={PLOT_BOT + 22}
           textAnchor="middle"
           className={styles.axisLabel}
         >
-          High
+          PRIMACY
         </text>
         <text
-          x={padding - 40}
-          y={padding}
+          x={(primacyEnd + recencyStart) / 2}
+          y={PLOT_BOT + 22}
+          textAnchor="middle"
+          className={styles.zoneLabelError}
+        >
+          LOST IN MIDDLE
+        </text>
+        <text
+          x={(recencyStart + PLOT_RIGHT) / 2}
+          y={PLOT_BOT + 22}
           textAnchor="middle"
           className={styles.axisLabel}
-          style={{ transform: `translateY(${middleY - padding}px)` }}
         >
-          Low
+          RECENCY
         </text>
-        <text
-          x={padding - 40}
-          y={height - padding}
-          textAnchor="middle"
-          className={styles.axisLabel}
-        >
-          ↑
-        </text>
-        <text
-          x={padding - 40}
-          y={height - padding + 15}
-          textAnchor="middle"
-          className={styles.axisLabelSmall}
-        >
-          Attention
-        </text>
+
+        {/* Inline zone annotation — fades in/out as zone crosses 60px threshold */}
+        {zoneShown && (() => {
+          const cx = (deadStart + deadEnd) / 2;
+          const zoneCls = zoneFade === 'in' ? styles.zoneAnnotationIn : zoneFade === 'out' ? styles.zoneAnnotationOut : '';
+          const descCls = `${styles.zoneAnnotationDesc} ${descFade === 'in' ? styles.zoneAnnotationIn : descFade === 'out' ? styles.zoneAnnotationOut : ''}`;
+          const renderText = (s: ReturnType<typeof getSeverity>, cls: string, key: string) => (
+            <text key={key} x={cx} y={PLOT_TOP + 16} textAnchor="middle" className={cls}>
+              <tspan fill={s.color} className={styles.zoneAnnotationTier}>{s.tier}</tspan>
+              {descShown && (
+                <tspan x={cx} dy="14" className={descCls}>{s.desc}</tspan>
+              )}
+            </text>
+          );
+          return (
+            <g className={zoneCls}>
+              {outgoing && renderText(outgoing, `${styles.zoneAnnotation} ${styles.zoneAnnotationOut}`, 'out')}
+              {renderText(displayed, `${styles.zoneAnnotation} ${outgoing ? styles.zoneAnnotationIn : ''}`, displayed.tier)}
+            </g>
+          );
+        })()}
       </svg>
 
-      <div className={styles.controls}>
-        <span className={styles.controlLabel}>Context Length:</span>
-        {contextLevels.map((level) => (
-          <button
-            key={level.value}
-            className={`${styles.button} ${
-              contextFill === level.value ? styles.buttonActive : ''
-            }`}
-            onClick={() => setContextFill(level.value)}
-          >
-            {level.label}
-          </button>
-        ))}
+      {/* Slider row */}
+      <div className={styles.sliderRow}>
+        <span className={styles.sliderLabel}>Context Fill</span>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={contextFill}
+          onChange={e => setContextFill(Number(e.target.value))}
+          className={styles.slider}
+          aria-label="Context fill percentage"
+          aria-valuetext={`${contextFill}%, ${severity.tier}: ${severity.desc}`}
+        />
+        <span className={styles.sliderValue}>{contextFill}%</span>
       </div>
 
+      {/* Explanation cards */}
       {!compact && (
-        <div className={styles.explanation}>
-          <strong>The U-Curve Effect:</strong> The curve&apos;s width shows
-          context length, while depth shows attention quality. As context length
-          increases, the attention drop in the middle becomes more pronounced.
-          Short contexts (30%) have minimal degradation. Medium contexts (60%)
-          show a noticeable U-curve. Long contexts (90%) exhibit severe
-          attention loss—only the beginning and end are reliably processed.
+        <div className={styles.cards}>
+          <div className={`${styles.card} ${styles.cardPrimacy}`}>
+            <div className={styles.cardTitle}>PRIMACY EFFECT</div>
+            <div className={styles.cardBody}>
+              Content at the beginning receives strong attention at low-to-moderate fill.
+              At high fill, primacy also degrades — put system instructions at the top,
+              but reinforce critical constraints near the end too.
+            </div>
+          </div>
+          <div className={`${styles.card} ${styles.cardLost}`}>
+            <div className={`${styles.cardTitle} ${styles.cardTitleError}`}>LOST IN MIDDLE</div>
+            <div className={styles.cardBody}>
+              Content in the middle is frequently skipped. Simple retrieval may still
+              work, but inferential tasks — following multi-step constraints, connecting
+              facts — fail catastrophically. As fill increases, this dead zone expands.
+            </div>
+          </div>
+          <div className={`${styles.card} ${styles.cardRecency}`}>
+            <div className={styles.cardTitle}>RECENCY EFFECT</div>
+            <div className={styles.cardBody}>
+              Content at the end receives the strongest and most stable attention at any
+              fill level. Place your final task instructions, output format requirements,
+              and critical constraints here — recency is the most reliable position.
+            </div>
+          </div>
+          <div className={`${styles.card} ${styles.cardTrap}`}>
+            <div className={`${styles.cardTitle} ${styles.cardTitleWarning}`}>
+              WHY A BIGGER WINDOW WON'T HELP
+            </div>
+            <div className={styles.cardBody}>
+              At 128K tokens, all frontier models score ~84% on MRCR v2 — regardless of
+              advertised window size. The divergence only appears past 60–70% fill:
+              Sonnet (200K window) at 128K scores 84.9%, while Gemini (10M window)
+              stuffed to 1M scores 26.3%. For agentic coding, context management that
+              keeps you in the effective zone beats a bigger window every time.
+            </div>
+          </div>
         </div>
       )}
     </div>

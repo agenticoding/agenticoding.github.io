@@ -19,7 +19,7 @@ import CapabilityMatrix from '../VisualElements/CapabilityMatrix';
 import UShapeAttentionCurve from '../VisualElements/UShapeAttentionCurve';
 import WorkflowCircle from '../VisualElements/WorkflowCircle';
 import ThreeContextWorkflow from '../VisualElements/ThreeContextWorkflow';
-import ContextWindowMeter from '../VisualElements/ContextWindowMeter';
+import ContextPressureDiagram from '../VisualElements/ContextPressureDiagram';
 import AbstractShapesVisualization from '../VisualElements/AbstractShapesVisualization';
 import PlanningStrategyComparison from '../VisualElements/PlanningStrategyComparison';
 import ExecutionModeComparison from '../VisualElements/ExecutionModeComparison';
@@ -93,7 +93,7 @@ const VISUAL_COMPONENTS = {
   UShapeAttentionCurve,
   WorkflowCircle,
   ThreeContextWorkflow,
-  ContextWindowMeter,
+  ContextPressureDiagram,
   AbstractShapesVisualization,
   PlanningStrategyComparison,
   ExecutionModeComparison,

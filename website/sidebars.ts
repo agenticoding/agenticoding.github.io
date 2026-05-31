@@ -39,14 +39,13 @@ const sidebars: SidebarsConfig = {
       label: 'Practical Techniques',
       collapsed: false,
       items: [
-        'practical-techniques/lesson-6-project-onboarding',
-        'practical-techniques/lesson-7-planning-execution',
+        'practical-techniques/lesson-6-context-management',
+        'practical-techniques/lesson-7-spec-driven-development',
         'practical-techniques/lesson-8-tests-as-guardrails',
         'practical-techniques/lesson-9-reviewing-code',
         'practical-techniques/lesson-10-debugging',
         'practical-techniques/lesson-11-agent-friendly-code',
-        'practical-techniques/lesson-12-spec-driven-development',
-        'practical-techniques/lesson-13-systems-thinking-specs',
+        'practical-techniques/lesson-12-systems-thinking-specs',
       ],
     },
     {

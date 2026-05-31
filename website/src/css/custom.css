@@ -188,6 +188,7 @@
   --text-muted: var(--neutral-500);      /* #808080 */
   --border-default: var(--neutral-300);  /* #b7b7b7 — structural container borders */
   --border-subtle: var(--neutral-200);   /* #d4d4d4 — hairline dividers */
+  --border-emphasis: var(--neutral-500); /* #808080 — strong borders, interactive outlines */
 
   /* Map to Infima layout variables */
   --ifm-background-color: var(--surface-page);
@@ -262,10 +263,6 @@
   --visual-bg-magenta: color-mix(in srgb, var(--visual-magenta) 10%, transparent);
   --visual-bg-rose: var(--visual-bg-neutral);                                      /* Follows rose alias */
   --visual-bg-neutral: color-mix(in srgb, var(--visual-neutral) 10%, transparent);
-
-  /* === GRADIENT ENDPOINTS (used by ContextWindowMeter) === */
-  --gradient-warning-end: #cd8c37; /* Warning-400 */
-  --gradient-critical-end: #ec7069; /* Error-400 */
 
   /* === TYPOGRAPHY & CODE === */
   --ifm-code-font-size: 95%;
@@ -378,10 +375,6 @@ details.alert {
   --semantic-info: #53a0ec;     /* Indigo-400 */
   --semantic-neutral: #9b9b9b;  /* Neutral-400 */
 
-  /* === GRADIENT ENDPOINTS (used by ContextWindowMeter) === */
-  --gradient-warning-end: #e6aa63; /* Warning-300 */
-  --gradient-critical-end: #ff958d; /* Error-300 */
-
   /* === MAP TO INFIMA — Neutral primary === */
   --ifm-color-primary: var(--neutral-100);
   --ifm-color-primary-dark: var(--neutral-200);
@@ -418,6 +411,7 @@ details.alert {
   --text-muted: #9b9b9b;          /* neutral-400 */
   --border-default: #505050;      /* neutral-700 */
   --border-subtle: #3d3d3d;       /* neutral-800 — hairline dividers */
+  --border-emphasis: #808080;     /* neutral-500 — strong borders, interactive outlines */
 
   /* === DARK MODE BACKGROUNDS === */
   --ifm-background-color: var(--surface-page);
@@ -722,10 +716,6 @@ article h1 {
   letter-spacing: -0.01em;
 }
 
-.navbar__logo {
-  height: var(--space-3);
-  margin-right: var(--space-1);
-}
 
 /* Nav links: Inter, small caps feel via uppercase + tracking */
 .navbar__link {
@@ -1128,15 +1118,15 @@ div[class*='announcementBar'] {
   75%      { transform: rotate(-5deg); }
 }
 @keyframes idleMagnifySearch {
-  0%     { transform: translate( 0px,  0.7px); }
-  12.5%  { transform: translate( 0.5px,0.5px); }
-  25%    { transform: translate( 0.7px,0px); }
-  37.5%  { transform: translate( 0.5px,-0.5px); }
-  50%    { transform: translate( 0px, -0.7px); }
-  62.5%  { transform: translate(-0.5px,-0.5px); }
-  75%    { transform: translate(-0.7px, 0px); }
-  87.5%  { transform: translate(-0.5px, 0.5px); }
-  100%   { transform: translate( 0px,  0.7px); }
+  0%     { transform: translate( 0px,  3px); }
+  12.5%  { transform: translate( 2.1px, 2.1px); }
+  25%    { transform: translate( 3px,  0px); }
+  37.5%  { transform: translate( 2.1px,-2.1px); }
+  50%    { transform: translate( 0px, -3px); }
+  62.5%  { transform: translate(-2.1px,-2.1px); }
+  75%    { transform: translate(-3px,  0px); }
+  87.5%  { transform: translate(-2.1px, 2.1px); }
+  100%   { transform: translate( 0px,  3px); }
 }
 @keyframes idleBrushArc {
   from { transform: rotate(-3.9deg); }
@@ -1171,6 +1161,14 @@ div[class*='announcementBar'] {
 @keyframes idleRobotSpark {
   0%, 30%  { opacity: 0; transform: scale(0); }
   15%      { opacity: 1; transform: scale(1); }
+}
+/* Landing zone – thumbnail highlight glow */
+@keyframes idleLandingGlow {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+.idle-landing-glow {
+  animation: idleLandingGlow 2500ms ease-in-out infinite;
 }
 
 .idle-cursor-blink  { animation: idleCursorBlink  1000ms step-end infinite; }
@@ -1337,7 +1335,7 @@ html:not([data-theme='dark']) .wordmark-dark { display: none; }
   .idle-robot-teeth, .idle-robot-blink, .idle-robot-spark,
   .idle-compass-needle, .idle-bullseye-ring,
   .idle-air-stripe, .idle-babysit-rock,
-  .idle-cross-shake, .idle-check-breathe {
+  .idle-cross-shake, .idle-check-breathe, .idle-landing-glow {
     animation: none !important;
   }
 }

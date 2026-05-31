@@ -128,7 +128,7 @@ IDE agents (Cursor, Copilot) work but are coupled to single windows, limiting co
 
 The methodology applies to any agent, but CLI agents unlock the parallel execution model this course teaches.
 
-*Learn more in [Lesson 2: Agents Demystified](/fundamentals/lesson-2-how-agents-work) and [Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution).*
+*Learn more in [Lesson 2: Agents Demystified](/fundamentals/lesson-2-how-agents-work) and [Lesson 7: Spec-Driven Development](/practical-techniques/lesson-7-spec-driven-development).*
 
 ### Is agentic coding better than prompt engineering?
 
@@ -172,7 +172,7 @@ The fix: **deliberately load context** before each task phase. Ask exploratory q
 
 Use hierarchical instruction files (CLAUDE.md at repo and directory levels) to persist architectural constraints and patterns that should always be available. Grounding isn't a one-time upfront step—it's continuous context engineering throughout the session.
 
-*Learn more in [Lesson 5: Grounding](/methodology/lesson-5-grounding) and [Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution#prompt-to-explain-loading-context-into-the-window).*
+*Learn more in [Lesson 5: Grounding](/methodology/lesson-5-grounding) and [Lesson 6: Context Engineering](/practical-techniques/lesson-6-context-management).*
 
 ### How do I stop AI agents from duplicating code?
 

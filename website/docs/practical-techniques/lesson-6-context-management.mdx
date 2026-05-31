@@ -1,0 +1,215 @@
+---
+sidebar_position: 1
+sidebar_label: 'Context Engineering'
+sidebar_custom_props:
+  sectionNumber: 6
+title: 'Context Engineering'
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import ContextPressureDiagram from '@site/src/components/VisualElements/ContextPressureDiagram';
+import ContextStreamBlock from '@site/src/components/VisualElements/ContextStreamBlock';
+import { contextManagementStream } from '@site/src/components/VisualElements/contextStreamData';
+import PromptExample from '@site/src/components/PromptExample';
+import MCPLoadingDecisionTree from '@site/src/components/VisualElements/MCPLoadingDecisionTree';
+import ContextMechanismMap from '@site/src/components/VisualElements/ContextMechanismMap';
+import ContextFilesHierarchy from '@site/src/components/VisualElements/ContextFilesHierarchy';
+import SkillsInvocationDiagram from '@site/src/components/VisualElements/SkillsInvocationDiagram';
+import SubAgentDiagram from '@site/src/components/VisualElements/SubAgentDiagram';
+import ContextSqueezeDiagram from '@site/src/components/VisualElements/ContextSqueezeDiagram';
+import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
+import MCPToolSchemaDiagram from '@site/src/components/VisualElements/MCPToolSchemaDiagram';
+
+Agents do not use a context window uniformly. They attend to some tokens more strongly than others, and position matters as much as raw capacity. Context engineering is the practice of shaping what enters the window, where it lands, and when it appears so the task stays in the model's high-attention zone.
+
+The core problem is positional. The [lost-in-the-middle effect](/fundamentals/lesson-1-how-llms-work) means the same instruction can be reliable at the top or bottom of the window and unreliable in the middle. A 200K-token window sounds enormous until you realize a single MCP server can consume 55K tokens just for tool schemas — before the agent reads a single line of your code. Capacity is not the goal. Controlled attention is the goal.
+
+This lesson covers the five mechanisms that decide what enters the context window and where: **context files**, **MCP tool schemas**, **skills**, **sub-agents**, and **runtime management**. Each operates at a different layer, with different tradeoffs between token cost and attention reliability.
+
+## The Context Pressure Problem
+
+As you add context files, connect MCP servers, and accumulate conversation history, the fixed-size "User Task" band — your actual request — drifts deeper into the middle of the window. The attention curve shows what happens: the task enters the forgotten zone where the agent can no longer reliably follow your instructions.
+
+<ContextPressureDiagram />
+
+Try the presets. **Fresh Session** keeps the window light — the task gets strong attention. **Heavy MCP (eager)** shows the real danger: connecting a few MCP servers plus conversation pushes the task into the dead zone, even though the window isn't full. **Heavy MCP (deferred)** demonstrates the dramatic savings from deferred tool loading — same tool count, fraction of the tokens. **Deep Conversation** shows how long conversations alone create pressure — 15 turns of accumulated context push the task down. **Skill-Heavy** shows procedure expansions: turns where a skill or reusable workflow was invoked get a violet accent bar, and their extra 4K tokens per expansion add up fast. **Near Compaction** shows the drain cascade in action — the hatched region models capacity reserved for the compaction handoff, shrinking the effective working window so the agent can still summarize before it hits the wall. **Overloaded** is the worst case — everything maxed out, task completely invisible.
+
+The connector on the right side shows how tool definitions produce results that land in conversation turns. Notice how the drain cascade works: when total content exceeds the effective window, headroom disappears first, then conversation gets compacted (reduced opacity bands), then context files shrink, and finally tool definitions yield — each slider shows the requested-vs-actual gap when drained.
+
+The key insight: **it's not about running out of tokens — it's about where your task lands relative to the attention curve.** A 65% full window with heavy tool definitions is worse than an 80% full window where most content is conversation (which sits below the task in the recency zone).
+
+## The Five Context Mechanisms
+
+<figure>
+  <ContextMechanismMap />
+  <figcaption>
+    The five context mechanisms: where tokens land and when they load.
+  </figcaption>
+</figure>
+
+The spectrum runs from **always-loaded** (context files — guaranteed delivery, high cost) to **fully isolated** (sub-agents — zero cost to parent, but no shared state). Effective context engineering means choosing the right mechanism for each piece of knowledge.
+
+## Context Files (AGENTS.md) {#context-files-claudemd--agentsmd}
+
+Context files are markdown documents injected between the system prompt and your input — the primacy zone. They give agents project memory without repeated explanations: architecture, conventions, build commands, constraints.
+
+The tradeoff: **guaranteed delivery vs. pushing everything else toward the middle.** Every token in your context files shifts the user task band down.
+
+<ScrollDrivenFigure
+  phaseEnd={0.5}
+  caption="The Primacy Squeeze: as AGENTS.md grows, the user task gets pushed from the primacy zone into the forgotten middle."
+>
+  <ContextSqueezeDiagram />
+</ScrollDrivenFigure>
+
+`AGENTS.md` is the vendor-neutral standard adopted by 60,000+ open-source projects (now governed by the Linux Foundation's Agentic AI Foundation), working across GitHub Copilot, Cursor, Windsurf, and most other AI coding tools (note: Claude Code does not support AGENTS.md — see tip below). Keep it minimal — your README should contain 90% of what AI needs; AGENTS.md adds only AI-specific operational context. That 10% is where the discipline lives — every token in AGENTS.md consumes primacy-zone attention that could go toward your actual task. Put project knowledge in your README where agents can read it on demand; AGENTS.md is for what changes _how_ the agent operates, not _what_ the project does. Reference external docs by link rather than inlining them — agents can fetch details when needed.
+
+:::tip Claude Code: Using AGENTS.md with Claude Code
+Claude Code uses `CLAUDE.md` instead of `AGENTS.md`. To maintain a single source of truth while supporting both ecosystems, use **@-linking** in your `CLAUDE.md`:
+
+```markdown
+# CLAUDE.md
+
+@/AGENTS.md
+```
+
+This imports your AGENTS.md content into Claude's context. For details on Claude Code's hierarchical context system, see the [Claude Code documentation](/developer-tools/cli-coding-agents#claude-code).
+:::
+
+:::warning Hierarchical CLAUDE.md: Hidden Context Bloat
+Unlike AGENTS.md (a single file with predictable token cost), Claude Code's hierarchical system merges `CLAUDE.md` files from multiple levels — project root, subdirectories, `.claude/rules/`, user config, and enterprise policy — all automatically loaded based on your working directory. Each additional file consumes primacy-zone tokens, compounding the attention pressure this lesson describes: every merged file pushes your actual task deeper into the forgotten middle. The total context-file token cost becomes invisible unless you audit every level of the hierarchy. If you use Claude Code, keep a single root `CLAUDE.md` that `@`-imports `AGENTS.md` and avoid scattering files throughout subdirectories — the hierarchy multiplies the squeeze.
+:::
+
+:::warning Security Consideration
+Context files are injected directly into system prompts. Security researchers have identified "Rules File Backdoor" attacks where malicious instructions are injected using Unicode characters or evasion techniques. Keep context files minimal, version-controlled, and code-reviewed like any other code.
+:::
+
+## MCP Tools
+
+Every tool the agent can call ships with a schema: name, description, parameters. Those schemas live in the request context and count toward input tokens. Built-in tools (Read, Edit, Bash) are modest at ~50–1000 tokens each. MCP servers are a different story entirely.
+
+The real issue is placement, not just capacity. **Eager loading** puts tool definitions in the initial request context before the model plans its first action. **Deferred loading** keeps only a search tool and compact catalog metadata upfront, preserving attention for the user task until a capability is actually needed.
+
+The cost is structural: every tool schema is serialized as JSON with repeated type annotations, nested `required` arrays, and verbose natural-language descriptions. A typical tool runs 300–600 tokens; complex API tools like GitHub's file operations hit 1,000–2,000. These costs compound quickly across multi-server setups. The governing rule is simple: **small, high-frequency toolsets favor eager loading; large, broad catalogs favor deferred loading.**
+
+### Eager vs Deferred Loading
+
+Eager loading keeps calls simple because the model already has the schema when it starts planning. Deferred loading protects the startup prompt by exposing ToolSearch first, but every deferred tool now depends on runtime discovery.
+
+<ScrollDrivenFigure
+  phaseEnd={0.5}
+  caption="The MCP loading tradeoff: eager loading keeps schemas in the initial request so calls stay direct, but it pushes the task lower in context. Deferred loading keeps the startup prompt compact by exposing ToolSearch first, then discovers and loads schemas only when needed."
+>
+  <MCPToolSchemaDiagram />
+</ScrollDrivenFigure>
+
+**Takeaway:** the more your catalog behaves like infrastructure, the more you should optimize for prompt placement instead of immediate tool visibility. The same logic applies one layer up to reusable procedures: if a workflow library is broad, discover it cheaply and load the full instructions only when needed. The same automation-versus-reliability tradeoff applies here.
+
+<details>
+<summary>See the deferred-loading runtime sequence</summary>
+
+When a deferred tool is needed, the model must **discover → load → call**:
+
+<ContextStreamBlock
+  entries={contextManagementStream}
+  ariaLabel="ToolSearch discovers gh_pr_create on demand, loads its schema, then makes the tool callable"
+/>
+
+Deferred loading is powerful precisely because it turns schema exposure into a runtime workflow instead of paying the full cost at startup.
+</details>
+
+## Skills and Procedures — The Automation-vs-Reliability Tradeoff
+
+Skills are the **procedure-side analogue of deferred MCP tools**. Deferred MCP exposes a cheap capability catalog up front, then loads a tool schema only when the tool is needed. Skill systems do the same for workflows: the agent sees a lightweight listing first, then loads the full procedure only when the task matches or you invoke it directly.
+
+The critical difference from tool schemas is not the mechanism — it is who decides which procedure to activate. This is the **automation-vs-reliability tradeoff**: auto-discovery is friction-free but the agent may pick wrong, while manual invocation always works but requires the human to know the skill exists.
+
+### Two Invocation Paths
+
+<SkillsInvocationDiagram />
+
+**Manual invocation**: The user explicitly selects a procedure — a slash command (`/commit`), skill picker, or sub-agent mention. The procedure loads because the human chose it. **Always reliable** — the model cannot misidentify the workflow — but the human must discover the skill and remember its name.
+
+**Model invocation**: The agent sees the procedure catalog in context, matches your intent against the descriptions, and loads the relevant workflow automatically. **Zero friction** — the agent handles discovery — but the model may pick the wrong skill, miss the right one, or waste tokens evaluating irrelevant descriptions.
+
+Most skill systems allow per-skill configuration of this tradeoff. Claude Code exposes `disable-model-invocation` (manual only) and `user-invokable` (model only) as frontmatter fields in each `SKILL.md`. A skill with `disable-model-invocation: true` never auto-triggers — it runs only when explicitly invoked. This lets you match the invocation path to the workflow's reliability requirements: critical workflows (deploy, commit, review) benefit from manual invocation; exploration workflows (search code, explain errors) work well with auto-discovery.
+
+### Different Harnesses, Same Core Pattern
+
+Unlike MCP — a defined protocol — skills are not standardized across tools. Each harness implements them differently. Yet they all follow the same pattern: advertise lightweight discovery metadata upfront, load the full procedure content only when invoked.
+
+Claude Code lists skill names and descriptions, then loads `SKILL.md` when the skill is activated. Pi does the same and also exposes prompt templates as direct slash commands. Codex separates built-in slash commands from a `/skills` browser that inserts skill context only when selected. OpenCode leans more on reusable agents and `@`-invoked subagents, but the idea is identical: keep the startup prompt lean and bring in specialized instructions only when relevant.
+
+That catalog listing is not free. Procedure metadata — names and descriptions used for discovery — consumes context budget even before any workflow runs. This is the procedure-side analogue of MCP schema pressure: different payload, same design problem.
+
+The practical framing: **AGENTS.md** holds what the agent should always know — architecture, conventions, constraints. **Skills** hold what the agent should know how to do — specific workflows loaded on demand, with the invocation path controlling who decides which one runs.
+
+## Sub-Agents — Context Isolation
+
+Sub-agents run in completely separate context windows. This is the most powerful context engineering tool: a sub-agent might consume 150K tokens researching a codebase, but returns only a 2K-token summary to the orchestrator. **Zero tokens in the parent context** — the research never existed as far as the main conversation is concerned.
+
+<ScrollDrivenFigure
+  phaseEnd={0.55}
+  caption="Sub-agent context isolation: research consumed internally, compact synthesis returned."
+>
+  <SubAgentDiagram />
+</ScrollDrivenFigure>
+
+The tradeoffs:
+
+- **No shared state** — each sub-agent starts fresh, so you pay the context-file loading cost again
+- **Synthesis can lose nuance** — the 2K summary omits details the parent might have needed
+- **Cost multiplied** — every sub-agent is a separate API call with its own token consumption
+- **No nesting** — sub-agents cannot spawn sub-agents; the orchestrator is always the root
+- **10 parallel cap** — Claude Code limits concurrent sub-agents to 10
+
+Sub-agents are ideal for heavy research, multi-file analysis, and exploratory tasks where the journey matters less than the destination. They can also generate independent plans or implementations when you want to compare options before applying one result.
+
+See [Lesson 5](/methodology/lesson-5-grounding#solution-2-sub-agents-for-context-isolation) for sub-agent grounding patterns.
+
+## Context Compaction — Lossy Handoff {#runtime-management}
+
+Compaction is lossy summarization. The model compresses the current session into a synthetic state guided by your instruction — but it cannot guarantee what survives. Future relevance is unknowable at compaction time: a debugging trace that looks like noise now may be the clue the next step needed.
+
+The reliable alternative is **manual handoff with external checkpointing**. Before starting a new phase, write a brief state file with the current goal, changed files, decisions, unresolved errors, and next step. Files provide exact recall; a fresh context provides inference quality.
+
+### The Buffer Tax
+
+Compaction itself consumes working context. The system reserves a buffer to ensure it can still perform the handoff when the session nears capacity — capacity intentionally withheld from normal conversation. This is the compaction buffer: a tax on your effective window.
+
+:::tip Disable auto-compaction
+Auto-compaction trades usable context for a safety margin you don't need when you own handoffs explicitly. Both Claude Code (CLI settings) and [pi](https://pi.dev) let you disable it:
+
+```json
+{ "compaction": { "enabled": false } }
+```
+
+Reclaim the buffer for actual work. Compact only when you choose to — at phase boundaries — and always externalize anything that must survive exactly.
+:::
+
+---
+
+## Key Takeaways
+
+**Context files give guaranteed delivery at the cost of attention pressure**
+Every token in AGENTS.md shifts the user task band deeper into the middle zone — keep files under 25KB.
+
+**MCP tool schemas compound quickly across multi-server setups**
+A single GitHub MCP server consumes ~55K tokens; three moderate servers can consume 72% of your window before the conversation starts. Enable ToolSearch for deferred loading when you have more than 20 tools.
+
+**Skills and reusable procedures land in the recency zone**
+Unlike context files that always consume tokens at startup, skill systems keep lightweight discovery metadata in context until invoked — and when they run, the expanded workflow lands in the recency zone where attention is strongest. The key design decision is the invocation path: manual invocation is always reliable but requires human awareness, while auto-discovery is friction-free but fallible. Per-skill configuration lets you choose the right path for each workflow.
+
+**Sub-agents trade token cost for clean orchestrator context**
+A sub-agent may consume 150K tokens internally but return only 2K to the parent — the research never touches the orchestrator's window. Use this for heavy research, multi-file analysis, exploratory tasks, and independent candidates that will be judged before one result is applied.
+
+**Disable auto-compaction; own handoffs with checkpoint files**
+Compaction is lossy summarization — it drops what looks irrelevant now but may be critical later. External checkpoint files provide reliable recall; a fresh context provides inference quality. If you must use compaction, externalize anything that must survive exactly.
+
+**Choose the mechanism by what the knowledge is for**
+Is it always needed? → Context file. Is it a callable tool? → MCP. Is it a workflow procedure? → Skill, prompt template, or reusable agent. Is it heavy research? → Sub-agent. Is context accumulating? → write a checkpoint file and start a fresh phase. Don't rely on auto-compaction.
+
+---
+
+**Next:** [Lesson 7: Spec-Driven Development](./lesson-7-spec-driven-development.md)

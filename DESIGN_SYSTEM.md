@@ -154,7 +154,7 @@ Radon marks any text written in a human voice — persona strings, polite conver
 
 ### Voice Constraints
 
-Voice faces: monospace only. Max 2 per block. Radon is scarce — human voice only, never for emphasis or technical content. Fallback: `var(--font-mono)` → `monospace`.
+Voice faces: monospace only. **Content axis** (base + highlight): max 2 per block. **Speaker axis** (Argon for AI, Radon for human): orthogonal — does not count toward the limit. Multi-turn interaction illustrations may use Neon + Krypton (content) alongside Argon and Radon (speakers). Radon is scarce — human voice only, never for emphasis or technical content. Fallback: `var(--font-mono)` → `monospace`.
 
 ### Prompt Block Component
 
@@ -397,6 +397,28 @@ Use semantic `<figure>` and `<figcaption>` for all visual block elements — dia
 Do NOT use figures without captions. Every `<figure>` must contain a `<figcaption>` that describes the content.
 
 Do NOT use `<img>` directly for diagrams or illustrations. Instead, wrap in `<figure>` with a descriptive caption.
+
+### Scroll-Reveal Timing
+
+Scroll-triggered animations must complete while the element occupies the user's primary fixation zone. Eye-tracking research (NNGroup, "Scrolling and Attention") shows 65% of above-fold viewing time concentrates in the **top half of the viewport**. Elements that finish animating only after scrolling past this zone appear empty during the period of peak attention.
+
+**Rule — Reveal-completion zone:** A `ScrollDrivenFigure` animation must reach phase=1 by the time the element's vertical center crosses the **viewport midpoint** (50 vh). The animation begins when the element's **top edge** enters the viewport bottom — i.e., `earlyStart` must be `true`.
+
+| Device | Animation start | Must complete by | Rationale |
+|--------|----------------|-----------------|-----------|
+| Desktop (>1024 px) | Top edge enters viewport | Element center at 50 vh | Standard fixation zone |
+| Tablet (768–1024 px) | Top edge enters viewport | Element center at 50 vh | Same proportional behavior |
+| Mobile (<768 px) | Top edge enters viewport | Element center at 60 vh | Smaller screens — less scroll distance; NNGroup recommends minimal scroll-fade on mobile |
+
+**Implementation:** `ScrollDrivenFigure` defaults to `earlyStart=true`. Calibrate `phaseEnd` so the full animation completes within roughly half the viewport height of scroll travel. For simple `useScrollReveal` observers, use `rootMargin: '0px 0px -50% 0px'` to trigger at the viewport midpoint.
+
+Do NOT omit `earlyStart` on `ScrollDrivenFigure`. The default is `true`; override to `false` only for elements that are guaranteed to load fully below the fold with no possibility of partial visibility on mount.
+
+**Evidence:**
+- 57% of page-viewing time is above the fold; 74% in the first two screenfuls (NNGroup, 2024).
+- Scroll-fade animations should leverage closure — partial visibility before full reveal motivates further scrolling (NNGroup, "Scroll Fading 101").
+- Animations exceeding 500 ms perceived duration feel sluggish; 100–400 ms is optimal (NNGroup, "Animation Duration").
+- `prefers-reduced-motion: reduce` must skip to phase=1 immediately (WCAG 2.2.2).
 
 ### Progressive Disclosure
 

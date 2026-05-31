@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Project Onboarding with Context Files",
-    "lessonId": "lesson-6-project-onboarding",
+    "lessonId": "lesson-6-context-management",
     "estimatedDuration": "30-40 minutes",
     "learningObjectives": [
       "Structure hierarchical context files",

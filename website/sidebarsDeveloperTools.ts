@@ -9,15 +9,10 @@ import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   developerToolsSidebar: [
     'cli-coding-agents',
+    'plans-comparison',
     'terminals',
     'cli-tools',
     'mcp-servers',
-    // Future expansion:
-    // {
-    //   type: 'category',
-    //   label: 'AI Coding Assistants',
-    //   items: ['agent-comparison', 'claude-code', 'cursor', 'copilot'],
-    // },
   ],
 };
 

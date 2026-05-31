@@ -19,5 +19,5 @@ import EvidenceBasedDebug from '@site/shared-prompts/\_evidence-based-debug.mdx'
 
 - **[Lesson 4: Prompting 101](/methodology/lesson-4-prompting-101#chain-of-thought-paving-a-clear-path)** - Chain-of-Thought, constraints, structured reasoning
 - **[Lesson 5: Grounding](/methodology/lesson-5-grounding#grounding-anchoring-agents-in-reality)** - Grounding directives, RAG, forcing retrieval
-- **[Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution#require-evidence-to-force-grounding)** - Evidence requirements, challenging agent logic
+- **[Lesson 7: Spec-Driven Development](/practical-techniques/lesson-7-spec-driven-development#require-evidence-to-force-grounding)** - Evidence requirements, challenging agent logic
 - **[Lesson 10: Debugging](/practical-techniques/lesson-10-debugging#the-closed-loop-debugging-workflow)** - Closed-loop workflow, reproduction scripts, evidence-based approach

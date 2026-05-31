@@ -93,7 +93,6 @@ const testimonials = [
 export default function SiteHero(): ReactNode {
   const courseStars = useGitHubStars('agenticoding/agenticoding.github.io');
   const chunkHoundStars = useGitHubStars('chunkhound/chunkhound');
-  const arguSeekStars = useGitHubStars('ArguSeek/arguseek');
 
   // Hydration-safe random pair: [0,1] on SSR, random distinct pair after mount
   const [pair, setPair] = useState<[number, number]>([0, 1]);
@@ -111,8 +110,8 @@ export default function SiteHero(): ReactNode {
           Master Agentic Coding
         </Heading>
         <p className={styles.heroSubtitle}>
-          Structured methodology proven on enterprise mono-repos with millions
-          of lines of code
+          A technical reference for senior engineers operating AI coding agents
+          in production.
         </p>
 
         <p className={styles.heroMeta}>
@@ -145,20 +144,6 @@ export default function SiteHero(): ReactNode {
                 ChunkHound
               </a>
               <StarIcon /><span>{formatStarCount(chunkHoundStars)}</span>
-            </>
-          )}
-          {arguSeekStars !== null && (
-            <>
-              <span className={styles.metaSep}>&middot;</span>
-              <a
-                href="https://github.com/ArguSeek/arguseek"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.heroMetaLink}
-              >
-                ArguSeek
-              </a>
-              <StarIcon /><span>{formatStarCount(arguSeekStars)}</span>
             </>
           )}
         </p>

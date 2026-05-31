@@ -72,7 +72,7 @@ When building on an established component library (shadcn/ui, Radix, Ant Design,
 
 Example: `SubscriptionCard` uses `<Card>` from shadcn/ui. The agent already knows Card's API from library documentation. Your spec defines the domain props (`plan: Plan`, `onUpgrade`) and responsibility rules, not how a card renders a shadow.
 
-Include component library references in your project's CLAUDE.md / AGENTS.md ([Lesson 6](/practical-techniques/lesson-6-project-onboarding)): import conventions, preferred primitives, and any overrides. This dramatically reduces spec surface and improves agent output because the agent operates within a constrained, well-documented design system.
+Include component library references in your project's CLAUDE.md / AGENTS.md ([Lesson 6](/practical-techniques/lesson-6-context-management)): import conventions, preferred primitives, and any overrides. This dramatically reduces spec surface and improves agent output because the agent operates within a constrained, well-documented design system.
 
 ## Flows: Interaction Traces
 
@@ -148,7 +148,7 @@ Every data-bound view has exactly five states. Omitting any is a bug:
 
 Agents consistently miss the **Partial** and **Empty** states. If the spec doesn't enumerate all five explicitly with examples, the agent will implement only Ideal and Loading — then the first empty dataset or partial API failure renders a blank screen.
 
-**Choosing a state model.** Pick one model per view entity, not per app. Three options: **Declarative** — you define the desired state, a reconciler (React, for example) figures out how to get there. Best for data display (tables, charts, read-only views). **State machine** — you enumerate every legal state and transition. Best for multi-step flows (forms, wizards, modals with distinct phases). **Event-driven** — you react to incoming events as they arrive. Best for real-time data (WebSocket feeds, collaborative editing, live notifications). For the system-level perspective on these models (event sourcing, CQRS, entity lifecycles), see [Lesson 13: State Models](/practical-techniques/lesson-13-systems-thinking-specs#state-models).
+**Choosing a state model.** Pick one model per view entity, not per app. Three options: **Declarative** — you define the desired state, a reconciler (React, for example) figures out how to get there. Best for data display (tables, charts, read-only views). **State machine** — you enumerate every legal state and transition. Best for multi-step flows (forms, wizards, modals with distinct phases). **Event-driven** — you react to incoming events as they arrive. Best for real-time data (WebSocket feeds, collaborative editing, live notifications). For the system-level perspective on these models (event sourcing, CQRS, entity lifecycles), see [Lesson 12: State Models](/practical-techniques/lesson-12-systems-thinking-specs#state-models).
 
 ## Layouts and Responsiveness
 

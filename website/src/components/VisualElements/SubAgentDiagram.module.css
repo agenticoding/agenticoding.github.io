@@ -1,0 +1,94 @@
+/* ── SubAgentDiagram — local styles only ──────────────────────────────────────
+   Shared animation primitives (ghost, connector, etc.) live in
+   diagram.module.css. Only diagram-specific styles are defined here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Container outlines — transition pair */
+.container {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
+.containerIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
+
+/* Section headers — transition pair */
+.header {
+  opacity: 0;
+  font-family: var(--font-mono-keyword);
+  font-feature-settings: var(--font-mono-features);
+  letter-spacing: 0.06em;
+  transition: opacity 200ms var(--ease-exit);
+}
+.headerIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
+
+/* Emoji actor nodes — slide-up + fade */
+.actor {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.actorIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* Result blocks — slide-up + fade */
+.block {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.blockIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* Token count labels — opacity-only */
+.tokenLabel {
+  opacity: 0;
+  font-family: var(--font-mono);
+  font-feature-settings: var(--font-mono-features);
+  transition: opacity 200ms var(--ease-exit);
+}
+.tokenLabelIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
+
+/* ── Reduced-motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .containerIn {
+    opacity: 1;
+    transition: none;
+  }
+  .header,
+  .headerIn {
+    opacity: 1;
+    transition: none;
+  }
+  .actor,
+  .actorIn {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .block,
+  .blockIn {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .tokenLabel,
+  .tokenLabelIn {
+    opacity: 1;
+    transition: none;
+  }
+}

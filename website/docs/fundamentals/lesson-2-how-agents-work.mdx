@@ -31,7 +31,7 @@ export const SEQ_ROWS = [
   { type: 'note',    on: 'agent', text: 'Decides to Edit file' },
   { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Edit' },
   { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: '"Edit successful" added to context', dashed: true },
-  { type: 'note',    on: 'agent', text: 'Decides to run tests via Bash' },
+  { type: 'note',    on: 'agent', text: 'Decides to run tests' },
   { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Bash' },
   { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: 'Test output added to context', dashed: true },
   { type: 'message', from: 'agent', to: 'user',  label: 'Agent Response', sublabel: '"Task complete"' },
@@ -45,8 +45,7 @@ An agent isn't just an LLM responding to prompts. It's a **feedback loop** that 
 
 ### Basic Loop: Perceive → Reason → Act → Verify → Iterate
 
-{/* earlyStart: figure may be partially visible on load, so animation phase starts earlier. */}
-<ScrollDrivenFigure phaseEnd={0.585} earlyStart caption="Perceive, reason, act, observe, verify — iterate until done.">
+<ScrollDrivenFigure phaseEnd={0.585} caption="Perceive, reason, act, observe, verify — iterate until done.">
   <AgentLoopDiagram />
 </ScrollDrivenFigure>
 
@@ -80,8 +79,8 @@ No magic, no separate reasoning engine, no hidden state. When you interact with 
 
 Every agent interaction follows this pattern:
 
-{/* phaseEnd={0.7}: spreads animation over 0.7×(vh+h) ≈ 1230px; SequenceDiagram auto-calibrates row thresholds to this value */}
-<ScrollDrivenFigure phaseEnd={0.7} earlyStart caption="Everything is text flowing through a context window.">
+{/* phaseEnd={0.7}: all row thresholds (max ≈0.68) < phase-at-50vh (0.71), so rows complete before peak attention passes */}
+<ScrollDrivenFigure phaseEnd={0.7} caption="Everything is text flowing through a context window.">
   <SequenceDiagram
     ariaLabel="Agent interaction sequence: user sends prompt, agent calls tools, returns result"
     columns={SEQ_COLUMNS}
@@ -125,7 +124,7 @@ The LLM doesn't "remember" previous conversations. It has no hidden internal sta
 **Unbiased code review:** The agent can critically audit its own work. Don't reveal code authorship, and it applies full scrutiny with no defensive bias.
 
 {/* phaseEnd: scroll 0.6 viewport-heights past entry trigger to animate all 12 context entries + verdict connectors */}
-<ScrollDrivenFigure phaseEnd={0.6} earlyStart caption="Same code, same model — different context produces a different solution class.">
+<ScrollDrivenFigure phaseEnd={0.6} caption="Same code, same model — different context produces a different solution class.">
   <ContextBiasDiagram />
 </ScrollDrivenFigure>
 
@@ -186,8 +185,8 @@ Open three tabs, run agents on different projects (refactoring in `project-a`, d
 
 **CLI agents unlock parallelism** without managing conversation threads or multiple IDE instances.
 
-:::tip Preview: [Lesson 7 — Planning & Execution](../practical-techniques/lesson-7-planning-execution.md)
-We'll dive deep into **Planning & Execution** strategies in Lesson 7, including how to structure concurrent work across multiple agents, when to parallelize vs. serialize tasks, and how to coordinate complex multi-project workflows.
+:::tip Preview: [Lesson 7 — Spec-Driven Development](../practical-techniques/lesson-7-spec-driven-development.md)
+We'll dive deep into **Spec-Driven Development** in Lesson 7, including how to structure concurrent work across multiple agents, when to parallelize vs. serialize tasks, and how to coordinate complex multi-project workflows.
 :::
 
 ## Context Engineering and Steering

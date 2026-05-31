@@ -107,7 +107,7 @@ The comments use different words with overlapping meaning—semantic breadcrumbs
 
 ### Automate Through Prompting
 
-Rather than manually managing discoverability strategies, configure your agent to handle this automatically. Add instructions like `"Document inline when necessary"` and `"Match surrounding patterns and style"` to your `CLAUDE.md` or `AGENTS.md` ([Lesson 6](/practical-techniques/lesson-6-project-onboarding)). These phrases make agents automatically add semantic bridge comments during generation, follow existing code conventions, and maintain consistency without explicit oversight. The agent reads your co-located constraints and semantic bridges during code research, then generates new code that follows the same patterns—turning discoverability into a self-reinforcing system rather than manual organizational work.
+Rather than manually managing discoverability strategies, configure your agent to handle this automatically. Add instructions like `"Document inline when necessary"` and `"Match surrounding patterns and style"` to your `CLAUDE.md` or `AGENTS.md` ([Lesson 6](/practical-techniques/lesson-6-context-management)). These phrases make agents automatically add semantic bridge comments during generation, follow existing code conventions, and maintain consistency without explicit oversight. The agent reads your co-located constraints and semantic bridges during code research, then generates new code that follows the same patterns—turning discoverability into a self-reinforcing system rather than manual organizational work.
 
 **Caveat:** You'll need to occasionally remind the agent about these instructions in your task-specific prompts. Due to the [U-shaped attention curve](/methodology/lesson-5-grounding#the-scale-problem-context-window-limits), instructions buried in configuration files can fall into the ignored middle of the context window during long interactions. A quick reminder like "document inline where necessary and match surrounding style" at the end of your prompt ensures these constraints stay in the high-attention zone.
 
@@ -141,7 +141,7 @@ function createUser(password: string) {
 
 This creates deliberate friction. An agent tasked with "add OAuth login" will work slower around password hashing code with heavy constraints—it must navigate all those NEVER/MUST directives carefully. That's the protection mechanism: forced caution for critical paths. But overuse is counterproductive. Mark too many functions as CRITICAL and agents struggle with routine work, slowing down legitimate changes as much as dangerous ones. Reserve this technique for code where accidental modification genuinely costs more than the development slowdown.
 
-These constraint IDs (C-001, I-001) originate in [spec tables](/practical-techniques/lesson-13-systems-thinking-specs#constraints-and-invariants-defining-correctness) and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the *rule* it enforces. This is what makes it safe to [delete the spec](/practical-techniques/lesson-12-spec-driven-development) after implementation: the WHY has migrated into the codebase.
+These constraint IDs (C-001, I-001) originate in [spec tables](/practical-techniques/lesson-12-systems-thinking-specs#constraints-and-invariants-defining-correctness) and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the *rule* it enforces. This is what makes it safe to [delete the spec](/practical-techniques/lesson-7-spec-driven-development) after implementation: the WHY has migrated into the codebase.
 
 ## The Knowledge Cache Anti-Pattern
 
@@ -195,7 +195,7 @@ The moment you commit extracted knowledge, every code change requires documentat
 
 - **Comments as agent-critical sections (use sparingly)** - For genuinely high-risk code (authentication, cryptography, payments, PII), write comments as prompts using imperative directives (NEVER, MUST, ALWAYS) to create deliberate friction. This protection mechanism guards sensitive code from accidental modification. **Overuse is counterproductive**—if everything is marked CRITICAL, the signal becomes noise and legitimate work slows down.
 
-- **Constraint IDs migrate from spec to code** — When specs use IDs like C-001 or I-001 ([Lesson 13](/practical-techniques/lesson-13-systems-thinking-specs#constraints-and-invariants-defining-correctness)), agents inline them into code comments during implementation. The code then carries the constraint rule, making it safe to delete the spec ([Lesson 12](/practical-techniques/lesson-12-spec-driven-development)).
+- **Constraint IDs migrate from spec to code** — When specs use IDs like C-001 or I-001 ([Lesson 12](/practical-techniques/lesson-12-systems-thinking-specs#constraints-and-invariants-defining-correctness)), agents inline them into code comments during implementation. The code then carries the constraint rule, making it safe to delete the spec ([Lesson 7](/practical-techniques/lesson-7-spec-driven-development)).
 
 - **You are the quality circuit breaker** - Code review ([Lesson 9](/practical-techniques/lesson-9-reviewing-code)) prevents negative compounding. Accepting bad patterns lets them enter pattern context for future agents. Rejecting them breaks the negative feedback loop.
 

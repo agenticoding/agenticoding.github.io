@@ -5,6 +5,45 @@ export interface ContextEntry {
   content: string[];
 }
 
+export const contextManagementStream: ContextEntry[] = [
+  {
+    role: 'system',
+    content: [
+      'You are Claude Code. You have access to these tools:',
+      '- Read(file_path): Read a file',
+      '- Edit(file_path, old_string, new_string): Edit a file',
+      '- ToolSearch(query): Find additional tools on demand',
+      '[Deferred catalog: github, slack, jira \u2014 load schemas only when needed]',
+      '[AGENTS.md injected \u2014 12,000 tokens]',
+    ],
+  },
+  {
+    role: 'user',
+    content: ['Create a PR for the authentication refactor'],
+  },
+  {
+    role: 'agent',
+    content: [
+      '{ "type": "tool_use", "name": "ToolSearch",',
+      '  "input": { "query": "github pull request create" } }',
+    ],
+  },
+  {
+    role: 'tool_result',
+    content: [
+      'Found: gh_pr_create(title, body, base, draft)',
+      'Loaded schema: gh_pr_create(name, description, input_schema)',
+    ],
+  },
+  {
+    role: 'agent',
+    content: [
+      '{ "type": "tool_use", "name": "gh_pr_create",',
+      '  "input": { "title": "Auth refactor", "draft": true } }',
+    ],
+  },
+];
+
 export const emailValidationStream: ContextEntry[] = [
   {
     role: 'system',

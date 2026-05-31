@@ -1,0 +1,93 @@
+/* MCPToolSchemaDiagram — causal comparison of context mechanics and tool-call behavior. */
+
+.diagram {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.kicker,
+.cardSubtitle,
+.annotation,
+.rule {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+
+.cardTitle {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.sectionLabel,
+.causalCue,
+.rowLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.windowLabel,
+.behaviorLabel,
+.rowValue {
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.annotation {
+  font-size: var(--text-xs);
+}
+
+.title,
+.kicker,
+.card,
+.rule {
+  opacity: 0;
+  transform: translateY(var(--motion-reveal-y-scroll));
+  transition:
+    opacity var(--duration-subtle-exit) var(--ease-exit),
+    transform var(--duration-subtle-exit) var(--ease-exit);
+}
+
+.titleIn,
+.kickerIn,
+.cardIn,
+.ruleIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-subtle) var(--ease-enter),
+    transform var(--duration-subtle) var(--ease-enter);
+}
+
+.kickerIn {
+  transition-delay: var(--motion-stagger-sm);
+}
+
+.ruleIn {
+  transition-delay: var(--motion-stagger-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title,
+  .titleIn,
+  .kicker,
+  .kickerIn,
+  .card,
+  .cardIn,
+  .rule,
+  .ruleIn {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

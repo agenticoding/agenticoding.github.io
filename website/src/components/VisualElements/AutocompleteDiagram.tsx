@@ -108,7 +108,7 @@ export default function AutocompleteDiagram() {
               dominantBaseline="middle"
               fontFamily="var(--font-mono)"
               fontSize="12"
-              fill="var(--text-base)"
+              fill="var(--text-body)"
             >
               {token}
             </text>

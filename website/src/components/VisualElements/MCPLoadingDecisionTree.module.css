@@ -1,0 +1,25 @@
+/* MCPLoadingDecisionTree — compact chooser for eager vs deferred MCP loading. */
+
+.diagram {
+  display: block;
+  margin: 0 auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.nodeLabel {
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.edgeLabel,
+.note {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+}

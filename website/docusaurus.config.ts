@@ -194,10 +194,6 @@ const config: Config = {
     },
     navbar: {
       title: 'Agentic Coding',
-      logo: {
-        alt: 'Agentic Coding Logo',
-        src: 'img/logo.svg',
-      },
       items: [], // All navigation moved to sidebar
     },
     prism: {

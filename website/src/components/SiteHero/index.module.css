@@ -66,8 +66,8 @@
   font-family: var(--font-body);
   font-size: var(--text-lg);
   color: var(--text-body);
-  margin-bottom: var(--space-1);
-  max-width: 66ch;
+  margin-bottom: var(--space-2);
+  max-width: 60ch;
   line-height: var(--lh-lg);
 }
 

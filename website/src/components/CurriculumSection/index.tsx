@@ -95,7 +95,7 @@ export default function CurriculumSection() {
       lessonCount: 8,
       hue: 'magenta',
       topics: ['CI integration', 'Test generation', 'Spec-driven development'],
-      link: '/practical-techniques/lesson-6-project-onboarding',
+      link: '/practical-techniques/lesson-6-context-management',
     },
     {
       number: 4,

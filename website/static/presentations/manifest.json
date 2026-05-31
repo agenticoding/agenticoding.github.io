@@ -69,8 +69,8 @@
     "title": "Agent-Friendly Code",
     "generatedAt": "2026-02-12T08:07:49.310Z"
   },
-  "practical-techniques/lesson-6-project-onboarding.md": {
-    "presentationUrl": "/presentations/practical-techniques/lesson-6-project-onboarding.json",
+  "practical-techniques/lesson-6-context-management.md": {
+    "presentationUrl": "/presentations/practical-techniques/lesson-6-context-management.json",
     "slideCount": 11,
     "estimatedDuration": "30-40 minutes",
     "title": "Project Onboarding with Context Files",

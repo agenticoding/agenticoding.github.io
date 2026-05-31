@@ -19,5 +19,5 @@ import TestFailureDiagnosis from '@site/shared-prompts/\_test-failure-diagnosis.
 
 - **[Lesson 3: High-Level Methodology](/methodology/lesson-3-high-level-methodology#the-four-phase-workflow)** - Four-phase workflow (Research > Plan > Execute > Validate)
 - **[Lesson 4: Prompting 101](/methodology/lesson-4-prompting-101#chain-of-thought-paving-a-clear-path)** - Chain-of-Thought, constraints, structured format
-- **[Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution#require-evidence-to-force-grounding)** - Evidence requirements, grounding techniques
+- **[Lesson 7: Spec-Driven Development](/practical-techniques/lesson-7-spec-driven-development#require-evidence-to-force-grounding)** - Evidence requirements, grounding techniques
 - **[Lesson 8: Tests as Guardrails](/practical-techniques/lesson-8-tests-as-guardrails#test-failure-diagnosis-agent-driven-debug-cycle)** - Three-context workflow, test failure diagnosis

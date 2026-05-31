@@ -1,0 +1,11 @@
+/* SkillsInvocationDiagram.module.css
+ *
+ * Static SVG — two side-by-side skill invocation paths.
+ * No scroll animation; useMounted handles SSR safety.
+ */
+
+/* No diagram-specific animation rules needed for this static figure. */
+
+@media (prefers-reduced-motion: reduce) {
+  /* No transitions to override — component is fully static. */
+}

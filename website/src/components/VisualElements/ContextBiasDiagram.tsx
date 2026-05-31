@@ -29,6 +29,17 @@ const AGENT_Y    = 336;
 const VERDICT_Y  = 400;
 const EMOJI_SIZE = 40;
 
+// ── Entry layout (8px grid) ─────────────────────────────────────────────────
+const ENTRY_H      = 28;   // standard row height
+const ENTRY_H_SM   = 24;   // compact code row (left stack)
+const ENTRY_H_LG   = 80;   // multi-line code block (right stack)
+const LABEL_DY     = 4;    // baseline nudge below center
+const LABEL_X      = 8;    // role label x inset from entry edge
+const PREVIEW_X    = 38;   // preview text x inset from entry edge
+const CODE_LINE_H  = 12;   // multi-line code line spacing
+const FONT_SM      = 9;    // entry text size
+const FONT_MD      = 10;   // header / verdict text size
+
 // ── Role config ───────────────────────────────────────────────────────────────
 // StackEntryRole is distinct from the shared Role type in contextStreamData.ts:
 // 'tool' here represents a tool-call entry in the visual stack (not 'tool_result'),
@@ -62,27 +73,27 @@ const ROLE_LABEL: Record<StackEntryRole, string> = {
 // ── Stack entry data ───────────────────────────────────────────────────────────
 interface StackEntry { role: StackEntryRole; y: number; h: number; threshold: number; preview?: string; lines?: string[]; }
 
-// 9 entries, 280px total: 8×28 + 1×24 + 8 gaps×4 = 280
+// 9 entries, 280px total: 8×ENTRY_H + 1×ENTRY_H_SM + 8 gaps×ENTRY_GAP = 280
 // Left entries span 0.04–0.648 (interval 0.076 = 69% wider than before)
 const LEFT_ENTRIES: StackEntry[] = [
-  { role: 'system', preview: 'You are a code reviewer...',  y:  32, h: 28, threshold: 0.040 },
-  { role: 'user',   preview: 'Review the auth module',      y:  64, h: 28, threshold: 0.116 },
-  { role: 'agent',  preview: "I'll analyze the code...",    y:  96, h: 28, threshold: 0.192 },
-  { role: 'tool',   preview: 'read_file(auth.ts)',           y: 128, h: 28, threshold: 0.268 },
-  { role: 'tool',   preview: '{ status: 200, ... }',         y: 160, h: 28, threshold: 0.344 },
-  { role: 'agent',  preview: 'The implementation...',        y: 192, h: 28, threshold: 0.420 },
-  { role: 'user',   preview: 'Any security concerns?',       y: 224, h: 28, threshold: 0.496 },
-  { role: 'agent',  preview: 'Looking at the...',            y: 256, h: 28, threshold: 0.572 },
-  // Left: code is buried — tiny 24px row with truncated preview (the point of the diagram)
-  { role: 'code',   preview: 'localStorage.setItem(...',     y: 288, h: 24, threshold: 0.648 },
+  { role: 'system', preview: 'You are a code reviewer...',  y:  32, h: ENTRY_H,    threshold: 0.040 },
+  { role: 'user',   preview: 'Review the auth module',      y:  64, h: ENTRY_H,    threshold: 0.116 },
+  { role: 'agent',  preview: "I'll analyze the code...",    y:  96, h: ENTRY_H,    threshold: 0.192 },
+  { role: 'tool',   preview: 'read_file(auth.ts)',           y: 128, h: ENTRY_H,    threshold: 0.268 },
+  { role: 'tool',   preview: '{ status: 200, ... }',         y: 160, h: ENTRY_H,    threshold: 0.344 },
+  { role: 'agent',  preview: 'The implementation...',        y: 192, h: ENTRY_H,    threshold: 0.420 },
+  { role: 'user',   preview: 'Any security concerns?',       y: 224, h: ENTRY_H,    threshold: 0.496 },
+  { role: 'agent',  preview: 'Looking at the...',            y: 256, h: ENTRY_H,    threshold: 0.572 },
+  // Left: code is buried — tiny row with truncated preview (the point of the diagram)
+  { role: 'code',   preview: 'localStorage.setItem(...',     y: 288, h: ENTRY_H_SM, threshold: 0.648 },
 ];
 
-// 3 entries, 144px total: 2×28 + 1×80 + 2 gaps×4 = 144
+// 3 entries, 144px total: 2×ENTRY_H + 1×ENTRY_H_LG + 2 gaps×ENTRY_GAP = 144
 const RIGHT_ENTRIES: StackEntry[] = [
-  { role: 'system', preview: 'You are a code reviewer...',  y: 168, h:  28, threshold: 0.040 },
-  { role: 'user',   preview: 'Review this code:',            y: 200, h:  28, threshold: 0.344 },
-  // Right: code is prominent — 80px block with full multi-line view (intentional asymmetry)
-  { role: 'code',   y: 232, h:  80, threshold: 0.648, lines: ["localStorage.setItem(", "  'authToken', token", ");"] },
+  { role: 'system', preview: 'You are a code reviewer...',  y: 168, h: ENTRY_H,    threshold: 0.040 },
+  { role: 'user',   preview: 'Review this code:',            y: 200, h: ENTRY_H,    threshold: 0.344 },
+  // Right: code is prominent — multi-line block with full view (intentional asymmetry)
+  { role: 'code',   y: 232, h: ENTRY_H_LG, threshold: 0.648, lines: ["localStorage.setItem(", "  'authToken', token", ");"] },
 ];
 
 // Derived from the CODE entry in each stack (last entry by convention)
@@ -167,7 +178,7 @@ export default function ContextBiasDiagram() {
         fill="var(--visual-bg-warning)" stroke="var(--visual-warning)" strokeWidth={1.5}
         className={clsx(shared.node, headersVisible && shared.nodeIn)}
       />
-      <text x={CX_L} y={23} textAnchor="middle" fontSize={10} fontWeight={600}
+      <text x={CX_L} y={23} textAnchor="middle" fontSize={FONT_MD} fontWeight={600}
         fill="var(--visual-warning)" fontFamily="var(--font-mono-spec)"
         className={clsx(shared.label, headersVisible && shared.labelIn)}
       >accumulated context</text>
@@ -176,7 +187,7 @@ export default function ContextBiasDiagram() {
         fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)" strokeWidth={1.5}
         className={clsx(shared.node, headersVisible && shared.nodeIn)}
       />
-      <text x={CX_R} y={23} textAnchor="middle" fontSize={10} fontWeight={600}
+      <text x={CX_R} y={23} textAnchor="middle" fontSize={FONT_MD} fontWeight={600}
         fill="var(--visual-cyan)" fontFamily="var(--font-mono-spec)"
         className={clsx(shared.label, headersVisible && shared.labelIn)}
       >fresh context</text>
@@ -187,7 +198,7 @@ export default function ContextBiasDiagram() {
       {/* ── Left stack entries ───────────────────────────────────────────────── */}
       {LEFT_ENTRIES.map((entry, i) => {
         const color = ROLE_COLOR[entry.role];
-        const textY = entry.y + Math.round(entry.h / 2) + 4;
+        const textY = entry.y + Math.round(entry.h / 2) + LABEL_DY;
         const vis   = mounted && phase >= entry.threshold;
         return (
           <g key={`left-${i}`} className={clsx(styles.entry, vis && styles.entryIn)}>
@@ -195,10 +206,10 @@ export default function ContextBiasDiagram() {
               fill={ROLE_BG[entry.role]}
             />
             <rect x={SX_L} y={entry.y} width={2} height={entry.h} fill={color} />
-            <text x={SX_L + 8} y={textY} fontSize={9} fontWeight={700}
+            <text x={SX_L + LABEL_X} y={textY} fontSize={FONT_SM} fontWeight={700}
               fill={color} fontFamily="var(--font-mono-spec)"
             >{ROLE_LABEL[entry.role]}</text>
-            <text x={SX_L + 38} y={textY} fontSize={9}
+            <text x={SX_L + PREVIEW_X} y={textY} fontSize={FONT_SM}
               fill="var(--text-muted)" fontFamily="var(--font-mono-spec)"
             >{entry.preview}</text>
           </g>
@@ -211,7 +222,7 @@ export default function ContextBiasDiagram() {
       {/* ── Right stack entries ──────────────────────────────────────────────── */}
       {RIGHT_ENTRIES.map((entry, i) => {
         const color   = ROLE_COLOR[entry.role];
-        const isLarge = entry.role === 'code';
+        const isLarge = !!entry.lines;
         const vis     = mounted && phase >= entry.threshold;
         return (
           <g key={`right-${i}`} className={clsx(styles.entry, vis && styles.entryIn)}>
@@ -219,19 +230,17 @@ export default function ContextBiasDiagram() {
               fill={ROLE_BG[entry.role]}
             />
             <rect x={SX_R} y={entry.y} width={2} height={entry.h} fill={color} />
-            <text x={SX_R + 8} y={entry.y + Math.round(entry.h / 2) + 4} fontSize={9} fontWeight={700}
+            <text x={SX_R + LABEL_X} y={entry.y + Math.round(entry.h / 2) + LABEL_DY} fontSize={FONT_SM} fontWeight={700}
               fill={color} fontFamily="var(--font-mono-spec)"
             >{ROLE_LABEL[entry.role]}</text>
             {isLarge ? (
-              <>
-                {(entry.lines ?? []).map((line, k) => (
-                  <text key={k} x={SX_R + 8} y={entry.y + 28 + k * 12} fontSize={9}
-                    fill="var(--text-muted)" fontFamily="var(--font-mono-spec)"
-                  >{line}</text>
-                ))}
-              </>
+              (entry.lines ?? []).map((line, k) => (
+                <text key={k} x={SX_R + PREVIEW_X} y={entry.y + 28 + k * CODE_LINE_H} fontSize={FONT_SM}
+                  fill="var(--text-muted)" fontFamily="var(--font-mono-spec)"
+                >{line}</text>
+              ))
             ) : (
-              <text x={SX_R + 38} y={entry.y + Math.round(entry.h / 2) + 4} fontSize={9}
+              <text x={SX_R + PREVIEW_X} y={entry.y + Math.round(entry.h / 2) + LABEL_DY} fontSize={FONT_SM}
                 fill="var(--text-muted)" fontFamily="var(--font-mono-spec)"
               >{entry.preview}</text>
             )}
@@ -294,7 +303,7 @@ export default function ContextBiasDiagram() {
       <g className={clsx(shared.node, leftVerdictVisible && shared.nodeIn)}>
         <NotoEmoji codepoint="26a0" x={CX_L - 20} y={VERDICT_Y} size={EMOJI_SIZE} />
       </g>
-      <text x={CX_L} y={456} textAnchor="middle" fontSize={10} fontWeight={600}
+      <text x={CX_L} y={456} textAnchor="middle" fontSize={FONT_MD} fontWeight={600}
         fill="var(--visual-warning)" fontFamily="var(--font-mono-spec)"
         className={clsx(styles.verdictText, leftVerdictVisible && styles.verdictTextIn)}
       >looks sound overall</text>
@@ -340,11 +349,11 @@ export default function ContextBiasDiagram() {
       <g className={clsx(shared.node, rightVerdictVisible && shared.nodeIn)}>
         <NotoEmoji codepoint="1f6a8" x={CX_R - 20} y={VERDICT_Y} size={EMOJI_SIZE} />
       </g>
-      <text x={CX_R} y={456} textAnchor="middle" fontSize={10} fontWeight={600}
+      <text x={CX_R} y={456} textAnchor="middle" fontSize={FONT_MD} fontWeight={600}
         fill="var(--visual-error)" fontFamily="var(--font-mono-spec)"
         className={clsx(styles.verdictText, rightVerdictVisible && styles.verdictTextIn)}
       >Critical: XSS via</text>
-      <text x={CX_R} y={472} textAnchor="middle" fontSize={10} fontWeight={600}
+      <text x={CX_R} y={472} textAnchor="middle" fontSize={FONT_MD} fontWeight={600}
         fill="var(--visual-error)" fontFamily="var(--font-mono-spec)"
         className={clsx(styles.verdictText, rightVerdictVisible && styles.verdictTextIn)}
       >localStorage</text>

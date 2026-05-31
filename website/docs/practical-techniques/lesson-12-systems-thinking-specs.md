@@ -1,8 +1,8 @@
 ---
-sidebar_position: 8
+sidebar_position: 7
 sidebar_label: 'Thinking in Systems'
 sidebar_custom_props:
-  sectionNumber: 13
+  sectionNumber: 12
 title: 'Thinking in Systems'
 ---
 
@@ -10,11 +10,11 @@ import SystemFlowDiagram from '@site/src/components/VisualElements/SystemFlowDia
 import SystemBoundaryDiagram from '@site/src/components/VisualElements/SystemBoundaryDiagram';
 import SpecCodeZoomDiagram from '@site/src/components/VisualElements/SpecCodeZoomDiagram';
 
-[Lesson 12](/practical-techniques/lesson-12-spec-driven-development) established that specs are scaffolding—temporary thinking tools deleted after implementation. But what makes a spec *good enough* to produce quality code?
+[Lesson 7](/practical-techniques/lesson-7-spec-driven-development) established that specs are scaffolding—temporary thinking tools deleted after implementation. But what makes a spec *good enough* to produce quality code?
 
 Think of a spec as a zoom lens. Zoomed out, you see architecture—modules, boundaries, invariants. Zoomed in, you see implementation—edge cases, error handling, concurrency. You oscillate between views, and the spec sharpens through contact with implementation[^5].
 
-## Precision Through Iteration
+## Precision Through Iteration {#converge-dont-count-passes}
 
 Vague specs produce vague code. Precision narrows the solution space:
 
@@ -31,7 +31,7 @@ This has a practical consequence for debugging. When implementation diverges fro
 
 <SpecCodeZoomDiagram />
 
-Start with three sections: **Architecture**, **Interfaces**, and **State**—enough to generate a first pass. The spec is a hypothesis. The code is an experiment. Implementation reveals what the spec missed: a state transition you didn't anticipate, a concurrency constraint, an unrealistic performance budget. Zoom out—extract the updated understanding from code via [ChunkHound code research](https://chunkhound.github.io/code-research). Fix the architecture. Zoom back in—regenerate. Repeat until convergence, then [delete the spec](/practical-techniques/lesson-12-spec-driven-development).
+Start with three sections: **Architecture**, **Interfaces**, and **State**—enough to generate a first pass. The spec is a hypothesis. The code is an experiment. Implementation reveals what the spec missed: a state transition you didn't anticipate, a concurrency constraint, an unrealistic performance budget. Zoom out—extract the updated understanding from code via [ChunkHound code research](https://chunkhound.github.io/code-research). Fix the architecture. Zoom back in—regenerate. Repeat until convergence, then [delete the spec](/practical-techniques/lesson-7-spec-driven-development).
 
 This is [Lesson 3's four-phase cycle](/methodology/lesson-3-high-level-methodology#the-four-phase-workflow) applied fractally. At the spec level: research the domain, plan architecture, write spec, validate completeness. At the code level: research codebase, plan changes, execute, validate tests. Each zoom transition—spec→code or code→spec—is itself a Research→Plan→Execute→Validate loop. The depth of iteration scales with complexity: a simple feature converges in one pass; a complex architectural change might take five.
 
@@ -222,7 +222,7 @@ export async function handleWebhook(req: Request): Promise<Response> {
 }
 ```
 
-The spec table is the authoritative source during design. The code comments become the authoritative source after implementation. This is what makes [deleting the spec](/practical-techniques/lesson-12-spec-driven-development) safe—the constraints have migrated.
+The spec table is the authoritative source during design. The code comments become the authoritative source after implementation. This is what makes [deleting the spec](/practical-techniques/lesson-7-spec-driven-development) safe—the constraints have migrated.
 
 ### Invariants
 
@@ -350,7 +350,7 @@ Each loop through this cycle reveals what the spec missed. The first pass might 
 
 **You're done when the loop produces no new gaps:** the code passes all behavioral scenarios, the spec accounts for all constraints the code revealed, and the last pass surfaces nothing new. That's a testable termination condition. A simple feature converges in one loop. A complex architectural change might take five. But you discover which you're dealing with *by running the loop*, not by predicting it.
 
-**Iteration speed is the multiplier.** Code generation is approaching post-scarcity[^1]—the scarce resource is your judgment about *what* to build. The engineer who runs ten hypothesis→experiment→verify loops per day outperforms the one who runs two with a more thorough upfront spec[^4][^5]. This is the same insight that made Agile outperform Waterfall, compressed from weeks-per-iteration to minutes. Use [exploration planning](/methodology/lesson-3-high-level-methodology#phase-2-plan-strategic-decision) (Lesson 3) and [ArguSeek](/methodology/lesson-5-grounding#arguseek-isolated-context--state) (Lesson 5) to research before each loop. For system-level work, start from the [full template](/prompts/specifications/spec-template). Validate through the [SDD workflow](/practical-techniques/lesson-12-spec-driven-development)—gap-analyze, implement, then delete the spec. What survives deletion: constraint IDs inlined in code ([Lesson 11](/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents)), and the small WHY residual (rejected alternatives, business rationale) committed as decision records.
+**Iteration speed is the multiplier.** Code generation is approaching post-scarcity[^1]—the scarce resource is your judgment about *what* to build. The engineer who runs ten hypothesis→experiment→verify loops per day outperforms the one who runs two with a more thorough upfront spec[^4][^5]. This is the same insight that made Agile outperform Waterfall, compressed from weeks-per-iteration to minutes. Use [exploration planning](/methodology/lesson-3-high-level-methodology#phase-2-plan-strategic-decision) (Lesson 3) and [ArguSeek](/methodology/lesson-5-grounding#structured-web-research-arguseek) (Lesson 5) to research before each loop. For system-level work, start from the [full template](/prompts/specifications/spec-template). Validate through the [SDD workflow](/practical-techniques/lesson-7-spec-driven-development)—gap-analyze, implement, then delete the spec. What survives deletion: constraint IDs inlined in code ([Lesson 11](/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents)), and the small WHY residual (rejected alternatives, business rationale) committed as decision records.
 
 :::info Template Sections Not Covered
 The [full spec template](/prompts/specifications/spec-template) includes sections not taught in this lesson: **Background** (problem statement + baseline metrics), **Caching** (strategy/TTL/invalidation), **Endpoints** (REST contract details), **Cleanup Flows** (teardown/rollback sequences), **Code Traceability** (file:line evidence columns). Use these when the code pulls them from you—not before.

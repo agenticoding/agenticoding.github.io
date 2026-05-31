@@ -36,7 +36,7 @@ export default function ScrollDrivenFigure({
   caption,
   className,
   phaseEnd = 0.5,
-  earlyStart = false,
+  earlyStart = true,
 }: ScrollDrivenFigureProps) {
   const innerRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState(0);
@@ -78,10 +78,10 @@ export default function ScrollDrivenFigure({
     const computePhase = () => {
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight;
-      // earlyStart=false (default): animation begins as the element's bottom enters the viewport
-      //   (start = vh). Good for below-fold figures — they start animating on first scroll-into-view.
-      // earlyStart=true: animation begins when the element's top reaches the viewport bottom
-      //   (start = vh + height). Good for figures that may already be partially visible on load.
+      // earlyStart=true (default): animation begins when the element's top reaches the viewport bottom
+      //   (start = vh + height). Ensures the element animates during peak fixation zone (top 50% of viewport).
+      // earlyStart=false: animation begins as the element's bottom enters the viewport
+      //   (start = vh). Only for elements guaranteed to load fully below the fold.
       const start = earlyStart ? vh + rect.height : vh;
       const end = (vh + rect.height) * (1 - phaseEnd);
       if (start <= end) { setPhase(1); return; }

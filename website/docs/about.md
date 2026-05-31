@@ -64,7 +64,7 @@ I taught iOS, Android, and web development courses at John Bryce (2013–2016), 
 
 ## Built With
 
-**Platform:** [Docusaurus](https://docusaurus.io) — open-source static site generator by Meta. Presentations powered by [Reveal.js](https://revealjs.com) by Hakim El Hattab. Diagrams rendered with [Mermaid](https://mermaid.js.org) by Knut Sveidqvist.
+**Platform:** [Docusaurus](https://docusaurus.io) — open-source static site generator by Meta. Presentations powered by [Reveal.js](https://revealjs.com) by Hakim El Hattab.
 
 **Typography:** Body text set in [Inter](https://rsms.me/inter/) by Rasmus Andersson. Headings in [Space Grotesk](https://floriankarsten.github.io/space-grotesk/) by Florian Karsten. Code rendered in [Monaspace](https://monaspace.githubnext.com/) by GitHub Next — a superfamily of five metrics-compatible monospace typefaces (Neon, Argon, Xenon, Radon, Krypton) used as a semantic voice system throughout the course. All fonts self-hosted under SIL OFL 1.1.
 

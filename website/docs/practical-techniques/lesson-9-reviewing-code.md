@@ -19,11 +19,11 @@ The key insight: **review in a fresh context, separate from where the code was w
 
 The same engineering standards—DRY, YAGNI, architecture, maintainability, readability—apply to all codebases. What differs is coding style optimization and the review process:
 
-**Agent-only codebases** are maintained exclusively by AI with minimal human intervention at the code level. Optimize coding style slightly toward AI clarity: more explicit type annotations, slightly more verbose documentation, detailed architectural context files ([Lesson 6](./lesson-6-project-onboarding.md)). Review question: "Will an agent understand this 6 months from now?"
+**Agent-only codebases** are maintained exclusively by AI with minimal human intervention at the code level. Optimize coding style slightly toward AI clarity: more explicit type annotations, slightly more verbose documentation, detailed architectural context files ([Lesson 6](./lesson-6-context-management.mdx)). Review question: "Will an agent understand this 6 months from now?"
 
 **Mixed codebases** balance human and AI collaboration where both work directly with code. Optimize coding style for human brevity while maintaining AI navigability. **Most production codebases fall into this category.**
 
-**Critical difference in mixed codebases:** Add a manual review step where you fully read and audit AI-generated code before committing to ensure human readability. This is non-negotiable—without explicit project rules guiding style, agents generate code following patterns from their training data that may not match your team's readability standards. Tune your project rules ([Lesson 6](./lesson-6-project-onboarding.md)) to guide agents toward the writing style humans expect, then verify the output meets those expectations.
+**Critical difference in mixed codebases:** Add a manual review step where you fully read and audit AI-generated code before committing to ensure human readability. This is non-negotiable—without explicit project rules guiding style, agents generate code following patterns from their training data that may not match your team's readability standards. Tune your project rules ([Lesson 6](./lesson-6-context-management.mdx)) to guide agents toward the writing style humans expect, then verify the output meets those expectations.
 
 :::
 
@@ -63,7 +63,7 @@ Use ChunkHound's code research.
 DO NOT EDIT ANYTHING - only review.
 ```
 
-After implementing code ([Lesson 7](./lesson-7-planning-execution.md)), writing tests ([Lesson 8](./lesson-8-tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
+After implementing code ([Lesson 7](./lesson-7-spec-driven-development.md)), writing tests ([Lesson 8](./lesson-8-tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
 
 :::tip Reference
 See the complete prompt template with iterative review guidance: [Comprehensive Code Review](/prompts/code-review/comprehensive-review)
@@ -96,29 +96,29 @@ Pull requests serve two audiences: human maintainers and their AI review assista
 
 - **Human reviewers** scan quickly, infer meaning from context, and value concise summaries (1-3 paragraphs max). They want to understand the "why" and business value at a glance.
 
-- **AI review assistants** parse content chunk-by-chunk, struggle with vague pronouns and semantic drift, and need explicit structure ([Lesson 5](../methodology/lesson-5-grounding.md)). They require detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
+- **AI review assistants** parse content chunk-by-chunk, struggle with vague pronouns and semantic drift, and need explicit structure ([Lesson 5](../methodology/lesson-5-grounding.mdx)). They require detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
 
 Traditional PR descriptions optimize for one audience or the other—too verbose for humans, too vague for AI agents. The solution: generate both in a coordinated workflow using sub-agents.
 
 ### The Advanced Prompt Pattern
 
-This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.mdx), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.md), and [Lesson 7 (Planning & Execution)](./lesson-7-planning-execution.md):
+This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.mdx), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.mdx), and [Lesson 7 (Spec-Driven Development)](./lesson-7-spec-driven-development.md):
 
 <DualOptimizedPR />
 
 ### Mechanisms at Work
 
-**Sub-agents for context conservation ([Lesson 5](../methodology/lesson-5-grounding.md#solution-2-sub-agents-for-context-isolation)):**
+**Sub-agents for context conservation ([Lesson 5](../methodology/lesson-5-grounding.mdx#solution-2-sub-agents-for-context-isolation)):**
 
 The instruction "Using the sub task tool to conserve context" spawns a separate agent for git history exploration, preventing the main orchestrator's context from filling with commit diffs. The sub-agent returns only synthesized findings. Without this, exploring 20-30 changed files consumes 40K+ tokens, pushing critical constraints into the U-shaped attention curve's ignored middle.
 
 This sub-agent capability is unique to [Claude Code CLI](/developer-tools/cli-coding-agents#claude-code). Other tools (Codex, GitHub Copilot) require splitting this into multiple sequential prompts: explore first, then draft based on findings.
 
-**Multi-source grounding ([Lesson 5](../methodology/lesson-5-grounding.md#production-pattern-multi-source-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
+**Multi-source grounding ([Lesson 5](../methodology/lesson-5-grounding.mdx#production-pattern-multi-source-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
 
 **Structured prompting ([Lesson 4](../methodology/lesson-4-prompting-101.mdx)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
 
-**Evidence requirements ([Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
+**Evidence requirements ([Lesson 4](../methodology/lesson-4-prompting-101.mdx#require-evidence-to-force-retrieval)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
 
 :::tip Reference
 See the complete prompt template with workflow integration tips: [PR Description Generator](/prompts/pull-requests/dual-optimized-pr)
@@ -181,7 +181,7 @@ This is **Chain of Draft (CoD)**—an optimization of Chain of Thought (CoT) pro
 
 - **Iterate until green light or diminishing returns** - Fix issues, then re-review in fresh context. Stop when findings become trivial nitpicks or the agent hallucinates problems that don't exist.
 
-- **Evidence requirements force grounding** - "Provide file paths and line numbers" from [Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding) ensures review findings are based on actual code, not statistical guesses.
+- **Evidence requirements force grounding** - "Provide file paths and line numbers" from [Lesson 4](../methodology/lesson-4-prompting-101.mdx#require-evidence-to-force-retrieval) ensures review findings are based on actual code, not statistical guesses.
 
 - **Generate dual-optimized PR descriptions for human and AI reviewers** - Humans need concise, scannable summaries (1-3 paragraphs). AI assistants need comprehensive, unambiguous technical context. Generate both in a coordinated workflow to serve both audiences effectively.
 

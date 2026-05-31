@@ -1,0 +1,797 @@
+/* ==========================================================================
+   ContextPressureDiagram — Three-Panel Causal Chain Layout
+   ========================================================================== */
+
+/* --- Container ------------------------------------------------------------ */
+
+.container {
+  margin-block: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+/* --- Three-panel grid ------------------------------------------------------ */
+
+.threePanel {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) 72px minmax(220px, 1.5fr) 72px minmax(160px, 1fr);
+  gap: 0;
+  align-items: stretch;
+  height: 640px;
+}
+
+/* --- Panels ---------------------------------------------------------------- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+}
+
+.panelHeader {
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-1);
+  flex-shrink: 0;
+}
+
+/* --- Arrows ---------------------------------------------------------------- */
+
+.arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-0h);
+  color: var(--text-muted);
+  padding: var(--space-1);
+}
+
+.arrowGlyph {
+  font-size: var(--text-xl);
+  line-height: 1;
+}
+
+.arrowLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  text-align: center;
+}
+
+/* --- Scenario chips -------------------------------------------------------- */
+
+.scenarioChips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0h);
+}
+
+.chip {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  padding: var(--space-0h) var(--space-1);
+  background: var(--surface-page);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-body);
+  text-align: left;
+  transition: border-color var(--duration-subtle) var(--ease-standard),
+              background var(--duration-subtle) var(--ease-standard);
+}
+
+.chip:hover {
+  border-color: var(--border-emphasis);
+}
+
+.chipActive {
+  border-color: var(--border-emphasis);
+  background: var(--surface-muted);
+  color: var(--text-body);
+}
+
+/* --- Scenario description -------------------------------------------------- */
+
+.scenarioDesc {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: var(--lh-sm);
+  flex-shrink: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height var(--duration-moderate) var(--ease-standard),
+              opacity var(--duration-subtle) var(--ease-standard);
+}
+
+.descVisible {
+  max-height: 200px;
+  opacity: 1;
+}
+
+.sliders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-1);
+  margin-top: auto;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-0h);
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.checkRow input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--border-emphasis);
+  cursor: pointer;
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.sliderLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-body);
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  min-width: 60px;
+  height: 6px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  background: var(--surface-muted);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--surface-page);
+  border: 2px solid var(--border-emphasis);
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--surface-page);
+  border: 2px solid var(--border-emphasis);
+  cursor: pointer;
+}
+
+.slider:focus-visible {
+  outline: 2px solid var(--border-emphasis);
+  outline-offset: 2px;
+}
+
+.sliderValue {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color var(--duration-subtle) var(--ease-standard);
+}
+
+.sliderValueDrained {
+  color: var(--visual-warning);
+}
+
+.inlineCheck {
+  display: flex;
+  align-items: center;
+  gap: var(--space-0h);
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.inlineCheck input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
+  accent-color: var(--border-emphasis);
+  cursor: pointer;
+}
+
+/* --- Context stack (Panel 2) ----------------------------------------------- */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  position: relative;
+}
+
+.stack::-webkit-scrollbar {
+  display: none;
+}
+
+.stackRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-1);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background var(--duration-subtle) var(--ease-standard),
+              flex-grow var(--duration-moderate) var(--ease-standard),
+              opacity var(--duration-subtle) var(--ease-standard),
+              outline-color var(--duration-subtle) var(--ease-standard);
+  overflow: hidden;
+}
+
+/* Task row state variants */
+.stackRowTask_primacy,
+.stackRowTask_recency,
+.stackRowTask_middle_safe,
+.stackRowTask_middle,
+.stackRowTask_danger,
+.stackRowTask_critical {
+  outline: 2px solid transparent;
+  outline-offset: -1px;
+}
+
+.stackRowTask_primacy,
+.stackRowTask_recency {
+  outline-color: var(--border-emphasis);
+}
+
+.stackRowTask_middle_safe {
+  outline-color: var(--visual-success);
+}
+
+.stackRowTask_middle {
+  outline-color: var(--visual-warning);
+}
+
+.stackRowTask_danger,
+.stackRowTask_critical {
+  outline-color: var(--visual-error);
+}
+
+.accent {
+  width: 3px;
+  align-self: stretch;
+  flex-shrink: 0;
+  transition: background var(--duration-subtle) var(--ease-standard);
+}
+
+.rowLabel {
+  font-size: var(--text-xs);
+  color: var(--text-body);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.rowTokens {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.drainBadge,
+.compactedBadge,
+.skillBadge {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  transition: max-width var(--duration-moderate) var(--ease-standard),
+              opacity var(--duration-subtle) var(--ease-standard);
+}
+
+.badgeVisible {
+  max-width: 80px;
+  opacity: 1;
+}
+
+.badgeGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-0h);
+  flex-shrink: 0;
+}
+
+.drainBadge {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-feature-settings: var(--font-mono-features);
+  color: var(--visual-warning);
+}
+
+.compactedBadge {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-feature-settings: var(--font-mono-features);
+  color: var(--visual-warning);
+}
+
+.skillBadge {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-feature-settings: var(--font-mono-features);
+  color: var(--visual-violet);
+}
+
+/* Collapsed middle turns when grouped */
+.turnCollapsed {
+  opacity: 0 !important;
+  overflow: hidden;
+  pointer-events: none;
+  border-bottom: none !important;
+}
+
+.turnCollapsedBoundary {
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Turn group label — centered within its flex item */
+.turnGroupItem {
+  justify-content: center;
+  background: transparent;
+}
+
+.turnGroupLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+}
+
+.headroomRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-bottom: none;
+  min-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: flex-grow var(--duration-moderate) var(--ease-standard),
+              opacity var(--duration-subtle) var(--ease-standard);
+}
+
+.headroomRowActive {
+  min-height: 2px;
+  opacity: 1;
+}
+
+.headroomLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.compactionRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    color-mix(in srgb, var(--text-muted) 15%, transparent) 4px,
+    color-mix(in srgb, var(--text-muted) 15%, transparent) 5px
+  );
+  min-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: flex-grow var(--duration-moderate) var(--ease-standard),
+              opacity var(--duration-subtle) var(--ease-standard);
+}
+
+.compactionRowActive {
+  opacity: 1;
+}
+
+.compactionLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* --- Budget bar ------------------------------------------------------------ */
+
+.budgetBar {
+  height: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.budgetFill {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  transition: width var(--duration-moderate) var(--ease-standard),
+              background var(--duration-subtle) var(--ease-standard);
+}
+
+.budgetLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* --- Attention strip (Panel 3) --------------------------------------------- */
+
+.attentionStrip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.zonePrimacy,
+.zoneRecency {
+  background: var(--visual-bg-cyan);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-1);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: height var(--duration-moderate) var(--ease-standard),
+              width var(--duration-moderate) var(--ease-standard);
+}
+
+.zoneMiddle {
+  background: var(--surface-muted);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-1);
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: height var(--duration-moderate) var(--ease-standard),
+              width var(--duration-moderate) var(--ease-standard),
+              background var(--duration-subtle) var(--ease-standard);
+}
+
+.zoneLabel {
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  display: block;
+}
+
+.zoneDesc {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  opacity: 0.7;
+  display: block;
+}
+
+/* ── SVG attention curve overlay ─────────────────────────────────────── */
+.attentionSVG {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.attentionSVGDesktop {
+  display: block;
+}
+
+.attentionSVGMobile {
+  display: none;
+}
+
+.attentionCurve {
+  fill: none;
+  stroke: var(--visual-cyan);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+  vector-effect: non-scaling-stroke;
+  transition: d var(--duration-moderate) var(--ease-standard);
+}
+
+.attentionFill {
+  fill: color-mix(in srgb, var(--visual-error) 10%, transparent);
+  stroke: none;
+  transition: d var(--duration-moderate) var(--ease-standard);
+}
+
+.attentionGrid {
+  stroke: color-mix(in srgb, var(--visual-success) 35%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+/* ── Max attention drop readout ──────────────────────────────────────── */
+.maxDrop {
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  text-align: center;
+  padding-top: var(--space-0h);
+  opacity: 0.75;
+  min-height: 16px;
+}
+
+/* Task position marker — absolutely positioned */
+.taskMarker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  top: var(--task-pos);
+  transform: translateY(-50%);
+  transition: top var(--duration-moderate) var(--ease-standard),
+              color var(--duration-moderate) var(--ease-standard);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.taskMarker_primacy,
+.taskMarker_recency {
+  color: var(--visual-success);
+}
+
+.taskMarker_middle_safe {
+  color: var(--visual-success);
+}
+
+.taskMarker_middle {
+  color: var(--visual-warning);
+}
+
+.taskMarker_danger {
+  color: var(--visual-error);
+}
+
+.taskMarker_critical {
+  color: var(--visual-error);
+}
+
+.taskMarkerLine {
+  flex: 1;
+  height: 2px;
+  background: currentColor;
+}
+
+.taskMarkerLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: currentColor;
+  white-space: nowrap;
+  background: var(--surface-raised);
+  padding: 0 var(--space-0h);
+  flex-shrink: 0;
+}
+
+.taskMarkerDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* --- Verdict --------------------------------------------------------------- */
+
+.verdict {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  padding: var(--space-0h) var(--space-1);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  flex-shrink: 0;
+  transition: color var(--duration-subtle) var(--ease-standard),
+              background var(--duration-subtle) var(--ease-standard);
+}
+
+.verdict_primacy,
+.verdict_recency {
+  color: var(--visual-success);
+  background: var(--visual-bg-success);
+}
+
+.verdict_middle_safe {
+  color: var(--visual-success);
+  background: var(--visual-bg-success);
+}
+
+.verdict_middle {
+  color: var(--visual-warning);
+  background: var(--visual-bg-warning);
+}
+
+.verdict_danger {
+  color: var(--visual-warning);
+  background: var(--visual-bg-warning);
+}
+
+.verdict_critical {
+  color: var(--visual-error);
+  background: var(--visual-bg-error);
+}
+
+/* --- Status region --------------------------------------------------------- */
+
+.statusRegion {
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  color: var(--text-muted);
+  margin-top: var(--space-2);
+  min-height: 20px;
+  text-align: center;
+}
+
+/* --- Mobile: stack vertically, rotate attention strip --------------------- */
+
+@media (max-width: 768px) {
+  .threePanel {
+    grid-template-columns: 1fr;
+    height: unset;
+  }
+
+  .arrow {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: var(--space-0h) var(--space-2);
+    gap: var(--space-1);
+  }
+
+  .arrowGlyph {
+    font-size: var(--text-base);
+    /* Rotate to point down */
+    display: inline-block;
+    transform: rotate(90deg);
+  }
+
+  /* On mobile, attention strip runs horizontally */
+  .attentionStrip {
+    flex-direction: row;
+    height: 80px;
+    flex: unset;
+  }
+
+  .stack {
+    flex: none;
+    height: 200px;
+  }
+
+  .zonePrimacy,
+  .zoneRecency {
+    height: 100% !important;
+    width: 25%;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .zoneMiddle {
+    height: 100%;
+    width: 50%;
+    flex: unset;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .attentionSVGDesktop {
+    display: none;
+  }
+
+  .attentionSVGMobile {
+    display: block;
+  }
+
+  /* Horizontal task marker: vertical line */
+  .taskMarker {
+    top: 0 !important;
+    bottom: 0;
+    left: var(--task-pos);
+    right: unset;
+    width: 2px;
+    height: 100%;
+    flex-direction: column;
+    transform: translateX(-50%);
+    align-items: center;
+    gap: 0;
+    transition: left var(--duration-moderate) var(--ease-standard),
+                color var(--duration-moderate) var(--ease-standard);
+  }
+
+  .taskMarkerLine {
+    flex: 1;
+    width: 2px;
+    height: unset;
+  }
+
+  .taskMarkerLabel {
+    writing-mode: vertical-rl;
+    font-size: 9px;
+    padding: var(--space-0h) 0;
+  }
+}
+
+/* --- Reduced motion ------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .stackRow,
+  .budgetFill,
+  .taskMarker,
+  .verdict,
+  .accent,
+  .chip {
+    transition: none;
+  }
+}

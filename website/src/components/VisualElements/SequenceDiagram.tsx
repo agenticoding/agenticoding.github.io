@@ -11,8 +11,8 @@ import { CONNECTOR_STYLE, GHOST_CONNECTOR_STYLE, ARROWHEAD_POINTS, ARROWHEAD_POI
 // Fixed layout constants (all in SVG user units ≈ CSS px after ResizeObserver)
 const HEADER_H   = 96;   // height of sticky HTML header zone (CSS px) — 80 content + 16 bottom pad (--space-2)
 const ROW_STEP   = 48;
-const NOTE_H_1   = 32;
-const NOTE_H_2   = 48;
+const NOTE_H_1   = 40;
+const NOTE_H_2   = 56;
 const NOTE_RX    = 6;
 const COL_ICON_SIZE = 52;  // drives column spacing; no SVG node rect is rendered at this size
 const EMOJI_SIZE = 36;
@@ -69,9 +69,8 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
     const animDist = phaseEnd * (viewportH + totalH);
     return rows.map((_, i) => ({
       id: `row-${i}`,
-      // factor=1.2: row is ~80–165px inside the viewport when its fade begins,
-      // making the transition clearly visible as it scrolls up from the bottom.
-      threshold: Math.min(0.95, (HEADER_H + PAD_V_TOP + i * ROW_STEP + ROW_STEP / 2) / animDist * 1.2),
+      // Row begins fading in as it enters the viewport.
+      threshold: Math.min(0.95, (HEADER_H + PAD_V_TOP + i * ROW_STEP + ROW_STEP / 2) / animDist),
     }));
   }, [rows, phaseEnd, viewportH]);
   const { wasReached } = useActs(actDefs, phase);
@@ -82,12 +81,23 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
 
   const nc       = columns.length;
   const nodeHalf = COL_ICON_SIZE / 2;
-  const usableW  = viewW - 2 * PAD_H;
-  const colSpacing = nc > 1 ? (usableW - COL_ICON_SIZE) / (nc - 1) : usableW;
+  const NOTE_FRAC = 0.8;
+  // Edge-safe spacing: pick the tighter of the default (respects PAD_H) and
+  // the edge-safe formula that prevents notes on the outermost columns from
+  // being clipped by the SVG viewBox.
+  const colSpacing = nc > 1
+    ? Math.min(
+        (viewW - 2 * PAD_H - COL_ICON_SIZE) / (nc - 1),               // default
+        (viewW - COL_ICON_SIZE) / (nc - 1 + NOTE_FRAC),                // edge-safe
+      )
+    : viewW - 2 * PAD_H;
+  const padH = nc > 1
+    ? (viewW - COL_ICON_SIZE - (nc - 1) * colSpacing) / 2
+    : PAD_H;
   const colCenter = (i: number) =>
     nc === 1
-      ? PAD_H + usableW / 2
-      : PAD_H + nodeHalf + i * colSpacing;
+      ? padH + (viewW - 2 * padH) / 2
+      : padH + nodeHalf + i * colSpacing;
 
   const colX = (id: string) => {
     const i = columns.findIndex((c) => c.id === id);
@@ -95,7 +105,7 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
     return colCenter(i);
   };
 
-  const noteW = Math.max(80, Math.min(colSpacing * 0.8, 300));
+  const noteW = Math.max(80, Math.min(colSpacing * NOTE_FRAC, 300));
 
   // SVG body only covers rows (no header zone)
   const bodyH = PAD_V_TOP + rows.length * ROW_STEP + PAD_V_BOT;
@@ -185,15 +195,17 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
                     strokeWidth={1}
                   />
                   <text
-                    x={cx} y={hasSubtext ? y - 10 : y + 5}
+                    x={cx} y={hasSubtext ? y - 8 : y}
                     fill="var(--text-body)"
+                    dominantBaseline="central"
                     style={{ fontFamily: 'var(--font-mono-spec)', fontSize: 'var(--text-base)' }}
                     fontWeight={500} textAnchor="middle"
                   >{row.text}</text>
                   {hasSubtext && (
                     <text
-                      x={cx} y={y + 12}
+                      x={cx} y={y + 8}
                       fill="var(--text-body)"
+                      dominantBaseline="central"
                       style={{ fontFamily: 'var(--font-mono-spec)', fontSize: 'var(--text-sm)' }}
                       textAnchor="middle"
                     >{row.subtext}</text>

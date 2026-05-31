@@ -1,0 +1,358 @@
+---
+sidebar_position: 3
+sidebar_label: 'Grounding'
+sidebar_custom_props:
+  sectionNumber: 5
+title: 'Grounding: Anchoring Agents in Reality'
+---
+
+import UShapeAttentionCurve from '@site/src/components/VisualElements/UShapeAttentionCurve';
+import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
+import GroundingDiagram from '@site/src/components/VisualElements/GroundingDiagram';
+import SubAgentDiagram from '@site/src/components/VisualElements/SubAgentDiagram';
+import ArchitectureDiagram from '@site/src/components/VisualElements/ArchitectureDiagram';
+import SequenceDiagram from '@site/src/components/VisualElements/SequenceDiagram';
+import PromptExample from '@site/src/components/PromptExample';
+
+export const MS_COLUMNS = [
+  { id: 'code', label: 'Code Research', emoji: '1f916', color: 'cyan' },
+  { id: 'orch', label: 'Orchestrator',  emoji: '1f916', color: 'magenta' },
+  { id: 'web',  label: 'Web Research',  emoji: '1f916', color: 'indigo' },
+];
+
+export const MS_ROWS = [
+  { type: 'note',    on: 'orch', text: 'Task', subtext: '"Implement OAuth2 credentials"' },
+  { type: 'message', from: 'orch', to: 'code', label: 'delegate', sublabel: '"How does existing auth work?"' },
+  { type: 'message', from: 'orch', to: 'web',  label: 'delegate', sublabel: '"OAuth2 best practices & CVEs?"' },
+  { type: 'note',    on: 'code', text: 'Search codebase', subtext: 'Grep auth & middleware files' },
+  { type: 'note',    on: 'web',  text: 'Fetch RFC 6749', subtext: 'Retrieve spec + guides' },
+  { type: 'note',    on: 'code', text: 'Read patterns', subtext: 'Read 12 files, ~38K tokens' },
+  { type: 'note',    on: 'web',  text: 'Scan CVEs', subtext: 'Check known vulnerabilities' },
+  { type: 'note',    on: 'code', text: 'Analyze architecture', subtext: '~50K tokens internally' },
+  { type: 'note',    on: 'web',  text: 'Rank practices', subtext: '~45K tokens internally' },
+  { type: 'message', from: 'code', to: 'orch', label: 'synthesis 3.2K', sublabel: 'Auth arch, middleware patterns', dashed: true },
+  { type: 'message', from: 'web',  to: 'orch', label: 'synthesis 4.8K', sublabel: 'RFC 6749, security notes', dashed: true },
+  { type: 'note',    on: 'orch', text: 'Implement', subtext: '~10K tokens in orchestrator' },
+];
+
+You ask your agent to fix the authentication bug. It confidently generates a solution using JWT verification patterns... that don't exist in your codebase. You use sessions, not JWTs. The agent just hallucinated a plausible implementation based on common patterns from its training data.
+
+Here's the fundamental issue: **The agent doesn't know your codebase exists.** It doesn't know your architecture, your patterns, or your constraints. As covered in [Lesson 2: Agents Demystified](/fundamentals/lesson-2-how-agents-work), the context window is the agent's entire world—everything else doesn't exist. Without explicit grounding in your actual code and current documentation, agents generate statistically plausible solutions that may be completely wrong for your system.
+
+**Grounding is how you inject reality into the context window.** You retrieve relevant external information—your codebase patterns, current docs, best practices—and feed it to the agent before generation. This lesson covers the engineering techniques that anchor agents in your actual system instead of hypothetical ones.
+
+<!-- doc-only-start -->
+<ScrollDrivenFigure phaseEnd={0.75} caption="Grounded vs. ungrounded agents approaching the same task.">
+  <GroundingDiagram />
+</ScrollDrivenFigure>
+<!-- doc-only-end -->
+
+<!-- presentation-only-start -->
+
+**Without Grounding:**
+
+- Works from generic training patterns frozen at Jan 2025
+- Guesses your architecture and libraries
+- Hallucinates plausible implementations that don't match your codebase
+- Misses current security vulnerabilities and API changes
+- Confidently wrong solutions built from statistical patterns
+
+**With Grounding:**
+
+- Works from your actual codebase (ChunkHound retrieves real code)
+- Uses current documentation (ArguSeek fetches latest API docs)
+- Aware of recent security advisories and breaking changes
+- Follows your existing patterns and architecture
+- Solutions that integrate cleanly with your system
+<!-- presentation-only-end -->
+
+:::info Full Disclosure
+[ChunkHound](https://chunkhound.github.io/) and [ArguSeek](https://github.com/ArguSeek/arguseek) are open source projects by the course author. Alternatives are noted inline throughout.
+:::
+
+## Grounding: Anchoring Agents in Reality
+
+**Grounding is how you inject reality into the context window.** You retrieve relevant external information—your codebase patterns, current docs, best practices—and feed it to the agent before generation. This lesson covers the engineering techniques that anchor agents in your actual system instead of hypothetical ones.
+
+## The Discovery Problem: Agentic Search
+
+When you assign "Fix the authentication bug," the agent starts with zero codebase knowledge. It doesn't know where auth code lives, what libraries you use, or how it's structured.
+
+**Agentic search is how the agent discovers your codebase autonomously.** The agent calls tools on its own—Glob finds files matching patterns, Grep searches for keywords, Read examines code. The agent decides what to search, interprets results, and determines next steps.
+
+**Example flow:**
+
+<PromptExample>
+Task: <code className="mono-human">"Fix JWT expiration validation"</code><br />
+<br />
+Agent: <code className="mono-ai">I'll search for JWT-related code</code><br />
+→ <code>Grep("JWT", "**/*.ts")</code><br />
+<br />
+Found in:<br />
+- <code>src/auth/jwt.ts:45</code>: export function verifyToken(token: string)<br />
+- <code>src/middleware/auth.ts:12</code>: import {"{"} verifyToken {"}"} from '../auth/jwt'<br />
+- <code>tests/auth.test.ts:8</code>: describe('JWT verification')<br />
+<br />
+Agent: <code className="mono-ai">Let me read the verification logic</code><br />
+→ <code>Read("src/auth/jwt.ts")</code><br />
+<br />
+[verification logic shows expiration check missing]<br />
+<br />
+Agent: <code className="mono-ai">Found it — the verifyToken function doesn't check exp claim</code>
+</PromptExample>
+
+In small codebases (under 10,000 lines), this works beautifully. Two or three searches return 5-10 files totaling 15,000 tokens. The agent reads them, builds a mental model, and solves the problem. Context stays clean.
+
+**At scale, agentic search breaks down.** Search "authentication" in a 100,000-line project and you get 80+ files. Reading them consumes 60,000+ tokens before the agent finishes discovery—half your effective context window gone. Critical information you provided up front gets pushed into the ignored middle as search results flood in.
+
+## The Scale Problem: Context Window Limits
+
+Current models advertise 200,000 tokens. Simple retrieval—finding a stated fact—works well across most of that window. **Inferential tasks are a different story.** Anthropic's [MRCR v2 8-needle benchmark](https://claude.com/blog/1m-context-ga) (2026) shows Sonnet 4.6 dropping from 90.6% at 256K to 65.1% at 1M tokens; GPT-5.4 falls from 79.3% to 36.6%. Even within 32K tokens, [NoLiMa](https://arxiv.org/abs/2502.05167) (Adobe Research, 2025) shows a 29-point accuracy drop on tasks requiring latent reasoning. Advertised capacity works for retrieval—not for the multi-step reasoning agents actually need to do. This is the **context window illusion**.
+
+<UShapeAttentionCurve />
+
+**Attention is asymmetric under load.** At moderate fill, attention forms a U-shape—strong at both ends, weak in the middle. As context fills past 50%, the shape shifts: recency dominates, primacy also begins to decay, and the middle becomes effectively invisible. This is transformer architecture under realistic constraints, not a bug.
+
+**Fill your context and you lose control.** Your critical constraints get pushed into the ignored middle where the agent never sees them. Worse, coherent distractor text—like verbose search results—degrades reasoning more than noise does, and distractors compound non-linearly ([Chroma Context Rot study](https://research.trychroma.com/context-rot), 2025).
+
+**Agentic search amplifies this problem at scale.** Three Grep searches return 18,000 tokens. Reading five files adds another 22,000 tokens. You're at 40,000 tokens and the agent hasn't finished discovery yet. Where are your initial constraints and requirements? Buried in the middle, being ignored.
+
+### Why a Bigger Context Window Won't Help
+
+Larger context windows have legitimate uses — summarizing regulatory filings, reviewing legal contracts, processing long transcripts. Those are retrieval-heavy tasks where finding stated facts scales well with window size. **Agentic coding is different.** Coding agents don't retrieve facts — they connect constraints across files, follow multi-step logic, and reason about architectural relationships. That's inference, and inference degrades non-linearly as context grows.
+
+Here's what the MRCR v2 8-needle benchmark reveals. At 128K tokens — well within every model's advertised window — **all frontier models score within 2 points of each other**:
+
+| Model | Window | MRCR v2 @ 128K | MRCR v2 @ 1M |
+|---|---|---|---|
+| Claude Sonnet 4.6 | 200K | 84.9% | — |
+| Gemini 3.1 Pro | 10M | 84.9% | 26.3% |
+| Claude Opus 4.6 | 1M | 84.0% | 76% |
+| GPT-5.2 | 1M | 83.8% | 26.3% |
+| Gemini 3 Pro | 10M | 77.0% | 26.3% |
+| Claude Sonnet 4.5 | 200K | — | 18.5% |
+
+At 128K tokens, a 200K-window Sonnet scores 84.9%. At 1M tokens, a 10M-window Gemini scores 26.3%. **The smaller model with managed context outperforms the bigger model with stuffed context by more than 3×.** The divergence isn't about model capability — it's attention dilution: more tokens means each attention head covers a larger space, reducing focus on any single relationship ([Softmax attention dilution](https://research.trychroma.com/context-rot)).
+
+:::warning The Agentic Coding Cost Trap
+
+Most providers apply per-token surcharges past a context threshold:
+
+- **Gemini 3.1 Pro / 2.5 Pro:** 2× input pricing above 200K tokens
+- **GPT-5.4:** 2× input, 1.5× output above 272K tokens
+- **Claude 4.6 (Opus/Sonnet):** No surcharge — flat rate to 1M (removed Feb 2026)
+
+For retrieval tasks (summarization, document review), the surcharge buys tokens in the model's strong accuracy zone. For agentic coding, you're paying a premium for tokens in the model's *worst* accuracy zone — the middle, where your constraints and requirements go to die.
+:::
+
+**Context management keeps you in the zone where all models perform equally well.** Every technique in this lesson — semantic search, sub-agents, structured grounding — exists to keep context fill below the cliff where inferential accuracy collapses. The model matters far less than what you put in it.
+
+### Solution 1: Semantic Search
+
+**Semantic search lets you query by meaning, not keywords.** Ask for "authentication middleware that validates user credentials" and you get relevant code even if it never mentions those exact terms.
+
+:::tip How Semantic Search Works
+
+**Vector embeddings:** Your code gets converted to high-dimensional vectors (768-1536 dimensions) that capture semantic meaning. Similar concepts cluster together in vector space.
+
+**Similarity matching:** Cosine similarity finds relevant chunks. "auth middleware", "login verification", and "JWT validation" map to nearby vectors—the model understands they're semantically related even though they use different words.
+
+**Infrastructure:** Vector databases (ChromaDB, pgvector, Qdrant) plus approximate nearest neighbor (ANN) algorithms enable fast search. Rerankers refine results. You call `code_research()`, not low-level APIs.
+
+**Key difference:** Embedding models with vector similarity search by concept, not text. This is fundamentally different from keyword matching.
+:::
+
+**Availability depends on your tool:**
+
+**IDE-based assistants** (Cursor, Windsurf, Cline) typically include semantic search out-of-the-box. The editor handles indexing and vector search automatically.
+
+**CLI agents** (Claude Code, Copilot CLI, Codex) need MCP servers to add semantic search. The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you extend CLI agents with tools like semantic search, web research, and database access.
+
+**MCP servers for semantic code search:**
+
+- [Claude Context](https://github.com/zilliztech/claude-context) - RAG-based semantic search
+- [Serena](https://github.com/oraios/serena) - LSP-based bridge (lighter weight, limited to LSP symbol scope)
+- [ChunkHound](https://chunkhound.github.io) - Structured pipeline with hybrid search
+
+Once you have semantic search (built-in or via MCP), your agent combines it with Grep for hybrid discovery: conceptual search to find the right area, precise keyword matching to locate exact implementations.
+
+**Semantic search extends your scale to 100,000+ lines of code.** You find relevant code faster with fewer false positives.
+
+**But there's still a limitation:** Semantic search still fills your orchestrator context. Ten semantic chunks (15,000 tokens) plus reading files (25,000 tokens) plus exploring related patterns (10,000 tokens) means you're at 50,000 tokens—half your effective context consumed before the agent starts reasoning about the actual task.
+
+## Solution 2: Sub-Agents for Context Isolation
+
+A **sub-agent** is an agent invoked by another agent—like a function call, but for agents. The orchestrator agent writes a prompt (the function parameters) describing the research task: "Find all JWT authentication code and explain the current implementation." The sub-agent executes in its own isolated context, running searches and reading files. When complete, it returns a concise synthesis (the return value): "JWT implementation found at src/auth/jwt.ts using Passport.js..." This synthesis loads into the orchestrator's context—typically 2,000-5,000 tokens instead of the 50,000-150,000 tokens the sub-agent processed internally.
+
+**How it works in practice:**
+
+<ScrollDrivenFigure phaseEnd={0.55} caption="Sub-agent context isolation: 50,000 tokens processed internally, 2,000 returned to orchestrator.">
+  <SubAgentDiagram />
+</ScrollDrivenFigure>
+
+**The trade-off is token cost, not accuracy.** You pay to process tokens in both contexts, increasing total cost significantly, but your orchestrator maintains a clean context throughout. This means first-iteration accuracy, which typically saves tokens compared to multiple correction cycles from a polluted context.
+
+**Without sub-agents, you can still manage.** Exploit the U-curve: Put critical constraints at the start, put tasks at the end. Supporting information goes in the middle where it's skimmable but available.
+
+### Two Sub-Agent Architectures
+
+**Autonomous architecture:** You give the agent tools and a system prompt. The agent autonomously decides what to do, which tools to call, and how to sequence its work.
+
+Example: Claude Code's Explore agent. You send it a task, it autonomously picks tools and sequences, then delivers results. Dynamic and adaptable — it handles any task you throw at it without prior engineering.
+
+**Structured architecture:** You build a deterministic control plane that defines the exact algorithm. The LLM makes tactical decisions within your structure ("Should I expand this symbol?" "Is this chunk relevant?"), but the overall flow is fixed.
+
+Example: ChunkHound uses a fixed multi-hop pipeline where the system controls traversal strategy and the LLM ranks relevance at decision points. Deterministic and reproducible — same input, same results every time.
+
+<ScrollDrivenFigure phaseEnd={0.6} caption="Two sub-agent architectures: deterministic pipeline (structured) vs. adaptive exploration (autonomous).">
+  <ArchitectureDiagram />
+</ScrollDrivenFigure>
+
+**The architectural trade-off:** Autonomous agents are dynamic — they handle any task and adapt on the fly, but are non-deterministic (same prompt yields different paths each run) and bounded by context capacity. Structured agents are reproducible and scale to any information volume with better token efficiency, but only handle the specific task they were engineered for and cost more to build.
+
+### Sub-Agent Availability
+
+Most platforms now include built-in sub-agents for code research:
+
+| Platform | Built-in Code Research Sub-Agents | Notes |
+|---|---|---|
+| **Claude Code** | Explore (read-only, Haiku), Plan, General-purpose | Custom sub-agents via `.claude/agents/`. Model routing per sub-agent. |
+| **Cursor** | Composer (deep repo indexing) | Up to 8 parallel sub-agents in isolated worktrees (v2.5+). |
+| **Windsurf** | Cascade agents, SWE-grep | Five parallel agents via Git worktrees. RL-trained code retrieval. |
+| **GitHub Copilot** | Exploration, planning, and review agents | Multi-agent orchestration across Claude, Codex, and Copilot models. |
+| **Cline** | Native sub-agents (v3.58+) | Parallel workers with dedicated context windows. |
+
+All built-in sub-agents above are **autonomous** — dynamic and context-bounded (see architecture comparison above). For **structured** code research that scales beyond context limits, [ChunkHound](https://chunkhound.github.io) provides pre-indexed deep exploration with multi-hop BFS traversal and map-reduce synthesis across millions of lines of code.
+
+## Code Grounding: Choosing Tools by Scale
+
+Your codebase size determines which grounding approach works. Here's how to choose:
+
+### Tool Selection Matrix
+
+| Scale           | Recommended Tools                                                                                                                                             | Breaking Point                                                 | Why                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **< 10k LOC**   | Agentic search (Grep, Read, Glob)                                                                                                                             | N/A - works reliably at this scale                             | Fast, cheap, sufficient coverage. No indexing overhead.                                                                                                                 |
+| **10-100K LOC** | Built-in sub-agents (most platforms)<br/>ChunkHound code research for structured needs<br/>**Alternative:** Semantic search (Claude Context, Serena via MCP) | Searches returning 50+ files start overwhelming context        | Sub-agents isolate research in separate contexts. Semantic search extends agentic search with meaning-based queries. ChunkHound adds pre-indexed deep exploration where built-in sub-agents hit context limits. |
+| **100K+ LOC**   | ChunkHound code research (structured sub-agent)                                                                                                               | Agentic search misses architectural connections across modules | Essential at 1M+ LOC. Only approach with progressive aggregation across large codebases.                                                                                |
+
+:::tip Measuring LOC
+
+Use [`cloc`](https://github.com/AlDanial/cloc) to measure your codebase: `cloc .` returns language-by-language breakdown. Focus on the "Code" column for accurate LOC counts.
+:::
+
+Every platform now ships autonomous sub-agents for code research (see availability table above), but these are context-bounded — they hit the same attention limits as any agent. Structured tools like [ChunkHound](https://chunkhound.github.io) fill the gap at scale with pre-indexed traversal and map-reduce synthesis, the same autonomous-vs-structured distinction from the sub-agent architectures section. The tool selection matrix above captures when to reach for each tier.
+
+## Web Grounding: Same Pattern, Different Sources
+
+You need more than just your codebase. You need current ecosystem knowledge: API docs, best practices, security advisories, recent research.
+
+**Web grounding follows the same progression as code grounding:** Simple tools work initially, then hit context limits, then need sophisticated solutions.
+
+### Built-In Web Search
+
+Most assistants (Claude Code, Copilot, Cursor) include basic web search. This works for simple queries.
+
+**The limitation:** Same context pollution problem. Each search consumes 8,000-15,000 tokens. Each page you fetch adds 3,000-10,000 tokens. The U-curve still applies—fill your context with search results and your original constraints disappear into the ignored middle.
+
+### Web Search Tools (Perplexity, Tavily)
+
+[Perplexity](https://perplexity.ai), [Tavily](https://tavily.com), and similar tools search, fetch, and synthesize before returning results to your agent.
+
+**The improvement:** Raw fetching would cost 15,000-30,000 tokens. Search synthesis compresses this to 3,000-8,000 tokens per query.
+
+**The limitations:**
+
+- Most use proprietary search indexes, so search quality varies by provider
+- You hit context limits after 3-5 queries
+- No state management—follow-up questions force the tool to re-explain basics instead of building on previous research
+
+### Structured Web Research (ArguSeek)
+
+Web search tools are autonomous — same pattern as code research sub-agents. [ArguSeek](https://github.com/ArguSeek/arguseek) is the structured counterpart: a deterministic web research pipeline with isolated context and semantic state management. Where search tools re-explain basics on each query, ArguSeek uses **semantic subtraction** — follow-ups skip already-covered content and advance your research instead of repeating it.
+
+**The scale advantage:** ArguSeek processes 12-30 sources per call. You can make tens of calls per task, scanning 100+ sources total while keeping your orchestrator context clean.
+
+**Example research sequence:**
+
+<PromptExample>
+<code>Q1:</code> <code className="mono-human">"Passport.js JWT authentication best practices?"</code><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<code className="mono-ai">→ Processes 15 sources</code><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<code className="mono-ai">→ Returns 2,800 tokens to your orchestrator</code><br />
+<br />
+<code>Q2:</code> <code className="mono-human">"Known security vulnerabilities in Passport JWT?"</code> (builds on Q1 context)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<code className="mono-ai">→ Processes 20 sources, skipping duplicate content from Q1</code><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<code className="mono-ai">→ Returns 3,600 tokens (no repeated basics)</code><br />
+<br />
+<code>Q3:</code> <code className="mono-human">"RS256 vs HS256 implementation trade-offs?"</code> (builds on Q1+Q2 context)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<code className="mono-ai">→ Processes 18 sources, skipping already-covered territory</code><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<code className="mono-ai">→ Returns 2,900 tokens (advances research)</code><br />
+<br />
+Total research: <code>53</code> sources processed<br />
+Total cost to your orchestrator: <code>9,300</code> tokens instead of <code>42,000+</code> from raw fetching
+</PromptExample>
+
+## Production Pattern: Multi-Source Grounding
+
+In production, you combine code grounding with web grounding:
+
+<!-- doc-only-start -->
+<ScrollDrivenFigure phaseEnd={0.65} caption="Multi-source grounding: orchestrator delegates research to isolated sub-agents, receives compact syntheses, stays in the high-accuracy context range.">
+  <SequenceDiagram columns={MS_COLUMNS} rows={MS_ROWS} ariaLabel="Multi-source grounding sequence: orchestrator delegates to code and web research sub-agents, receives compact syntheses." />
+</ScrollDrivenFigure>
+<!-- doc-only-end -->
+
+<!-- presentation-only-start -->
+
+1. **Code research** (ChunkHound): How does existing authentication work?
+   - Returns: Current session-based auth architecture, middleware patterns (3,200 tokens)
+
+2. **Web research** (ArguSeek): What are current OAuth2 best practices and known CVEs?
+   - Returns: RFC 6749 guidance, security considerations, recent vulnerabilities (4,800 tokens)
+
+3. **Implementation**: Synthesize both sources — follows your architecture (code-grounded) using current security standards (web-grounded)
+
+<!-- presentation-only-end -->
+
+This multi-source approach prevents two failure modes:
+
+- Code-only grounding prevents hallucinations but risks outdated patterns
+- Web-only grounding gives you current best practices but doesn't fit your architecture
+
+Combining both gives you solutions that work for your specific system using current standards.
+
+## Key Takeaways
+
+**The agent only knows what's in the context window**
+Without grounding, agents hallucinate plausible solutions based on training data patterns. You ground agents by injecting external information (your codebase, current docs, research) into the context before generation.
+
+**Agentic search is autonomous tool-based discovery**
+The agent calls Grep, Read, and Glob on its own to explore your codebase. This works beautifully for small projects (under 10,000 lines). At scale, search results flood the context window and push your constraints into the ignored middle.
+
+**The context window illusion: retrieval capacity ≠ reasoning capacity**
+Models advertise 200,000 tokens and simple retrieval largely holds up. Inferential tasks are far more fragile: [MRCR v2](https://claude.com/blog/1m-context-ga) benchmarks show Sonnet 4.6 at 90.6% (256K) dropping to 65.1% (1M) on 8-needle multi-retrieval; [NoLiMa](https://arxiv.org/abs/2502.05167) shows a 29pp drop within 32K tokens on latent-reasoning tasks. The attention curve is asymmetric under load — recency dominates, the middle becomes invisible, and primacy weakens at high fill. Only recency remains reliably strong at any context size.
+
+**A bigger context window won't help agentic coding**
+At 128K tokens, all frontier models score ~84% on MRCR v2 — regardless of advertised window size. Push to 1M and models with bigger windows collapse hardest: Gemini 3 Pro (10M window) drops to 26.3%, while Opus 4.6 (1M window) holds at 76%. For the inference tasks coding agents actually perform, context management that keeps fill in the effective zone beats a bigger window.
+
+**Semantic search queries by meaning instead of keywords**
+Vector embeddings let you search by concept: "authentication middleware" finds relevant code even without exact keyword matches. This extends your scale to 100,000+ lines of code.
+
+**Sub-agents isolate research in separate contexts**
+You delegate research to a sub-agent with its own context. It processes 50,000-150,000 tokens of search results and returns a 2,000-5,000 token synthesis. This costs more tokens but delivers first-iteration accuracy through clean orchestrator context.
+
+**Two sub-agent architectures serve different needs**
+Autonomous agents (built into most platforms) are dynamic and handle any task — but non-deterministic (same prompt, different results each run) and context-bounded. Structured agents (ChunkHound) are reproducible and scale to any information volume with better token efficiency — but only handle the task they were built for.
+
+**Choose grounding tools by codebase scale**
+Under 10,000 LOC: Agentic search works reliably. 10,000-100,000 LOC: Add semantic search or built-in sub-agents. Over 100,000 LOC: Use structured code research (ChunkHound). The tool you need depends on your scale.
+
+**Web grounding follows the same progression**
+Built-in search works for simple queries. Web search tools (Perplexity, Tavily) compress results. Sub-agents (ArguSeek) maintain state across 100+ sources while keeping your context clean.
+
+**Production systems combine code + web grounding**
+Ground in your codebase to prevent hallucinations and match your architecture. Ground in current web sources to get best practices and avoid outdated patterns. Combining both prevents solutions that work in theory but don't fit your system.
+
+---
+
+**Next:** The methodology module is complete. You now have the fundamental workflows (Plan > Execute > Validate), communication patterns (Prompting 101), and context management strategies (Grounding) to operate AI agents effectively in production environments.

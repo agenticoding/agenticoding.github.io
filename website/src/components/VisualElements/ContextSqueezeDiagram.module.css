@@ -1,0 +1,165 @@
+/* ── ContextSqueezeDiagram — local styles only ───────────────────────────────
+   Shared animation primitives (ghost, connector, etc.) live in
+   diagram.module.css. Only diagram-specific styles are defined here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Zone background rects — slide-up + fade */
+.zone {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.zoneIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* Zone labels — slide-up + fade with staggered entrance */
+.zoneLabel {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.zoneLabelIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter) 60ms, transform 250ms var(--ease-enter) 60ms;
+}
+
+/* Context file block — entrance (opacity + slide-up) */
+.contextFile {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.contextFileIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* Context file rect — height transition (48px → 128px) */
+.cfRect {
+  height: 48px;
+  transition: height 250ms var(--ease-enter);
+}
+.cfRectGrown {
+  height: 128px;
+  transition: height 250ms var(--ease-enter);
+}
+
+/* Context file label — vertical recentering during growth */
+.cfText {
+  transform: translateY(0);
+  transition: transform 250ms var(--ease-enter);
+}
+.cfTextGrown {
+  transform: translateY(40px);
+  transition: transform 250ms var(--ease-enter);
+}
+
+/* Task block — entrance (opacity + slide-up) */
+.taskBlock {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.taskBlockIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* Task block inner — vertical slide when grow act reached */
+.taskInner {
+  transform: translateY(0);
+  transition: transform 250ms var(--ease-enter);
+}
+.taskInnerGrown {
+  transform: translateY(80px);
+  transition: transform 250ms var(--ease-enter);
+}
+
+/* Task block fill + stroke transition (success → warning) */
+.taskBlockSafe {
+  fill: var(--visual-bg-success);
+  stroke: var(--visual-success);
+  transition: fill 250ms var(--ease-enter), stroke 250ms var(--ease-enter);
+}
+.taskBlockDanger {
+  fill: var(--visual-bg-warning);
+  stroke: var(--visual-warning);
+  transition: fill 250ms var(--ease-enter), stroke 250ms var(--ease-enter);
+}
+
+/* Arrow — opacity fade + follows the growing gap */
+.arrow {
+  opacity: 0;
+  transform: translateY(0);
+  transition: opacity 200ms var(--ease-exit), transform 250ms var(--ease-enter);
+}
+.arrowIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+.arrowGrown {
+  transform: translateY(80px);
+}
+
+/* ── Reduced-motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+  .zone,
+  .zoneIn,
+  .zoneLabel,
+  .zoneLabelIn {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .contextFile,
+  .contextFileIn {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .cfRect,
+  .cfRectGrown {
+    height: 128px;
+    transition: none;
+  }
+
+  .cfText,
+  .cfTextGrown {
+    transform: translateY(40px);
+    transition: none;
+  }
+
+  .taskBlock,
+  .taskBlockIn {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .taskInner,
+  .taskInnerGrown {
+    transform: translateY(80px);
+    transition: none;
+  }
+
+  .taskBlockSafe,
+  .taskBlockDanger {
+    fill: var(--visual-bg-warning);
+    stroke: var(--visual-warning);
+    transition: none;
+  }
+
+  .arrow,
+  .arrowIn {
+    opacity: 1;
+    transition: none;
+  }
+}

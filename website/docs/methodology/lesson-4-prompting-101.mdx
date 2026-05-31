@@ -147,7 +147,7 @@ Assume adversarial input and untrusted networks.
 
 Result: Targeted security analysis identifying specific vulnerabilities with mitigation strategies
 
-The persona didn't add knowledge—it changed _which_ knowledge gets retrieved by shifting vocabulary. This principle applies universally: vocabulary is the control interface for semantic retrieval. The same concept governs how you query codebase search tools (ChunkHound), web research agents (ArguSeek), vector databases, or instruct sub-agents. "Authentication middleware patterns" retrieves different code chunks than "login code." "Rate limiting algorithms" finds different research than "slow down requests." Choose terms that retrieve the patterns you need. (See [Lesson 5: Grounding](./lesson-5-grounding.md) for semantic search tools.)
+The persona didn't add knowledge—it changed _which_ knowledge gets retrieved by shifting vocabulary. This principle applies universally: vocabulary is the control interface for semantic retrieval. The same concept governs how you query codebase search tools (ChunkHound), web research agents (ArguSeek), vector databases, or instruct sub-agents. "Authentication middleware patterns" retrieves different code chunks than "login code." "Rate limiting algorithms" finds different research than "slow down requests." Choose terms that retrieve the patterns you need. (See [Lesson 5: Grounding](./lesson-5-grounding.mdx) for semantic search tools.)
 
 ## Chain-of-Thought: Paving a Clear Path
 
@@ -185,6 +185,32 @@ Provide your conclusions with evidence.
 - **Essential for complex operations**—Modern models handle simple tasks without CoT, but multi-step operations (5+ steps) require explicit guidance for accuracy.
 
 CoT is particularly powerful for QA workflows where you need methodical execution. See [Lesson 8: Tests as Guardrails](../practical-techniques/lesson-8-tests-as-guardrails.md) for production examples of using tests as guardrails in agent workflows.
+
+### Require Evidence: Force Retrieval Over Recall {#require-evidence-to-force-retrieval}
+
+Chain-of-Thought controls *how* the model reasons. Evidence requirements control *what* it can claim. When the agent explains a plan, a discrepancy, or a bug, require evidence: file paths, line numbers, concrete values, and exact error messages.
+
+This works because LLMs are next-token predictors that prioritize plausibility over accuracy. Without constraints, they generate fluent but ungrounded claims—hallucinations. An evidence requirement acts as an **epistemic integrity constraint**: it prohibits unverified claims by making them impossible to satisfy. The model cannot write "I think the auth middleware probably works like this" when the prompt demands a file path and line range.
+
+<CrossEmoji size={18} /> **Weak claim—pattern completion:**
+
+<PromptExample>
+The auth middleware handles login exemptions before rate limiting applies.
+</PromptExample>
+
+<CheckEmoji size={18} /> **Grounded claim—retrieval with evidence:**
+
+<PromptExample>
+The exemption is implemented in <code>src/middleware/auth.ts:42-58</code> and the login route is mounted separately in <code>src/routes/auth.ts:11</code>.
+</PromptExample>
+
+The second claim is verifiable. If the file or line range is wrong, you spot the drift immediately.
+
+This is distinct from Retrieval-Augmented Generation (RAG). RAG injects external data into context. An evidence requirement is a **prompt-level output constraint** that forces the model to ground whatever claims it makes in its available context—retrieved documents, tool outputs, or codebase files[^1].
+
+Evidence does not make the model deterministic, but it does make drift much more visible. When the CoT example above says *"Provide your conclusions with evidence,"* this is the mechanism behind that phrase: you are not asking for justification, you are demanding retrieval.
+
+[^1]: Code Broker's Correctness Assessor implements exactly this pattern: it is explicitly instructed to cite line numbers and static analysis message codes when reporting issues, anchoring findings in specific, verifiable locations within the codebase. See [arXiv:2604.23088v2](https://arxiv.org/abs/2604.23088), 2026.
 
 ## Applying Structure to Prompts
 
@@ -307,4 +333,4 @@ Effective prompting is precision engineering. You're not having a conversation�
 
 ---
 
-**Next:** [Lesson 5: Grounding](./lesson-5-grounding.md)
+**Next:** [Lesson 5: Grounding](./lesson-5-grounding.mdx)

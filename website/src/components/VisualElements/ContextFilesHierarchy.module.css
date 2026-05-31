@@ -1,0 +1,59 @@
+/* ── ContextFilesHierarchy — local styles only ─────────────────────────────
+   Shared animation primitives (ghost, connector, etc.) live in
+   diagram.module.css. Only diagram-specific styles are defined here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Tier rows — slide-up + fade */
+.tier {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+}
+.tierIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+}
+
+/* Override arrows between tiers — fade only */
+.arrow {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
+.arrowIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
+
+/* Title + bracket annotation — fade */
+.meta {
+  opacity: 0;
+  font-family: var(--font-mono-keyword);
+  font-feature-settings: var(--font-mono-features);
+  letter-spacing: 0.06em;
+  transition: opacity 200ms var(--ease-exit);
+}
+.metaIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
+
+/* ── Reduced-motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+  .tier,
+  .tierIn {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .arrow,
+  .arrowIn {
+    opacity: 1;
+    transition: none;
+  }
+  .meta,
+  .metaIn {
+    opacity: 1;
+    transition: none;
+  }
+}

@@ -1,0 +1,11 @@
+/* CompactClearDiagram.module.css
+ *
+ * Static SVG — three context window states: Before / After /compact / After /clear.
+ * No scroll animation; useMounted handles SSR safety.
+ */
+
+/* No diagram-specific animation rules needed for this static figure. */
+
+@media (prefers-reduced-motion: reduce) {
+  /* No transitions to override — component is fully static. */
+}

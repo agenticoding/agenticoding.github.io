@@ -156,7 +156,7 @@ function main() {
     'methodology/lesson-3-high-level-methodology.json',
     'methodology/lesson-4-prompting-101.json',
     'methodology/lesson-5-grounding.json',
-    'practical-techniques/lesson-6-project-onboarding.json',
+    'practical-techniques/lesson-6-context-management.json',
     'practical-techniques/lesson-7-planning-execution.json',
     'practical-techniques/lesson-8-tests-as-guardrails.json',
     'practical-techniques/lesson-9-reviewing-code.json',

@@ -19,5 +19,5 @@ import EdgeCaseDiscovery from '@site/shared-prompts/\_edge-case-discovery.mdx';
 
 - **[Lesson 4: Prompting 101](/methodology/lesson-4-prompting-101#chain-of-thought-paving-a-clear-path)** - Chain-of-Thought, structured prompts with sequential steps
 - **[Lesson 5: Grounding](/methodology/lesson-5-grounding#grounding-anchoring-agents-in-reality)** - Loading codebase context before generation, preventing hallucination
-- **[Lesson 7: Planning & Execution](/practical-techniques/lesson-7-planning-execution#require-evidence-to-force-grounding)** - Research-first methodology, evidence requirements
+- **[Lesson 7: Spec-Driven Development](/practical-techniques/lesson-7-spec-driven-development#require-evidence-to-force-grounding)** - Research-first methodology, evidence requirements
 - **[Lesson 8: Tests as Guardrails](/practical-techniques/lesson-8-tests-as-guardrails#the-three-context-workflow)** - Three-context workflow, preventing specification gaming

@@ -22,7 +22,7 @@ Good tests provide grounding. They show OAuth users skip email verification, dat
 
 ### Research First: Discover Edge Cases Through Questions
 
-Before writing tests, use the planning techniques from [Lesson 7](./lesson-7-planning-execution.md) to discover what needs testing. Questions load implementation details and existing edge cases into context.
+Before writing tests, use the planning techniques from [Lesson 7](./lesson-7-spec-driven-development.md) to discover what needs testing. Questions load implementation details and existing edge cases into context.
 
 **Prompt pattern for edge case discovery:**
 
@@ -44,13 +44,13 @@ When tests become the optimization target, agents optimize for passing tests rat
 
 :::
 
-Apply the same planning and execution methodology from [Lesson 7](./lesson-7-planning-execution.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.mdx) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.mdx)—the agent doesn't carry assumptions or defend prior decisions between contexts.
+Apply the same planning and execution methodology from [Lesson 7](./lesson-7-spec-driven-development.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.mdx) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.mdx)—the agent doesn't carry assumptions or defend prior decisions between contexts.
 
 ## The three-context workflow:
 
 <ThreeContextWorkflow />
 
-1. **Write code** in Context A—research existing patterns using [grounding from Lesson 5](../methodology/lesson-5-grounding.md), plan implementation, execute, verify correctness
+1. **Write code** in Context A—research existing patterns using [grounding from Lesson 5](../methodology/lesson-5-grounding.mdx), plan implementation, execute, verify correctness
 2. **Write tests** in fresh Context B—research requirements and edge cases, plan test coverage, execute (agent doesn't remember writing implementation, so tests derive independently from requirements), verify tests fail initially
 3. **Triage failures** in fresh Context C—research the failure output, analyze test intent versus implementation behavior, determine root cause with evidence (file paths, line numbers, semantic analysis), propose fixes (agent doesn't know who wrote code or tests, providing objective analysis)
 
@@ -86,7 +86,7 @@ Tests with heavy mocking give false confidence. They verify implementation detai
 
 ### Fast Feedback with Smoke Tests
 
-Build a **sub-30-second smoke test suite** covering critical junctions only—core user journey, authentication boundaries, and database connectivity—not exhaustive coverage. A 10-minute comprehensive suite is useless for iterative agent development; you'll skip running it until the end when debugging becomes expensive. Run smoke tests after each task to catch failures immediately while context is fresh, rather than making 20 changes before discovering which one broke the system. As [Jeremy Miller notes](https://jeremydmiller.com/2024/09/29/my-recommendations-for-a-test-automation-strategy), use "the finest grained mechanism that tells you something important." Reserve edge cases, detailed validation, and UI rendering details for the full test suite—smoke tests exist solely to prevent compounding errors during rapid iteration. Codify this practice in your project's `AGENTS.md` or `CLAUDE.md` file ([Lesson 6](./lesson-6-project-onboarding.md)) so agents automatically run smoke tests after completing each task without requiring explicit reminders.
+Build a **sub-30-second smoke test suite** covering critical junctions only—core user journey, authentication boundaries, and database connectivity—not exhaustive coverage. A 10-minute comprehensive suite is useless for iterative agent development; you'll skip running it until the end when debugging becomes expensive. Run smoke tests after each task to catch failures immediately while context is fresh, rather than making 20 changes before discovering which one broke the system. As [Jeremy Miller notes](https://jeremydmiller.com/2024/09/29/my-recommendations-for-a-test-automation-strategy), use "the finest grained mechanism that tells you something important." Reserve edge cases, detailed validation, and UI rendering details for the full test suite—smoke tests exist solely to prevent compounding errors during rapid iteration. Codify this practice in your project's `AGENTS.md` or `CLAUDE.md` file ([Lesson 6](./lesson-6-context-management.mdx)) so agents automatically run smoke tests after completing each task without requiring explicit reminders.
 
 ---
 
@@ -182,7 +182,7 @@ This diagnostic prompt applies techniques from [Lesson 4](../methodology/lesson-
 - **DIAGNOSE numbered steps** implement [Chain-of-Thought](../methodology/lesson-4-prompting-101.mdx#chain-of-thought-paving-a-clear-path), forcing sequential analysis (can't jump to "root cause" without examining test intent first)
 - **"Understand the intention"** (step 2) ensures the agent articulates WHY the test exists, not just WHAT it does—critical for [CoT reasoning](../methodology/lesson-4-prompting-101.mdx#chain-of-thought-paving-a-clear-path)
 - **DETERMINE binary decision** [constrains output](../methodology/lesson-4-prompting-101.mdx#constraints-as-guardrails) to "bug vs outdated test" instead of open-ended conclusions
-- **"Provide evidence"** requires file paths and line numbers—concrete proof via [require evidence](./lesson-7-planning-execution.md#require-evidence-to-force-grounding), not vague assertions
+- **"Provide evidence"** requires file paths and line numbers—concrete proof via [require evidence](../methodology/lesson-4-prompting-101.mdx#require-evidence-to-force-retrieval), not vague assertions
 
 You can adapt this for performance issues, security vulnerabilities, or deployment failures by changing the diagnostic steps while preserving the structure: sequential CoT → constrained decision → evidence requirement.
 

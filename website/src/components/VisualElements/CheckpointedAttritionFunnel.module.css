@@ -1,0 +1,15 @@
+.container {
+  margin: var(--space-4) 0;
+}
+
+.compact {
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
