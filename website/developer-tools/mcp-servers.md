@@ -69,7 +69,7 @@ brew install arguseek
 
 Requires Go 1.23+ and Google API credentials. See [ArguSeek on GitHub](https://github.com/ArguSeek/arguseek) for detailed setup instructions and configuration options.
 
-**Learn more:** [Lesson 5: Grounding](/methodology/lesson-5-grounding#structured-web-research-arguseek) explains ArguSeek's architecture, semantic subtraction, and research patterns.
+**Learn more:** [Lesson 5: Grounding](/methodology/lesson-5-grounding#production-pattern-multi-source-grounding) explains multi-source grounding with ChunkHound code research and web search.
 
 ## Browser Automation
 
@@ -92,4 +92,4 @@ Previous recommendations included Playwright MCP and Chrome DevTools MCP. These 
 **Related Course Content:**
 
 - [Lesson 5: Grounding](/methodology/lesson-5-grounding) - Detailed architecture and use cases for ChunkHound and ArguSeek
-- [Lesson 7: Spec-Driven Development](/practical-techniques/lesson-7-spec-driven-development) - Multi-agent workflows that leverage MCP capabilities
+- [Lesson 7: Reliability Levers](/practical-techniques/lesson-7-reliability-levers) - Multi-agent workflows that leverage MCP capabilities

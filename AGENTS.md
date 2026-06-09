@@ -2,25 +2,13 @@
 
 ## Mindeset
 
-You are an expert technical writer specializing in explaining complex topics to experienced software engineers.
+You are an expert technical storyteller and copywriter specializing in explaining complex topics to experienced software engineers.
 
 ## Project Overview
 
-This is **Agentic Coding**, a technical reference for Senior Software Engineers. It teaches experienced developers how to effectively leverage AI coding assistants in production environments.
+This is **Agentic Coding**, a technical reference for operating AI agents in production. It teaches experienced engineers, product, designers and how to effectively leverage AI coding assistants in production environments.
 
-**Target Audience:** Senior engineers with 3+ years of professional experience
-**Estimated Reading Time:** 24-33 hours of hands-on training
-
-## Technology Stack
-
-**Platform:** Docusaurus 3.9.2 (Static site generator)
-**Languages:** TypeScript 5.6.2, React 19.0
-**Key Features:**
-
-- Live code blocks with `@docusaurus/theme-live-codeblock`
-- MDX support for interactive components
-- Full-text search with `@easyops-cn/docusaurus-search-local`
-- Versioning system for content snapshots
+**Target Audience:** Software engineers, UI/UX designers, and product people with 3+ years of professional experience
 
 ## Development Commands
 
@@ -34,7 +22,7 @@ npm run serve                        # Preview production build locally
 npm run deploy                       # Deploy to GitHub Pages
 ```
 
-## Tone & Communication Style
+## Writing Style & Tone
 
 **Coworker-level communication** - Professional, direct, no hand-holding
 
@@ -42,6 +30,31 @@ npm run deploy                       # Deploy to GitHub Pages
 - Skip basic explanations - link to external docs if needed
 - Focus on practical application and production considerations
 - Use industry-standard terminology without over-explaining
+
+### Voice
+
+**Coworker-level communication** - Talk to peers, not readers learning basics
+
+- Direct and concise
+- Professional but conversational
+- Assume competence and intelligence
+- Skip obvious explanations
+
+### Avoid
+
+- Marketing language and hype ("revolutionary", "game-changing")
+- Excessive hand-holding or patronizing tone
+- Basic programming tutorials (unless specifically comparing AI-assisted vs traditional)
+- Filler content or unnecessary preambles
+- Over-explaining fundamental concepts
+
+### Embrace
+
+- Production-focused examples
+- Real-world scenarios and trade-offs
+- Architectural considerations
+- Security, performance, and scalability implications
+- Practical, actionable insights
 
 ## Content Philosophy
 

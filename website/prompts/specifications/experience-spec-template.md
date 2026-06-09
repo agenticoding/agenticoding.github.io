@@ -26,10 +26,10 @@ For **system/backend** specs, use the
 2. Fill in with your domain specifics — skip sections that don't apply
 3. Use browser automation to verify implementation matches spec
 4. Delete after implementation — code + mock contracts + accessibility tree are the source of truth
-   ([Lesson 7](/practical-techniques/lesson-7-spec-driven-development))
+   ([Lesson 8](/practical-techniques/lesson-8-spec-driven-development))
 
 ### Related
 
 - [Experience Engineering](/experience-engineering/lesson-14-design-tokens) — teaches the thinking behind UI spec-driven development with AI agents (Lessons 14–17)
-- [Lesson 12: Thinking in Systems](/practical-techniques/lesson-12-systems-thinking-specs) — the system spec counterpart
+- [Lesson 13: Thinking in Systems](/practical-techniques/lesson-13-systems-thinking-specs) — the system spec counterpart
 - [System Spec Template](/prompts/specifications/spec-template) — for backend/system specifications

@@ -20,8 +20,12 @@ import SubAgentDiagram from '@site/src/components/VisualElements/SubAgentDiagram
 import ContextSqueezeDiagram from '@site/src/components/VisualElements/ContextSqueezeDiagram';
 import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
 import MCPToolSchemaDiagram from '@site/src/components/VisualElements/MCPToolSchemaDiagram';
+import ArchitectureDiagram from '@site/src/components/VisualElements/ArchitectureDiagram';
+import UShapeAttentionCurve from '@site/src/components/VisualElements/UShapeAttentionCurve';
 
 Agents do not use a context window uniformly. They attend to some tokens more strongly than others, and position matters as much as raw capacity. Context engineering is the practice of shaping what enters the window, where it lands, and when it appears so the task stays in the model's high-attention zone.
+
+[Lesson 5: Grounding](/methodology/lesson-5-grounding) covered how to retrieve the code, docs, and external sources that make the agent operate against reality. Context engineering starts after that. Once the right information exists, you still have to decide how much enters the window, where it lands, and when it expires.
 
 The core problem is positional. The [lost-in-the-middle effect](/fundamentals/lesson-1-how-llms-work) means the same instruction can be reliable at the top or bottom of the window and unreliable in the middle. A 200K-token window sounds enormous until you realize a single MCP server can consume 55K tokens just for tool schemas — before the agent reads a single line of your code. Capacity is not the goal. Controlled attention is the goal.
 
@@ -38,6 +42,121 @@ Try the presets. **Fresh Session** keeps the window light — the task gets stro
 The connector on the right side shows how tool definitions produce results that land in conversation turns. Notice how the drain cascade works: when total content exceeds the effective window, headroom disappears first, then conversation gets compacted (reduced opacity bands), then context files shrink, and finally tool definitions yield — each slider shows the requested-vs-actual gap when drained.
 
 The key insight: **it's not about running out of tokens — it's about where your task lands relative to the attention curve.** A 65% full window with heavy tool definitions is worse than an 80% full window where most content is conversation (which sits below the task in the recency zone).
+
+
+## Capacity Is Not Reliability
+
+Large context windows have legitimate uses: summarizing regulatory filings, reviewing legal contracts, processing long transcripts. Those are retrieval-heavy tasks where finding stated facts scales reasonably well with window size. Agentic coding is different. Coding agents connect constraints across files, follow multi-step logic, and reason about architectural relationships. That is inference, and inference degrades as context grows.
+
+The mistake is treating **capacity** as **reliability**:
+
+- **Advertised context** is how many tokens the model accepts.
+- **Effective context** is how much of that input the model can still use reliably.
+- **Point drop** is absolute percentage-point loss. A fall from 80% to 40% is −40 percentage points, even though relative accuracy was cut in half.
+- **Attention placement** determines whether the important facts are visible when the model needs them.
+
+<UShapeAttentionCurve />
+
+**Attention is asymmetric under load.** At moderate fill, attention forms a U-shape: strong at both ends, weak in the middle. As context fills past 50%, recency dominates, primacy weakens, and the middle becomes effectively invisible. This is transformer architecture under realistic constraints, not a bug.
+
+Current long-context benchmarks show the pattern. Simple retrieval can hold up across large windows. Inferential tasks are more fragile: Anthropic's [MRCR v2 8-needle benchmark](https://claude.com/blog/1m-context-ga) shows large point drops near maximum context, while [NoLiMa](https://arxiv.org/abs/2502.05167) shows a 29-point drop within 32K tokens on tasks requiring latent reasoning.
+
+The context window is storage. Attention is bandwidth. Context engineering exists because agentic coding fails when you treat storage as bandwidth.
+
+<details>
+<summary>Long-context benchmark evidence</summary>
+
+MRCR means **Multi-Round Co-reference Retrieval**. The model gets a very long prompt with multiple target facts buried inside distractor text, then must answer questions that refer to those facts indirectly. The **8-needle** variant plants eight facts, so the model has to keep several references straight instead of matching one obvious phrase.
+
+MRCR stresses the exact failure mode agentic coding creates: after search results, file reads, logs, and partial plans flood the context, can the agent still recover the few facts that matter?
+
+:::info Why this is different from coding benchmarks
+MRCR does **not** measure patch quality. Coding benchmarks like SWE-bench test debugging, repository reasoning, tool use, and patch generation. MRCR tests long-context retrieval under pressure. A model can improve on coding benchmarks while regressing on MRCR because these are related but different capabilities.
+:::
+
+At moderate context, frontier models cluster tightly. Near the advertised maximum, they diverge brutally.
+
+| Model | Window | Moderate context | Long context | Point drop | Pattern |
+|---|---:|---:|---:|---:|---|
+| Claude Sonnet 4.6 | 1M | 90.6% @256K | 65.1% @1M | −25.5 pp | Gradual decay |
+| Claude Opus 4.6 | 1M | **93.0%** @128K | **76.0%** @1M | −17.0 pp | Strong retention |
+| Claude Opus 4.7 | 1M | 78.3%⁠* | 32.2% @1M | −46.1 pp | Release regression |
+| Claude Opus 4.8 | 1M | 85.9%⁠† | 68.1%⁠† | −17.8 pp | Partial recovery |
+| GPT-5.4 | 1.05M | 79.3% @128K | 36.6% @1M | −42.7 pp | Sharp collapse |
+| GPT-5.5 | 1.1M | 87.5%⁠* | **74.0%** @1M | −13.5 pp | Retrieval retrain |
+| Gemini 3.1 Pro | 1M | 84.9% @128K | 26.3% @1M | −58.6 pp | Severe collapse |
+| Gemini 3.5 Flash | 1M | 77.3% @128K | 26.6% @1M | −50.7 pp | Severe Flash-tier decay |
+| DeepSeek V4 Pro | 1M | 83.5%⁠^ | ~66% @1M | ~−17 pp | Compression tax |
+| DeepSeek V4 Flash | 1M | 89% @128K | 58–79%⁠^ @1M | 10–31 pp | Reasoning-mode dependent |
+
+<details>
+<summary>How to compare these numbers</summary>
+
+Use the table for the **shape of degradation**, not as a strict leaderboard. Most rows are MRCR v2 8-needle long-context retrieval; marked rows need context:
+
+- `*` uses 256K as the moderate-context point because the relevant 128K value was not the published comparison point.
+- `^` shows Max reasoning mode. DeepSeek defaults are lower: Pro ~66%, Flash 58% @1M.
+- `†` uses GraphWalks BFS, a harder relational-retrieval benchmark, because Opus 4.8's MRCR v2 score is unpublished. Opus 4.8 also scores 83.3% on GraphWalks Parents @1M.
+- Gemini 3.5 Flash publishes 128K average and 1M pointwise scores, but no 512K breakdown.
+</details>
+
+The table tells three stories: same window ≠ same reliability; moderate context is not the problem; the degradation curve matters more than the headline window.
+
+:::tip First-pass takeaway
+Every model has an effective context limit. Some decline gradually, some fall off a cliff, and some recover only with expensive reasoning modes. None make context management obsolete.
+:::
+
+<details>
+<summary>Claude: coding wins can damage retrieval</summary>
+
+Opus 4.6 was purpose-built for long-context retrieval: Extended Thinking gave it a dedicated reasoning budget to "search" the 1M-token space. Opus 4.7 removed that path, gained major wins in coding, visual reasoning, and tool orchestration, but fell from 78.3% to 32.2% on long-context retrieval — a 59% relative collapse.
+
+Opus 4.8 partially corrects the regression: its GraphWalks BFS @1M beats Opus 4.6 on the same subtask, but MRCR v2 remains unpublished. The lesson: **the same changes that improve coding can damage long-context retrieval.**
+</details>
+
+<details>
+<summary>GPT: from bigger window to retrieval retraining</summary>
+
+GPT-5.4 moved back into the 1M-token tier, but exposed a reliability cliff: 79.3% around 128K, 57.5% around 256K–512K, and 36.6% near 1M. It could accept the tokens, but could not use them reliably.
+
+GPT-5.5 appears to be the correction: retrained for long-context retrieval with heavier long-document examples, better position-aware behavior, and lower distractor susceptibility. Its 74.0% near 1M is roughly double GPT-5.4. The lesson is not "GPT wins"; it is that reliability requires model-level optimization, not just a bigger window.
+</details>
+
+<details>
+<summary>Gemini: capacity without reliable use</summary>
+
+Gemini 3.1 Pro advertises the same 1M-token class as Opus and GPT, yet drops to 26.3% near 1M. Large windows still help retrieval-heavy workflows, but they do not make agentic coding safe by default.
+</details>
+
+<details>
+<summary>DeepSeek: cheap 1M context has a precision trade-off</summary>
+
+DeepSeek buys efficiency with hybrid attention: CSA compression plus sparse selection, and HCA dense scanning. That makes 1M-token inference cheaper, but consistency depends on reasoning mode. V4 Flash collapses in non-thinking mode; Max mode recovers to 78.7%. Compression buys efficiency, but reasoning-time compute has to recover precision.
+</details>
+
+</details>
+
+:::warning The Agentic Coding Cost Trap
+
+Most providers apply per-token surcharges past a context threshold:
+
+- **Gemini 3.1 Pro:** 2× input pricing above 200K tokens
+- **GPT-5.5 / GPT-5.4:** 2× input pricing above ~272K tokens
+- **DeepSeek V4 Pro / Flash:** 1.5× pricing above 512K tokens
+- **Claude 4.6/4.7/4.8 (Opus/Sonnet):** No surcharge — flat rate to 1M
+
+For retrieval tasks (summarization, document review), the surcharge buys tokens in the model's strong accuracy zone. For agentic coding, you're paying a premium for tokens in the model's *worst* accuracy zone — the middle, where your constraints and requirements go to die.
+:::
+
+## Retrieval Is Not Context Engineering
+
+Semantic search, code research, and web research improve discovery. They help the agent find the right facts by meaning instead of guessing from keywords or training priors. But retrieval alone does not decide placement, lifetime, or isolation.
+
+Three Grep searches can return 18,000 tokens. Reading five files can add another 22,000. You are at 40,000 tokens before discovery is finished. Ten excellent semantic chunks can cost 15,000 tokens; reading related files adds 25,000; exploring patterns adds another 10,000. You are at 50,000 tokens before implementation starts.
+
+That is why correct retrieval can still hurt reliability. A long search trail can push the actual task into the forgotten middle. A useful web page can arrive too early, sit too long, and compete with more relevant instructions later. Coherent distractor text is especially dangerous because it looks relevant while degrading reasoning more than obvious noise ([Chroma Context Rot study](https://research.trychroma.com/context-rot), 2025).
+
+So treat retrieval as the input to context engineering, not a replacement for it. Grounding answers **what facts should enter the agent's world**. Context engineering answers **how those facts stay usable**.
 
 ## The Five Context Mechanisms
 
@@ -127,7 +246,12 @@ The critical difference from tool schemas is not the mechanism — it is who dec
 
 ### Two Invocation Paths
 
-<SkillsInvocationDiagram />
+<ScrollDrivenFigure
+  phaseEnd={0.5}
+  caption="Skill invocation paths: manual selection is reliable; model matching is automatic but probabilistic."
+>
+  <SkillsInvocationDiagram />
+</ScrollDrivenFigure>
 
 **Manual invocation**: The user explicitly selects a procedure — a slash command (`/commit`), skill picker, or sub-agent mention. The procedure loads because the human chose it. **Always reliable** — the model cannot misidentify the workflow — but the human must discover the skill and remember its name.
 
@@ -147,7 +271,9 @@ The practical framing: **AGENTS.md** holds what the agent should always know —
 
 ## Sub-Agents — Context Isolation
 
-Sub-agents run in completely separate context windows. This is the most powerful context engineering tool: a sub-agent might consume 150K tokens researching a codebase, but returns only a 2K-token summary to the orchestrator. **Zero tokens in the parent context** — the research never existed as far as the main conversation is concerned.
+Sub-agents run in completely separate context windows. This is the most powerful context engineering tool: a sub-agent might consume 50K–150K tokens researching a codebase, but returns only a 2K–5K synthesis to the orchestrator. **Zero raw research tokens in the parent context** — the search trail, file reads, and partial interpretations never existed as far as the main conversation is concerned.
+
+Think of a sub-agent like a function call for agents. The prompt is the parameter: "Find all JWT authentication code and explain the current implementation." The synthesis is the return value: "JWT implementation found at src/auth/jwt.ts using Passport.js..." You pay for work in both contexts, but the parent receives the compact result instead of inheriting the whole research journey.
 
 <ScrollDrivenFigure
   phaseEnd={0.55}
@@ -164,9 +290,38 @@ The tradeoffs:
 - **No nesting** — sub-agents cannot spawn sub-agents; the orchestrator is always the root
 - **10 parallel cap** — Claude Code limits concurrent sub-agents to 10
 
+The trade-off is token cost, not accuracy. You pay to process tokens in both contexts, but the orchestrator stays clean. That often improves first-iteration accuracy enough to save tokens compared with multiple correction cycles from a polluted parent context.
+
 Sub-agents are ideal for heavy research, multi-file analysis, and exploratory tasks where the journey matters less than the destination. They can also generate independent plans or implementations when you want to compare options before applying one result.
 
+### Two Sub-Agent Architectures
+
+**Autonomous architecture:** You give the agent tools and a system prompt. The agent autonomously decides what to do, which tools to call, and how to sequence its work.
+
+Example: Claude Code's Explore agent. You send it a task, it autonomously picks tools and sequences, then delivers results. Dynamic and adaptable — it handles any task you throw at it without prior engineering.
+
+**Structured architecture:** You build a deterministic control plane that defines the exact algorithm. The LLM makes tactical decisions within your structure ("Should I expand this symbol?" "Is this chunk relevant?"), but the overall flow is fixed.
+
+Example: ChunkHound uses a fixed multi-hop pipeline where the system controls traversal strategy and the LLM ranks relevance at decision points. Deterministic and reproducible — same input, same results every time.
+
+<ScrollDrivenFigure phaseEnd={0.6} caption="Two sub-agent architectures: deterministic pipeline (structured) vs. adaptive exploration (autonomous).">
+  <ArchitectureDiagram />
+</ScrollDrivenFigure>
+
+**The architectural trade-off:** Autonomous agents are dynamic — they handle any task and adapt on the fly, but are non-deterministic (same prompt yields different paths each run) and bounded by context capacity. Structured agents are reproducible and scale to any information volume with better token efficiency, but only handle the specific task they were engineered for and cost more to build.
+
 See [Lesson 5](/methodology/lesson-5-grounding#solution-2-sub-agents-for-context-isolation) for sub-agent grounding patterns.
+
+### If You Cannot Use Sub-Agents
+
+Without sub-agents, exploit the attention curve directly:
+
+- Put durable constraints at the start, where primacy is strongest.
+- Put the active task at the end, where recency is strongest.
+- Keep supporting evidence in the middle summarized and referenced, not pasted wholesale.
+- Start a fresh phase when the middle becomes crowded instead of continuing in a degraded thread.
+
+This is less powerful than isolation, but it still respects the core rule: important facts must land where the model can attend to them.
 
 ## Context Compaction — Lossy Handoff {#runtime-management}
 
@@ -212,4 +367,4 @@ Is it always needed? → Context file. Is it a callable tool? → MCP. Is it a w
 
 ---
 
-**Next:** [Lesson 7: Spec-Driven Development](./lesson-7-spec-driven-development.md)
+**Next:** [Lesson 7: Reliability Levers](./lesson-7-reliability-levers.md)

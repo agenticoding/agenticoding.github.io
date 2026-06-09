@@ -1,8 +1,8 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 sidebar_label: 'Reviewing Code'
 sidebar_custom_props:
-  sectionNumber: 9
+  sectionNumber: 10
 title: 'Reviewing Code'
 ---
 
@@ -63,7 +63,7 @@ Use ChunkHound's code research.
 DO NOT EDIT ANYTHING - only review.
 ```
 
-After implementing code ([Lesson 7](./lesson-7-spec-driven-development.md)), writing tests ([Lesson 8](./lesson-8-tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
+After implementing code ([Lesson 8](./lesson-8-spec-driven-development.md)), writing tests ([Lesson 9](./lesson-9-tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
 
 :::tip Reference
 See the complete prompt template with iterative review guidance: [Comprehensive Code Review](/prompts/code-review/comprehensive-review)
@@ -71,7 +71,7 @@ See the complete prompt template with iterative review guidance: [Comprehensive 
 
 ### Iterative Review: Repeat Until Green or Diminishing Returns
 
-Code review is rarely one-pass—first review finds issues, you fix them, re-run tests ([Lesson 8](./lesson-8-tests-as-guardrails.md)) to catch regressions, then review again in a fresh context (not the same conversation where the agent will defend its prior decisions). Continue this cycle: review in fresh context, fix issues, validate with tests, repeat.
+Code review is rarely one-pass—first review finds issues, you fix them, re-run tests ([Lesson 9](./lesson-9-tests-as-guardrails.md)) to catch regressions, then review again in a fresh context (not the same conversation where the agent will defend its prior decisions). Continue this cycle: review in fresh context, fix issues, validate with tests, repeat.
 
 **Review itself is probabilistic**—it's also an LLM making statistical predictions. The agent can be wrong. It might suggest "fixes" that break working code or introduce regressions that your test suite catches.
 
@@ -102,7 +102,7 @@ Traditional PR descriptions optimize for one audience or the other—too verbose
 
 ### The Advanced Prompt Pattern
 
-This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.mdx), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.mdx), and [Lesson 7 (Spec-Driven Development)](./lesson-7-spec-driven-development.md):
+This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.mdx), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.mdx), and [Lesson 8 (Spec-Driven Development)](./lesson-8-spec-driven-development.md):
 
 <DualOptimizedPR />
 
@@ -189,4 +189,4 @@ This is **Chain of Draft (CoD)**—an optimization of Chain of Thought (CoT) pro
 
 ---
 
-**Next:** [Lesson 10: Debugging with AI](./lesson-10-debugging.md)
+**Next:** [Lesson 11: Debugging with AI](./lesson-11-debugging.md)

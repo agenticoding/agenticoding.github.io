@@ -1,11 +1,27 @@
-/* SkillsInvocationDiagram.module.css
- *
- * Static SVG — two side-by-side skill invocation paths.
- * No scroll animation; useMounted handles SSR safety.
- */
+/* SkillsInvocationDiagram — staged intro reveal.
+   Motion teaches reading order: frame → operator path → model path → tradeoffs. */
 
-/* No diagram-specific animation rules needed for this static figure. */
+.frame,
+.flowItem,
+.note {
+  opacity: 0;
+  transform: translateY(var(--motion-reveal-y-scroll));
+  transition: opacity var(--duration-moderate-exit) var(--ease-exit), transform var(--duration-moderate-exit) var(--ease-exit);
+}
+
+.entered {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--duration-moderate) var(--ease-enter), transform var(--duration-moderate) var(--ease-enter);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  /* No transitions to override — component is fully static. */
+  .frame,
+  .flowItem,
+  .note {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
+  }
 }

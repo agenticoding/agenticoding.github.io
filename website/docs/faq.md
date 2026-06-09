@@ -128,7 +128,7 @@ IDE agents (Cursor, Copilot) work but are coupled to single windows, limiting co
 
 The methodology applies to any agent, but CLI agents unlock the parallel execution model this course teaches.
 
-*Learn more in [Lesson 2: Agents Demystified](/fundamentals/lesson-2-how-agents-work) and [Lesson 7: Spec-Driven Development](/practical-techniques/lesson-7-spec-driven-development).*
+*Learn more in [Lesson 2: Agents Demystified](/fundamentals/lesson-2-how-agents-work), [Lesson 7: Reliability Levers](/practical-techniques/lesson-7-reliability-levers), and [Lesson 8: Spec-Driven Development](/practical-techniques/lesson-8-spec-driven-development).*
 
 ### Is agentic coding better than prompt engineering?
 
@@ -178,19 +178,19 @@ Use hierarchical instruction files (CLAUDE.md at repo and directory levels) to p
 
 Agents amplify existing patterns—they don't invent duplication. If your codebase has inconsistent patterns, agents replicate them. Before requesting new implementations, show existing ones. Force the agent to search for existing patterns first. Grounding in your actual code prevents reinvention.
 
-*Learn more in [Lesson 11: Writing Agent-Friendly Code](/practical-techniques/lesson-11-agent-friendly-code).*
+*Learn more in [Lesson 12: Writing Agent-Friendly Code](/practical-techniques/lesson-12-agent-friendly-code).*
 
 ### Can AI agents review their own generated code?
 
 Not in the same context. Agents reviewing their own work defend prior decisions—confirmation bias. They defend issues rather than identify them. For objective analysis, review in a fresh context (different conversation) where the agent has no memory of implementation decisions.
 
-*Learn more in [Lesson 9: Reviewing Code](/practical-techniques/lesson-9-reviewing-code).*
+*Learn more in [Lesson 10: Reviewing Code](/practical-techniques/lesson-10-reviewing-code).*
 
 ### How do I validate AI-generated code efficiently?
 
 Use the three-context workflow: generate code in Context A, write tests in a fresh Context B (the agent can't defend its implementation), and triage failures in Context C (objective analysis). Use sociable tests that exercise real code—mock only external systems. Tests define the operational boundaries agents cannot cross.
 
-*Learn more in [Lesson 8: Tests as Guardrails](/practical-techniques/lesson-8-tests-as-guardrails).*
+*Learn more in [Lesson 9: Tests as Guardrails](/practical-techniques/lesson-9-tests-as-guardrails).*
 
 ### How do AI coding agents handle large codebases?
 

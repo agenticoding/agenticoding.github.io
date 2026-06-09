@@ -1,7 +1,7 @@
 ---
 title: About
 sidebar_label: About
-description: 'Ofri Wolfus — Senior Software Architect, ex-Google engineer, and creator of ChunkHound, ArguSeek, and GoatDB. Author of Agentic Coding, a technical reference for senior engineers on AI-assisted development.'
+description: 'Ofri Wolfus — Senior Software Architect, ex-Google engineer, and creator of ChunkHound, ArguSeek, and GoatDB. Author of Agentic Coding, a technical reference for engineers on AI-assisted development.'
 keywords: [Ofri Wolfus, agentic coding, ChunkHound, ArguSeek, GoatDB, AI-assisted development, software architect, open source, distributed systems, MCP]
 ---
 

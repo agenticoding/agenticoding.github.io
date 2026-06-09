@@ -1,8 +1,8 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 sidebar_label: 'Tests as Guardrails'
 sidebar_custom_props:
-  sectionNumber: 8
+  sectionNumber: 9
 title: 'Tests as Guardrails'
 ---
 
@@ -22,7 +22,7 @@ Good tests provide grounding. They show OAuth users skip email verification, dat
 
 ### Research First: Discover Edge Cases Through Questions
 
-Before writing tests, use the planning techniques from [Lesson 7](./lesson-7-spec-driven-development.md) to discover what needs testing. Questions load implementation details and existing edge cases into context.
+Before writing tests, use the planning techniques from [Lesson 8](./lesson-8-spec-driven-development.md) to discover what needs testing. Questions load implementation details and existing edge cases into context.
 
 **Prompt pattern for edge case discovery:**
 
@@ -44,7 +44,7 @@ When tests become the optimization target, agents optimize for passing tests rat
 
 :::
 
-Apply the same planning and execution methodology from [Lesson 7](./lesson-7-spec-driven-development.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.mdx) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.mdx)—the agent doesn't carry assumptions or defend prior decisions between contexts.
+Apply the same planning and execution methodology from [Lesson 8](./lesson-8-spec-driven-development.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.mdx) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.mdx)—the agent doesn't carry assumptions or defend prior decisions between contexts.
 
 ## The three-context workflow:
 
@@ -206,4 +206,4 @@ See the complete prompt template with detailed usage examples and adaptations: [
 
 ---
 
-**Next:** [Lesson 9: Reviewing Code](./lesson-9-reviewing-code.md)
+**Next:** [Lesson 10: Reviewing Code](./lesson-10-reviewing-code.md)

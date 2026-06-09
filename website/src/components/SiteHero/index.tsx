@@ -33,7 +33,10 @@ function useGitHubStars(repo: string): number | null {
           setStars(data.stargazers_count);
           localStorage.setItem(
             `gh-stars-${repo}`,
-            JSON.stringify({ stars: data.stargazers_count, timestamp: Date.now() })
+            JSON.stringify({
+              stars: data.stargazers_count,
+              timestamp: Date.now(),
+            })
           );
         }
       })
@@ -110,8 +113,8 @@ export default function SiteHero(): ReactNode {
           Master Agentic Coding
         </Heading>
         <p className={styles.heroSubtitle}>
-          A technical reference for senior engineers operating AI coding agents
-          in production.
+          A technical reference for engineers operating AI coding agents in
+          production.
         </p>
 
         <p className={styles.heroMeta}>
@@ -129,7 +132,8 @@ export default function SiteHero(): ReactNode {
           {courseStars !== null && (
             <>
               <span className={styles.metaSep}>&middot;</span>
-              <StarIcon /><span>{formatStarCount(courseStars)}</span>
+              <StarIcon />
+              <span>{formatStarCount(courseStars)}</span>
             </>
           )}
           {chunkHoundStars !== null && (
@@ -143,7 +147,8 @@ export default function SiteHero(): ReactNode {
               >
                 ChunkHound
               </a>
-              <StarIcon /><span>{formatStarCount(chunkHoundStars)}</span>
+              <StarIcon />
+              <span>{formatStarCount(chunkHoundStars)}</span>
             </>
           )}
         </p>

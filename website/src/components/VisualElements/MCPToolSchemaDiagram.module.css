@@ -47,6 +47,14 @@
   font-size: var(--text-xs);
 }
 
+.schemaPulse {
+  animation-delay: 0ms;
+}
+
+.taskPulse {
+  animation-delay: -3000ms;
+}
+
 .title,
 .kicker,
 .card,

@@ -95,6 +95,7 @@ function ContextBlock({
   label,
   semantic = false,
   dashed = false,
+  className,
 }: {
   x: number;
   y: number;
@@ -103,9 +104,10 @@ function ContextBlock({
   label: string;
   semantic?: boolean;
   dashed?: boolean;
+  className?: string;
 }) {
   return (
-    <g aria-hidden="true">
+    <g aria-hidden="true" className={className}>
       <rect
         x={x}
         y={y}
@@ -134,14 +136,14 @@ function ContextWindow({ mode, x, y }: { mode: LoadingMode; x: number; y: number
 
       {mode === 'eager' ? (
         <>
-          <ContextBlock x={x + 16} y={y + 16} w={104} h={40} label="MCP schemas" semantic />
-          <ContextBlock x={x + 16} y={y + 72} w={104} h={24} label="user task" />
+          <ContextBlock x={x + 16} y={y + 16} w={104} h={40} label="MCP schemas" semantic className={clsx(styles.schemaPulse, 'idle-alternating-emphasis')} />
+          <ContextBlock x={x + 16} y={y + 72} w={104} h={24} label="user task" className={clsx(styles.taskPulse, 'idle-alternating-emphasis')} />
         </>
       ) : (
         <>
           <ContextBlock x={x + 16} y={y + 8} w={104} h={24} label="ToolSearch" semantic />
-          <ContextBlock x={x + 16} y={y + 40} w={104} h={24} label="user task" />
-          <ContextBlock x={x + 16} y={y + 72} w={104} h={24} label="schema later" semantic dashed />
+          <ContextBlock x={x + 16} y={y + 40} w={104} h={24} label="user task" className={clsx(styles.taskPulse, 'idle-alternating-emphasis')} />
+          <ContextBlock x={x + 16} y={y + 72} w={104} h={24} label="schema later" semantic dashed className={clsx(styles.schemaPulse, 'idle-alternating-emphasis')} />
         </>
       )}
     </g>

@@ -411,8 +411,8 @@ export default function CompoundQualityVisualization({
       {!compact && (
         <div className={styles.circuitBreakerBox}>
           <strong>Your Role as Circuit Breaker:</strong> Code review (
-          <a href="/practical-techniques/lesson-9-reviewing-code">
-            Lesson 9
+          <a href="/practical-techniques/lesson-10-reviewing-code">
+            Lesson 10
           </a>
           ) is where you intervene. Accepting bad patterns lets them enter the
           compounding cycle. Rejecting them breaks the negative feedback loop

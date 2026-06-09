@@ -1,8 +1,8 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 sidebar_label: 'Agent-Friendly Code'
 sidebar_custom_props:
-  sectionNumber: 11
+  sectionNumber: 12
 title: 'Writing Agent-Friendly Code'
 ---
 
@@ -44,7 +44,7 @@ You can't eliminate these random errors with better prompts or cleaner patterns�
 
 Both problems feed the same exponential curve. When you accept a random AI error during code review, it becomes a pattern that gets copied. One hallucinated API call in iteration 1 becomes the template for 5 similar hallucinations by iteration 3.
 
-**Your Critical Role:** Code review ([Lesson 9](/practical-techniques/lesson-9-reviewing-code)) is where you break the cycle. Reject bad patterns before they multiply. Reject random errors before they become patterns. Every acceptance decision affects every future generation.
+**Your Critical Role:** Code review ([Lesson 10](/practical-techniques/lesson-10-reviewing-code)) is where you break the cycle. Reject bad patterns before they multiply. Reject random errors before they become patterns. Every acceptance decision affects every future generation.
 
 ## Co-locate Related Constraints
 
@@ -141,7 +141,7 @@ function createUser(password: string) {
 
 This creates deliberate friction. An agent tasked with "add OAuth login" will work slower around password hashing code with heavy constraints—it must navigate all those NEVER/MUST directives carefully. That's the protection mechanism: forced caution for critical paths. But overuse is counterproductive. Mark too many functions as CRITICAL and agents struggle with routine work, slowing down legitimate changes as much as dangerous ones. Reserve this technique for code where accidental modification genuinely costs more than the development slowdown.
 
-These constraint IDs (C-001, I-001) originate in [spec tables](/practical-techniques/lesson-12-systems-thinking-specs#constraints-and-invariants-defining-correctness) and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the *rule* it enforces. This is what makes it safe to [delete the spec](/practical-techniques/lesson-7-spec-driven-development) after implementation: the WHY has migrated into the codebase.
+These constraint IDs (C-001, I-001) originate in [spec tables](/practical-techniques/lesson-13-systems-thinking-specs#constraints-and-invariants-defining-correctness) and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the *rule* it enforces. This is what makes it safe to [delete the spec](/practical-techniques/lesson-8-spec-driven-development) after implementation: the WHY has migrated into the codebase.
 
 ## The Knowledge Cache Anti-Pattern
 
@@ -195,9 +195,9 @@ The moment you commit extracted knowledge, every code change requires documentat
 
 - **Comments as agent-critical sections (use sparingly)** - For genuinely high-risk code (authentication, cryptography, payments, PII), write comments as prompts using imperative directives (NEVER, MUST, ALWAYS) to create deliberate friction. This protection mechanism guards sensitive code from accidental modification. **Overuse is counterproductive**—if everything is marked CRITICAL, the signal becomes noise and legitimate work slows down.
 
-- **Constraint IDs migrate from spec to code** — When specs use IDs like C-001 or I-001 ([Lesson 12](/practical-techniques/lesson-12-systems-thinking-specs#constraints-and-invariants-defining-correctness)), agents inline them into code comments during implementation. The code then carries the constraint rule, making it safe to delete the spec ([Lesson 7](/practical-techniques/lesson-7-spec-driven-development)).
+- **Constraint IDs migrate from spec to code** — When specs use IDs like C-001 or I-001 ([Lesson 13](/practical-techniques/lesson-13-systems-thinking-specs#constraints-and-invariants-defining-correctness)), agents inline them into code comments during implementation. The code then carries the constraint rule, making it safe to delete the spec ([Lesson 8](/practical-techniques/lesson-8-spec-driven-development)).
 
-- **You are the quality circuit breaker** - Code review ([Lesson 9](/practical-techniques/lesson-9-reviewing-code)) prevents negative compounding. Accepting bad patterns lets them enter pattern context for future agents. Rejecting them breaks the negative feedback loop.
+- **You are the quality circuit breaker** - Code review ([Lesson 10](/practical-techniques/lesson-10-reviewing-code)) prevents negative compounding. Accepting bad patterns lets them enter pattern context for future agents. Rejecting them breaks the negative feedback loop.
 
 - **Avoid knowledge cache anti-patterns** - Code research tools (Explore, ChunkHound, semantic search) extract architectural knowledge dynamically from source code every time you need it. Saving extracted knowledge to .md files creates unnecessary caches that become stale, pollute future grounding with duplicated information, and create impossible cache invalidation problems. Trust the grounding process ([Lesson 5](/methodology/lesson-5-grounding)) to re-extract knowledge on-demand from the single source of truth.
 

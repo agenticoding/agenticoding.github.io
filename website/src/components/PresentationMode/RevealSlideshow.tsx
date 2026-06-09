@@ -28,6 +28,7 @@ import KnowledgeExpansionDiamond from '../VisualElements/KnowledgeExpansionDiamo
 import SystemFlowDiagram from '../VisualElements/SystemFlowDiagram';
 import SystemBoundaryDiagram from '../VisualElements/SystemBoundaryDiagram';
 import SpecCodeZoomDiagram from '../VisualElements/SpecCodeZoomDiagram';
+import FailureStickinessChain from '../VisualElements/FailureStickinessChain';
 
 interface SpeakerNotes {
   talkingPoints: string;
@@ -102,6 +103,7 @@ const VISUAL_COMPONENTS = {
   SystemFlowDiagram,
   SystemBoundaryDiagram,
   SpecCodeZoomDiagram,
+  FailureStickinessChain,
 };
 
 export default function RevealSlideshow({

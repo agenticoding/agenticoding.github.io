@@ -13,10 +13,10 @@ import GenerateSpec from '@site/shared-prompts/_generate-spec.mdx';
 
 **When to use this pattern:** Brownfield modifications (understand before changing), architectural investigation (how does this system work?), pre-planning for complex features (decompose before prompting), onboarding to unfamiliar codebases (extract the mental model). Most valuable when changes span multiple modules or touch unfamiliar code. Skip for isolated bug fixes where the context window serves as sufficient spec.
 
-**Prerequisites:** [ChunkHound code research](https://chunkhound.github.io/) for codebase exploration, existing code to analyze. For new systems (greenfield), use the template directly as a design tool rather than extraction target. After extraction, validate claims with file:line evidence—agents hallucinate structure that doesn't exist. Delete specs after implementation; the code becomes the source of truth ([Lesson 7](/practical-techniques/lesson-7-spec-driven-development)).
+**Prerequisites:** [ChunkHound code research](https://chunkhound.github.io/) for codebase exploration, existing code to analyze. For new systems (greenfield), use the template directly as a design tool rather than extraction target. After extraction, validate claims with file:line evidence—agents hallucinate structure that doesn't exist. Delete specs after implementation; the code becomes the source of truth ([Lesson 8](/practical-techniques/lesson-8-spec-driven-development)).
 
 ### Related Lessons
 
 - **[Lesson 5: Grounding](/methodology/lesson-5-grounding)** - Code research tools, semantic search, evidence requirements
-- **[Lesson 7: Spec-Driven Development](/practical-techniques/lesson-7-spec-driven-development)** - Spec lifecycle, code as source of truth, delete after implementation
-- **[Lesson 12: Thinking in Systems](/practical-techniques/lesson-12-systems-thinking-specs)** - Using the template as a thinking skeleton, matching formality to complexity
+- **[Lesson 8: Spec-Driven Development](/practical-techniques/lesson-8-spec-driven-development)** - Spec lifecycle, code as source of truth, delete after implementation
+- **[Lesson 13: Thinking in Systems](/practical-techniques/lesson-13-systems-thinking-specs)** - Using the template as a thinking skeleton, matching formality to complexity

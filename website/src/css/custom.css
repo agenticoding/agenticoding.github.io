@@ -474,6 +474,23 @@ article h1 {
 }
 
 /* ========================================================================
+   RESEARCH AGENT COMPARISON TABLE — Noto emoji alignment
+   ======================================================================== */
+
+.research-agent-table .check-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.research-agent-table .check-cell img {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  vertical-align: middle;
+}
+
+/* ========================================================================
    TABLE OF CONTENTS — Right sidebar, design system alignment
    ======================================================================== */
 
@@ -1075,6 +1092,10 @@ div[class*='announcementBar'] {
 @keyframes idleStatusPulse {
   0%, 100% { opacity: 1; } 50% { opacity: 0.5; }
 }
+@keyframes idleAlternatingEmphasis {
+  0%, 34%, 100% { opacity: 1; }
+  12%, 22%      { opacity: 0.45; }
+}
 @keyframes idleFlowDrift {
   0%, 100% { transform: translateX(0); } 50% { transform: translateX(2px); }
 }
@@ -1171,9 +1192,10 @@ div[class*='announcementBar'] {
   animation: idleLandingGlow 2500ms ease-in-out infinite;
 }
 
-.idle-cursor-blink  { animation: idleCursorBlink  1000ms step-end infinite; }
-.idle-status-pulse  { animation: idleStatusPulse  2000ms ease-in-out infinite; }
-.idle-flow-drift    { animation: idleFlowDrift    3000ms ease-in-out infinite; }
+.idle-cursor-blink          { animation: idleCursorBlink          1000ms step-end infinite; }
+.idle-status-pulse          { animation: idleStatusPulse          2000ms ease-in-out infinite; }
+.idle-alternating-emphasis  { animation: idleAlternatingEmphasis  6000ms ease-in-out infinite; }
+.idle-flow-drift            { animation: idleFlowDrift            3000ms ease-in-out infinite; }
 .idle-ready-breathe { animation: idleReadyBreathe 4000ms ease-in-out infinite; }
 .ping-once          { animation: pingOnce 400ms var(--ease-exit) 1 both; }
 .idle-arm-rock      { animation: idleArmRock  5000ms ease-in-out infinite; }
@@ -1325,6 +1347,7 @@ html:not([data-theme='dark']) .wordmark-dark { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .idle-cursor-blink, .idle-status-pulse,
+  .idle-alternating-emphasis,
   .idle-flow-drift, .idle-ready-breathe, .ping-once,
   .idle-arm-rock, .idle-palm-wave, .idle-gear-spin,
   .idle-stopwatch-hand,

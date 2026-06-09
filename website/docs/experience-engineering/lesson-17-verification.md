@@ -121,7 +121,7 @@ Each loop reveals what the spec missed — a view state you didn't anticipate, a
 - Last pass surfaces no new gaps
 - Delete the spec — code + mock contracts + accessibility tree are the source of truth
 
-UI iteration is fast because browser automation provides immediate structural and visual feedback — you see whether the agent's output is right within seconds, not minutes. The engineer who runs ten spec → build → check loops per day outperforms the one who writes a more thorough spec upfront. For the same pattern applied to system architecture, see [Lesson 12: Converge, Don't Count Passes](/practical-techniques/lesson-12-systems-thinking-specs#converge-dont-count-passes).
+UI iteration is fast because browser automation provides immediate structural and visual feedback — you see whether the agent's output is right within seconds, not minutes. The engineer who runs ten spec → build → check loops per day outperforms the one who writes a more thorough spec upfront. For the same pattern applied to system architecture, see [Lesson 13: Converge, Don't Count Passes](/practical-techniques/lesson-13-systems-thinking-specs#converge-dont-count-passes).
 
 ## Key Takeaways
 
@@ -131,6 +131,6 @@ UI iteration is fast because browser automation provides immediate structural an
 
 - **Behavior mocks are contracts, not shortcuts** — MSW handlers define the interface between frontend and backend, and are deleted when the real API is verified. Strangler fig pattern applied to frontend-backend integration.
 
-- **Spec → build → check → repeat** — the agent builds, browser automation checks, you fix either spec or code. Iterate until no gaps remain. Same pattern as system specs ([Lesson 12](/practical-techniques/lesson-12-systems-thinking-specs)), different verification tool.
+- **Spec → build → check → repeat** — the agent builds, browser automation checks, you fix either spec or code. Iterate until no gaps remain. Same pattern as system specs ([Lesson 13](/practical-techniques/lesson-13-systems-thinking-specs)), different verification tool.
 
 - **Delete the spec when done** — code + mock contracts + accessibility tree are the source of truth.

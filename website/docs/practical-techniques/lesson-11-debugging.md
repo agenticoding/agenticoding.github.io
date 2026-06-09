@@ -1,8 +1,8 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 sidebar_label: 'Debugging'
 sidebar_custom_props:
-  sectionNumber: 10
+  sectionNumber: 11
 title: 'Debugging with AI Agents'
 ---
 
@@ -67,7 +67,7 @@ This is where CLI agents (Claude Code, Codex, Copilot CLI) shine over IDE assist
 **4. INVESTIGATE** - Agent leverages grounding techniques to form hypotheses by correlating:
 
 - **Runtime behavior**: Execute diagnostic commands, inspect responses, analyze logs
-- **Codebase**: Use ChunkHound's code research for comprehensive investigation with architectural context and cross-module relationships. For smaller codebases, [agentic search](/methodology/lesson-5-grounding#the-discovery-problem-agentic-search) (Grep, Read) works well. See [Lesson 5](/methodology/lesson-5-grounding#code-grounding-choosing-tools-by-scale) for scale guidance.
+- **Codebase**: Use ChunkHound's code research for comprehensive investigation with architectural context and cross-module relationships. For smaller codebases, [agentic search](/methodology/lesson-5-grounding#grounding-tool-1-agentic-search) (Grep, Read) works well. See [Lesson 5](/methodology/lesson-5-grounding#code-grounding-choosing-tools-by-scale) for scale guidance.
 - **Known issues**: Research error patterns, CVEs, and similar bugs using tools like ArguSeek
 
 **5. VERIFY** - Agent applies the fix, re-runs reproduction, and confirms the bug is resolved—or forms a new hypothesis and iterates

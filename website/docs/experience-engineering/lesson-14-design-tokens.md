@@ -6,7 +6,7 @@ sidebar_custom_props:
 title: 'Design Tokens & Visual Primitives'
 ---
 
-[Lesson 7](/practical-techniques/lesson-7-spec-driven-development) established that specs are scaffolding — temporary thinking tools deleted after implementation. This section applies spec-driven development to user-facing interfaces. We call this **Experience Engineering** — specifying design tokens, component APIs, interaction flows, and accessibility architecture precisely enough for an agent to implement and browser automation to verify. For system-level specs, see [Lesson 12](/practical-techniques/lesson-12-systems-thinking-specs).
+[Lesson 8](/practical-techniques/lesson-8-spec-driven-development) established that specs are scaffolding — temporary thinking tools deleted after implementation. This section applies spec-driven development to user-facing interfaces. We call this **Experience Engineering** — specifying design tokens, component APIs, interaction flows, and accessibility architecture precisely enough for an agent to implement and browser automation to verify. For system-level specs, see [Lesson 13](/practical-techniques/lesson-13-systems-thinking-specs).
 
 The key insight: **the experience layer can be fully built and validated before any backend exists.** Design tokens, component layouts, interaction flows, accessibility constraints — none of these depend on API responses. An agent generates the UI with mocked data (behavior mocks via MSW), browser automation verifies it through the accessibility tree (`snapshot -ic`), and you iterate on the experience until it's right. Backend integration comes later, and by then the interface contract is locked.
 
@@ -40,7 +40,7 @@ Brand colors are your judgment. Everything derivative — shade scales, harmony 
 
 ### Domain Research with ArguSeek
 
-You wouldn't pick a database without researching the options. Same principle applies to color decisions. [ArguSeek](/methodology/lesson-5-grounding#structured-web-research-arguseek)'s `research_iteratively` builds cumulative knowledge across queries through semantic subtraction — each follow-up skips already-covered content and advances the research:
+You wouldn't pick a database without researching the options. Same principle applies to color decisions. ChunkHound `websearch` ([Lesson 5](/methodology/lesson-5-grounding#production-pattern-multi-source-grounding)) builds current context from external sources before the design decision:
 
 ```
 Q1: "OKLCH color space best practices for design systems and token generation"

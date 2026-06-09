@@ -94,6 +94,7 @@ export default function MyComponent({ compact = false }: PresentationAwareProps 
 | **ContextWindowMeter**          | Interactive token usage meter          | ✅           | Lesson 3 docs & presentation         |
 | **AbstractShapesVisualization** | Clean vs cluttered context demo        | ✅           | Lesson 5 presentation                |
 | **PlanningStrategyComparison**  | Exploration vs exact planning          | ✅           | Lesson 6 presentation                |
+| **FailureStickinessChain**      | Failure propagation and checkpointing  | ✅           | Lesson 7 docs & presentation-ready   |
 
 Most components support both documentation and presentation modes. Some components (marked ❌) are documentation-only.
 

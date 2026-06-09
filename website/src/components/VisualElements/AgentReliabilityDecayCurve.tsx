@@ -323,9 +323,14 @@ export default function AgentReliabilityDecayCurve({
         fill="var(--visual-bg-success)"
       />
       <ThresholdWash
+        y1={yForReliability(0.9)}
+        y2={yForReliability(0.7)}
+        fill="var(--visual-bg-warning)"
+      />
+      <ThresholdWash
         y1={yForReliability(0.7)}
         y2={yForReliability(0)}
-        fill="var(--visual-bg-warning)"
+        fill="var(--visual-bg-error)"
       />
 
       {[1, 0.9, 0.7, 0.5, 0.25, 0].map((value) => (
@@ -352,20 +357,25 @@ export default function AgentReliabilityDecayCurve({
         </g>
       ))}
 
-      {[0.9, 0.7].map((value) => (
-        <line
-          key={`threshold-${value}`}
-          x1={PLOT_LEFT}
-          y1={yForReliability(value)}
-          x2={PLOT_RIGHT}
-          y2={yForReliability(value)}
-          stroke={
-            value === 0.9 ? 'var(--visual-success)' : 'var(--visual-warning)'
-          }
-          strokeWidth="var(--stroke-default)"
-          opacity="0.55"
-        />
-      ))}
+      {[
+        { key: 'automate', value: 0.9, color: 'var(--visual-success)' },
+        { key: 'verify', value: 0.8, color: 'var(--visual-warning)' },
+        { key: 'judge', value: 0.7, color: 'var(--visual-error)' },
+      ].map(({ key, value, color }) => {
+        const y = yForReliability(value);
+        return (
+          <line
+            key={`threshold-${key}`}
+            x1={PLOT_LEFT}
+            y1={y}
+            x2={PLOT_RIGHT}
+            y2={y}
+            stroke={color}
+            strokeWidth="var(--stroke-default)"
+            opacity="0.55"
+          />
+        );
+      })}
 
       {[0, 5, 10, 15, 20].map((step) => (
         <g key={step}>

@@ -59,8 +59,8 @@ export default function CourseVisualsShowcase() {
           <PreviewTile
             title="Context Isolation"
             caption="Separate contexts prevent bias between code, tests, and triage"
-            lessonLink="/practical-techniques/lesson-8-tests-as-guardrails"
-            lessonNumber={8}
+            lessonLink="/practical-techniques/lesson-9-tests-as-guardrails"
+            lessonNumber={9}
           >
             <ThreeContextWorkflow compact vertical />
           </PreviewTile>
@@ -68,8 +68,8 @@ export default function CourseVisualsShowcase() {
           <PreviewTile
             title="Code Pattern Compounding"
             caption="Good patterns amplify quality, bad patterns compound technical debt"
-            lessonLink="/practical-techniques/lesson-11-agent-friendly-code"
-            lessonNumber={11}
+            lessonLink="/practical-techniques/lesson-12-agent-friendly-code"
+            lessonNumber={12}
           >
             <CompoundQualityVisualization compact homepageMode />
           </PreviewTile>

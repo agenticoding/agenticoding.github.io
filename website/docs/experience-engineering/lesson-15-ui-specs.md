@@ -36,7 +36,7 @@ Metrics are the completion test. When the agent's implementation meets these thr
 
 Components are units of UI responsibility with explicit APIs. Props define what a component **accepts**. Rendered output defines what it **guarantees**. Accessibility attributes are **non-negotiable** — always present, never conditional.
 
-Throughout the Experience Engineering lessons and the [UI spec template](/prompts/specifications/experience-spec-template), you'll see IDs like `A-001` or `L-003`. These are constraint IDs — labels you put in the spec that the agent carries into code comments during implementation, making rules grep-able and verifiable across the codebase. For the code-level mechanics, see [Lesson 11](/practical-techniques/lesson-11-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents).
+Throughout the Experience Engineering lessons and the [UI spec template](/prompts/specifications/experience-spec-template), you'll see IDs like `A-001` or `L-003`. These are constraint IDs — labels you put in the spec that the agent carries into code comments during implementation, making rules grep-able and verifiable across the codebase. For the code-level mechanics, see [Lesson 12](/practical-techniques/lesson-12-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents).
 
 ### Component Table
 
@@ -148,7 +148,7 @@ Every data-bound view has exactly five states. Omitting any is a bug:
 
 Agents consistently miss the **Partial** and **Empty** states. If the spec doesn't enumerate all five explicitly with examples, the agent will implement only Ideal and Loading — then the first empty dataset or partial API failure renders a blank screen.
 
-**Choosing a state model.** Pick one model per view entity, not per app. Three options: **Declarative** — you define the desired state, a reconciler (React, for example) figures out how to get there. Best for data display (tables, charts, read-only views). **State machine** — you enumerate every legal state and transition. Best for multi-step flows (forms, wizards, modals with distinct phases). **Event-driven** — you react to incoming events as they arrive. Best for real-time data (WebSocket feeds, collaborative editing, live notifications). For the system-level perspective on these models (event sourcing, CQRS, entity lifecycles), see [Lesson 12: State Models](/practical-techniques/lesson-12-systems-thinking-specs#state-models).
+**Choosing a state model.** Pick one model per view entity, not per app. Three options: **Declarative** — you define the desired state, a reconciler (React, for example) figures out how to get there. Best for data display (tables, charts, read-only views). **State machine** — you enumerate every legal state and transition. Best for multi-step flows (forms, wizards, modals with distinct phases). **Event-driven** — you react to incoming events as they arrive. Best for real-time data (WebSocket feeds, collaborative editing, live notifications). For the system-level perspective on these models (event sourcing, CQRS, entity lifecycles), see [Lesson 13: State Models](/practical-techniques/lesson-13-systems-thinking-specs#state-models).
 
 ## Layouts and Responsiveness
 
