@@ -4,6 +4,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "jsx": "react-jsx",
+    "allowImportingTsExtensions": true,
     "types": ["@docusaurus/module-type-aliases", "@docusaurus/types"]
   },
   "include": ["src/**/*", "docs/**/*"],
