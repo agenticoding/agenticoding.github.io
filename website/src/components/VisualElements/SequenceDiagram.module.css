@@ -1,8 +1,7 @@
 /* Ghost classes moved to diagram.module.css — only SequenceDiagram-specific styles here. */
 
-/* Row-level fade-in */
-.row    { opacity: 0; transition: opacity 200ms var(--ease-exit); }
-.rowIn  { opacity: 1; transition: opacity 300ms var(--ease-enter); }
+/* Row opacity is scroll-derived so completion is tied to viewport position, not time. */
+.row { opacity: 0; }
 
 /* Structural elements — always visible */
 .arrowLine { stroke: var(--text-muted); } /* fill:none from CONNECTOR_STYLE; stroke kept for CSS specificity */
@@ -45,5 +44,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row, .rowIn { opacity: 1; transition: none; }
+  .row { opacity: 1; }
 }

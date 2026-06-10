@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import clsx from 'clsx';
+import React, { useEffect, useRef, useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './SequenceDiagram.module.css';
 import { useAnimationContext } from '../animations/ScrollDrivenFigure';
-import { useActs } from '../../hooks/useActs';
 import { useMounted } from '../../hooks/useMounted';
+import { scrollElementRevealProgress } from '../../hooks/scrollElementReveal';
 import { Ghost, ghostClass } from './Ghost';
 import { CONNECTOR_STYLE, GHOST_CONNECTOR_STYLE, ARROWHEAD_POINTS, ARROWHEAD_POINTS_REV } from './diagramConstants';
 
@@ -19,6 +18,7 @@ const EMOJI_SIZE = 36;
 const PAD_H      = 16;
 const PAD_V_TOP  = 24;  // ensures ≥16px gap between sticky header and first row
 const PAD_V_BOT  = 20;
+const GHOST_HANDOFF_PROGRESS = 0.12;
 
 type VisualColor = 'cyan' | 'indigo' | 'violet' | 'magenta' | 'neutral' | 'warning' | 'success' | 'error' | 'rose' | 'lime';
 
@@ -41,15 +41,16 @@ interface Props {
 
 export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
   const emojiBase = useBaseUrl('/img/emoji');
-  const { phase, phaseEnd } = useAnimationContext();
+  const { phase, phaseEnd, earlyStart } = useAnimationContext();
   const mounted = useMounted();
 
   // Measure container so viewBox width = container CSS width.
   const containerRef = useRef<HTMLDivElement>(null);
   const [viewW, setViewW] = useState<number | null>(null);
-  const [viewportH, setViewportH] = useState(() =>
-    typeof window !== 'undefined' ? window.innerHeight : 900,
-  );
+  const [viewportSize, setViewportSize] = useState(() => ({
+    height: typeof window !== 'undefined' ? window.innerHeight : 900,
+    width: typeof window !== 'undefined' ? window.innerWidth : 1280,
+  }));
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -57,23 +58,11 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
     update(el.getBoundingClientRect().width);
     const ro = new ResizeObserver(([entry]) => update(entry.contentRect.width));
     ro.observe(el);
-    const onResize = () => setViewportH(window.innerHeight);
+    const onResize = () => setViewportSize({ height: window.innerHeight, width: window.innerWidth });
     window.addEventListener('resize', onResize, { passive: true });
     return () => { ro.disconnect(); window.removeEventListener('resize', onResize); };
   }, []);
 
-  const actDefs = useMemo(() => {
-    const bodyH   = PAD_V_TOP + rows.length * ROW_STEP + PAD_V_BOT;
-    const totalH  = HEADER_H + bodyH;
-    // Total scroll distance over which phase runs 0→1.
-    const animDist = phaseEnd * (viewportH + totalH);
-    return rows.map((_, i) => ({
-      id: `row-${i}`,
-      // Row begins fading in as it enters the viewport.
-      threshold: Math.min(0.95, (HEADER_H + PAD_V_TOP + i * ROW_STEP + ROW_STEP / 2) / animDist),
-    }));
-  }, [rows, phaseEnd, viewportH]);
-  const { wasReached } = useActs(actDefs, phase);
 
   if (viewW === null) {
     return <div ref={containerRef} className={styles.wrapper} style={{ minHeight: 96 }} />;
@@ -165,8 +154,24 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
 
         {/* ── Rows — scroll-animated with ghost placeholders ────────────── */}
         {rows.map((row, i) => {
-          const visible = mounted && wasReached(`row-${i}`);
           const y = rowY(i);
+          const rowHeight = row.type === 'note'
+            ? (row.subtext ? NOTE_H_2 : NOTE_H_1)
+            : ROW_STEP;
+          const { progress } = scrollElementRevealProgress({
+            phase,
+            phaseEnd,
+            earlyStart,
+            viewportHeight: viewportSize.height,
+            figureHeight: HEADER_H + bodyH,
+            elementTop: HEADER_H + y - rowHeight / 2,
+            elementHeight: rowHeight,
+            settleAtViewportFraction: viewportSize.width < 768 ? 0.6 : 0.5,
+          });
+          // Keep the placeholder around until the real row has enough opacity
+          // to read as present; otherwise the handoff flickers through empty space.
+          const visible = mounted && progress >= GHOST_HANDOFF_PROGRESS;
+          const rowStyle: React.CSSProperties = { opacity: mounted ? progress : 0 };
 
           if (row.type === 'note') {
             const hasSubtext = Boolean(row.subtext);
@@ -186,7 +191,7 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
                   mounted={mounted} reached={visible}
                 />
                 {/* Real row */}
-                <g className={clsx(styles.row, visible && styles.rowIn)}>
+                <g className={styles.row} style={rowStyle}>
                   <rect
                     x={cx - noteW / 2} y={y - noteH / 2}
                     width={noteW} height={noteH} rx={NOTE_RX}
@@ -232,7 +237,7 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
                 {...GHOST_CONNECTOR_STYLE}
               />
               {/* Real row */}
-              <g className={clsx(styles.row, visible && styles.rowIn)}>
+              <g className={styles.row} style={rowStyle}>
                 <line
                   x1={x1} y1={y} x2={tipX} y2={y}
                   {...CONNECTOR_STYLE}
