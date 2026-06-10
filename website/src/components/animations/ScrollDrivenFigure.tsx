@@ -8,10 +8,11 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import styles from './ScrollDrivenFigure.module.css';
+import { resolveScrollPhase, type ScrollPhaseState } from './scrollPhase';
 
 // Context: phase 0.0 (not yet visible) → 1.0 (fully scrolled through)
-interface AnimCtx { phase: number; phaseEnd: number; }
-const AnimationPhaseContext = createContext<AnimCtx>({ phase: 0, phaseEnd: 0.5 });
+interface AnimCtx { phase: number; phaseEnd: number; earlyStart: boolean; }
+const AnimationPhaseContext = createContext<AnimCtx>({ phase: 0, phaseEnd: 0.5, earlyStart: true });
 export const useAnimationPhase = () => useContext(AnimationPhaseContext).phase;
 /** Full context — use when children need phaseEnd to self-calibrate thresholds. */
 export const useAnimationContext = () => useContext(AnimationPhaseContext);
@@ -68,50 +69,23 @@ export default function ScrollDrivenFigure({
       return () => io.disconnect();
     }
 
-    // effectiveStart is locked on the first scroll/resize event (not mount) so that
-    // child components with deferred heights (e.g. ResizeObserver-driven) are fully
-    // rendered before we snapshot position. Mount only handles the "already scrolled
-    // past" edge case.
-    let isMount = true;
-    let effectiveStart: number | null = null;
+    let phaseState: ScrollPhaseState = { isMount: true, effectiveStart: null };
 
     const computePhase = () => {
       const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      // earlyStart=true (default): animation begins when the element's top reaches the viewport bottom
-      //   (start = vh + height). Ensures the element animates during peak fixation zone (top 50% of viewport).
-      // earlyStart=false: animation begins as the element's bottom enters the viewport
-      //   (start = vh). Only for elements guaranteed to load fully below the fold.
-      const start = earlyStart ? vh + rect.height : vh;
-      const end = (vh + rect.height) * (1 - phaseEnd);
-      if (start <= end) { setPhase(1); return; }
-      const raw = (rect.bottom - start) / (end - start);
-
-      if (isMount) {
-        isMount = false;
-        // Only snap to 1 if already scrolled past; leave everything else at phase=0.
-        if (raw >= 1) setPhase(1);
-        return;
-      }
-
-      // First scroll/resize: lock effectiveStart now that heights are stable.
-      // If element is already in the animation window, anchor here so phase=0 at
-      // this position and the animation plays forward from first scroll.
-      // If element is below fold (raw ≤ 0), use original start — no adjustment needed.
-      if (effectiveStart === null) {
-        effectiveStart = (raw > 0 && raw < 1) ? rect.bottom : start;
-      }
-
-      const denom = end - effectiveStart;
-      // denom < 0 when effectiveStart > end (tall element already past its animation range);
-      // division yields > 1, which the clamp below collapses to 1 — intentional.
-      const adjRaw = denom === 0 ? 1 : (rect.bottom - effectiveStart) / denom;
-      setPhase(Math.min(1, Math.max(0, adjRaw)));
+      const next = resolveScrollPhase({
+        rectBottom: rect.bottom,
+        rectHeight: rect.height,
+        viewportHeight: window.innerHeight,
+        phaseEnd,
+        earlyStart,
+      }, phaseState);
+      phaseState = { isMount: next.isMount, effectiveStart: next.effectiveStart };
+      setPhase(next.phase);
     };
 
     const onResize = () => {
-      // Re-anchor effectiveStart on next scroll so resized layout is used.
-      effectiveStart = null;
+      phaseState = { ...phaseState, effectiveStart: null };
       computePhase();
     };
 
@@ -128,7 +102,7 @@ export default function ScrollDrivenFigure({
   const figureClass = clsx(styles.figure, className);
 
   return (
-    <AnimationPhaseContext.Provider value={{ phase, phaseEnd }}>
+    <AnimationPhaseContext.Provider value={{ phase, phaseEnd, earlyStart }}>
       <figure className={figureClass}>
         <div ref={innerRef} className={styles.inner}>
           {children}
