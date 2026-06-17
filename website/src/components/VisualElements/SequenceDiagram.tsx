@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './SequenceDiagram.module.css';
-import { useAnimationContext } from '../animations/ScrollDrivenFigure';
+import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useMounted } from '../../hooks/useMounted';
-import { scrollElementRevealProgress } from '../../hooks/scrollElementReveal';
 import { Ghost, ghostClass } from './Ghost';
 import { CONNECTOR_STYLE, GHOST_CONNECTOR_STYLE, ARROWHEAD_POINTS, ARROWHEAD_POINTS_REV } from './diagramConstants';
+import { getSequenceMessageGhostReached, getSequenceRowReached } from './sequenceDiagramReveal';
 
 // Fixed layout constants (all in SVG user units ≈ CSS px after ResizeObserver)
 const HEADER_H   = 96;   // height of sticky HTML header zone (CSS px) — 80 content + 16 bottom pad (--space-2)
@@ -18,7 +19,12 @@ const EMOJI_SIZE = 36;
 const PAD_H      = 16;
 const PAD_V_TOP  = 24;  // ensures ≥16px gap between sticky header and first row
 const PAD_V_BOT  = 20;
-const GHOST_HANDOFF_PROGRESS = 0.12;
+
+// ── Reveal thresholds (phase 0→1, structure first, then rows staggered) ──────
+// Animation band sits in the center-to-end range so the diagram enters
+// at viewport center, not at the bottom.  Structure appears first,
+// then rows stagger across the remaining range.
+const STRUCTURE_THRESHOLD = 0.30;
 
 type VisualColor = 'cyan' | 'indigo' | 'violet' | 'magenta' | 'neutral' | 'warning' | 'success' | 'error' | 'rose' | 'lime';
 
@@ -41,16 +47,12 @@ interface Props {
 
 export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
   const emojiBase = useBaseUrl('/img/emoji');
-  const { phase, phaseEnd, earlyStart } = useAnimationContext();
+  const phase = useAnimationPhase();
   const mounted = useMounted();
 
   // Measure container so viewBox width = container CSS width.
   const containerRef = useRef<HTMLDivElement>(null);
   const [viewW, setViewW] = useState<number | null>(null);
-  const [viewportSize, setViewportSize] = useState(() => ({
-    height: typeof window !== 'undefined' ? window.innerHeight : 900,
-    width: typeof window !== 'undefined' ? window.innerWidth : 1280,
-  }));
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -58,12 +60,8 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
     update(el.getBoundingClientRect().width);
     const ro = new ResizeObserver(([entry]) => update(entry.contentRect.width));
     ro.observe(el);
-    const onResize = () => setViewportSize({ height: window.innerHeight, width: window.innerWidth });
-    window.addEventListener('resize', onResize, { passive: true });
-    return () => { ro.disconnect(); window.removeEventListener('resize', onResize); };
+    return () => ro.disconnect();
   }, []);
-
-
   if (viewW === null) {
     return <div ref={containerRef} className={styles.wrapper} style={{ minHeight: 96 }} />;
   }
@@ -100,10 +98,15 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
   const bodyH = PAD_V_TOP + rows.length * ROW_STEP + PAD_V_BOT;
   const rowY  = (i: number) => PAD_V_TOP + i * ROW_STEP + ROW_STEP / 2;
 
+  const structureReached = mounted && phase >= STRUCTURE_THRESHOLD;
+
   return (
     <div ref={containerRef} className={styles.wrapper}>
       {/* ── Sticky column headers (HTML, not SVG) ────────────────────────── */}
-      <div className={styles.stickyHeader} style={{ height: HEADER_H }}>
+      <div
+        className={clsx(styles.stickyHeader, styles.structure, structureReached && styles.structureIn)}
+        style={{ height: HEADER_H }}
+      >
         {columns.map((col, i) => {
           const cx    = colCenter(i);
           const color = col.color ?? 'neutral';
@@ -149,29 +152,15 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
             stroke="var(--border-subtle)"
             strokeWidth={1}
             strokeDasharray="6 4"
+            className={clsx(styles.structure, structureReached && styles.structureIn)}
           />
         ))}
 
         {/* ── Rows — scroll-animated with ghost placeholders ────────────── */}
         {rows.map((row, i) => {
           const y = rowY(i);
-          const rowHeight = row.type === 'note'
-            ? (row.subtext ? NOTE_H_2 : NOTE_H_1)
-            : ROW_STEP;
-          const { progress } = scrollElementRevealProgress({
-            phase,
-            phaseEnd,
-            earlyStart,
-            viewportHeight: viewportSize.height,
-            figureHeight: HEADER_H + bodyH,
-            elementTop: HEADER_H + y - rowHeight / 2,
-            elementHeight: rowHeight,
-            settleAtViewportFraction: viewportSize.width < 768 ? 0.6 : 0.5,
-          });
-          // Keep the placeholder around until the real row has enough opacity
-          // to read as present; otherwise the handoff flickers through empty space.
-          const visible = mounted && progress >= GHOST_HANDOFF_PROGRESS;
-          const rowStyle: React.CSSProperties = { opacity: mounted ? progress : 0 };
+          const rowReached = getSequenceRowReached(mounted, phase, i, rows.length);
+          const rowGhostClass = ghostClass(mounted, getSequenceMessageGhostReached(mounted, phase, i, rows.length));
 
           if (row.type === 'note') {
             const hasSubtext = Boolean(row.subtext);
@@ -188,10 +177,10 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
                   width={noteW} height={noteH} rx={NOTE_RX}
                   fill={`var(--visual-bg-${color})`}
                   stroke={`var(--visual-${color})`}
-                  mounted={mounted} reached={visible}
+                  mounted={mounted} reached={rowReached}
                 />
                 {/* Real row */}
-                <g className={styles.row} style={rowStyle}>
+                <g className={clsx(styles.row, rowReached && styles.rowIn)}>
                   <rect
                     x={cx - noteW / 2} y={y - noteH / 2}
                     width={noteW} height={noteH} rx={NOTE_RX}
@@ -233,11 +222,11 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
               {/* Ghost placeholder */}
               <line
                 x1={x1} y1={y} x2={tipX} y2={y}
-                className={ghostClass(mounted, visible)}
+                className={rowGhostClass}
                 {...GHOST_CONNECTOR_STYLE}
               />
               {/* Real row */}
-              <g className={styles.row} style={rowStyle}>
+              <g className={clsx(styles.row, rowReached && styles.rowIn)}>
                 <line
                   x1={x1} y1={y} x2={tipX} y2={y}
                   {...CONNECTOR_STYLE}

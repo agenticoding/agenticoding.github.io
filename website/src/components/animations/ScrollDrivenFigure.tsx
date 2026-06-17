@@ -14,8 +14,6 @@ import { resolveScrollPhase, type ScrollPhaseState } from './scrollPhase';
 interface AnimCtx { phase: number; phaseEnd: number; earlyStart: boolean; }
 const AnimationPhaseContext = createContext<AnimCtx>({ phase: 0, phaseEnd: 0.5, earlyStart: true });
 export const useAnimationPhase = () => useContext(AnimationPhaseContext).phase;
-/** Full context — use when children need phaseEnd to self-calibrate thresholds. */
-export const useAnimationContext = () => useContext(AnimationPhaseContext);
 
 interface ScrollDrivenFigureProps {
   children: ReactNode;

@@ -1,9 +1,14 @@
 /* Ghost classes moved to diagram.module.css — only SequenceDiagram-specific styles here. */
 
-/* Row opacity is scroll-derived so completion is tied to viewport position, not time. */
-.row { opacity: 0; }
+/* ── Structure — transition pair for sticky header + SVG lifelines ─────────── */
+.structure  { opacity: 0; transition: opacity 200ms var(--ease-exit); }
+.structureIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
 
-/* Structural elements — always visible */
+/* ── Rows — scroll-animated with ghost placeholders ────────────────────────── */
+.row   { opacity: 0; transition: opacity 200ms var(--ease-exit); }
+.rowIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+
+/* Structural elements — always visible once structure revealed */
 .arrowLine { stroke: var(--text-muted); } /* fill:none from CONNECTOR_STYLE; stroke kept for CSS specificity */
 .arrowHead { fill: var(--text-muted); }
 
@@ -43,6 +48,8 @@
   white-space: nowrap;
 }
 
+/* ── Reduced-motion overrides ─────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .row { opacity: 1; }
+  .structure, .structureIn { opacity: 1; transition: none; }
+  .row, .rowIn             { opacity: 1; transition: none; }
 }
