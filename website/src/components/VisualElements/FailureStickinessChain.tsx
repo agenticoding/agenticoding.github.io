@@ -1,29 +1,41 @@
 import React, { useId } from 'react';
 
 import type { PresentationAwareProps } from '@site/src/components/PresentationMode/types';
-import { NotoEmoji } from './ActorNodes';
+import { OperatorNode } from './ActorNodes';
 
 const GRID = 8;
-const VW = 960;
-const VH = 280;
-const SMALL_W = GRID * 14;
+const SPACE_2 = GRID * 2;
+const SPACE_3 = GRID * 3;
+const SPACE_4 = GRID * 4;
+const SPACE_5 = GRID * 6;
+const SPACE_6 = GRID * 8;
+const VW = GRID * 136;
+const VH = GRID * 36;
+const SMALL_W = GRID * 16;
 const CARD_W = GRID * 17;
 const CARD_H = GRID * 7;
-const FLOW_Y = GRID * 17;
+const OPERATOR_SIZE = GRID * 5;
+const FLOW_Y = GRID * 18;
 const CARD_Y = FLOW_Y - CARD_H / 2;
 
-const GOOD_1_X = GRID * 7;
-const GOOD_2_X = GRID * 23;
-const FAIL_1_X = GRID * 43;
-const FAIL_2_X = GRID * 63;
-const GATE_X = GRID * 91;
-const RECOVER_X = GRID * 99;
+const GOOD_1_X = SPACE_6;
+const GOOD_2_X = GOOD_1_X + SMALL_W + SPACE_5;
+const FAIL_1_X = GOOD_2_X + SMALL_W + SPACE_5;
+const FAIL_2_X = FAIL_1_X + CARD_W + SPACE_6;
+const FAILURE_ZONE_END_X = FAIL_2_X + CARD_W + SPACE_5;
+const CHECKPOINT_X = FAILURE_ZONE_END_X + SPACE_5;
+const RECOVER_X = CHECKPOINT_X + SPACE_5;
 const CAPSULE = {
-  x: FAIL_1_X - GRID * 3,
-  y: CARD_Y - GRID * 4,
-  w: GATE_X - FAIL_1_X + GRID * 3,
-  h: CARD_H + GRID * 8,
+  x: FAIL_1_X - SPACE_2,
+  y: CARD_Y - SPACE_4,
+  w: FAILURE_ZONE_END_X - FAIL_1_X + SPACE_2,
+  h: CARD_H + SPACE_6,
 };
+const CHECKPOINT_LINE_TOP = CAPSULE.y + SPACE_2;
+const CHECKPOINT_LINE_BOTTOM = CAPSULE.y + CAPSULE.h - SPACE_2;
+const CHECKPOINT_EMOJI_X = CHECKPOINT_X - OPERATOR_SIZE / 2;
+const CHECKPOINT_EMOJI_Y = CHECKPOINT_LINE_TOP - OPERATOR_SIZE - GRID;
+const CHECKPOINT_LABEL_Y = CAPSULE.y + CAPSULE.h + SPACE_3;
 
 function Marker({ id, fill }: { id: string; fill: string }) {
   return (
@@ -140,41 +152,43 @@ function RecoveredStep() {
   );
 }
 
-function Arrow({
-  x1,
-  x2,
-  tone,
-  markerId,
-  angular = false,
-}: {
+function connectorHandle(x1: number, x2: number) {
+  const gap = Math.abs(x2 - x1);
+  return Math.min(SPACE_2, Math.max(GRID, gap / 3));
+}
+
+function angularPoints(x1: number, x2: number) {
+  return `${x1},${FLOW_Y} ${x1 + SPACE_2},${FLOW_Y - SPACE_2} ${x2 - SPACE_2},${FLOW_Y - SPACE_2} ${x2},${FLOW_Y}`;
+}
+
+function Arrow({ x1, x2, tone, markerId, angular = false }: {
   x1: number;
   x2: number;
   tone: string;
   markerId: string;
   angular?: boolean;
 }) {
-  if (angular) {
-    return (
-      <polyline
-        points={`${x1},${FLOW_Y} ${x1 + GRID * 2},${FLOW_Y - GRID} ${x2 - GRID * 2},${FLOW_Y - GRID} ${x2},${FLOW_Y}`}
-        fill="none"
-        stroke={tone}
-        strokeWidth="var(--stroke-heavy)"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        markerEnd={`url(#${markerId})`}
-      />
-    );
-  }
+  const handle = connectorHandle(x1, x2);
+  const markerEnd = `url(#${markerId})`;
 
-  return (
+  return angular ? (
+    <polyline
+      points={angularPoints(x1, x2)}
+      fill="none"
+      stroke={tone}
+      strokeWidth="var(--stroke-heavy)"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
+      markerEnd={markerEnd}
+    />
+  ) : (
     <path
-      d={`M ${x1} ${FLOW_Y} C ${x1 + GRID * 2} ${FLOW_Y}, ${x2 - GRID * 2} ${FLOW_Y}, ${x2} ${FLOW_Y}`}
+      d={`M ${x1} ${FLOW_Y} C ${x1 + handle} ${FLOW_Y}, ${x2 - handle} ${FLOW_Y}, ${x2} ${FLOW_Y}`}
       fill="none"
       stroke={tone}
       strokeWidth="var(--stroke-default)"
       strokeLinecap="round"
-      markerEnd={`url(#${markerId})`}
+      markerEnd={markerEnd}
     />
   );
 }
@@ -274,7 +288,7 @@ export default function FailureStickinessChain({
       <line
         x1={FAIL_2_X + CARD_W}
         y1={FLOW_Y}
-        x2={GATE_X - GRID * 2}
+        x2={CHECKPOINT_X}
         y2={FLOW_Y}
         stroke="var(--visual-error)"
         strokeWidth="var(--stroke-heavy)"
@@ -282,18 +296,18 @@ export default function FailureStickinessChain({
       />
 
       <line
-        x1={GATE_X}
-        y1={CAPSULE.y + GRID * 2}
-        x2={GATE_X}
-        y2={CAPSULE.y + CAPSULE.h - GRID * 2}
+        x1={CHECKPOINT_X}
+        y1={CHECKPOINT_LINE_TOP}
+        x2={CHECKPOINT_X}
+        y2={CHECKPOINT_LINE_BOTTOM}
         stroke="var(--visual-warning)"
         strokeWidth="var(--stroke-accent)"
         strokeLinecap="square"
       />
-      <NotoEmoji codepoint="1f9d1_200d_1f4bb" x={GATE_X - GRID * 3} y={CAPSULE.y - GRID * 4} size={48} />
+      <OperatorNode x={CHECKPOINT_EMOJI_X} y={CHECKPOINT_EMOJI_Y} size={OPERATOR_SIZE} />
       <text
-        x={GATE_X}
-        y={CAPSULE.y + CAPSULE.h + GRID * 3}
+        x={CHECKPOINT_X}
+        y={CHECKPOINT_LABEL_Y}
         textAnchor="middle"
         fontFamily="var(--font-mono-human)"
         fontSize="var(--text-xs)"
@@ -303,7 +317,7 @@ export default function FailureStickinessChain({
         human checkpoint
       </text>
 
-      <Arrow x1={GATE_X + GRID * 3} x2={RECOVER_X} tone="var(--visual-success)" markerId={successMarker} />
+      <Arrow x1={CHECKPOINT_X} x2={RECOVER_X} tone="var(--visual-success)" markerId={successMarker} />
       <RecoveredStep />
     </svg>
   );
