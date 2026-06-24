@@ -1,0 +1,191 @@
+/* ModelEncodingAtlas.module.css
+ * Interconnected model mesh with electrical activity across encoded patterns.
+ */
+
+.container {
+  container-type: inline-size;
+}
+
+.compact {
+  margin: 0 auto;
+  max-width: 95%;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 360px;
+}
+
+@container (max-width: 520px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 520px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+.fieldPlate {
+  opacity: 0.24;
+  stroke: none;
+}
+
+.fieldBoundary {
+  fill: none;
+  opacity: 0.46;
+  stroke-width: 1.15;
+}
+
+.knowledgeField.fieldPlate {
+  fill: var(--visual-bg-indigo);
+}
+
+.actionField.fieldPlate {
+  fill: var(--visual-bg-magenta);
+}
+
+.knowledgeField.fieldBoundary {
+  stroke: var(--visual-indigo);
+}
+
+.actionField.fieldBoundary {
+  stroke: var(--visual-magenta);
+}
+
+.meshEdge {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.2;
+  opacity: 0.38;
+}
+
+.knowledgeEdge {
+  stroke: var(--visual-indigo);
+}
+
+.actionEdge {
+  stroke: var(--visual-magenta);
+}
+
+.crossEdge {
+  stroke: var(--visual-violet);
+}
+
+.primaryEdge {
+  opacity: 0.62;
+  stroke-width: 1.8;
+}
+
+.secondaryEdge {
+  opacity: 0.3;
+  stroke-width: 1.1;
+}
+
+.edgePulse {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: var(--pulse-width, 2.6);
+  stroke-dasharray: var(--pulse-size, 8) var(--pulse-gap, 92);
+  opacity: 0;
+  animation-duration: var(--pulse-duration, 1600ms);
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
+  animation-name: edgePulse;
+  animation-timing-function: linear;
+}
+
+.knowledgePulse {
+  stroke: var(--visual-indigo);
+}
+
+.actionPulse {
+  stroke: var(--visual-magenta);
+}
+
+.crossPulse,
+.wholePulse {
+  stroke: var(--visual-violet);
+}
+
+.edgePulseReverse {
+  animation-name: edgePulseReverse;
+}
+
+@keyframes edgePulse {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+
+  12% {
+    opacity: var(--pulse-opacity, 0.9);
+  }
+
+  42% {
+    opacity: calc(var(--pulse-opacity, 0.9) * 0.82);
+  }
+
+  62%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes edgePulseReverse {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+
+  16% {
+    opacity: calc(var(--pulse-opacity, 0.9) * 0.82);
+  }
+
+  46% {
+    opacity: var(--pulse-opacity, 0.9);
+  }
+
+  66%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meshEdge {
+    opacity: 0.5;
+    stroke-width: 1.4;
+  }
+
+  .edgePulse {
+    opacity: 0;
+    animation: none;
+  }
+
+  .primaryEdge {
+    opacity: 0.72;
+  }
+
+}

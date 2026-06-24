@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
 import clsx from 'clsx';
 import shared from './diagram.module.css';
-import { NotoEmoji } from './ActorNodes';
+import { EmojiImage } from './ActorNodes';
+import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
@@ -11,10 +12,10 @@ import { CONNECTOR_STYLE, ARROWHEAD_POINTS, arrowOpacity } from './diagramConsta
 
 // Layout — ViewBox 480×264
 //
-//           🧠 Brain (predict)        x=216 y=32  w=48 h=48 rx=12   center=(240,56)
+//           🧠 Brain (predict)        x=216 y=32  w=48 h=48 rx=0   center=(240,56)
 //                ↗               ↘
-//   👀 Observe (result)          🦾 Execute      x=312 y=152 w=48 h=48 rx=12   center=(336,176)
-//        x=120 y=152 w=48 h=48 rx=12  center=(144,176)
+//   👀 Observe (result)          🦾 Execute      x=312 y=152 w=48 h=48 rx=0   center=(336,176)
+//        x=120 y=152 w=48 h=48 rx=0  center=(144,176)
 //
 // Arcs computed via scripts/compute-execution-loop-arcs.js (BULGE=44, markerRefX=5)
 // ARC_PREDICT: M 264 56 Q 335.2 77.6 335.95 147      (brain right-center → execute top-center)
@@ -57,7 +58,7 @@ export default function ExecutionLoopDiagram() {
     >
       {/* ── Brain node (LLM) — always visible ─────────────────────────── */}
       <g className={clsx(shared.node, shared.nodeIn)}>
-        <NotoEmoji codepoint="1f9e0" x={220} y={36} size={40} />
+        <EmojiImage asset={EMOJI.brain} x={220} y={36} size={40} />
       </g>
 
       {/* "predict" label */}
@@ -81,14 +82,14 @@ export default function ExecutionLoopDiagram() {
       </g>
 
       {/* ── Execute ghost placeholder ─────────────────────────────────── */}
-      <Ghost x={312} y={152} width={48} height={48} rx={12}
+      <Ghost x={312} y={152} width={48} height={48} rx={0}
         fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)"
         mounted={mounted} reached={executeReached}
       />
 
       {/* ── Execute node (Body) ───────────────────────────────────────── */}
       <g className={clsx(shared.node, executeReached && shared.nodeIn)}>
-        <NotoEmoji codepoint="1f9be" x={316} y={156} size={40} />
+        <EmojiImage asset={EMOJI.act} x={316} y={156} size={40} />
       </g>
 
       {/* "execute" label */}
@@ -112,14 +113,14 @@ export default function ExecutionLoopDiagram() {
       </g>
 
       {/* ── Observe ghost placeholder ─────────────────────────────────── */}
-      <Ghost x={120} y={152} width={48} height={48} rx={12}
+      <Ghost x={120} y={152} width={48} height={48} rx={0}
         fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)"
         mounted={mounted} reached={observeReached}
       />
 
       {/* ── Observe node (Result) ─────────────────────────────────────── */}
       <g className={clsx(shared.node, observeReached && shared.nodeIn)}>
-        <NotoEmoji codepoint="1f440" x={124} y={156} size={40} />
+        <EmojiImage asset={EMOJI.observe} x={124} y={156} size={40} />
       </g>
 
       {/* "observe" label */}

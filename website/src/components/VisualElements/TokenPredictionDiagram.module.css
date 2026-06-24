@@ -1,20 +1,53 @@
 /* TokenPredictionDiagram.module.css
  *
- * Static diagram — all connections permanently visible.
- * Single idle loop: gear spin (machinery metaphor).
+ * Static story, responsive topology: horizontal desktop, vertical mobile.
+ * Shared inference idle: read context tokens → process → emit prediction.
  */
 
-/* ── Component ────────────────────────────────────────────────────────────── */
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  max-width: 440px;
+}
 
 .diagram {
   display: block;
   width: 100%;
   height: auto;
-  max-width: 440px;
   margin-inline: auto;
+}
+
+.desktopDiagram {
+  max-width: 440px;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 320px;
 }
 
 .gear {
   transform-box: fill-box;
   transform-origin: center;
+}
+
+@container (max-width: 420px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 430px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
 }

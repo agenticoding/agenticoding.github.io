@@ -1,0 +1,420 @@
+/* PostTrainingTuningBoard.module.css
+ * Static board: post-training changes behavior controls, not the base mechanism.
+ */
+
+.container {
+  container-type: inline-size;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 360px;
+}
+
+@container (max-width: 520px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 520px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+.storyKnob {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-duration: 12000ms;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.storyTrack {
+  opacity: 0;
+  animation-duration: 12000ms;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.storyBadge {
+  fill-opacity: 0.72;
+  stroke-width: 1;
+}
+
+.storyEffect {
+  opacity: 0;
+  fill-opacity: 0.55;
+  stroke-opacity: 1;
+  stroke-width: 2.5;
+  animation-duration: 12000ms;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.instructionKnob {
+  animation-name: instruction-knob;
+}
+.helpfulnessKnob {
+  animation-name: helpfulness-knob;
+}
+.safetyKnob {
+  animation-name: safety-knob;
+}
+.reasoningKnob {
+  animation-name: reasoning-knob;
+}
+.toolKnob {
+  animation-name: tool-knob;
+}
+.domainKnob {
+  animation-name: domain-knob;
+}
+
+.instructionTrack {
+  animation-name: instruction-track;
+}
+.helpfulnessTrack {
+  animation-name: helpfulness-track;
+}
+.safetyTrack {
+  animation-name: safety-track;
+}
+.reasoningTrack {
+  animation-name: reasoning-track;
+}
+.toolTrack {
+  animation-name: tool-track;
+}
+.domainTrack {
+  animation-name: domain-track;
+}
+
+.instructionEffect {
+  animation-name: instruction-effect;
+}
+.helpfulnessEffect {
+  animation-name: helpfulness-effect;
+}
+.safetyEffect {
+  animation-name: safety-effect;
+}
+.reasoningEffect {
+  animation-name: reasoning-effect;
+}
+.toolEffect {
+  animation-name: tool-effect;
+}
+.domainEffect {
+  animation-name: domain-effect;
+}
+
+@keyframes instruction-knob {
+  0%,
+  4%,
+  10%,
+  51%,
+  57%,
+  100% {
+    transform: translateX(0);
+  }
+  6%,
+  8%,
+  53%,
+  55% {
+    transform: translateX(var(--story-boost-x));
+  }
+}
+
+@keyframes helpfulness-knob {
+  0%,
+  11%,
+  17%,
+  100% {
+    transform: translateX(0);
+  }
+  13%,
+  15% {
+    transform: translateX(var(--story-boost-x));
+  }
+}
+
+@keyframes safety-knob {
+  0%,
+  18%,
+  24%,
+  84%,
+  90%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  22%,
+  86%,
+  88% {
+    transform: translateX(var(--story-boost-x));
+  }
+}
+
+@keyframes reasoning-knob {
+  0%,
+  44%,
+  50%,
+  77%,
+  83%,
+  100% {
+    transform: translateX(0);
+  }
+  46%,
+  48%,
+  79%,
+  81% {
+    transform: translateX(var(--story-boost-x));
+  }
+}
+
+@keyframes tool-knob {
+  0%,
+  37%,
+  43%,
+  100% {
+    transform: translateX(0);
+  }
+  39%,
+  41% {
+    transform: translateX(var(--story-boost-x));
+  }
+}
+
+@keyframes domain-knob {
+  0%,
+  70%,
+  76%,
+  100% {
+    transform: translateX(0);
+  }
+  72%,
+  74% {
+    transform: translateX(var(--story-boost-x));
+  }
+}
+
+@keyframes instruction-track {
+  0%,
+  4%,
+  10%,
+  51%,
+  57%,
+  100% {
+    opacity: 0;
+  }
+  6%,
+  8%,
+  53%,
+  55% {
+    opacity: 1;
+  }
+}
+
+@keyframes helpfulness-track {
+  0%,
+  11%,
+  17%,
+  100% {
+    opacity: 0;
+  }
+  13%,
+  15% {
+    opacity: 1;
+  }
+}
+
+@keyframes safety-track {
+  0%,
+  18%,
+  24%,
+  84%,
+  90%,
+  100% {
+    opacity: 0;
+  }
+  20%,
+  22%,
+  86%,
+  88% {
+    opacity: 1;
+  }
+}
+
+@keyframes reasoning-track {
+  0%,
+  44%,
+  50%,
+  77%,
+  83%,
+  100% {
+    opacity: 0;
+  }
+  46%,
+  48%,
+  79%,
+  81% {
+    opacity: 1;
+  }
+}
+
+@keyframes tool-track {
+  0%,
+  37%,
+  43%,
+  100% {
+    opacity: 0;
+  }
+  39%,
+  41% {
+    opacity: 1;
+  }
+}
+
+@keyframes domain-track {
+  0%,
+  70%,
+  76%,
+  100% {
+    opacity: 0;
+  }
+  72%,
+  74% {
+    opacity: 1;
+  }
+}
+
+@keyframes instruction-effect {
+  0%,
+  4%,
+  10%,
+  51%,
+  57%,
+  100% {
+    opacity: 0;
+  }
+  6%,
+  8%,
+  53%,
+  55% {
+    opacity: 1;
+  }
+}
+
+@keyframes helpfulness-effect {
+  0%,
+  11%,
+  17%,
+  100% {
+    opacity: 0;
+  }
+  13%,
+  15% {
+    opacity: 1;
+  }
+}
+
+@keyframes safety-effect {
+  0%,
+  18%,
+  24%,
+  84%,
+  90%,
+  100% {
+    opacity: 0;
+  }
+  20%,
+  22%,
+  86%,
+  88% {
+    opacity: 1;
+  }
+}
+
+@keyframes reasoning-effect {
+  0%,
+  44%,
+  50%,
+  77%,
+  83%,
+  100% {
+    opacity: 0;
+  }
+  46%,
+  48%,
+  79%,
+  81% {
+    opacity: 1;
+  }
+}
+
+@keyframes tool-effect {
+  0%,
+  37%,
+  43%,
+  100% {
+    opacity: 0;
+  }
+  39%,
+  41% {
+    opacity: 1;
+  }
+}
+
+@keyframes domain-effect {
+  0%,
+  70%,
+  76%,
+  100% {
+    opacity: 0;
+  }
+  72%,
+  74% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storyKnob,
+  .storyTrack,
+  .storyEffect,
+  .mobileMapping {
+    animation: none;
+  }
+
+  .storyTrack,
+  .storyEffect {
+    opacity: 0;
+  }
+
+  .mobileMapping {
+    opacity: 0.35;
+  }
+
+  .storyBadge {
+    fill-opacity: 0.86;
+    stroke-width: 1.5;
+  }
+}

@@ -1,0 +1,217 @@
+.diagram {
+  color: var(--text-body);
+}
+
+.desktopDiagram,
+.mobileDiagram {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.desktopDiagram {
+  display: block;
+  max-width: 720px;
+}
+
+.mobileDiagram {
+  display: none !important;
+  max-width: 360px;
+}
+
+.card,
+.acceptedCard {
+  stroke-width: var(--stroke-fine);
+}
+
+.sectionDivider {
+  stroke: var(--border-subtle);
+  stroke-width: var(--stroke-fine);
+}
+
+.checkpointMotion {
+  pointer-events: none;
+}
+
+.checkpointTrace {
+  fill: none;
+  opacity: 0;
+  stroke: var(--visual-violet);
+  stroke-width: var(--stroke-heavy);
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 100;
+  stroke-dashoffset: 100;
+}
+
+.traceDelegated {
+  stroke: var(--visual-neutral);
+  animation: checkpointTraceDelegated 6400ms linear infinite;
+}
+
+.traceGenerated {
+  animation: checkpointTraceGenerated 6400ms linear infinite;
+}
+
+.traceToGate {
+  animation: checkpointTraceToGate 6400ms linear infinite;
+}
+
+.traceAccepted {
+  stroke: var(--visual-success);
+  animation: checkpointTraceAccepted 6400ms linear infinite;
+}
+
+.flow {
+  fill: none;
+  stroke-width: var(--stroke-default);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.title {
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  fill: var(--text-heading);
+}
+
+.label,
+.laneLabel,
+.body,
+.human,
+.ai,
+.check,
+.success {
+  font-size: var(--text-xs);
+}
+
+.label {
+  font-family: var(--font-mono-keyword);
+  font-weight: 500;
+  fill: var(--text-muted);
+}
+
+.body {
+  font-family: var(--font-mono);
+  fill: var(--text-body);
+}
+
+.laneLabel {
+  font-family: var(--font-mono-spec);
+  font-weight: 500;
+  fill: var(--text-muted);
+}
+
+.human {
+  font-family: var(--font-mono-human);
+  fill: var(--visual-neutral);
+}
+
+.ai {
+  font-family: var(--font-mono-ai);
+  fill: var(--visual-magenta);
+}
+
+.check {
+  font-family: var(--font-mono-keyword);
+  fill: var(--text-body);
+}
+
+.validationDetail {
+  fill: var(--visual-cyan);
+}
+
+.success {
+  font-family: var(--font-mono-keyword);
+  fill: var(--visual-success);
+}
+
+@keyframes checkpointTraceDelegated {
+  0%,
+  3% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  6%,
+  14% {
+    opacity: 1;
+  }
+  18%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes checkpointTraceGenerated {
+  0%,
+  18% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  21%,
+  33% {
+    opacity: 1;
+  }
+  37%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes checkpointTraceToGate {
+  0%,
+  39% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  42%,
+  56% {
+    opacity: 1;
+  }
+  60%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes checkpointTraceAccepted {
+  0%,
+  62% {
+    opacity: 0;
+    stroke-dashoffset: 100;
+  }
+  66%,
+  76% {
+    opacity: 1;
+  }
+  82%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .desktopDiagram {
+    display: none !important;
+  }
+
+  .mobileDiagram {
+    display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow,
+  .checkpointTrace {
+    animation: none;
+    transition: none;
+  }
+
+  .checkpointTrace {
+    display: none;
+  }
+}

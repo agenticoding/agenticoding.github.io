@@ -6,118 +6,330 @@ sidebar_custom_props:
 title: 'LLMs Demystified'
 ---
 
+import ModelEncodingAtlas from '@site/src/components/VisualElements/ModelEncodingAtlas';
+import PostTrainingTuningBoard from '@site/src/components/VisualElements/PostTrainingTuningBoard';
 import TokenPredictionDiagram from '@site/src/components/VisualElements/TokenPredictionDiagram';
-import ExecutionLoopDiagram from '@site/src/components/VisualElements/ExecutionLoopDiagram';
-import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
+import PatternToUsefulWorkFunnel from '@site/src/components/VisualElements/PatternToUsefulWorkFunnel';
+import LongContextBenchmarkExplorer from '@site/src/components/VisualElements/LongContextBenchmarkExplorer';
+import ArchitectureToolShapeTable from '@site/src/components/VisualElements/ArchitectureToolShapeTable';
+import MarketingDecoderInteractive from '@site/src/components/VisualElements/MarketingDecoderInteractive';
+import TokenTypeIllustration from '@site/src/components/VisualElements/TokenTypeIllustration';
+import OwnershipBoundaryDiagram from '@site/src/components/VisualElements/OwnershipBoundaryDiagram';
 
-You're here to operate agents. Before you can operate them well, you need to understand what they actually **are** — because the terminology makes them sound far more magical than they deserve.
+You're here to operate agents. That starts with a grounded model of the engine inside the agent.
 
-### LLM = Brains (Token Prediction Engine)
+An LLM is not magic, a coworker, or a mind. It is a token prediction system trained on large-scale patterns in text, code, images, audio, or other data depending on the model. That reductive framing is the key to understanding why LLMs are useful, why they fail, and why there is no such thing as "the best model."
 
-A Large Language Model is a statistical pattern matcher built on [transformer architecture](<https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)>). It:
+The operator stance is simple:
 
-- **Predicts the next most probable token** (word/sub-word) in a sequence
-- **Processes ~200K tokens** of context (working memory)
-- **Samples from probability distributions** learned from training data
-- **Has zero consciousness, intent, or feelings**
+<div className="principle-callout principle-callout--system">
+  <div className="principle-callout__label">Operator stance</div>
+  <p>
+    Treat every LLM as a powerful probabilistic tool with a specific operating
+    envelope. Pick it, route to it, and constrain it like any other production
+    dependency.
+  </p>
+</div>
+
+## What an LLM Actually Is
+
+A Large Language Model is a statistical pattern engine built on [transformer architecture](<https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)>). At inference time, it repeatedly does one thing:
+
+1. Read the current context
+2. Estimate likely next tokens
+3. Sample or select one token
+4. Append it to the context
+5. Repeat
+
+The context is the current token sequence. The output is one predicted next token, which immediately becomes part of the next context. This loop is the core mechanism behind every fluent paragraph, code patch, tool call, or reasoning trace the model emits.
 
 <figure>
   <TokenPredictionDiagram />
-  <figcaption>Each new token is predicted from all previous tokens in the context window — the sequence grows one token at a time, feeding back as input for the next prediction.</figcaption>
+  <figcaption>
+    Each generated token becomes part of the context for the next prediction.
+    Long responses are built one token at a time.
+  </figcaption>
 </figure>
 
 :::tip[What's a Token?]
-A **token** is the atomic unit of an LLM - the "pixel" of text processing. Averages ~3-4 characters, but varies widely: common short words are single tokens (`"the"`, `"is"`), while longer or rare words split into subwords using algorithms like [Byte-Pair Encoding](https://en.wikipedia.org/wiki/Byte-pair_encoding).
+Those predicted units are **tokens**: the units the model processes and emits. For text, a token may be a word, part of a word, punctuation, or whitespace. For multimodal models, tokens can also represent encoded image patches, audio frames, video segments, tool-call structure, or other model-specific units.
 
-**Why it matters:**
+<TokenTypeIllustration />
 
-- **Cost:** LLM providers bill per token (input + output)
-- **Context limits:** The ~200K token window is your working memory budget
-- **Performance:** Token-efficient prompts = faster responses and lower costs
+Tokens matter because they define the model's input/output budget across modalities:
 
-Rule of thumb: 1 token ≈ 0.75 words in English. This paragraph is ~150 tokens. A typical source file runs 3K-15K tokens.
+- **Cost:** providers usually bill by token, including non-text inputs after encoding
+- **Context:** the context window is measured in tokens, not files, pages, images, or minutes
+- **Latency:** more tokens usually means slower requests
+- **Compression:** token-efficient context gives the model more useful working room
+
+Rule of thumb for English text: 1 token is roughly 0.75 words. Multimodal token counts vary by provider and encoding strategy, so treat word-based estimates as text-only approximations.
 :::
 
-Think of it like an incredibly sophisticated autocomplete - one that's read most of the internet and can generate convincing continuations of any text pattern it's seen before.
+The model has no consciousness, intent, or feelings. It does not "want" to solve your task. It produces continuations that are likely under its training and instruction context.
 
-**Technical reality vs. marketing speak:**
+That does not make it useless. It makes it a tool.
 
-| We Say (Metaphor)       | What's Actually Happening                                                         |
-| ----------------------- | --------------------------------------------------------------------------------- |
-| "The agent thinks"      | LLM generates token predictions through multi-head attention layers               |
-| "The agent understands" | Pattern matching against training data produces contextually probable output      |
-| "The agent learns"      | Statistical weights update during training (NOT during your conversation)         |
-| "The agent reasons"     | Breaking down problems into sequential token predictions that build on each other |
+## What Gets Encoded Into the Model
 
-### Agent Software = Body (Execution Layer)
+A trained LLM is a compressed map of patterns. Its weights encode statistical structure learned from training data: language, facts, code idioms, document formats, interaction norms, visual patterns, domain terminology, and common ways people respond to situations.
 
-<ScrollDrivenFigure phaseEnd={0.75} caption="Predict, execute, observe, repeat.">
-  <ExecutionLoopDiagram />
-</ScrollDrivenFigure>
+That includes two useful kinds of structure:
 
-The LLM alone can only generate text. Plain old, **deterministic**, agent software wraps the LLM to enable **action**:
+- **World and domain knowledge:** what tends to be true, how concepts relate, what APIs look like, how legal clauses are written, what a support ticket usually contains
+- **Action patterns:** what to do next in a scenario, how to answer a question, how to revise code, when to ask for clarification, how to format a tool call
 
-- **File operations:** Read, Write, Edit
-- **Command execution:** Bash, git, npm, pytest
-- **Code search:** Grep, Glob
-- **API calls:** Fetch docs, external resources
+This knowledge is not stored like rows in a database. It is distributed across parameters.
 
-**The LLM is the brains. The agent framework is the body.**
+<figure>
+  <ModelEncodingAtlas />
+  <figcaption>
+    The model does not retrieve a fact row or a playbook entry. Both knowledge
+    and action traces are distributed through the same parameter mesh.
+  </figcaption>
+</figure>
 
-When an agent "implements a feature," here's what's actually happening:
+That is why the model can generalize beyond exact examples, but also why it can be stale, incomplete, biased, or confidently wrong.
 
-1. LLM predicts "I should read the existing auth middleware" → Agent executes `Read(src/auth.ts)`
-2. LLM predicts code changes → Agent executes `Edit(file, old, new)`
-3. LLM predicts "run tests" → Agent executes `Bash("npm test")`
-4. LLM analyzes test output → Predicts fixes → Loop continues
+A good mental model: the model has learned many ways the world and its artifacts tend to continue. Inference asks it to continue this situation.
 
-No magic. No consciousness. Just **probability distributions driving tool execution.**
+## Base Models Learn Patterns; Post-Training Shapes Behavior
 
-### Why This Matters for You as an Operator
+Modern LLM products are not just pretrained models exposed through an API. Vendors usually start with a base model, then post-train it toward a product goal.
 
-Understanding the machinery prevents three critical errors:
+| Stage                      | What it contributes                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| Pretraining                | Broad knowledge, language/code/multimodal patterns, raw continuation ability               |
+| Supervised fine-tuning     | Instruction following, task formats, assistant behavior                                    |
+| Preference training        | Helpfulness, tone, safety behavior, refusal policy, response quality                       |
+| Verifiable reward training | Stronger math, code, retrieval, or tool behavior where outputs can be checked              |
+| Domain tuning              | Specialized patterns for coding, legal, medical, finance, support, or enterprise workflows |
 
-**Error 1: Assuming the agent "knows" things**
+Read the stages as a manufacturing pipeline. Each stage narrows the raw continuation engine into a product behavior profile: what it follows, prefers, refuses, verifies, and specializes for.
 
-- Reality: It only sees current context (~200K tokens)
-- Your fix: Provide explicit context (Principle 1, covered in Lesson 3)
+<figure>
+  <PostTrainingTuningBoard />
+  <figcaption>
+    Post-training turns a broad base model into a product behavior profile: what
+    it follows, prefers, refuses, verifies, and specializes for.
+  </figcaption>
+</figure>
 
-**Error 2: Expecting the agent to "care" about outcomes**
+Reinforcement-style post-training is one way manufacturers shape behavior. [InstructGPT](https://arxiv.org/abs/2203.02155) popularized the supervised fine-tuning + reward model + reinforcement learning pipeline for instruction following. Later methods such as [DPO](https://arxiv.org/abs/2305.18290) simplify preference optimization. Verifiable rewards go further for tasks like code, math, retrieval, and tool use because the output can be checked.
 
-- Reality: It executes your literal instruction to completion
-- Your fix: Be precise and include constraints (Principle 2, covered in Lesson 3)
+For code, the objective may include tests or compiler feedback. For tool use, it may include correct function calls. For regulated domains, it may include compliance, citations, or safe refusal behavior.
 
-**Error 3: Treating it like a teammate instead of a tool**
+That is the product reality behind many model claims: vendors are not selling generic intelligence. They are selling differently trained behavior profiles.
 
-- Reality: It's a precision instrument that speaks English
-- Your fix: Maintain tool mindset (Principle 3, covered in Lesson 3)
+## Architecture Defines the Tool Shape
 
-**Analogy: LLMs are power tools for code**
+Training shapes what the model knows and prefers. Architecture shapes the model's operating envelope: what it can do cheaply, quickly, and reliably.
 
-A power tool doesn't "understand" what you're building. It executes based on how you operate it. You don't blame a circular saw for a bad cut—you adjust your technique and setup.
+Two models can learn similar patterns and still behave differently in production because their internal design changes latency, memory footprint, context behavior, modality handling, serving complexity, and cost per token.
 
-Same with LLMs. They're tools that execute language-based instructions with impressive fluency but zero comprehension.
+<ArchitectureToolShapeTable />
 
-### The Power (and Limitation) of "Fancy Autocomplete"
+Architecture tells you the model's physical limits. System choices such as RAG, search tools, file tools, databases, and verification decide what information and feedback reach that model. Treat them as separate levers: first understand the model's envelope, then design the surrounding system for recall, control, and recovery.
 
-This might sound reductive, but it's liberating:
+<details>
+  <summary>Architecture details: dense vs. MoE</summary>
 
-- **Power:** These token prediction engines are incredibly good at generating code patterns they've seen
-- **Limitation:** They have no model of correctness, only probability
-- **Implication:** Your job is to create verification systems (tests, types, lints) that catch probabilistic errors
+Dense models activate the same full network for each token. That makes them simpler to serve and more predictable in latency-sensitive workflows: IDE assistants, tight tool-call loops, local deployment, and reliability-sensitive transformations.
 
-You're not managing a junior developer. You're operating a sophisticated code generation tool that needs **architectural guardrails**.
+Mixture-of-Experts models route each token through a subset of expert subnetworks. This separates **total parameters** from **active parameters**: total parameters affect capacity and memory footprint; active parameters affect per-token compute and latency. MoE is a powerful serving-economics tool, but routing adds complexity. See Sebastian Raschka's [MoE explainer](https://sebastianraschka.com/llm-architecture-gallery/moe/) for a deeper walkthrough.
 
-Now that we've established the machinery, let's discuss the operating principles and workflows.
+The operator question is not "dense or MoE?" It is: do you need predictable interactive latency, or broad capacity at lower active compute?
 
-## Summary
+</details>
 
-You're learning to **operate precision tools**, not manage teammates. Understanding what AI agents actually are - LLMs (token prediction engines) wrapped in agent software (execution layer) - is fundamental to using them effectively.
+<details>
+  <summary>Architecture details: attention and context</summary>
 
-The three operator errors covered above stem from anthropomorphizing these tools. Avoid assuming they "know" things, "care" about outcomes, or function like teammates. They're sophisticated instruments that execute language-based instructions.
+Attention architecture shapes context economics and recall behavior.
 
-The next lesson covers agent architecture, execution workflows, and how your role as an engineer evolves into an operator.
+- **Full attention:** strong global token interaction, but expensive as context grows.
+- **Grouped-query attention (GQA):** shares key/value heads to reduce KV-cache memory.
+- **Latent/compressed attention variants:** reduce cache pressure further, making longer contexts more practical.
+- **Sliding-window, local, or sparse attention:** lowers cost by limiting which tokens attend to which others, but may miss distant dependencies.
+- **Hybrid linear/state-space approaches:** improve long-sequence scaling, but can trade off precise retrieval or complex reasoning unless carefully designed.
+
+The architecture comparison matters because "1M context" is not one capability. It depends on attention design, KV-cache cost, serving stack, and whether the model can reliably locate the relevant facts. For more depth, see Raschka's [LLM architecture comparison](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison).
+
+</details>
+
+<details>
+  <summary>Architecture details: multimodal models</summary>
+
+Multimodal support is not binary.
+
+Different architectures encode image patches, audio frames, video segments, text, and tool structure differently. Some models use separate encoders or adapters. Others use more unified token streams or modality-specific components. [Mixture-of-Transformers](https://arxiv.org/abs/2411.04996) is one example of separating parameters by modality while preserving cross-modal attention.
+
+Choose by workload, not checkbox:
+
+| Workload              | What must be optimized                          |
+| --------------------- | ----------------------------------------------- |
+| Screenshot debugging  | layout, OCR, spatial reasoning, UI state        |
+| Chart analysis        | visual structure + numeric extraction           |
+| PDF/document analysis | high-resolution OCR + page structure            |
+| Video understanding   | temporal compression + event tracking           |
+| Voice agent           | streaming latency, ASR quality, turn-taking     |
+| Cross-modal reasoning | relating text/image/audio in one reasoning path |
+
+</details>
+
+## Why Token Prediction Is Useful
+
+"Autocomplete" sounds weak until you remember how much human work is expressed through structured patterns — not only in text, but in artifacts that can be encoded as tokens.
+
+Code is text. API usage is text. Bug reports are text. Architecture discussions are text. Test failures are text. Shell commands, diffs, logs, documentation, design specs, tickets, and review comments are all text-shaped interfaces to software work.
+
+Multimodal systems extend the same idea beyond plain text. Screenshots, diagrams, audio, video, PDFs, and charts can be converted into token streams the model can condition on. The model is still predicting tokens, but the context may now include visual layout, spoken words, document structure, or tool-call schemas alongside text.
+
+Prediction becomes useful because the model has learned three kinds of operational structure:
+
+- **Artifact patterns:** code, APIs, logs, docs, tickets, diagrams, screenshots, audio/video transcripts, and domain-specific document formats
+- **Work patterns:** implementations, refactors, tests, diagnosis flows, reviews, explanations, summaries, and risk language
+- **Action patterns:** when to search, inspect files, call tools, ask for clarification, or emit structured actions for an agent runtime
+
+<figure>
+  <PatternToUsefulWorkFunnel />
+  <figcaption>
+    Useful work emerges when rich context is encoded into input tokens and
+    compressed into output tokens: implementation, analysis, or a tool action.
+  </figcaption>
+</figure>
+
+A model trained and post-trained on those patterns can turn context into useful continuations:
+
+- **Build or change artifacts:** complete code, rewrite code while preserving intent, generate tests, or draft implementation plans
+- **Compress and interpret context:** summarize large technical inputs, explain unfamiliar APIs or errors, or inspect multimodal evidence
+- **Drive systems:** produce structured tool calls, hand off decisions, or continue an agent workflow in the expected format
+
+The model does not need to be conscious to be useful. It needs enough encoded knowledge and behavior to generate outputs that often match useful patterns across the modalities it was built to process. The engineering problem is knowing which patterns a model handles well, when "often" is good enough, and how to catch failures when it is not.
+
+## The Fundamental Limitation
+
+LLMs produce convincing results. That is the point—and the trap.
+
+A good response can look like competent human work: confident explanation, familiar structure, plausible APIs, reasonable tradeoffs, clean code, and the right tone. But you should not read it the way you read a trusted engineer's write-up. The model is not reporting what it knows. It is generating the next likely artifact from the pattern you set up.
+
+The ownership does not move.
+
+LLMs and agents are tools in the hands of human operators. Humans get paid. Humans make the judgment call. Humans own the result. A hammer does not get blamed for a faulty chair, and an LLM does not get blamed for a broken production change. The operator chose the tool, supplied the context, accepted the output, and decided whether it was ready.
+
+That means your job is not to believe the response. Your job is to inspect it.
+
+There are two separate checks:
+
+1. **Shape judgment:** did the model match the intended pattern? Is the output shaped like the thing you asked for: the right kind of plan, patch, analysis, test, summary, schema, or decision record?
+2. **Result validation:** does the result actually hold up? Does the code compile? Do the tests pass? Do the cited sources exist? Does the API behave that way? Are the constraints preserved? Does the tradeoff make sense for this system?
+
+<figure>
+  <OwnershipBoundaryDiagram />
+  <figcaption>
+    The model generates candidate work. The operator owns the decision to
+    inspect, validate, accept, and ship it.
+  </figcaption>
+</figure>
+
+| Failure mode              | Shape may look right because…                         | Operator must validate…                             |
+| ------------------------- | ----------------------------------------------------- | --------------------------------------------------- |
+| Hallucinated API          | The name and usage match familiar library patterns    | Docs, types, imports, runtime behavior              |
+| Broken refactor           | The local diff follows a recognizable edit pattern    | Tests, typechecks, invariants, call sites           |
+| Overconfident explanation | The reasoning has the tone and structure of expertise | Citations, code pointers, reproduction              |
+| Lost instruction          | Most requirements were followed                       | Explicit constraint checklist                       |
+| Wrong tradeoff            | The answer optimizes the prompt                       | Business goal, risk, cost, latency, maintainability |
+
+This is why production agent work is not "ask and accept." It is:
+
+> intent → generated candidate → operator judgment → external validation → owned result
+
+The useful stance is not trust or distrust. It is ownership. Use the model for leverage, then inspect and validate the work as if your name is on it—because it is.
+
+## Long Context Is Not Reliable Memory
+
+More context is not automatically better context. For model selection, the context-window number is only an input capacity limit. It does not mean the model becomes more precise as you add tokens; often retrieval gets worse as the prompt grows.
+
+That distinction matters because model marketing often collapses three different capabilities into one number:
+
+- **Advertised context** is how many tokens the model accepts.
+- **Effective context** is how much of that input the model can still use reliably under load.
+- **Point drop** is absolute percentage-point loss. A fall from 80% to 40% is −40 percentage points, even though relative accuracy was cut in half.
+
+The simplest signal to watch is retrieval decay: as the prompt grows from moderate context toward the advertised maximum, can the model still recover facts buried inside it? A 1M-token window can be real capacity while still producing worse retrieval near 1M than at 128K or 256K.
+
+:::warning[Capacity is not recall]
+A model can accept a million tokens and still become less reliable at finding the relevant fact as the prompt approaches that size. Bigger windows expand what you can send; they do not guarantee better retrieval or more precise answers.
+
+For model selection, compare degradation curves, not just maximum window size. [Lesson 5: Grounding](../methodology/lesson-5-grounding.mdx) covers retrieval and RAG as system levers. [Lesson 6: Context Engineering](../practical-techniques/lesson-6-context-management.mdx) covers the attention-shape problem and how to exploit it operationally.
+:::
+
+### Long-Context Benchmarks Show the Tradeoff
+
+Long-context benchmarks are not coding benchmarks, but they isolate the model-selection question: as context rises, does retrieval stay precise, degrade gradually, or collapse?
+
+MRCR means **Multi-Round Co-reference Resolution**. The model gets a long prompt with multiple target facts buried inside distractor text, then answers questions that refer to those facts indirectly. The **8-needle** variant plants eight facts, so the model has to keep several references straight instead of matching one obvious phrase.
+
+Current long-context results show the pattern: models cluster more tightly at moderate context, then diverge near the advertised maximum. Some products have full published curves; others only publish sparse points.
+
+The benchmark figure plots vendor-reported benchmark points; the table below lists the exact values, mode, evidence density, and source for each selected product.
+
+<LongContextBenchmarkExplorer />
+
+The figure tells three stories:
+
+1. **Same window does not mean same reliability.** A 1M-token model can retain usable facts or collapse near the end of its advertised range.
+2. **Moderate context is not the main problem.** Many models look strong before the window is saturated.
+3. **The degradation curve matters more than the headline number.** If your workload routinely reaches 500K–1M tokens, benchmark shape matters more than maximum capacity.
+
+:::tip[First-pass takeaway]
+Every model has an effective context limit. Some decline gradually, some fall off a cliff, and some recover only with expensive reasoning modes. None make context management obsolete.
+:::
+
+### Newer Models Can Improve One Dimension and Regress Another
+
+Model releases move along a Pareto frontier. A vendor can improve coding, tool use, vision, latency, safety, or instruction following while making long-context retrieval worse.
+
+Claude Opus 4.6 is a useful example: Anthropic reported **[76% on the 8-needle 1M MRCR v2 benchmark](https://www.anthropic.com/news/claude-opus-4-6)**, a strong long-context retrieval result for an Opus-class model. Opus 4.7 then improved across agentic coding, visual acuity, tool use, self-verification, instruction following, and long-running task behavior, according to Anthropic's [Opus 4.7 release notes](https://www.anthropic.com/news/claude-opus-4-7). But the long-context retrieval line regressed sharply in the benchmark data above.
+
+That is not a contradiction. It is the point: **"better model" is not a scalar property.** A model can become better for autonomous coding while becoming worse at needle-in-a-haystack retrieval. Another can improve long-context recall by spending more reasoning tokens, raising cost and latency. A smaller model can be preferable when verification is strong and the loop needs speed.
+
+Use benchmarks to identify which dimension improved, which dimension paid the cost, and whether your workload depends on the dimension that moved. This section stops at the model-selection question; Lesson 6 handles the operational attention shape and context-engineering tactics.
+
+## Marketing Translate
+
+LLM marketing often starts with a familiar launch claim and hides the operational behavior underneath. Translate the sentence before evaluating the system.
+
+<figure>
+  <MarketingDecoderInteractive />
+  <figcaption>
+    Source claim on the left. Engineering translation on the right. The note
+    keeps ownership attached.
+  </figcaption>
+</figure>
+
+These translations are not cynicism. They are operational clarity. Once you translate the claim, you can evaluate the system like an engineer.
+
+:::tip[Useful skepticism]
+Do not ask, "Is this model smart?" Ask, "Under what workload, constraints, cost profile, and failure tolerance does this model perform well?"
+:::
+
+## There Is No Best LLM
+
+There is no best LLM in isolation. There is only a model that fits a workload, a constraint set, and a verification strategy.
+
+A model can be stronger at coding and weaker at long-context recall. It can be faster because it spends less compute. It can look better on a benchmark and still be wrong for your system because the benchmark measured the wrong bottleneck. Treat every model claim as a narrow engineering claim: what improved, under what setup, at what cost, and does that matter for this task?
+
+When an output fails, diagnose before switching models. If the model never had the right information, the fix is grounding: retrieval, search, file access, smaller context, or better source selection. If the model had the information and used it badly, the fix is inference support: a stronger model, a narrower task, examples, tests, evals, or review.
+
+That is this chapter's operating model. LLMs are probabilistic engines, not coworkers. They produce candidate work from the context you give them. Production reliability comes from the system around the model: [grounding facts](../methodology/lesson-5-grounding.mdx), [managing context](../practical-techniques/lesson-6-context-management.mdx), [constraining and routing work](../practical-techniques/lesson-7-reliability-levers.md), [using tests as guardrails](../practical-techniques/lesson-9-tests-as-guardrails.md), and verifying results before accepting them.
+
+The useful abstraction is:
+
+> A probabilistic engine inside a controlled software system.
+
+The next chapter covers that controlled system: how agents wrap the LLM brain with software that can plan, use tools, observe results, and continue the loop.
 
 ---
 
-**Next:** [Lesson 2: Agents Demystified](./lesson-2-how-agents-work.mdx)
+**Next:** [Chapter 2: Agents Demystified](./lesson-2-how-agents-work.mdx)
