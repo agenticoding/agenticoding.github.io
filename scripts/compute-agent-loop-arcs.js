@@ -213,4 +213,4 @@ console.log(`  // Node rects`);
 centers.forEach((c, i) => {
   console.log(`  /* ${NAMES[i].padEnd(8)} */ x={${c.x-24}} y={${c.y-24}} width={48} height={48}`);
 });
-console.log(`  /* done      */ x={${DONE_CX - DONE_S/2}} y={${DONE_CY - DONE_S/2}} width={${DONE_S}} height={${DONE_S}}  (NotoEmoji x={${DONE_CX - DONE_S/2 + 4}} y={${DONE_CY - DONE_S/2 + 4}} size={40})`);
+console.log(`  /* done      */ x={${DONE_CX - DONE_S/2}} y={${DONE_CY - DONE_S/2}} width={${DONE_S}} height={${DONE_S}}  (EmojiImage x={${DONE_CX - DONE_S/2 + 4}} y={${DONE_CY - DONE_S/2 + 4}} size={40})`);

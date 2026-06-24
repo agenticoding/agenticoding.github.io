@@ -68,7 +68,7 @@ I taught iOS, Android, and web development courses at John Bryce (2013–2016), 
 
 **Typography:** Body text set in [Inter](https://rsms.me/inter/) by Rasmus Andersson. Headings in [Space Grotesk](https://floriankarsten.github.io/space-grotesk/) by Florian Karsten. Code rendered in [Monaspace](https://monaspace.githubnext.com/) by GitHub Next — a superfamily of five metrics-compatible monospace typefaces (Neon, Argon, Xenon, Radon, Krypton) used as a semantic voice system throughout the course. All fonts self-hosted under SIL OFL 1.1.
 
-**Illustrations:** Diagrams derived from [Noto Emoji SVG](https://github.com/adobe-fonts/noto-emoji-svg) by Adobe.
+**Illustrations:** Diagrams use [OpenMoji](https://openmoji.org/) color SVG assets. OpenMoji is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 ## Copyright
 

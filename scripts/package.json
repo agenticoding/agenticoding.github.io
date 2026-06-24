@@ -12,7 +12,8 @@
     "generate-social-card": "node generate-social-card.js",
     "generate-favicons": "node generate-favicons.js",
     "generate-brand-assets": "node generate-social-card.js && node generate-favicons.js",
-    "fetch-emoji": "node fetch-emoji.js"
+    "fetch-openmoji": "node fetch-openmoji.js",
+    "audit-openmoji": "node audit-openmoji-assets.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

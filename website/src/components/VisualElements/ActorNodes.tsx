@@ -1,88 +1,113 @@
 import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import {
+  EMOJI,
+  OPENMOJI_VIEWBOX_SIZE,
+  centeredEmojiOffset,
+  emojiDisplaySize,
+  type EmojiAsset,
+  emojiSrc,
+} from './emojiAssets';
 
-export interface OperatorNodeProps { x: number; y: number; size?: number; }
-export interface AgentNodeProps    { x: number; y: number; size?: number; }
+export interface OperatorNodeProps {
+  x: number;
+  y: number;
+  size?: number;
+}
+export interface AgentNodeProps {
+  x: number;
+  y: number;
+  size?: number;
+}
 // ── TravelingPromptCard (36×20, centered at 0,0 for animateMotion origin) ──
 // All coords computed via scripts/compute-actor-coords.js
 const TCARD_GEOM = {
-  W: 36, H: 20, rx: 8, bodyX: -18, bodyY: -10,
+  W: 36,
+  H: 20,
+  rx: 8,
+  bodyX: -18,
+  bodyY: -10,
   stubs: [
     { x: -9, y: -4, w: 18, h: 2, rx: 1 },
-    { x: -6, y:  2, w: 12, h: 2, rx: 1 },
+    { x: -6, y: 2, w: 12, h: 2, rx: 1 },
   ] as const,
 } as const;
 
 // ── OperatorNode ─────────────────────────────────────────────────────────────
-// 🤓 Noto emoji u1f913. Delegates to NotoEmoji.
 export function OperatorNode({ x, y, size = 40 }: OperatorNodeProps) {
-  return <NotoEmoji codepoint="1f913" x={x} y={y} size={size} />;
+  return <EmojiImage asset={EMOJI.operator} x={x} y={y} size={size} />;
 }
 
-// ── NotoEmoji ─────────────────────────────────────────────────────────────────
-// Renders a Noto emoji SVG via <image> for gradient-def ID isolation.
-// Files live in /img/emoji/u{codepoint}.svg (fetched via scripts/fetch-emoji.js).
-export interface NotoEmojiProps { codepoint: string; x: number; y: number; size?: number; }
+// ── EmojiImage ────────────────────────────────────────────────────────────────
+// <image> isolates external SVG internals from the parent diagram document.
+export interface EmojiImageProps {
+  asset: EmojiAsset;
+  x: number;
+  y: number;
+  size?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}
 
-export function NotoEmoji({ codepoint, x, y, size = 40 }: NotoEmojiProps) {
+export function EmojiImage({
+  asset,
+  x,
+  y,
+  size = 40,
+  className,
+  style,
+}: EmojiImageProps) {
   const base = useBaseUrl('/img/emoji');
+  const displaySize = emojiDisplaySize(size);
+  const offset = centeredEmojiOffset(size);
   return (
-    <svg x={x} y={y} width={size} height={size} viewBox="0 0 128 128">
-      <image href={`${base}/u${codepoint}.svg`} width={128} height={128} />
+    <svg
+      x={x - offset}
+      y={y - offset}
+      width={displaySize}
+      height={displaySize}
+      viewBox={`0 0 ${OPENMOJI_VIEWBOX_SIZE} ${OPENMOJI_VIEWBOX_SIZE}`}
+      preserveAspectRatio="xMidYMid meet"
+      aria-label={asset.label}
+      className={className}
+      style={style}
+    >
+      <image
+        href={emojiSrc(base, asset)}
+        width={OPENMOJI_VIEWBOX_SIZE}
+        height={OPENMOJI_VIEWBOX_SIZE}
+        preserveAspectRatio="xMidYMid meet"
+      />
     </svg>
   );
 }
 
 // ── AgentNode ─────────────────────────────────────────────────────────────────
-// Original Google Noto 🤖 emoji (u1f916). Delegates to NotoEmoji.
 export function AgentNode({ x, y, size = 40 }: AgentNodeProps) {
-  return <NotoEmoji codepoint="1f916" x={x} y={y} size={size} />;
+  return <EmojiImage asset={EMOJI.agent} x={x} y={y} size={size} />;
 }
 
 // ── AuthorWaveNode ────────────────────────────────────────────────────────────
 // 🙋🏻‍♂️ Emoji-style waving figure — author greeting the reader. Used on the about page.
-// Paths inlined from /img/emoji/u1f64b_1f3fb_200d_2642.svg (128×128 viewBox).
+// Site-specific inline figure; replace with OpenMoji-derived art in the inline slice.
 // Fills use flat colors (no gradients) per design system; hairHighlights omitted.
 // Draw order: shirt/body → head/face → arm assembly (hand in front of head).
 // LEFT hand waves (viewer perspective) — animations use negative rotations.
 export function AuthorWaveNode({ className }: { className?: string }) {
+  const base = useBaseUrl('/img/emoji');
+  const size = emojiDisplaySize(104);
   return (
-    <svg
-      viewBox="0 0 128 128"
-      width={104}
-      height={104}
+    <img
+      src={emojiSrc(base, EMOJI.wavingAuthor)}
+      width={size}
+      height={size}
       role="img"
       aria-label="Author waving hello"
       className={className}
-      style={{ display: 'block', overflow: 'visible' }}
-    >
-      {/* Layer 1: Body */}
-      <path d="M115.17,124 C114.91,116.71 109,107.03 101.35,103.01 C91.29,97.72 78.41,96 63.99,96 C55.09,96 48.01,98.62 39.64,95.99 C35.2,94.59 32.13,92.3 30.67,87.81 L29.35,83.76 L5.22,89.76 C5.22,89.76 10.24,111.65 12.79,124 Z" fill="#009393" />
-      <path d="M73.07,90.08 L54.91,90.08 L54.91,100.06 C54.91,104.57 58.61,108.23 63.17,108.23 L64.82,108.23 C69.38,108.23 73.08,104.57 73.08,100.06 Z" fill="#fcca91" />
-      <path d="M91.33,50.43 L36.67,50.43 C30.78,50.43 25.96,55.57 25.96,61.84 C25.96,68.12 30.78,73.25 36.67,73.25 L91.32,73.25 C97.21,73.25 102.03,68.11 102.03,61.84 C102.04,55.57 97.22,50.43 91.33,50.43 Z" fill="#fcca91" />
-
-      {/* Layer 2: Head & face */}
-      <path d="M64,11.07 C46.6,11.07 30.48,29.68 30.48,56.46 C30.48,83.1 47.09,96.27 64,96.27 C80.91,96.27 97.52,83.1 97.52,56.46 C97.52,29.68 81.4,11.07 64,11.07 Z" fill="#ffe3c3" />
-      <path d="M72.42,76.14 C69.23,78.03 58.79,78.03 55.61,76.14 C53.78,75.05 51.91,76.72 52.67,78.38 C53.42,80.01 59.12,83.8 64.04,83.8 C68.96,83.8 74.59,80.01 75.34,78.38 C76.09,76.72 74.25,75.05 72.42,76.14 Z" fill="#3d3d3d" />
-      <path d="M67.86,68.06 C67.75,68.02 67.65,67.99 67.54,67.98 L60.47,67.98 C60.36,67.99 60.25,68.02 60.15,68.06 C59.51,68.32 59.16,68.98 59.46,69.69 C59.76,70.4 61.17,72.38 64.01,72.38 C66.85,72.38 68.26,70.39 68.56,69.69 C68.85,68.98 68.5,68.32 67.86,68.06 Z" fill="#e6aa63" />
-      <path d="M52.49,58.81 A4.93 5.1 0 1 1 42.63,58.81 A4.93 5.1 0 1 1 52.49,58.81 Z" fill="#2b2b2b" />
-      <path d="M85.37,58.81 A4.93 5.1 0 1 1 75.51,58.81 A4.93 5.1 0 1 1 85.37,58.81 Z" fill="#2b2b2b" />
-      <path d="M88.08,50.79 L88.08,50.79 C88.08,50.78 85.79,47.18 80.48,47.18 C75.17,47.18 72.88,50.78 72.88,50.78 L72.88,50.79 C72.69,51.05 72.58,51.37 72.58,51.71 C72.58,52.58 73.29,53.29 74.15,53.29 C74.33,53.29 74.77,53.16 74.81,53.14 C77.99,51.83 80.48,51.82 80.48,51.82 C80.48,51.82 82.95,51.83 86.13,53.14 C86.17,53.16 86.61,53.29 86.79,53.29 C87.66,53.29 88.36,52.58 88.36,51.71 C88.39,51.36 88.27,51.04 88.08,50.79 Z" fill="#3d3d3d" />
-      <path d="M55.08,50.79 L55.08,50.79 C55.09,50.78 52.79,47.18 47.49,47.18 C42.19,47.18 39.89,50.78 39.89,50.78 L39.9,50.79 C39.71,51.05 39.6,51.37 39.6,51.71 C39.6,52.58 40.31,53.29 41.18,53.29 C41.36,53.29 41.8,53.16 41.84,53.14 C45.02,51.83 47.51,51.82 47.51,51.82 C47.51,51.82 49.98,51.83 53.16,53.14 C53.2,53.16 53.64,53.29 53.82,53.29 C54.69,53.29 55.4,52.58 55.4,51.71 C55.38,51.36 55.27,51.04 55.08,50.79 Z" fill="#3d3d3d" />
-      <path d="M64.01,4.03 L64.01,4.03 C64,4.03 64,4.03 63.99,4.03 C63.98,4.03 63.98,4.03 63.97,4.03 L63.97,4.03 C18.53,4.27 27.84,56.17 27.84,56.17 C27.84,56.17 29.88,61.52 30.81,63.88 C30.94,64.22 31.44,64.18 31.52,63.83 C32.49,59.49 35.98,44.1 37.74,39.43 C38.78,36.67 41.64,35.07 44.54,35.6 C48.99,36.41 56.09,37.41 63.91,37.41 C63.94,37.41 63.97,37.41 63.99,37.41 C64.01,37.41 64.05,37.41 64.07,37.41 C71.89,37.41 78.99,36.41 83.44,35.6 C86.34,35.07 89.2,36.68 90.23,39.43 C91.98,44.09 95.45,59.39 96.43,63.79 C96.51,64.15 97.01,64.18 97.14,63.84 L100.12,56.17 C100.14,56.17 109.44,4.27 64.01,4.03 Z" fill="#2b2b2b" />
-
-      {/* Layer 3: Arm assembly — rocks at shoulder, palm waves at wrist */}
-      <g className="idle-arm-rock" style={{ transformOrigin: '30px 88px' }}>
-        <path d="M29.12,83.06 C28.64,81.12 28.46,79.12 28.58,77.13 L29.21,47.95 C29.26,47.15 28.84,46.43 28.18,46.07 C27.94,45.92 27.67,45.81 27.38,45.77 L11.41,42.07 C10.38,41.94 9.42,42.62 9.2,43.63 C9.2,43.63 5.07,74.55 4.77,77.02 C4.47,79.49 3.69,82.46 4.5,86.2 L5.22,89.75 L31.01,89.06 Z" fill="#009393" />
-        <path d="M35.83,29.52 C32.71,29.66 29.59,30.03 26.88,31.42 C25.52,32.13 24.32,33.11 23.3,34.28 C22.48,35.21 21.82,36.26 21.22,37.39 C21.2,37.44 21.15,37.47 21.11,37.47 C21.04,37.47 21,37.42 20.99,37.36 L20.99,37.35 C20.99,37.32 21.89,34.84 22.63,33.76 C23.56,32.38 24.86,31.23 26.34,30.41 C27.81,29.59 29.42,29.06 31.05,28.79 C32.57,28.52 34.1,28.44 35.61,28.5 C35.59,28.57 35.56,28.64 35.54,28.7 C35.53,28.72 35.52,28.73 35.52,28.74 C35.4,29.07 35.56,29.39 35.83,29.52 Z" fill="#fcca91" />
-        <g className="idle-palm-wave" style={{ transformOrigin: '21px 45px' }}>
-          <path d="M44.33,31.43 C42.03,31.46 37.67,34.95 35.93,37.19 C33.09,40.83 31.08,48.42 21.72,45.5 C20.05,44.99 13.38,43.87 12.23,43.2 C11.45,42.75 9.38,39.06 10.69,31.51 C11.18,28.64 12.35,21.7 12.35,21.7 L14,10.83 C14.21,9 15.48,7.82 17.21,8.25 C18.6,8.6 18.99,9.85 18.89,11.48 L18.5,18.02 L18.5,18.06 C18.5,18.35 18.71,18.61 19.01,18.67 C19.34,18.73 19.66,18.52 19.73,18.19 C20.21,16 21.87,8.39 22.24,7.04 C22.68,5.46 23.51,4.2 25.28,4.59 C27.05,4.97 27.33,6.81 27.03,8.26 C26.74,9.7 24.85,19.73 24.85,19.73 C24.78,20.08 24.97,20.41 25.3,20.49 C25.3,20.49 25.3,20.49 25.31,20.49 C25.62,20.56 25.94,20.35 26.03,20.02 L30.15,6.47 C30.64,4.69 32.16,3.6 33.79,4.33 C35.09,4.92 35.38,6.42 34.97,7.91 L31.48,21.74 C31.44,21.9 31.52,22.07 31.67,22.12 L31.68,22.12 C31.82,22.16 31.98,22.08 32.03,21.93 L36.73,10.58 C37.29,9.15 38.53,8.15 39.91,8.51 C41.67,8.95 42.19,10.74 41.53,12.45 C41.53,12.45 37.04,24.72 35.62,28.5 C35.6,28.57 35.57,28.64 35.55,28.7 C35.54,28.72 35.53,28.73 35.53,28.74 C35.41,29.07 35.57,29.39 35.84,29.52 C35.92,29.56 36.01,29.58 36.1,29.58 C36.2,29.58 36.3,29.55 36.4,29.51 C36.49,29.46 36.58,29.42 36.66,29.36 C36.69,29.34 36.72,29.32 36.75,29.3 C38.17,28.42 39.52,26.49 41.72,26.2 C44.12,25.88 45.67,26.78 46.18,27.82 C46.62,28.69 46.63,31.39 44.33,31.43 Z" fill="#ffe3c3" />
-        </g>
-      </g>
-    </svg>
+      style={{ display: 'block' }}
+    />
   );
 }
-
 // ── PromptIcon ────────────────────────────────────────────────────────────────
 // Unified prompt shape — same geometry as TravelingPromptCard, centered at 0,0.
 // No embedded animateMotion; parent applies scroll-driven transform.
@@ -90,11 +115,26 @@ export function PromptIcon({ className }: { className?: string }) {
   const g = TCARD_GEOM;
   return (
     <g className={className}>
-      <rect x={g.bodyX} y={g.bodyY} width={g.W} height={g.H} rx={g.rx}
-        fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5} />
+      <rect
+        x={g.bodyX}
+        y={g.bodyY}
+        width={g.W}
+        height={g.H}
+        rx={0}
+        fill="var(--visual-bg-indigo)"
+        stroke="var(--visual-indigo)"
+        strokeWidth={1.5}
+      />
       {g.stubs.map((s, i) => (
-        <rect key={i} x={s.x} y={s.y} width={s.w} height={s.h} rx={s.rx}
-          fill="var(--visual-indigo)" />
+        <rect
+          key={i}
+          x={s.x}
+          y={s.y}
+          width={s.w}
+          height={s.h}
+          rx={0}
+          fill="var(--visual-indigo)"
+        />
       ))}
     </g>
   );
@@ -103,30 +143,59 @@ export function PromptIcon({ className }: { className?: string }) {
 // ── TravelingPromptCard ───────────────────────────────────────────────────────
 // (0,0) is the animateMotion anchor. Parent supplies <path id={pathId}> in <defs>.
 // begin defaults to "indefinite" — caller triggers via motionRef.current.beginElement().
-// rotate defaults to "0" — prompt cards are artifacts that don't tilt (Smooth Circuit).
+// rotate defaults to "0" — prompt cards are stable artifacts that don't tilt.
 export interface TravelingPromptCardProps {
   pathId: string;
-  dur?: string;                                        // default "0.4s"
+  dur?: string; // default "0.4s"
   motionRef?: React.RefObject<SVGAnimateMotionElement>;
   className?: string;
   style?: React.CSSProperties;
   rotate?: string; // "0" | "auto-reverse" — default "0"
 }
 
-export function TravelingPromptCard({ pathId, dur = '0.4s', motionRef, className, style, rotate }: TravelingPromptCardProps) {
+export function TravelingPromptCard({
+  pathId,
+  dur = '0.4s',
+  motionRef,
+  className,
+  style,
+  rotate,
+}: TravelingPromptCardProps) {
   const g = TCARD_GEOM;
   return (
     <g className={className} style={style}>
-      <animateMotion ref={motionRef} begin="indefinite" dur={dur} fill="freeze"
-        calcMode="spline" keyTimes="0;1" keySplines="0.20 0 0.38 0.9"
-        rotate={rotate ?? '0'}>
+      <animateMotion
+        ref={motionRef}
+        begin="indefinite"
+        dur={dur}
+        fill="freeze"
+        calcMode="spline"
+        keyTimes="0;1"
+        keySplines="0.20 0 0.38 0.9"
+        rotate={rotate ?? '0'}
+      >
         <mpath href={`#${pathId}`} />
       </animateMotion>
-      <rect x={g.bodyX} y={g.bodyY} width={g.W} height={g.H} rx={g.rx}
-        fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5} />
+      <rect
+        x={g.bodyX}
+        y={g.bodyY}
+        width={g.W}
+        height={g.H}
+        rx={0}
+        fill="var(--visual-bg-indigo)"
+        stroke="var(--visual-indigo)"
+        strokeWidth={1.5}
+      />
       {g.stubs.map((s, i) => (
-        <rect key={i} x={s.x} y={s.y} width={s.w} height={s.h} rx={s.rx}
-          fill="var(--visual-indigo)" />
+        <rect
+          key={i}
+          x={s.x}
+          y={s.y}
+          width={s.w}
+          height={s.h}
+          rx={0}
+          fill="var(--visual-indigo)"
+        />
       ))}
     </g>
   );

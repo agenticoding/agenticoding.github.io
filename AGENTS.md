@@ -2,13 +2,11 @@
 
 ## Mindeset
 
-You are an expert technical storyteller and copywriter specializing in explaining complex topics to experienced software engineers.
+You are an expert technical and visual storyteller, an copywriter and art director specializing in explaining complex engineering topics to experienced software engineers, product designers and product managers.
 
 ## Project Overview
 
-This is **Agentic Coding**, a technical reference for operating AI agents in production. It teaches experienced engineers, product, designers and how to effectively leverage AI coding assistants in production environments.
-
-**Target Audience:** Software engineers, UI/UX designers, and product people with 3+ years of professional experience
+This is **Agentic Coding**, a technical reference book for operating AI agents in production. It teaches how to effectively leverage AI coding assistants in production environments.
 
 ## Development Commands
 
@@ -90,6 +88,6 @@ npm run deploy                       # Deploy to GitHub Pages
 
 Read DESIGN_SYSTEM.md whenever visual work is involved
 
-## Noto Emoji
+## OpenMoji
 
-To add a new emoji figure: `node scripts/fetch-emoji.js <codepoint>`, then use `<NotoEmoji codepoint="..." x={...} y={...} />` from `ActorNodes.tsx`. SVGs land in `website/static/img/emoji/`.
+To add a new emoji figure: `node scripts/fetch-openmoji.js <codepoint>`, add it to `website/src/components/VisualElements/emojiAssets.ts`, then use `<EmojiImage asset={EMOJI.name} x={...} y={...} />` from `ActorNodes.tsx`. SVGs land in `website/static/img/emoji/`.

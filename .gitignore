@@ -49,3 +49,5 @@ scripts/.noto-cache/
 src-tauri/target/
 src-tauri/gen/
 # Cargo.lock is intentionally tracked (application binary, not library)
+# .openmoji-cache
+scripts/.openmoji-cache/

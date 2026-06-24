@@ -130,7 +130,7 @@ export default function MyNewComponent({ compact = false }: PresentationAwarePro
 .container {
   margin: 2rem 0;
   padding: 1.5rem;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--visual-bg-cyan);
   border: 1px solid var(--visual-cyan);
 }
