@@ -333,11 +333,11 @@ export default function MarketingDecoderInteractive({
     .join(' ');
 
   return (
-    <section className={className} aria-label="Marketing Translate widget">
+    <section className={className} aria-label="Marketing Translator widget">
       <header className={styles.header}>
         <div className={styles.headingGroup}>
           <div className={styles.titleLine}>
-            <p className={styles.kicker}>Marketing Translate</p>
+            <p className={styles.kicker}>Marketing Translator</p>
             <PauseButton
               disabled={state.reducedMotion}
               onClick={state.togglePaused}

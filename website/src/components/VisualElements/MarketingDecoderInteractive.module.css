@@ -315,7 +315,7 @@
   align-content: start;
   gap: var(--space-2);
   align-items: start;
-  block-size: 6.25rem;
+  block-size: calc(var(--space-9) + var(--space-1));
   overflow: hidden;
   padding: var(--space-2);
   border-left: 3px solid var(--visual-neutral);
@@ -366,7 +366,7 @@
 }
 
 .compact .note {
-  block-size: 5.75rem;
+  block-size: calc(var(--space-9) + var(--space-1));
 }
 
 .compact .selector {
@@ -541,7 +541,8 @@
   }
 
   .marketingPane {
-    block-size: var(--space-9);
+    block-size: calc(var(--space-9) + var(--space-1));
+    padding-block-end: var(--space-2);
   }
 
   .engineeringPane,
