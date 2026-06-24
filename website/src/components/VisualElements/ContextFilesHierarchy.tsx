@@ -17,7 +17,6 @@ const TIER_W = 320;
 const TIER_H = 36;
 const TIER_GAP = 20;           // vertical gap between tiers
 const TIER_TOP = 40;           // y of first tier (below title)
-const TIER_R = 8;              // corner radius
 const ACCENT_W = 3;            // left accent strip width
 
 // Arrow geometry (positioned between tiers)
@@ -168,7 +167,7 @@ export default function ContextFilesHierarchy() {
           <g key={tier.id}>
             {/* Ghost placeholder */}
             <Ghost
-              x={TIER_X} y={y} width={TIER_W} height={TIER_H} rx={TIER_R}
+              x={TIER_X} y={y} width={TIER_W} height={TIER_H} rx={0}
               fill={bgVar}
               stroke={colorVar}
               mounted={mounted} reached={isReached}
@@ -178,7 +177,7 @@ export default function ContextFilesHierarchy() {
             <g className={clsx(styles.tier, isReached && styles.tierIn)}>
               {/* Background */}
               <rect
-                x={TIER_X} y={y} width={TIER_W} height={TIER_H} rx={TIER_R}
+                x={TIER_X} y={y} width={TIER_W} height={TIER_H} rx={0}
                 fill={bgVar}
                 stroke={colorVar}
                 strokeWidth={1.5}

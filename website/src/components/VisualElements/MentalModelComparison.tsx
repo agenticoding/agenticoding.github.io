@@ -1,15 +1,13 @@
 import React from 'react';
-import { superellipsePath } from '@site/src/utils/svgMath';
 
 interface Props {
   compact?: boolean;
 }
 
-// Precomputed superellipsePath(410, 148, 44, 30, 3.5)
-const OPERATOR_PATH =
-  'M454.0,148.0 L453.9,156.0 L453.5,159.8 L452.9,162.8 L452.1,165.3 L451.0,167.5 L449.6,169.4 L448.0,171.1 L446.1,172.6 L443.9,173.9 L441.4,175.0 L438.6,175.9 L435.4,176.7 L431.7,177.3 L427.3,177.7 L421.7,177.9 L410.0,178.0 L398.3,177.9 L392.7,177.7 L388.3,177.3 L384.6,176.7 L381.4,175.9 L378.6,175.0 L376.1,173.9 L373.9,172.6 L372.0,171.1 L370.4,169.4 L369.0,167.5 L367.9,165.3 L367.1,162.8 L366.5,159.8 L366.1,156.0 L366.0,148.0 L366.1,140.0 L366.5,136.2 L367.1,133.2 L367.9,130.7 L369.0,128.5 L370.4,126.6 L372.0,124.9 L373.9,123.4 L376.1,122.1 L378.6,121.0 L381.4,120.1 L384.6,119.3 L388.3,118.7 L392.7,118.3 L398.3,118.1 L410.0,118.0 L421.7,118.1 L427.3,118.3 L431.7,118.7 L435.4,119.3 L438.6,120.1 L441.4,121.0 L443.9,122.1 L446.1,123.4 L448.0,124.9 L449.6,126.6 L451.0,128.5 L452.1,130.7 L452.9,133.2 L453.5,136.2 L453.9,140.0 L454.0,148.0Z';
+// Sharp operator card path centered at (410, 148), 88×60.
+const OPERATOR_PATH = 'M366.0,118.0 L454.0,118.0 L454.0,178.0 L366.0,178.0 Z';
 
-export default function MentalModelComparison({ compact = false }: Props) {
+export default function MentalModelComparison({ compact: _compact = false }: Props) {
   return (
     <svg
       viewBox="0 0 600 280"
@@ -21,7 +19,7 @@ export default function MentalModelComparison({ compact = false }: Props) {
       style={{ display: 'block' }}
     >
       <defs>
-        {/* Arrow marker for rose (Smooth Circuit) */}
+        {/* Arrow marker for rose */}
         <marker
           id="mmcArrowRose"
           markerWidth="6"
@@ -131,7 +129,7 @@ export default function MentalModelComparison({ compact = false }: Props) {
         AI
       </text>
 
-      {/* Bidirectional arcs — You ↔ AI (Smooth Circuit: round linecaps) */}
+      {/* Bidirectional arcs — You ↔ AI; curve communicates relationship flow. */}
       {/* Upper arc: You → AI */}
       <path
         d="M 126,148 Q 152,110 179,148"
@@ -191,7 +189,7 @@ export default function MentalModelComparison({ compact = false }: Props) {
         ✓ AI AS POWER TOOL
       </text>
 
-      {/* Operator node — squircle (Smooth Circuit) */}
+      {/* Operator node — sharp rectangular container */}
       <path
         d={OPERATOR_PATH}
         fill="var(--surface-raised)"
@@ -219,7 +217,7 @@ export default function MentalModelComparison({ compact = false }: Props) {
         y="124"
         width="76"
         height="48"
-        rx="2"
+        rx="0"
         fill="var(--visual-bg-cyan)"
         stroke="var(--visual-cyan)"
         strokeWidth="2"

@@ -28,11 +28,12 @@
 
 .resources {
   padding: var(--space-6) 0;
+  container-type: inline-size;
 }
 
 .resourceGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: var(--space-3);
   max-width: 1100px;
   margin: 0 auto;
@@ -45,7 +46,7 @@
   background: var(--surface-raised);
   border: 1px solid var(--border-default);
   border-top: 3px solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: 0;
   text-decoration: none;
   color: inherit;
   transition: border-color 0.15s ease;
@@ -127,11 +128,7 @@
    RESPONSIVE
    ======================================================================== */
 
-@media screen and (max-width: 768px) {
-  .resourceGrid {
-    grid-template-columns: 1fr;
-  }
-
+@container (max-width: 48rem) {
   .sectionTitle {
     font-size: var(--text-2xl);
   }

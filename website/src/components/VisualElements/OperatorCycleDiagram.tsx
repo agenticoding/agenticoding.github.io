@@ -5,7 +5,8 @@ import shared from './diagram.module.css';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
-import { NotoEmoji } from './ActorNodes';
+import { EmojiImage } from './ActorNodes';
+import { EMOJI, type EmojiAsset } from './emojiAssets';
 import { ARROWHEAD_POINTS, arrowOpacity, CONNECTOR_STYLE } from './diagramConstants';
 import { useMounted } from '../../hooks/useMounted';
 
@@ -30,11 +31,11 @@ const R = 22;
 
 const ICON_HALF = 18;
 
-const EMOJI: Record<string, string> = {
-  research: '1f52c',
-  plan:     '1f4d1',
-  execute:  '1f916',
-  validate: '1f4cf',
+const NODE_EMOJI: Record<string, EmojiAsset> = {
+  research: EMOJI.microscope,
+  plan:     EMOJI.documentTabs,
+  execute:  EMOJI.agent,
+  validate: EMOJI.ruler,
 };
 
 const NODES = [
@@ -176,7 +177,7 @@ export default function OperatorCycleDiagram() {
             className={clsx(styles.phaseNode, nodesReached && shared.actEntered)}
             style={nodesReached ? { animationDelay: `${i * 80}ms` } : undefined}
           >
-            <NotoEmoji codepoint={EMOJI[node.id]} x={node.cx - ICON_HALF} y={node.cy - ICON_HALF} size={ICON_HALF * 2} />
+            <EmojiImage asset={NODE_EMOJI[node.id]} x={node.cx - ICON_HALF} y={node.cy - ICON_HALF} size={ICON_HALF * 2} />
             {/* Phase label — above top-row nodes, below bottom-row nodes */}
             <text
               x={node.cx} y={node.labelAbove ? node.cy - R - 8 : node.cy + R + 14}

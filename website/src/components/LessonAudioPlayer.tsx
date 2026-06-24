@@ -134,8 +134,8 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
       >
         {isPlaying ? (
           <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
-            <rect x="2" y="2" width="3.5" height="10" rx="0.5"/>
-            <rect x="8.5" y="2" width="3.5" height="10" rx="0.5"/>
+            <rect x="2" y="2" width="3.5" height="10" rx="0"/>
+            <rect x="8.5" y="2" width="3.5" height="10" rx="0"/>
           </svg>
         ) : (
           <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
@@ -149,8 +149,8 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
           stroke="currentColor" strokeWidth="2"
           strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9V8a5 5 0 0 1 10 0v1"/>
-          <rect x="1" y="9" width="3" height="4" rx="1"/>
-          <rect x="12" y="9" width="3" height="4" rx="1"/>
+          <rect x="1" y="9" width="3" height="4" rx="0"/>
+          <rect x="12" y="9" width="3" height="4" rx="0"/>
         </svg>
       </span>
 

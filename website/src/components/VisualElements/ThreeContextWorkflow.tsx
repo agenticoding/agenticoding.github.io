@@ -95,7 +95,7 @@ function VerticalLayout() {
               y={y}
               width={boxWidth}
               height={boxHeight}
-              rx="12"
+              rx="0"
               className={styles.contextBox}
             />
             <text
@@ -220,7 +220,7 @@ function HorizontalLayout({ compact }: { compact: boolean }) {
             y={centerY - boxHeight / 2}
             width={boxWidth}
             height={boxHeight}
-            rx="16"
+            rx="0"
             className={styles.contextBox}
           />
 

@@ -378,7 +378,7 @@
 .comparison-column {
   composes: gpu-optimized;
   padding: clamp(0.7em, 1.5vw, 1em);
-  border-radius: 8px;
+  border-radius: 0;
   overflow-y: auto;
 }
 
@@ -388,7 +388,7 @@
   font-size: 0.8em;
   line-height: 1.4;
   margin: 0;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--code-bg);
   padding: 1.2em;
   text-align: left;

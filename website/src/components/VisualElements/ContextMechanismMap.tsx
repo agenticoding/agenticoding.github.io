@@ -15,10 +15,6 @@ const ROW_START_Y = CARD_Y + 144;
 const ROW_GAP = 48;
 
 // Design system border-radius tokens (px values for SVG rx attributes)
-const RADIUS_NONE = 0;  // --radius-none
-const RADIUS_SM = 4;    // --radius-sm
-const RADIUS_MD = 8;    // --radius-md
-const RADIUS_LG = 12;   // --radius-lg
 
 const CARDS = [
   {
@@ -89,11 +85,11 @@ function ContextThumbnail({ card, x, y, delay }: { card: Card; x: number; y: num
   if (card.thumbnail === 'subagents') {
     return (
       <g aria-hidden="true">
-        <rect x={x} y={y + 8} width={76} height={48} rx={RADIUS_MD} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
-        <rect x={x + 10} y={y + 18} width={56} height={7} rx={RADIUS_SM} fill="var(--surface-muted)" />
-        <rect x={x + 10} y={y + 30} width={40} height={7} rx={RADIUS_SM} fill="var(--surface-muted)" />
+        <rect x={x} y={y + 8} width={76} height={48} rx={0} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
+        <rect x={x + 10} y={y + 18} width={56} height={7} rx={0} fill="var(--surface-muted)" />
+        <rect x={x + 10} y={y + 30} width={40} height={7} rx={0} fill="var(--surface-muted)" />
         <path d={`M ${x + 82} ${y + 32} C ${x + 92} ${y + 24}, ${x + 96} ${y + 24}, ${x + 104} ${y + 24}`} fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeDasharray="4 3" strokeLinecap="round" />
-        <rect x={x + 104} y={y + 8} width={40} height={48} rx={RADIUS_MD} fill={bg} stroke={color} strokeWidth={1.5} strokeDasharray="4 3" className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />
+        <rect x={x + 104} y={y + 8} width={40} height={48} rx={0} fill={bg} stroke={color} strokeWidth={1.5} strokeDasharray="4 3" className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />
         <text x={x + 124} y={y + 38} textAnchor="middle" className={styles.zeroLabel} fill={color}>0</text>
       </g>
     );
@@ -101,10 +97,10 @@ function ContextThumbnail({ card, x, y, delay }: { card: Card; x: number; y: num
 
   return (
     <g aria-hidden="true">
-      <rect x={x} y={y} width={THUMB_W} height={THUMB_H} rx={RADIUS_MD} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
-      <rect x={x + 10} y={y + 10} width={124} height={10} rx={RADIUS_SM} fill="var(--surface-muted)" />
-      <rect x={x + 10} y={y + 26} width={124} height={10} rx={RADIUS_SM} fill="var(--surface-muted)" />
-      <rect x={x + 10} y={y + 42} width={124} height={10} rx={RADIUS_SM} fill="var(--surface-muted)" />
+      <rect x={x} y={y} width={THUMB_W} height={THUMB_H} rx={0} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
+      <rect x={x + 10} y={y + 10} width={124} height={10} rx={0} fill="var(--surface-muted)" />
+      <rect x={x + 10} y={y + 26} width={124} height={10} rx={0} fill="var(--surface-muted)" />
+      <rect x={x + 10} y={y + 42} width={124} height={10} rx={0} fill="var(--surface-muted)" />
       {renderHighlight(card.thumbnail, x, y, color, bg, delay)}
     </g>
   );
@@ -113,15 +109,15 @@ function ContextThumbnail({ card, x, y, delay }: { card: Card; x: number; y: num
 function renderHighlight(kind: Thumbnail, x: number, y: number, color: string, bg: string, delay: number) {
   switch (kind) {
     case 'primacy':
-      return <rect x={x + 10} y={y + 10} width={124} height={10} rx={RADIUS_SM} fill={bg} stroke={color} strokeWidth={1.5} className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />;
+      return <rect x={x + 10} y={y + 10} width={124} height={10} rx={0} fill={bg} stroke={color} strokeWidth={1.5} className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />;
     case 'tools':
-      return <rect x={x + 10} y={y + 26} width={124} height={10} rx={RADIUS_SM} fill={bg} stroke={color} strokeWidth={1.5} className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />;
+      return <rect x={x + 10} y={y + 26} width={124} height={10} rx={0} fill={bg} stroke={color} strokeWidth={1.5} className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />;
     case 'recency':
-      return <rect x={x + 10} y={y + 42} width={124} height={10} rx={RADIUS_SM} fill={bg} stroke={color} strokeWidth={1.5} className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />;
+      return <rect x={x + 10} y={y + 42} width={124} height={10} rx={0} fill={bg} stroke={color} strokeWidth={1.5} className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />;
     case 'runtime':
       return (
         <g className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }}>
-          <rect x={x + 10} y={y + 26} width={124} height={26} rx={RADIUS_MD} fill="transparent" stroke={color} strokeWidth={1.5} strokeDasharray="5 3" />
+          <rect x={x + 10} y={y + 26} width={124} height={26} rx={0} fill="transparent" stroke={color} strokeWidth={1.5} strokeDasharray="5 3" />
           <path d={`M ${x + 24} ${y + 21} L ${x + 24} ${y + 57} M ${x + 120} ${y + 21} L ${x + 120} ${y + 57}`} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
         </g>
       );
@@ -167,15 +163,19 @@ function MechanismCard({
 
   return (
     <g>
-      <path
-        d={`M ${x} ${CARD_Y} L ${x + CARD_W - RADIUS_SM} ${CARD_Y} Q ${x + CARD_W} ${CARD_Y} ${x + CARD_W} ${CARD_Y + RADIUS_SM} L ${x + CARD_W} ${CARD_Y + CARD_H - RADIUS_SM} Q ${x + CARD_W} ${CARD_Y + CARD_H} ${x + CARD_W - RADIUS_SM} ${CARD_Y + CARD_H} L ${x} ${CARD_Y + CARD_H} Z`}
+      <rect
+        x={x}
+        y={CARD_Y}
+        width={CARD_W}
+        height={CARD_H}
+        rx={0}
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
         strokeWidth={1}
       />
-      <rect x={x} y={CARD_Y} width={3} height={CARD_H} rx={RADIUS_NONE} fill={color} className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />
+      <rect x={x} y={CARD_Y} width={3} height={CARD_H} rx={0} fill={color} className="idle-landing-glow" style={{ animationDelay: `${delay}ms` }} />
       <text x={x + 16} y={CARD_Y + 26} className={styles.cardTitle} fill="var(--text-heading)">{card.title}</text>
-      <rect x={x + 16} y={CARD_Y + 38} width={56} height={4} rx={RADIUS_SM} fill={bg} stroke={color} strokeWidth={1} />
+      <rect x={x + 16} y={CARD_Y + 38} width={56} height={4} rx={0} fill={bg} stroke={color} strokeWidth={1} />
       <ContextThumbnail card={card} x={x + 16} y={THUMB_Y} delay={delay} />
       <LensRows card={card} x={x} />
     </g>

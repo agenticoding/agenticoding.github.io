@@ -6,7 +6,7 @@ interface IconProps {
 }
 
 // Checklist icon — 3 rows: 2 checked items + 1 pending circle.
-// Communicates "structured plan in progress." Smooth Circuit throughout.
+// Communicates "structured plan in progress." curved geometry throughout.
 // Lines taper (11px → 8px → 6px) for visual progression.
 export default function ChecklistIcon({ className, size = 24 }: IconProps) {
   return (

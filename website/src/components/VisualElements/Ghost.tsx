@@ -20,10 +20,10 @@ export interface GhostProps {
   mounted: boolean; reached: boolean;
   style?: React.CSSProperties;
 }
-export function Ghost({ x, y, width, height, rx = 12, fill, stroke, mounted, reached, style }: GhostProps) {
+export function Ghost({ x, y, width, height, fill, stroke, mounted, reached, style }: GhostProps) {
   return (
     <rect
-      x={x} y={y} width={width} height={height} rx={rx}
+      x={x} y={y} width={width} height={height} rx={0}
       fill={fill} stroke={stroke}
       {...GHOST_STYLE}
       className={ghostClass(mounted, reached)}

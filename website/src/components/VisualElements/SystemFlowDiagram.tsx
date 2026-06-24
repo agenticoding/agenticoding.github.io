@@ -59,14 +59,12 @@ const TERMINAL_CIRCLE_RADIUS = 22;
 const TERMINAL_ARROW_END = TERMINAL_CIRCLE_OFFSET - TERMINAL_CIRCLE_RADIUS - ARROW_GAP; // 55
 
 // Box styling
-const BOX_CORNER_RADIUS = 8;
 const CHECKMARK_Y_OFFSET = 7;
 
 // Exit markers
 const EXIT_START_PADDING = 5;
 const EXIT_PILL_WIDTH = 56;
 const EXIT_PILL_HEIGHT = 32;
-const EXIT_PILL_RADIUS = 16;
 const EXIT_PILL_GAP = 18;
 
 export default function SystemFlowDiagram({
@@ -385,7 +383,7 @@ export default function SystemFlowDiagram({
                     y={stepY - BOX_HEIGHT / 2}
                     width={BOX_WIDTH}
                     height={BOX_HEIGHT}
-                    rx={BOX_CORNER_RADIUS}
+                    rx={0}
                     className={styles.stepBox}
                   />
                   <text
@@ -432,13 +430,13 @@ export default function SystemFlowDiagram({
                 y2={EXIT_Y - EXIT_PILL_GAP}
                 className={styles.exitPath}
               />
-              {/* Exit marker pill */}
+              {/* Exit marker */}
               <rect
                 x={finalExitX - EXIT_PILL_WIDTH / 2}
                 y={EXIT_Y - EXIT_PILL_HEIGHT / 2}
                 width={EXIT_PILL_WIDTH}
                 height={EXIT_PILL_HEIGHT}
-                rx={EXIT_PILL_RADIUS}
+                rx={0}
                 className={
                   marker.type === 'error'
                     ? styles.exitMarkerError

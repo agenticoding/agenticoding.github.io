@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import promptsSidebars from '../../../sidebarsPrompts';
-import { superellipsePath } from '@site/src/utils/svgMath';
+import { rectanglePath } from '@site/src/utils/svgMath';
 import styles from './index.module.css';
 
 // ---------------------------------------------------------------------------
@@ -35,12 +35,11 @@ const PROMPT_COUNT = countPrompts();
 // ---------------------------------------------------------------------------
 
 /**
- * Cascading squircle "cards" — Smooth Circuit family (n=3.5).
- * Three overlapping squircle outlines fan rightward, front card has
- * abstract text lines inside. Magenta accent on the front shape.
+ * Cascading sharp prompt cards.
+ * Three overlapping rectangular outlines fan rightward; the front card carries
+ * abstract text lines and a magenta semantic accent.
  */
 function PromptIllustration() {
-  const n = 3.5;
   const rx = 34,
     ry = 24;
   return (
@@ -51,7 +50,7 @@ function PromptIllustration() {
       className={styles.resourceIllustration}
     >
       <path
-        d={superellipsePath(68, 44, rx, ry, n)}
+        d={rectanglePath(68, 44, rx, ry)}
         fill="var(--surface-raised)"
         stroke="var(--border-subtle)"
         strokeWidth="1.5"
@@ -59,7 +58,7 @@ function PromptIllustration() {
         strokeLinejoin="round"
       />
       <path
-        d={superellipsePath(78, 42, rx, ry, n)}
+        d={rectanglePath(78, 42, rx, ry)}
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
         strokeWidth="1.5"
@@ -67,7 +66,7 @@ function PromptIllustration() {
         strokeLinejoin="round"
       />
       <path
-        d={superellipsePath(88, 40, rx, ry, n)}
+        d={rectanglePath(88, 40, rx, ry)}
         fill="var(--surface-raised)"
         stroke="var(--visual-magenta)"
         strokeWidth="2"
@@ -124,7 +123,7 @@ function ToolboxIllustration() {
         y="10"
         width="96"
         height="60"
-        rx="2"
+        rx="0"
         fill="var(--surface-raised)"
         stroke="var(--visual-cyan)"
         strokeWidth="2"
@@ -184,12 +183,11 @@ function ToolboxIllustration() {
 }
 
 /**
- * Code research — Smooth Circuit family.
+ * Code research — sharp rectangular documents with curved search geometry.
  * Layered code blocks with match highlights, dashed connectors
  * leading to a magnifying glass. Indigo accent.
  */
 function ChunkHoundIllustration() {
-  const n = 3.5;
   return (
     <svg
       viewBox="0 0 160 80"
@@ -198,7 +196,7 @@ function ChunkHoundIllustration() {
       className={styles.resourceIllustration}
     >
       <path
-        d={superellipsePath(48, 42, 28, 22, n)}
+        d={rectanglePath(48, 42, 28, 22)}
         fill="var(--surface-raised)"
         stroke="var(--border-subtle)"
         strokeWidth="1.5"
@@ -206,7 +204,7 @@ function ChunkHoundIllustration() {
         strokeLinejoin="round"
       />
       <path
-        d={superellipsePath(56, 40, 28, 22, n)}
+        d={rectanglePath(56, 40, 28, 22)}
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
         strokeWidth="2"
@@ -319,7 +317,7 @@ function ChunkHoundIllustration() {
 }
 
 /**
- * Converging research — Smooth Circuit family.
+ * Converging research — sharp rectangular sources with curved connector flow.
  * Scattered source nodes with Bezier curves converging to a
  * synthesis circle, then output arrow. Success accent.
  */

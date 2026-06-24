@@ -72,13 +72,13 @@
   cursor: pointer;
 }
 
-/* Smooth Circuit thumb — explicit idle values; no var() intermediary so Safari
+/* curved geometry thumb — explicit idle values; no var() intermediary so Safari
    can observe the property change and fire transitions correctly */
 .seekBar::-webkit-slider-thumb {
   appearance: none;
   width: 12px;
   height: 12px;
-  border-radius: var(--radius-full);
+  border-radius: 0;
   background: var(--text-muted);
   cursor: pointer;
   transform: scale(0.6);
@@ -89,7 +89,7 @@
   width: 12px;
   height: 12px;
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: 0;
   background: var(--text-muted);
   cursor: pointer;
   transform: scale(0.6);

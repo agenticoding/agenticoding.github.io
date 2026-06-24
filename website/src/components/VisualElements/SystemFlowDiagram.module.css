@@ -123,7 +123,7 @@
   stroke-linecap: round;
 }
 
-/* Exit marker pills */
+/* Exit markers */
 .exitMarkerError {
   fill: var(--visual-bg-error);
   stroke: var(--visual-error);

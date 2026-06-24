@@ -170,7 +170,7 @@
   max-width: var(--target-sm);
   padding: 0;
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
@@ -244,7 +244,7 @@
   width: var(--target-sm);
   height: var(--target-sm);
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   color: var(--text-muted);
   transition: background 0.15s ease, color 0.15s ease;
 }

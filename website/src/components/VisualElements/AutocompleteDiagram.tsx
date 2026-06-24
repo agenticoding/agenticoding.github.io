@@ -18,7 +18,6 @@ const VH = 240;
 const RIBBON_X  = 20;
 const CHIP_W    = 42;
 const CHIP_H    = 28;
-const CHIP_RX   = 4;
 const CHIP_GAP  = 4;
 const CHIP_STRIDE = CHIP_W + CHIP_GAP; // 46
 const RIBBON_Y  = 52;
@@ -44,7 +43,6 @@ const PCT_RIGHT_X = 280;
 const BAR_X     = 286;
 const MAX_BAR_W = 104;
 const BAR_H     = 14;
-const BAR_RX    = 2;
 const BAR_Y_OFF = (ROW_H - BAR_H) / 2; // 4
 const TOKEN_X   = BAR_X + MAX_BAR_W + 8; // 398
 
@@ -96,7 +94,7 @@ export default function AutocompleteDiagram() {
               y={RIBBON_Y}
               width={CHIP_W}
               height={CHIP_H}
-              rx={CHIP_RX}
+              rx={0}
               fill="var(--surface-raised)"
               stroke="var(--border-subtle)"
               strokeWidth="1"
@@ -166,7 +164,7 @@ export default function AutocompleteDiagram() {
               y={ry + BAR_Y_OFF}
               width={bw}
               height={BAR_H}
-              rx={BAR_RX}
+              rx={0}
               fill={barFill}
               stroke={barStroke}
               strokeWidth="1"

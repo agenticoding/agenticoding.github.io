@@ -1,7 +1,7 @@
 .container {
   margin: 2.5rem auto;
   padding: 1.25rem;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--visual-bg-indigo);
   border: 1px solid var(--visual-indigo);
   max-width: 500px;

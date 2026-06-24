@@ -181,7 +181,7 @@ export default function KnowledgeExpansionDiamond({
             y={specY}
             width={specBoxWidth}
             height={boxHeight}
-            rx="5"
+            rx="0"
             className={styles.layerBox}
           />
           <text
@@ -209,7 +209,7 @@ export default function KnowledgeExpansionDiamond({
             y={designY}
             width={designBoxWidth}
             height={boxHeight}
-            rx="5"
+            rx="0"
             className={styles.layerBox}
           />
           <text
@@ -237,7 +237,7 @@ export default function KnowledgeExpansionDiamond({
             y={codeY}
             width={codeBoxWidth}
             height={codeBoxHeight}
-            rx="6"
+            rx="0"
             className={styles.layerBoxCode}
             filter="url(#codeShadow)"
           />

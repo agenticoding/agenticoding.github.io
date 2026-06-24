@@ -10,7 +10,7 @@ import { AgentNode } from './ActorNodes';
 import { ARROWHEAD_POINTS_STD, arrowOpacity, CONNECTOR_STYLE } from './diagramConstants';
 import { Ghost } from './Ghost';
 
-// ViewBox 600x300 — two squircle containers side by side.
+// ViewBox 600x300 — two sharp containers side by side.
 //
 // Left (orchestrator):  container x=32  w=200  center=132  blocks x=48  w=168
 // Right (sub-agent):    container x=360 w=200  center=460  blocks x=376 w=168
@@ -28,7 +28,6 @@ const L_BX = 48;                            // left block x
 const R_BX = 376;                           // right block x
 const BW = 168;                             // block width
 const BH = 32;                              // block height
-const BR = 8;                               // block corner radius
 const L_CX = L_BX + BW / 2;                // 132 — left column center-x
 const R_CX = R_BX + BW / 2;                // 460 — right column center-x
 
@@ -85,14 +84,14 @@ export default function SubAgentDiagram() {
       xmlns="http://www.w3.org/2000/svg"
       style={{ display: 'block', maxWidth: '600px', margin: '0 auto' }}
     >
-      {/* Container outlines — rx=14 (squircle), stroke-medium 2.5px */}
+      {/* Container outlines — rx=0, stroke-medium 2.5px */}
       <rect
-        x={32} y={40} width={200} height={224} rx={14}
+        x={32} y={40} width={200} height={224} rx={0}
         fill="none" stroke="var(--visual-neutral)" strokeWidth={2.5}
         className={clsx(styles.container, containers && styles.containerIn)}
       />
       <rect
-        x={360} y={40} width={200} height={224} rx={14}
+        x={360} y={40} width={200} height={224} rx={0}
         fill="none" stroke="var(--visual-neutral)" strokeWidth={2.5}
         className={clsx(styles.container, containers && styles.containerIn)}
         style={containers ? DELAY_80 : undefined}
@@ -129,29 +128,29 @@ export default function SubAgentDiagram() {
 
       {/* Ghost placeholders — left blocks */}
       <Ghost
-        x={L_BX} y={112} width={BW} height={BH} rx={BR}
+        x={L_BX} y={112} width={BW} height={BH} rx={0}
         fill="var(--visual-bg-neutral)" stroke="var(--visual-neutral)"
         mounted={mounted} reached={delegate}
       />
       <Ghost
-        x={L_BX} y={200} width={BW} height={BH} rx={BR}
+        x={L_BX} y={200} width={BW} height={BH} rx={0}
         fill="var(--visual-bg-magenta)" stroke="var(--visual-magenta)"
         mounted={mounted} reached={synthesize}
       />
 
       {/* Ghost placeholders — right blocks */}
       <Ghost
-        x={R_BX} y={112} width={BW} height={BH} rx={BR}
+        x={R_BX} y={112} width={BW} height={BH} rx={0}
         fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)"
         mounted={mounted} reached={search}
       />
       <Ghost
-        x={R_BX} y={152} width={BW} height={BH} rx={BR}
+        x={R_BX} y={152} width={BW} height={BH} rx={0}
         fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)"
         mounted={mounted} reached={reads}
       />
       <Ghost
-        x={R_BX} y={192} width={BW} height={BH} rx={BR}
+        x={R_BX} y={192} width={BW} height={BH} rx={0}
         fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
         mounted={mounted} reached={reasons}
       />
@@ -204,7 +203,7 @@ export default function SubAgentDiagram() {
 
       {/* Orchestrator — task card (appears with delegate) */}
       <g className={clsx(styles.block, delegate && styles.blockIn)}>
-        <rect x={L_BX} y={112} width={BW} height={BH} rx={BR}
+        <rect x={L_BX} y={112} width={BW} height={BH} rx={0}
           fill="var(--visual-bg-neutral)" stroke="var(--visual-neutral)" strokeWidth={1} />
         <text x={L_CX} y={132} textAnchor="middle" fontSize={11} fill="var(--text-muted)"
           fontFamily="var(--font-mono)">
@@ -214,7 +213,7 @@ export default function SubAgentDiagram() {
 
       {/* Sub-agent — staggered research blocks */}
       <g className={clsx(styles.block, search && styles.blockIn)}>
-        <rect x={R_BX} y={112} width={BW} height={BH} rx={BR}
+        <rect x={R_BX} y={112} width={BW} height={BH} rx={0}
           fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)" strokeWidth={1} />
         <text x={R_CX} y={132} textAnchor="middle" fontSize={11} fill="var(--visual-cyan)"
           fontFamily="var(--font-mono)" fontWeight={500}>
@@ -222,7 +221,7 @@ export default function SubAgentDiagram() {
         </text>
       </g>
       <g className={clsx(styles.block, reads && styles.blockIn)}>
-        <rect x={R_BX} y={152} width={BW} height={BH} rx={BR}
+        <rect x={R_BX} y={152} width={BW} height={BH} rx={0}
           fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1} />
         <text x={R_CX} y={172} textAnchor="middle" fontSize={11} fill="var(--visual-indigo)"
           fontFamily="var(--font-mono)" fontWeight={500}>
@@ -230,7 +229,7 @@ export default function SubAgentDiagram() {
         </text>
       </g>
       <g className={clsx(styles.block, reasons && styles.blockIn)}>
-        <rect x={R_BX} y={192} width={BW} height={BH} rx={BR}
+        <rect x={R_BX} y={192} width={BW} height={BH} rx={0}
           fill="var(--visual-bg-violet)" stroke="var(--visual-violet)" strokeWidth={1} />
         <text x={R_CX} y={212} textAnchor="middle" fontSize={11} fill="var(--visual-violet)"
           fontFamily="var(--font-mono)" fontWeight={500}>
@@ -240,7 +239,7 @@ export default function SubAgentDiagram() {
 
       {/* Orchestrator — synthesis result (appears with return arrow) */}
       <g className={clsx(styles.block, synthesize && styles.blockIn)}>
-        <rect x={L_BX} y={200} width={BW} height={BH} rx={BR}
+        <rect x={L_BX} y={200} width={BW} height={BH} rx={0}
           fill="var(--visual-bg-magenta)" stroke="var(--visual-magenta)" strokeWidth={1} />
         <text x={L_CX} y={220} textAnchor="middle" fontSize={11} fill="var(--visual-magenta)"
           fontFamily="var(--font-mono)" fontWeight={500}>

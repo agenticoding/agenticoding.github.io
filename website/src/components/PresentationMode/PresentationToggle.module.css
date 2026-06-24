@@ -7,7 +7,7 @@
   background: transparent;
   color: var(--text-body);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   font-family: var(--font-body);
   font-size: var(--text-sm);
   font-weight: 500;
@@ -47,7 +47,7 @@
   z-index: 9999;
   background: var(--surface-page);
   border: 2px solid var(--visual-error);
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   padding: var(--space-4);
   max-width: 400px;
   text-align: center;
@@ -64,7 +64,7 @@
   background: var(--visual-error);
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   font-family: var(--font-body);
   font-size: var(--text-sm);
   font-weight: 600;

@@ -4,7 +4,6 @@ import styles from './SystemBoundaryDiagram.module.css';
 
 // Shared constants
 const ARROW_GAP = 8;
-const BOX_RX = 8;
 const VIEWBOX_PADDING = 25;
 
 interface ArrowDef {
@@ -153,7 +152,7 @@ export default function SystemBoundaryDiagram({ compact = false }: PresentationA
           <rect
             x={boundary.x} y={boundary.y}
             width={boundary.w} height={boundary.h}
-            rx={BOX_RX}
+            rx={0}
             className={styles.boundary}
           />
           <text x={boundary.x + 10} y={boundary.y + boundary.h - 8} className={styles.boundaryLabel}>
@@ -164,7 +163,7 @@ export default function SystemBoundaryDiagram({ compact = false }: PresentationA
         {/* Internal modules */}
         {modules.map((m, i) => (
           <g key={m.id} className={styles.animGroup} style={{ animationDelay: `${DELAY_MODULES + i * 0.08}s` }}>
-            <rect x={m.x} y={m.y} width={m.w} height={m.h} rx={BOX_RX} className={styles.moduleBox} />
+            <rect x={m.x} y={m.y} width={m.w} height={m.h} rx={0} className={styles.moduleBox} />
             <text x={m.x + m.w / 2} y={m.y + m.h / 2 + 6} textAnchor="middle" className={styles.moduleLabel}>
               {m.label}
             </text>
@@ -174,7 +173,7 @@ export default function SystemBoundaryDiagram({ compact = false }: PresentationA
         {/* External actors */}
         {actors.map((a, i) => (
           <g key={a.id} className={styles.animGroup} style={{ animationDelay: `${DELAY_ACTORS + i * 0.08}s` }}>
-            <rect x={a.x} y={a.y} width={a.w} height={a.h} rx={BOX_RX} className={styles.actorBox} />
+            <rect x={a.x} y={a.y} width={a.w} height={a.h} rx={0} className={styles.actorBox} />
             <text x={a.x + a.w / 2} y={a.y + a.h / 2 + 6} textAnchor="middle" className={styles.actorLabel}>
               {a.label}
             </text>

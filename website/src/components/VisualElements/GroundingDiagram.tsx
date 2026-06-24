@@ -5,7 +5,8 @@ import shared from './diagram.module.css';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
-import { NotoEmoji } from './ActorNodes';
+import { EmojiImage } from './ActorNodes';
+import { EMOJI } from './emojiAssets';
 import { ARROWHEAD_POINTS_SM, arrowOpacity, CONNECTOR_STYLE } from './diagramConstants';
 import { useMounted } from '../../hooks/useMounted';
 import { Ghost } from './Ghost';
@@ -18,7 +19,7 @@ import { Ghost } from './Ghost';
 // Connector: balloon bottom (140, 78) → crying top (140, 154)  [dashed, curves away]
 // Connector: anchor bottom (420, 80) → bullseye top (420, 152) [solid, straight]
 //
-// Ghost rects: 44×44 centered on each node position, rx=12
+// Ghost rects: 44×44 centered on each node position, rx=0
 // Emoji size: 44px, offset = -22 from center
 // Column headers: y=16, result labels: y=212
 
@@ -148,18 +149,18 @@ export default function GroundingDiagram() {
 
       {/* Top row: 🎈 balloon + 🔌 plug — always rendered, toggled by emojiNodeIn */}
       <g className={clsx(styles.emojiNode, agentsReached && styles.emojiNodeIn)}>
-        <NotoEmoji codepoint="1f388" x={140 - ICON_HALF} y={56 - ICON_HALF} size={ICON} />
+        <EmojiImage asset={EMOJI.balloon} x={140 - ICON_HALF} y={56 - ICON_HALF} size={ICON} />
       </g>
       <g className={clsx(styles.emojiNode, agentsReached && styles.emojiNodeIn)} style={agentsReached ? { transitionDelay: '80ms' } : undefined}>
-        <NotoEmoji codepoint="1f50c" x={420 - ICON_HALF} y={56 - ICON_HALF} size={ICON} />
+        <EmojiImage asset={EMOJI.plug} x={420 - ICON_HALF} y={56 - ICON_HALF} size={ICON} />
       </g>
 
       {/* Bottom row: 😭 crying face + 🎯 bullseye — always rendered, toggled by emojiNodeIn */}
       <g className={clsx(styles.emojiNode, resultsReached && styles.emojiNodeIn)}>
-        <NotoEmoji codepoint="1f62d" x={140 - ICON_HALF} y={176 - ICON_HALF} size={ICON} />
+        <EmojiImage asset={EMOJI.crying} x={140 - ICON_HALF} y={176 - ICON_HALF} size={ICON} />
       </g>
       <g className={clsx(styles.emojiNode, resultsReached && styles.emojiNodeIn)} style={resultsReached ? { transitionDelay: '80ms' } : undefined}>
-        <NotoEmoji codepoint="1f3af" x={420 - ICON_HALF} y={176 - ICON_HALF} size={ICON} />
+        <EmojiImage asset={EMOJI.accurate} x={420 - ICON_HALF} y={176 - ICON_HALF} size={ICON} />
       </g>
 
       {/* Result labels — neutral; distinction conveyed by emojis and connector style */}

@@ -128,7 +128,7 @@ export default function PresentationToggle({
                stroke="currentColor" strokeWidth="1.5"
                strokeLinecap="round" strokeLinejoin="round"
                aria-hidden="true">
-            <rect x="2" y="2" width="12" height="9" rx="1.5"/>
+            <rect x="2" y="2" width="12" height="9" rx="0"/>
             <line x1="8" y1="11" x2="8" y2="14"/>
             <line x1="5" y1="14" x2="11" y2="14"/>
           </svg>

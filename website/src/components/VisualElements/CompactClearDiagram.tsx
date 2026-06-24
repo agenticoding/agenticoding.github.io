@@ -28,7 +28,6 @@ const BC_CX = 376; // midpoint of 359–392 gap
 // Band area
 const BAND_Y0  = 35;  // first band top
 const BAND_Y1  = 248; // last band bottom
-const BOX_RX   = 6;
 
 // ── Band definitions ─────────────────────────────────────────────────────────
 // Heights are proportional; must sum to BAND_TOT.
@@ -95,7 +94,7 @@ function renderBands(bands: Band[], px: number, startY: number): React.ReactNode
           y={y}
           width={PW}
           height={h}
-          rx={BOX_RX}
+          rx={0}
           fill="transparent"
           stroke={band.color}
           strokeWidth={1}
@@ -126,7 +125,7 @@ function renderBands(bands: Band[], px: number, startY: number): React.ReactNode
           y={y}
           width={PW}
           height={h}
-          rx={BOX_RX}
+          rx={0}
           fill={band.bg}
           stroke={band.color}
           strokeWidth={1}
@@ -139,7 +138,7 @@ function renderBands(bands: Band[], px: number, startY: number): React.ReactNode
           y={y}
           width={3}
           height={h}
-          rx={1.5}
+          rx={0}
           fill={band.color}
         />
       );

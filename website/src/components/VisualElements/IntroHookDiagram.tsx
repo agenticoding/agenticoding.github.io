@@ -2,7 +2,8 @@ import React, { useRef, useEffect } from 'react';
 import clsx from 'clsx';
 import styles from './IntroHookDiagram.module.css';
 import shared from './diagram.module.css';
-import { OperatorNode, AgentNode, NotoEmoji } from './ActorNodes';
+import { OperatorNode, AgentNode, EmojiImage } from './ActorNodes';
+import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
@@ -29,8 +30,8 @@ import { promptFadeOpacity } from './diagramConstants';
 // Fan W2:    M 289 113 Q 375 113 476 116
 // Fan W3:    M 289 113 Q 345 158 436 180
 //
-// Lightbulb: globe center (90, 55), r=13; cap x=82 y=68 w=16 h=5 rx=2
-// Ghost workers: AgentNode S=32 squircle outline at worker positions, opacity 0.28 → 0 on dispatch
+// Lightbulb: globe center (90, 55), r=13; cap x=82 y=68 w=16 h=5 rx=0
+// Ghost workers: AgentNode S=32 sharp outline at worker positions, opacity 0.28 → 0 on dispatch
 
 // 5 rays, −45° to +45° CW from North (top), 90° total arc. Globe center (90, 55), r=13.
 // r_inner=16 (r+3), r_outer=21 (r_inner+5). All coords integer. All rays in sync.
@@ -147,12 +148,12 @@ export default function IntroHookDiagram() {
 
       {/* Ghost worker placeholders — provide rightward visual mass in start state,
           fading out as the real workers bloom in on dispatch. Shape matches the
-          AgentNode S=32 head squircle (headX=2.4 headY=2.4 headW=27.2 headH=27.2 rx=6.8). */}
+          AgentNode S=32 head rectangle (headX=2.4 headY=2.4 headW=27.2 headH=27.2 rx=0). */}
       {FAN_ARCS.map((fan, i) => (
         <Ghost
           key={`ghost-${i}`}
           x={fan.workerX + 2.4} y={fan.workerY + 2.4}
-          width={27.2} height={27.2} rx={6.8}
+          width={27.2} height={27.2} rx={0}
           fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
           mounted={mounted} reached={dispatched}
           style={dispatched ? { transitionDelay: `${fan.nodeDelay}ms` } : undefined}
@@ -187,7 +188,7 @@ export default function IntroHookDiagram() {
         ))}
         {/* IdeaIcon — globe center lands at (90, 55) matching BULB_RAYS geometry.
             x = 90 − size/2 = 70; y chosen so globe center (64/128 × size) ≈ 55. */}
-        <NotoEmoji codepoint="1f4a1" x={70} y={41} size={40} />
+        <EmojiImage asset={EMOJI.lightBulb} x={70} y={41} size={40} />
       </g>
 
       {/* Guide arc — operator → orchestrator */}
@@ -228,7 +229,7 @@ export default function IntroHookDiagram() {
       {mainPromptPos && (
         <g transform={`translate(${mainPromptPos.x}, ${mainPromptPos.y})`} style={{ opacity: mainPromptPos.opacity }}>
           <g className={shared.actEntered}>
-            <NotoEmoji codepoint="1f4ac" x={-11} y={-11} size={22} />
+            <EmojiImage asset={EMOJI.chat} x={-11} y={-11} size={22} />
           </g>
         </g>
       )}
@@ -237,7 +238,7 @@ export default function IntroHookDiagram() {
       {fanPromptPositions.map((pos, i) => pos && (
         <g key={i} transform={`translate(${pos.x}, ${pos.y})`} style={{ opacity: pos.opacity }}>
           <g className={shared.actEntered}>
-            <NotoEmoji codepoint="1f4ac" x={-11} y={-11} size={22} />
+            <EmojiImage asset={EMOJI.chat} x={-11} y={-11} size={22} />
           </g>
         </g>
       ))}
@@ -295,7 +296,7 @@ export default function IntroHookDiagram() {
 
       {/* Reduced-motion fallback: static emoji at arc midpoint (177, 78) */}
       <g className={styles.staticCard}>
-        <NotoEmoji codepoint="1f4ac" x={166} y={67} size={22} />
+        <EmojiImage asset={EMOJI.chat} x={166} y={67} size={22} />
       </g>
     </svg>
   );

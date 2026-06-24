@@ -114,7 +114,7 @@ export default function CheckpointedAttritionFunnel({
           y="104"
           width="96"
           height="112"
-          rx="12"
+          rx="0"
           fill="var(--surface-raised)"
           stroke="var(--border-default)"
           strokeWidth="1.5"
@@ -168,7 +168,7 @@ export default function CheckpointedAttritionFunnel({
               y={stage.y}
               width={stage.w}
               height={stage.h}
-              rx="12"
+              rx="0"
               fill={index < 3 ? 'var(--visual-bg-warning)' : 'var(--visual-bg-neutral)'}
               stroke={index < 3 ? 'var(--visual-warning)' : 'var(--border-default)'}
               strokeWidth="1.5"
@@ -276,7 +276,7 @@ export default function CheckpointedAttritionFunnel({
           y="84"
           width="134"
           height="152"
-          rx="14"
+          rx="0"
           fill="var(--visual-bg-indigo)"
           stroke="var(--visual-indigo)"
           strokeWidth="2"
@@ -286,7 +286,7 @@ export default function CheckpointedAttritionFunnel({
           y="116"
           width="94"
           height="88"
-          rx="10"
+          rx="0"
           fill="var(--surface-page)"
           stroke="var(--visual-indigo)"
           strokeWidth="1.5"
@@ -328,7 +328,7 @@ export default function CheckpointedAttritionFunnel({
           y="112"
           width="92"
           height="96"
-          rx="12"
+          rx="0"
           fill="var(--visual-bg-success)"
           stroke="var(--visual-success)"
           strokeWidth="1.5"

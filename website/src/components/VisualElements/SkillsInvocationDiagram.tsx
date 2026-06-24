@@ -22,7 +22,6 @@ const TITLE_TO_STACK_GAP = GRID * 2;
 const BOX_INSET_X = GRID;
 const BOX_W = PANEL_W - BOX_INSET_X * 2;
 const BOX_H = GRID * 4;
-const BOX_RX = GRID;
 const BOX_STEP_Y = BOX_H + GRID * 3;
 const FIRST_BOX_Y = TITLE_Y + TITLE_TO_STACK_GAP;
 const BOX_LABEL_X = GRID * 2;
@@ -86,7 +85,7 @@ function Box({
         y={by}
         width={BOX_W}
         height={BOX_H}
-        rx={BOX_RX}
+        rx={0}
         fill={bg}
         stroke={color}
         strokeWidth={1}

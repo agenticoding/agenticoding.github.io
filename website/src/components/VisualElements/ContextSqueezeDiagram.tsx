@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import styles from './ContextSqueezeDiagram.module.css';
-import shared from './diagram.module.css';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useMounted } from '../../hooks/useMounted';
@@ -24,7 +23,6 @@ const ZONE_W = 360;
 
 const BLOCK_X = 40;
 const BLOCK_W = 320;
-const BLOCK_RX = 8;
 
 const CF_Y = 8;
 const CF_H_INITIAL = 48;
@@ -32,7 +30,7 @@ const CF_H_INITIAL = 48;
 const TASK_Y = 64;
 const TASK_H = 32;
 
-// Zone label pills — empirically offset +3 for fontSize=9 all-caps Monaspace Xenon
+// Zone labels — empirically offset +3 for fontSize=9 all-caps Monaspace Xenon
 const PILL_H = 16;
 const PRIMACY_PILL_Y = 32;   // centered in primacy zone (0–80)
 const MIDDLE_PILL_Y = 152;   // centered in middle zone (80–240)
@@ -86,7 +84,7 @@ export default function ContextSqueezeDiagram() {
 
       {/* ── Context File block ─────────────────────────────────────────────── */}
       <Ghost
-        x={BLOCK_X} y={CF_Y} width={BLOCK_W} height={CF_H_INITIAL} rx={BLOCK_RX}
+        x={BLOCK_X} y={CF_Y} width={BLOCK_W} height={CF_H_INITIAL} rx={0}
         fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)"
         mounted={mounted} reached={baseline}
       />
@@ -94,7 +92,7 @@ export default function ContextSqueezeDiagram() {
       <g className={clsx(styles.contextFile, baseline && styles.contextFileIn)}>
         <rect
           className={clsx(styles.cfRect, grow && styles.cfRectGrown)}
-          x={BLOCK_X} y={CF_Y} width={BLOCK_W} rx={BLOCK_RX}
+          x={BLOCK_X} y={CF_Y} width={BLOCK_W} rx={0}
           fill="var(--visual-bg-cyan)"
           stroke="var(--visual-cyan)"
           strokeWidth={1.5}
@@ -123,7 +121,7 @@ export default function ContextSqueezeDiagram() {
 
       {/* ── User Task block ────────────────────────────────────────────────── */}
       <Ghost
-        x={BLOCK_X} y={TASK_Y} width={BLOCK_W} height={TASK_H} rx={BLOCK_RX}
+        x={BLOCK_X} y={TASK_Y} width={BLOCK_W} height={TASK_H} rx={0}
         fill="var(--visual-bg-success)" stroke="var(--visual-success)"
         mounted={mounted} reached={baseline}
       />
@@ -132,7 +130,7 @@ export default function ContextSqueezeDiagram() {
         <g className={clsx(styles.taskInner, grow && styles.taskInnerGrown)}>
           <rect
             className={clsx(styles.taskBlockSafe, danger && styles.taskBlockDanger)}
-            x={BLOCK_X} y={TASK_Y} width={BLOCK_W} height={TASK_H} rx={BLOCK_RX}
+            x={BLOCK_X} y={TASK_Y} width={BLOCK_W} height={TASK_H} rx={0}
             strokeWidth={2}
           />
           <text
@@ -150,7 +148,7 @@ export default function ContextSqueezeDiagram() {
       {/* ── Zone labels — rendered last so they float above all blocks ─────── */}
       <g className={clsx(styles.zoneLabel, zones && styles.zoneLabelIn)}>
         {/* Primacy */}
-        <rect x={161} y={PRIMACY_PILL_Y} width={78} height={PILL_H} rx={4} fill="var(--surface-page)" />
+        <rect x={161} y={PRIMACY_PILL_Y} width={78} height={PILL_H} rx={0} fill="var(--surface-page)" />
         <text
           x={200} y={PRIMACY_PILL_Y + PILL_H / 2 + ZONE_LABEL_OFFSET}
           textAnchor="middle"
@@ -163,7 +161,7 @@ export default function ContextSqueezeDiagram() {
         </text>
 
         {/* Middle */}
-        <rect x={164} y={MIDDLE_PILL_Y} width={72} height={PILL_H} rx={4} fill="var(--surface-page)" />
+        <rect x={164} y={MIDDLE_PILL_Y} width={72} height={PILL_H} rx={0} fill="var(--surface-page)" />
         <text
           x={200} y={MIDDLE_PILL_Y + PILL_H / 2 + ZONE_LABEL_OFFSET}
           textAnchor="middle"
@@ -176,7 +174,7 @@ export default function ContextSqueezeDiagram() {
         </text>
 
         {/* Recency */}
-        <rect x={161} y={RECENCY_PILL_Y} width={78} height={PILL_H} rx={4} fill="var(--surface-page)" />
+        <rect x={161} y={RECENCY_PILL_Y} width={78} height={PILL_H} rx={0} fill="var(--surface-page)" />
         <text
           x={200} y={RECENCY_PILL_Y + PILL_H / 2 + ZONE_LABEL_OFFSET}
           textAnchor="middle"

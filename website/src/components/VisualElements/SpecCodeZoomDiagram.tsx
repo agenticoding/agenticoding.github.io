@@ -173,7 +173,7 @@ export default function SpecCodeZoomDiagram({
             y={specY}
             width={specBoxWidth}
             height={specBoxHeight}
-            rx="5"
+            rx="0"
             className={styles.layerBox}
           />
           <text
@@ -201,7 +201,7 @@ export default function SpecCodeZoomDiagram({
             y={codeY}
             width={codeBoxWidth}
             height={codeBoxHeight}
-            rx="6"
+            rx="0"
             className={styles.layerBoxCode}
             filter="url(#sczdCodeShadow)"
           />

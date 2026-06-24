@@ -26,7 +26,7 @@ function OutcomeIcon({ label, color, children }: OutcomeIconProps) {
   );
 }
 
-/** Icon 1: Onboard codebases faster — open document with magnifying glass (Smooth Circuit) */
+/** Icon 1: Onboard codebases faster — open document with magnifying glass (curved geometry) */
 function OnboardIcon() {
   return (
     <OutcomeIcon label="Onboard Faster" color="var(--visual-indigo)">
@@ -42,7 +42,7 @@ function OnboardIcon() {
   );
 }
 
-/** Icon 2: Refactor reliably — two rotating arrows (Smooth Circuit) */
+/** Icon 2: Refactor reliably — two rotating arrows (curved geometry) */
 function RefactorIcon() {
   return (
     <OutcomeIcon label="Refactor Reliably" color="var(--visual-violet)">
@@ -71,7 +71,7 @@ function DebugIcon() {
         y="3"
         width="20"
         height="15"
-        rx="2"
+        rx="0"
         strokeLinecap="square"
         strokeLinejoin="miter"
       />
@@ -83,7 +83,7 @@ function DebugIcon() {
   );
 }
 
-/** Icon 4: Review systematically — shield with checkmark (Smooth Circuit) */
+/** Icon 4: Review systematically — shield with checkmark (curved geometry) */
 function ReviewIcon() {
   return (
     <OutcomeIcon label="Review Systematically" color="var(--visual-success)">
@@ -97,7 +97,7 @@ function ReviewIcon() {
   );
 }
 
-/** Icon 5: Plan & execute features — checklist (Smooth Circuit) */
+/** Icon 5: Plan & execute features — checklist (curved geometry) */
 function PlanIcon() {
   return (
     <OutcomeIcon label="Plan & Execute" color="var(--visual-magenta)">

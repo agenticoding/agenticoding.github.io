@@ -2,7 +2,8 @@ import React, { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './ParadigmShiftDiagram.module.css';
 import shared from './diagram.module.css';
-import { OperatorNode, AgentNode, NotoEmoji } from './ActorNodes';
+import { OperatorNode, AgentNode, EmojiImage } from './ActorNodes';
+import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
@@ -90,7 +91,7 @@ export default function ParadigmShiftDiagram() {
         className={clsx(styles.sceneA, transitioned && styles.sceneAOut)}
         style={{ transformOrigin: '240px 132px' }}
       >
-        <NotoEmoji codepoint="1fa9a" x={248} y={98} size={36} />
+        <EmojiImage asset={EMOJI.handTools} x={248} y={98} size={36} />
         <text
           x={240} y={178}
           fill="var(--visual-neutral)"
@@ -109,7 +110,7 @@ export default function ParadigmShiftDiagram() {
           <Ghost
             key={`ghost-${i}`}
             x={agent.x + 2} y={agent.y + 2}
-            width={28} height={28} rx={6}
+            width={28} height={28} rx={0}
             fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
             mounted={mounted} reached={dispatched}
           />
@@ -165,14 +166,14 @@ export default function ParadigmShiftDiagram() {
         {/* Ghost factory placeholder — visual mass before converge */}
         <Ghost
           x={208} y={164}
-          width={64} height={64} rx={10}
+          width={64} height={64} rx={0}
           fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
           mounted={mounted} reached={converged}
         />
 
         {/* Tier 3 — Factory */}
         <g className={clsx(styles.factoryNode, converged && styles.factoryNodeIn)}>
-          <NotoEmoji codepoint="1f3ed" x={204} y={160} size={72} />
+          <EmojiImage asset={EMOJI.factory} x={204} y={160} size={72} />
         </g>
 
         {/* Label */}

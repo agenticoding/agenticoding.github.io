@@ -16,9 +16,6 @@ const RIGHT_X = 416;
 const PAD = 24;
 
 // SVG equivalents of design-system radius tokens.
-const RADIUS_NONE = 0;
-const RADIUS_SM = 4;
-const RADIUS_MD = 8;
 
 const ACTS = [
   { id: 'frame', threshold: 0.0 },
@@ -113,7 +110,7 @@ function ContextBlock({
         y={y}
         width={w}
         height={h}
-        rx={RADIUS_MD}
+        rx={0}
         fill={semantic ? 'var(--visual-bg-cyan)' : 'var(--surface-raised)'}
         stroke={semantic ? 'var(--visual-cyan)' : 'var(--border-default)'}
         strokeWidth={semantic ? 1.5 : 1}
@@ -132,7 +129,7 @@ function ContextWindow({ mode, x, y }: { mode: LoadingMode; x: number; y: number
 
   return (
     <g aria-hidden="true">
-      <rect x={x} y={y} width={windowW} height={windowH} rx={RADIUS_MD} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
+      <rect x={x} y={y} width={windowW} height={windowH} rx={0} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
 
       {mode === 'eager' ? (
         <>
@@ -177,7 +174,7 @@ function BehaviorNode({ x, y, w, label, semantic = false }: { x: number; y: numb
         y={y}
         width={w}
         height={32}
-        rx={RADIUS_MD}
+        rx={0}
         fill={semantic ? 'var(--visual-bg-cyan)' : 'var(--surface-page)'}
         stroke={semantic ? 'var(--visual-cyan)' : 'var(--border-default)'}
         strokeWidth={1.5}
@@ -261,13 +258,17 @@ function LoadingCard({ card, reached }: { card: CardSpec; reached: boolean }) {
 
   return (
     <g className={clsx(styles.card, reached && styles.cardIn)}>
-      <path
-        d={`M ${x} ${CARD_Y} H ${x + CARD_W - RADIUS_MD} Q ${x + CARD_W} ${CARD_Y} ${x + CARD_W} ${CARD_Y + RADIUS_MD} V ${CARD_Y + CARD_H - RADIUS_MD} Q ${x + CARD_W} ${CARD_Y + CARD_H} ${x + CARD_W - RADIUS_MD} ${CARD_Y + CARD_H} H ${x} Z`}
+      <rect
+        x={x}
+        y={CARD_Y}
+        width={CARD_W}
+        height={CARD_H}
+        rx={0}
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
         strokeWidth={1}
       />
-      <rect x={x} y={CARD_Y} width={3} height={CARD_H} rx={RADIUS_NONE} fill="var(--visual-cyan)" />
+      <rect x={x} y={CARD_Y} width={3} height={CARD_H} rx={0} fill="var(--visual-cyan)" />
 
       <SvgText x={contentX} y={CARD_Y + 32} className={styles.cardTitle} fill="var(--text-heading)">
         {card.title}

@@ -120,7 +120,7 @@ export default function OperatorIllustration() {
             y={n.ry}
             width={NODE_W}
             height={NODE_H}
-            rx={12}
+            rx={0}
             fill="var(--visual-bg-cyan)"
             stroke="var(--visual-cyan)"
             strokeWidth={1}

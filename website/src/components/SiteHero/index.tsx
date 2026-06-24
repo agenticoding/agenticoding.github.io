@@ -47,7 +47,7 @@ function useGitHubStars(repo: string): number | null {
 }
 
 // ---------------------------------------------------------------------------
-// Icons — Smooth Circuit style (fill: none, stroke: currentColor, round caps)
+// Icons — curved geometry style (fill: none, stroke: currentColor, round caps)
 // ---------------------------------------------------------------------------
 
 function GitHubIcon() {

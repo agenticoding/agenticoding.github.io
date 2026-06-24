@@ -21,7 +21,7 @@ const DASHED_CONNECTOR = {
 
 // Layout — ViewBox 560×264
 //
-// Plan Card:     rect x=16  y=80  w=66  h=72  rx=8
+// Plan Card:     rect x=16  y=80  w=66  h=72  rx=0
 // Orchestrator:  AgentNode x=155 y=100 size=40  right shoulder ~(193,125)
 // Worker 1:      AgentNode x=392 y=36  size=32  (top)
 // Worker 2:      AgentNode x=392 y=108 size=32  (mid)
@@ -171,7 +171,7 @@ export default function PlanExecuteDiagram() {
         <Ghost
           key={`ghost-${i}`}
           x={branch.workerX + 2.4} y={branch.workerY + 2.4}
-          width={27.2} height={27.2} rx={6.8}
+          width={27.2} height={27.2} rx={0}
           fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
           mounted={mounted} reached={executeReached}
           style={executeReached ? { transitionDelay: `${branch.nodeDelay}ms` } : undefined}
@@ -180,16 +180,16 @@ export default function PlanExecuteDiagram() {
 
       {/* Plan card — checklist artifact */}
       <g className={clsx(styles.planCard, wasReached('plan') && shared.actEntered)}>
-        <rect x={16} y={80} width={66} height={72} rx={8}
+        <rect x={16} y={80} width={66} height={72} rx={0}
           fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5} />
         {/* Title line */}
-        <rect x={24} y={92} width={42} height={3} rx={1} fill="var(--visual-indigo)" />
+        <rect x={24} y={92} width={42} height={3} rx={0} fill="var(--visual-indigo)" />
         {/* Row 1 — checked */}
         <circle cx={27} cy={108} r={4.5} fill="var(--visual-success)" />
-        <rect x={35} y={105.5} width={30} height={2.5} rx={1} fill="var(--visual-indigo)" />
+        <rect x={35} y={105.5} width={30} height={2.5} rx={0} fill="var(--visual-indigo)" />
         {/* Row 2 — checked */}
         <circle cx={27} cy={124} r={4.5} fill="var(--visual-success)" />
-        <rect x={35} y={121.5} width={24} height={2.5} rx={1} fill="var(--visual-indigo)" />
+        <rect x={35} y={121.5} width={24} height={2.5} rx={0} fill="var(--visual-indigo)" />
         {/* Row 3 — pending until complete act */}
         <circle cx={27} cy={140} r={4.5}
           fill={completeReached ? 'var(--visual-success)' : 'none'}
@@ -197,7 +197,7 @@ export default function PlanExecuteDiagram() {
           strokeWidth={1.5}
           style={{ transition: 'fill 300ms var(--ease-enter)' }}
         />
-        <rect x={35} y={137.5} width={18} height={2.5} rx={1}
+        <rect x={35} y={137.5} width={18} height={2.5} rx={0}
           fill={completeReached ? 'var(--visual-indigo)' : 'var(--visual-neutral)'}
           style={{ transition: 'fill 300ms var(--ease-enter)' }}
         />
@@ -317,10 +317,10 @@ export default function PlanExecuteDiagram() {
       {/* Reduced-motion static fallback */}
       <g className={styles.staticCard}>
         <g transform="translate(280, 108)">
-          <rect x={-24} y={-14} width={48} height={28} rx={8}
+          <rect x={-24} y={-14} width={48} height={28} rx={0}
             fill="var(--visual-bg-indigo)" stroke="var(--visual-indigo)" strokeWidth={1.5} />
-          <rect x={-12} y={-6} width={24} height={3} rx={1} fill="var(--visual-indigo)" />
-          <rect x={-8}  y={2}  width={16} height={3} rx={1} fill="var(--visual-indigo)" />
+          <rect x={-12} y={-6} width={24} height={3} rx={0} fill="var(--visual-indigo)" />
+          <rect x={-8}  y={2}  width={16} height={3} rx={0} fill="var(--visual-indigo)" />
         </g>
       </g>
     </svg>

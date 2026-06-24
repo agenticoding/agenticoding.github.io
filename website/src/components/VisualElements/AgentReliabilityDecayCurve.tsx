@@ -116,7 +116,7 @@ function ThresholdGuide() {
         y={THRESHOLD_Y}
         width={CARD_W}
         height={THRESHOLD_H}
-        rx="var(--radius-md)"
+        rx="0"
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
       />
@@ -137,7 +137,7 @@ function ThresholdGuide() {
             <circle
               cx={CARD_X + SPACE_2}
               cy={y - SPACE_1 / 2}
-              r="var(--radius-sm)"
+              r="4"
               fill={row.tone}
             />
             <text
@@ -200,7 +200,7 @@ function Card({
         y={y}
         width={CARD_W}
         height={height}
-        rx="var(--radius-md)"
+        rx="0"
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
       />
@@ -271,7 +271,7 @@ export default function AgentReliabilityDecayCurve({
             y={PLOT.y}
             width={PLOT.w}
             height={PLOT.h}
-            rx="var(--radius-md)"
+            rx="0"
           />
         </clipPath>
       </defs>
@@ -281,7 +281,7 @@ export default function AgentReliabilityDecayCurve({
         y="0"
         width={WIDTH}
         height={HEIGHT}
-        rx="var(--radius-xl)"
+        rx="0"
         fill="var(--surface-page)"
         stroke="var(--border-subtle)"
       />
@@ -312,7 +312,7 @@ export default function AgentReliabilityDecayCurve({
         y={PLOT.y}
         width={PLOT.w}
         height={PLOT.h}
-        rx="var(--radius-md)"
+        rx="0"
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
       />
