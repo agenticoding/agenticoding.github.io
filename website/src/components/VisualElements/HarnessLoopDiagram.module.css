@@ -1,0 +1,99 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  max-width: 640px;
+}
+
+.container.compact {
+  margin: 0 auto;
+  max-width: 95%;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.desktopDiagram {
+  max-width: 640px;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 320px;
+}
+
+.box,
+.label,
+.arrow,
+.branchLabel,
+.laneLabel,
+.boundary {
+  opacity: 0;
+  transition: opacity 250ms var(--ease-enter);
+}
+
+.visible {
+  opacity: 1;
+}
+
+.boxText {
+  font-family: var(--font-mono-ai);
+  font-size: 11px;
+  font-weight: 500;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.smallText {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.laneLabel {
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.branchLabel {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-feature-settings: var(--font-mono-features);
+}
+
+@container (max-width: 480px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 500px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .box,
+  .label,
+  .arrow,
+  .branchLabel,
+  .laneLabel,
+  .boundary {
+    opacity: 1;
+    transition: none;
+  }
+}

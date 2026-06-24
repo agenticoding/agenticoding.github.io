@@ -46,95 +46,27 @@ The key insight: **it's not about running out of tokens — it's about where you
 
 ## Capacity Is Not Reliability
 
-Large context windows have legitimate uses: summarizing regulatory filings, reviewing legal contracts, processing long transcripts. Those are retrieval-heavy tasks where finding stated facts scales reasonably well with window size. Agentic coding is different. Coding agents connect constraints across files, follow multi-step logic, and reason about architectural relationships. That is inference, and inference degrades as context grows.
+Large context windows have legitimate uses: summarizing regulatory filings, reviewing legal contracts, processing long transcripts. Those are retrieval-heavy tasks where stated facts can be useful even across a large window.
 
-The mistake is treating **capacity** as **reliability**:
+Agentic coding is different. Coding agents connect constraints across files, follow multi-step logic, and reason about architectural relationships. That is inference, and inference degrades when the context fills with search trails, file reads, logs, obsolete plans, and coherent distractors.
 
-- **Advertised context** is how many tokens the model accepts.
-- **Effective context** is how much of that input the model can still use reliably.
-- **Point drop** is absolute percentage-point loss. A fall from 80% to 40% is −40 percentage points, even though relative accuracy was cut in half.
-- **Attention placement** determines whether the important facts are visible when the model needs them.
+[Lesson 1: LLMs Demystified](/fundamentals/lesson-1-how-llms-work#long-context-is-not-reliable-memory) covers the model-selection lesson: bigger context does not mean better retrieval, and newer models can improve coding or tool use while regressing on long-context precision.
 
 <UShapeAttentionCurve />
 
 **Attention is asymmetric under load.** At moderate fill, attention forms a U-shape: strong at both ends, weak in the middle. As context fills past 50%, recency dominates, primacy weakens, and the middle becomes effectively invisible. This is transformer architecture under realistic constraints, not a bug.
 
-Current long-context benchmarks show the pattern. Simple retrieval can hold up across large windows. Inferential tasks are more fragile: Anthropic's [MRCR v2 8-needle benchmark](https://claude.com/blog/1m-context-ga) shows large point drops near maximum context, while [NoLiMa](https://arxiv.org/abs/2502.05167) shows a 29-point drop within 32K tokens on tasks requiring latent reasoning.
+This lesson starts from the operational consequence: **context engineering exists because storage is not bandwidth.** The job is not to fit everything. The job is to keep the active task, current constraints, and relevant evidence where the model can still use them.
 
-The context window is storage. Attention is bandwidth. Context engineering exists because agentic coding fails when you treat storage as bandwidth.
+## Retrieval Is Not Context Engineering
 
-<details>
-<summary>Long-context benchmark evidence</summary>
+Semantic search, code research, and web research improve discovery. They help the agent find the right facts by meaning instead of guessing from keywords or training priors. But retrieval alone does not decide placement, lifetime, or isolation.
 
-MRCR means **Multi-Round Co-reference Retrieval**. The model gets a very long prompt with multiple target facts buried inside distractor text, then must answer questions that refer to those facts indirectly. The **8-needle** variant plants eight facts, so the model has to keep several references straight instead of matching one obvious phrase.
+Three Grep searches can return 18,000 tokens. Reading five files can add another 22,000. You are at 40,000 tokens before discovery is finished. Ten excellent semantic chunks can cost 15,000 tokens; reading related files adds 25,000; exploring patterns adds another 10,000. You are at 50,000 tokens before implementation starts.
 
-MRCR stresses the exact failure mode agentic coding creates: after search results, file reads, logs, and partial plans flood the context, can the agent still recover the few facts that matter?
+That is why correct retrieval can still hurt reliability. A long search trail can push the actual task into the forgotten middle. A useful web page can arrive too early, sit too long, and compete with more relevant instructions later. Coherent distractor text is especially dangerous because it looks relevant while degrading reasoning more than obvious noise ([Chroma Context Rot study](https://research.trychroma.com/context-rot), 2025).
 
-:::info Why this is different from coding benchmarks
-MRCR does **not** measure patch quality. Coding benchmarks like SWE-bench test debugging, repository reasoning, tool use, and patch generation. MRCR tests long-context retrieval under pressure. A model can improve on coding benchmarks while regressing on MRCR because these are related but different capabilities.
-:::
-
-At moderate context, frontier models cluster tightly. Near the advertised maximum, they diverge brutally.
-
-| Model | Window | Moderate context | Long context | Point drop | Pattern |
-|---|---:|---:|---:|---:|---|
-| Claude Sonnet 4.6 | 1M | 90.6% @256K | 65.1% @1M | −25.5 pp | Gradual decay |
-| Claude Opus 4.6 | 1M | **93.0%** @128K | **76.0%** @1M | −17.0 pp | Strong retention |
-| Claude Opus 4.7 | 1M | 78.3%⁠* | 32.2% @1M | −46.1 pp | Release regression |
-| Claude Opus 4.8 | 1M | 85.9%⁠† | 68.1%⁠† | −17.8 pp | Partial recovery |
-| GPT-5.4 | 1.05M | 79.3% @128K | 36.6% @1M | −42.7 pp | Sharp collapse |
-| GPT-5.5 | 1.1M | 87.5%⁠* | **74.0%** @1M | −13.5 pp | Retrieval retrain |
-| Gemini 3.1 Pro | 1M | 84.9% @128K | 26.3% @1M | −58.6 pp | Severe collapse |
-| Gemini 3.5 Flash | 1M | 77.3% @128K | 26.6% @1M | −50.7 pp | Severe Flash-tier decay |
-| DeepSeek V4 Pro | 1M | 83.5%⁠^ | ~66% @1M | ~−17 pp | Compression tax |
-| DeepSeek V4 Flash | 1M | 89% @128K | 58–79%⁠^ @1M | 10–31 pp | Reasoning-mode dependent |
-
-<details>
-<summary>How to compare these numbers</summary>
-
-Use the table for the **shape of degradation**, not as a strict leaderboard. Most rows are MRCR v2 8-needle long-context retrieval; marked rows need context:
-
-- `*` uses 256K as the moderate-context point because the relevant 128K value was not the published comparison point.
-- `^` shows Max reasoning mode. DeepSeek defaults are lower: Pro ~66%, Flash 58% @1M.
-- `†` uses GraphWalks BFS, a harder relational-retrieval benchmark, because Opus 4.8's MRCR v2 score is unpublished. Opus 4.8 also scores 83.3% on GraphWalks Parents @1M.
-- Gemini 3.5 Flash publishes 128K average and 1M pointwise scores, but no 512K breakdown.
-</details>
-
-The table tells three stories: same window ≠ same reliability; moderate context is not the problem; the degradation curve matters more than the headline window.
-
-:::tip First-pass takeaway
-Every model has an effective context limit. Some decline gradually, some fall off a cliff, and some recover only with expensive reasoning modes. None make context management obsolete.
-:::
-
-<details>
-<summary>Claude: coding wins can damage retrieval</summary>
-
-Opus 4.6 was purpose-built for long-context retrieval: Extended Thinking gave it a dedicated reasoning budget to "search" the 1M-token space. Opus 4.7 removed that path, gained major wins in coding, visual reasoning, and tool orchestration, but fell from 78.3% to 32.2% on long-context retrieval — a 59% relative collapse.
-
-Opus 4.8 partially corrects the regression: its GraphWalks BFS @1M beats Opus 4.6 on the same subtask, but MRCR v2 remains unpublished. The lesson: **the same changes that improve coding can damage long-context retrieval.**
-</details>
-
-<details>
-<summary>GPT: from bigger window to retrieval retraining</summary>
-
-GPT-5.4 moved back into the 1M-token tier, but exposed a reliability cliff: 79.3% around 128K, 57.5% around 256K–512K, and 36.6% near 1M. It could accept the tokens, but could not use them reliably.
-
-GPT-5.5 appears to be the correction: retrained for long-context retrieval with heavier long-document examples, better position-aware behavior, and lower distractor susceptibility. Its 74.0% near 1M is roughly double GPT-5.4. The lesson is not "GPT wins"; it is that reliability requires model-level optimization, not just a bigger window.
-</details>
-
-<details>
-<summary>Gemini: capacity without reliable use</summary>
-
-Gemini 3.1 Pro advertises the same 1M-token class as Opus and GPT, yet drops to 26.3% near 1M. Large windows still help retrieval-heavy workflows, but they do not make agentic coding safe by default.
-</details>
-
-<details>
-<summary>DeepSeek: cheap 1M context has a precision trade-off</summary>
-
-DeepSeek buys efficiency with hybrid attention: CSA compression plus sparse selection, and HCA dense scanning. That makes 1M-token inference cheaper, but consistency depends on reasoning mode. V4 Flash collapses in non-thinking mode; Max mode recovers to 78.7%. Compression buys efficiency, but reasoning-time compute has to recover precision.
-</details>
-
-</details>
+So treat retrieval as the input to context engineering, not a replacement for it. Grounding answers **what facts should enter the agent's world**. Context engineering answers **how those facts stay usable**.
 
 :::warning The Agentic Coding Cost Trap
 
@@ -147,16 +79,6 @@ Most providers apply per-token surcharges past a context threshold:
 
 For retrieval tasks (summarization, document review), the surcharge buys tokens in the model's strong accuracy zone. For agentic coding, you're paying a premium for tokens in the model's *worst* accuracy zone — the middle, where your constraints and requirements go to die.
 :::
-
-## Retrieval Is Not Context Engineering
-
-Semantic search, code research, and web research improve discovery. They help the agent find the right facts by meaning instead of guessing from keywords or training priors. But retrieval alone does not decide placement, lifetime, or isolation.
-
-Three Grep searches can return 18,000 tokens. Reading five files can add another 22,000. You are at 40,000 tokens before discovery is finished. Ten excellent semantic chunks can cost 15,000 tokens; reading related files adds 25,000; exploring patterns adds another 10,000. You are at 50,000 tokens before implementation starts.
-
-That is why correct retrieval can still hurt reliability. A long search trail can push the actual task into the forgotten middle. A useful web page can arrive too early, sit too long, and compete with more relevant instructions later. Coherent distractor text is especially dangerous because it looks relevant while degrading reasoning more than obvious noise ([Chroma Context Rot study](https://research.trychroma.com/context-rot), 2025).
-
-So treat retrieval as the input to context engineering, not a replacement for it. Grounding answers **what facts should enter the agent's world**. Context engineering answers **how those facts stay usable**.
 
 ## The Five Context Mechanisms
 

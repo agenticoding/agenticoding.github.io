@@ -2,6 +2,7 @@ import React from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import { Prism } from 'prism-react-renderer';
 import styles from './ContextStreamBlock.module.css';
+import { EMOJI, type EmojiAsset, emojiSrc } from './emojiAssets';
 import type { Role, ContextEntry } from './contextStreamData';
 
 interface Props {
@@ -9,11 +10,11 @@ interface Props {
   ariaLabel?: string;
 }
 
-const ROLE_CONFIG: Record<Role, { label: string; color: string; contentClass: string; emoji: string; nudgeY?: number }> = {
-  system:      { label: 'SYSTEM',      color: 'var(--visual-cyan)',    contentClass: styles.contentSystem,     emoji: '2699'  },
-  user:        { label: 'USER',        color: 'var(--visual-neutral)', contentClass: styles.contentUser,       emoji: '1f913' },
-  agent:       { label: 'AGENT',       color: 'var(--visual-magenta)', contentClass: styles.contentAgent,      emoji: '1f916', nudgeY: -1 },
-  tool_result: { label: 'TOOL_RESULT', color: 'var(--visual-indigo)',  contentClass: styles.contentToolResult, emoji: '1f6e0' },
+const ROLE_CONFIG: Record<Role, { label: string; color: string; contentClass: string; emoji: EmojiAsset; nudgeY?: number }> = {
+  system:      { label: 'SYSTEM',      color: 'var(--visual-cyan)',    contentClass: styles.contentSystem,     emoji: EMOJI.gear },
+  user:        { label: 'USER',        color: 'var(--visual-neutral)', contentClass: styles.contentUser,       emoji: EMOJI.operator },
+  agent:       { label: 'AGENT',       color: 'var(--visual-magenta)', contentClass: styles.contentAgent,      emoji: EMOJI.agent, nudgeY: -1 },
+  tool_result: { label: 'TOOL_RESULT', color: 'var(--visual-indigo)',  contentClass: styles.contentToolResult, emoji: EMOJI.tools },
 };
 
 // --- Inline tokenizer ---
@@ -115,7 +116,7 @@ export default function ContextStreamBlock({ entries, ariaLabel = 'Context windo
             style={{ '--entry-accent': config.color } as React.CSSProperties}
           >
             <span className={styles.roleLabel} style={{ color: config.color }}>
-              <img src={`${emojiBase}/u${config.emoji}.svg`} alt="" width={14} height={14}
+              <img src={emojiSrc(emojiBase, config.emoji)} alt="" width={14} height={14}
                 style={{ display: 'block', ...(config.nudgeY ? { transform: `translateY(${config.nudgeY}px)` } : {}) }}
               />
               {config.label}

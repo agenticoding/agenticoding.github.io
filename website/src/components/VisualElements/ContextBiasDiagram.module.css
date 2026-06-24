@@ -2,19 +2,151 @@
    Only ContextBias-specific classes live here. */
 
 /* Stack entry stagger */
-.entry   { opacity: 0; transition: opacity 200ms var(--ease-exit); }
-.entryIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+.entry {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
+.entryIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
 
 /* Same-code bezier connector + label */
-.sameCodeLink   { opacity: 0; }
-.sameCodeLinkIn { opacity: 1; transition: opacity 350ms var(--ease-enter); }
+.sameCodeLink {
+  opacity: 0;
+}
+.sameCodeLinkIn {
+  opacity: 1;
+  transition: opacity 350ms var(--ease-enter);
+}
+
+/* Electricity idles on the inference connectors without touching scroll drawing. */
+.electricConnector {
+  --electric-color: var(--text-muted);
+}
+
+.electricConnectorIn {
+  stroke: var(--electric-color);
+  animation: electricGlow 1200ms ease-in-out infinite;
+}
+
+.electricSpark {
+  opacity: 0;
+  fill: none;
+  stroke: var(--electric-color);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px var(--electric-color));
+  animation: electricSpark 1200ms steps(1, end) infinite;
+}
+
+.electricSparkIn {
+  opacity: 0.45;
+}
+.electricWarning {
+  --electric-color: var(--visual-warning);
+}
+.electricError {
+  --electric-color: var(--visual-error);
+}
+.electricDelay0 {
+  animation-delay: 0ms;
+}
+.electricDelay1 {
+  animation-delay: -280ms;
+}
+.electricDelay2 {
+  animation-delay: -560ms;
+}
+.electricDelay3 {
+  animation-delay: -840ms;
+}
+
+@keyframes electricGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 var(--electric-color));
+    stroke-width: 1.5;
+  }
+  45% {
+    filter: drop-shadow(0 0 2px var(--electric-color));
+    stroke-width: 1.9;
+  }
+  52% {
+    filter: drop-shadow(0 0 4px var(--electric-color));
+    stroke-width: 2.2;
+  }
+  58% {
+    filter: drop-shadow(0 0 1px var(--electric-color));
+    stroke-width: 1.6;
+  }
+}
+
+@keyframes electricSpark {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translateX(0);
+  }
+  8% {
+    opacity: 0.95;
+    transform: translateX(-0.8px);
+  }
+  10% {
+    opacity: 0.35;
+    transform: translateX(0.7px);
+  }
+  34% {
+    opacity: 0.75;
+    transform: translateX(0.9px);
+  }
+  36% {
+    opacity: 0.25;
+    transform: translateX(0);
+  }
+  68% {
+    opacity: 0.6;
+    transform: translateX(-0.6px);
+  }
+}
 
 /* Verdict text */
-.verdictText   { opacity: 0; transition: opacity 200ms var(--ease-exit); }
-.verdictTextIn { opacity: 1; transition: opacity 300ms var(--ease-enter); }
+.verdictText {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
+.verdictTextIn {
+  opacity: 1;
+  transition: opacity 300ms var(--ease-enter);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .entry, .entryIn               { opacity: 1; transition: none; }
-  .sameCodeLink, .sameCodeLinkIn { opacity: 1; transition: none; }
-  .verdictText, .verdictTextIn   { opacity: 1; transition: none; }
+  .entry,
+  .entryIn {
+    opacity: 1;
+    transition: none;
+  }
+  .sameCodeLink,
+  .sameCodeLinkIn {
+    opacity: 1;
+    transition: none;
+  }
+  .electricConnector,
+  .electricConnectorIn {
+    animation: none;
+    filter: none;
+    stroke: var(--text-muted);
+  }
+  .electricSpark,
+  .electricSparkIn {
+    opacity: 0;
+    animation: none;
+  }
+  .verdictText,
+  .verdictTextIn {
+    opacity: 1;
+    transition: none;
+  }
 }

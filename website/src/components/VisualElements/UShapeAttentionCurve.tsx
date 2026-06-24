@@ -189,7 +189,7 @@ export default function UShapeAttentionCurve({
               y={dot.dotY - DOT_SIZE / 2}
               width={DOT_SIZE}
               height={DOT_SIZE}
-              rx={4}
+              rx={0}
               className={dot.danger ? styles.dotDanger : styles.dot}
             />
             {!dot.danger && dot.cyanOpacity > 0 && (
@@ -198,7 +198,7 @@ export default function UShapeAttentionCurve({
                 y={dot.dotY - DOT_SIZE / 2}
                 width={DOT_SIZE}
                 height={DOT_SIZE}
-                rx={4}
+                rx={0}
                 className={styles.dotCyan}
                 opacity={dot.cyanOpacity}
               />
@@ -303,7 +303,7 @@ export default function UShapeAttentionCurve({
           </div>
           <div className={`${styles.card} ${styles.cardTrap}`}>
             <div className={`${styles.cardTitle} ${styles.cardTitleWarning}`}>
-              WHY A BIGGER WINDOW WON'T HELP
+              WHY A BIGGER WINDOW WON&apos;T HELP
             </div>
             <div className={styles.cardBody}>
               At 128K tokens, all frontier models score ~84% on MRCR v2 — regardless of

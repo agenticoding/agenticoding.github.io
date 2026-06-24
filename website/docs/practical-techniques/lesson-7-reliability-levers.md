@@ -7,7 +7,12 @@ title: 'Reliability Levers'
 ---
 
 import AgentReliabilityDecayCurve from '@site/src/components/VisualElements/AgentReliabilityDecayCurve';
+import ContextQualityLeverDiagram from '@site/src/components/VisualElements/ContextQualityLeverDiagram';
 import FailureStickinessChain from '@site/src/components/VisualElements/FailureStickinessChain';
+import HITLCheckpointLeverDiagram from '@site/src/components/VisualElements/HITLCheckpointLeverDiagram';
+import OrchestrationLeverDiagram from '@site/src/components/VisualElements/OrchestrationLeverDiagram';
+import ReliabilityLeversControlPanel from '@site/src/components/VisualElements/ReliabilityLeversControlPanel';
+import SamplingLeverDiagram from '@site/src/components/VisualElements/SamplingLeverDiagram';
 
 [Lesson 5: Grounding](/methodology/lesson-5-grounding) covered getting the right facts into the agent's world. [Lesson 6: Context Engineering](./lesson-6-context-management.mdx) covered why long-context capacity does not equal reliable inference, then showed how to keep facts usable by controlling placement, loading, isolation, and handoffs. But context quality is only one part of the reliability problem. Even with good context, agents still operate as probabilistic systems executing multi-step plans.
 
@@ -67,6 +72,15 @@ Production agent reliability breaks down into four operator levers. Each attacks
 
 Each lever changes a different part of the reliability system.
 
+<figure>
+  <ReliabilityLeversControlPanel />
+  <figcaption>
+    The four reliability levers are not interchangeable. Context quality raises
+    baseline R, orchestration changes step hardness and dependencies, sampling
+    raises effective reliability, and HITL checkpoints reduce failure stickiness S.
+  </figcaption>
+</figure>
+
 1. **Context quality** sets the starting reliability of a step.
 2. **Orchestration** changes how hard each step is.
 3. **Sampling** gives you more than one shot at a noisy step.
@@ -77,6 +91,14 @@ Together they are multiplicative. Better context raises your base `R`. Better or
 Lesson 6 introduced the operator tools for shaping context: context files, MCP loading strategy, skills, sub-agents, and manual handoffs. Context quality is one lever directly, but those same tools also support orchestration, sampling, and checkpoints.
 
 ### 1. Context Quality: Raise the Baseline
+
+<figure>
+  <ContextQualityLeverDiagram />
+  <figcaption>
+    Context quality is selective loading, not maximal loading. Relevant facts feed
+    the task chain; stale or irrelevant history stays outside the working context.
+  </figcaption>
+</figure>
 
 Context quality is the foundation lever. It sets the baseline reliability `R` for every step by controlling what the agent sees, when it sees it, and how much noise competes with the task.
 
@@ -93,6 +115,14 @@ For the rate-limiting task, that means loading the facts that actually constrain
 The tradeoff is that more context is not better context. Once relevant grounding turns into excess detail, `R` drops because the signal gets pushed out of the model's high-attention zone.
 
 ### 2. Orchestration: Change the Shape of the Work
+
+<figure>
+  <OrchestrationLeverDiagram />
+  <figcaption>
+    Orchestration improves reliability by changing the shape of the work: avoid
+    both oversized steps and unnecessary dependency chains.
+  </figcaption>
+</figure>
 
 Orchestration is the lever that changes the structure of the workflow itself: what counts as one step, which steps depend on each other, and which work should be done by tools, procedures, or separate agents.
 
@@ -116,6 +146,14 @@ Mathematically, orchestration is about the balance between per-step reliability 
 The tradeoff is simple: decomposition helps only up to the model's actual capability. If a step is still too hard, splitting the workflow differently will not rescue it. Bad orchestration usually fails in one of two ways: the step is too large for the model to execute reliably, or the workflow adds dependencies that did not need to exist.
 
 ### 3. Sampling: More Coin Tosses, Better Odds
+
+<figure>
+  <SamplingLeverDiagram />
+  <figcaption>
+    Sampling only buys reliability when attempts are meaningfully independent and
+    the judge is separate enough to select the best candidate.
+  </figcaption>
+</figure>
 
 Sampling is the lever for noisy generations. The intuition is the same as repeated coin tosses: if one toss has a chance of landing heads, the odds of seeing at least one head go up when you toss again.
 
@@ -155,6 +193,14 @@ This is where [Lesson 6's sub-agents](./lesson-6-context-management.mdx#sub-agen
 The tradeoff is that latency and cost scale with `k`, and gains depend on how independent the retries really are and how trustworthy the judge is. Sampling is a poor substitute for bad decomposition or weak grounding.
 
 ### 4. Human-in-the-Loop (HITL) Checkpoints: Break Error Propagation
+
+<figure>
+  <HITLCheckpointLeverDiagram />
+  <figcaption>
+    A checkpoint is valuable when it blocks propagation and starts the next phase
+    from a validated artifact, not when it rubber-stamps a noisy thread.
+  </figcaption>
+</figure>
 
 Human-in-the-loop means a person deliberately reviews or approves an intermediate artifact before the agent continues. In practice, that artifact might be a plan, a spec, a code diff, a deployment command, or a final answer.
 

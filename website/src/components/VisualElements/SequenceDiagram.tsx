@@ -7,13 +7,13 @@ import { useMounted } from '../../hooks/useMounted';
 import { Ghost, ghostClass } from './Ghost';
 import { CONNECTOR_STYLE, GHOST_CONNECTOR_STYLE, ARROWHEAD_POINTS, ARROWHEAD_POINTS_REV } from './diagramConstants';
 import { getSequenceMessageGhostReached, getSequenceRowReached } from './sequenceDiagramReveal';
+import { type EmojiAsset, emojiSrc } from './emojiAssets';
 
 // Fixed layout constants (all in SVG user units ≈ CSS px after ResizeObserver)
 const HEADER_H   = 96;   // height of sticky HTML header zone (CSS px) — 80 content + 16 bottom pad (--space-2)
 const ROW_STEP   = 48;
 const NOTE_H_1   = 40;
 const NOTE_H_2   = 56;
-const NOTE_RX    = 6;
 const COL_ICON_SIZE = 52;  // drives column spacing; no SVG node rect is rendered at this size
 const EMOJI_SIZE = 36;
 const PAD_H      = 16;
@@ -31,7 +31,7 @@ type VisualColor = 'cyan' | 'indigo' | 'violet' | 'magenta' | 'neutral' | 'warni
 export type Column = {
   id: string;
   label: string;
-  emoji: string;        // NotoEmoji codepoint e.g. "1f916"
+  emoji: EmojiAsset;
   color?: VisualColor;  // maps to var(--visual-{color})
 };
 
@@ -116,9 +116,8 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
               className={styles.columnItem}
               style={{ left: cx, transform: 'translateX(-50%)' }}
             >
-              {/* <img> not NotoEmoji: this is an HTML context, not SVG */}
               <img
-                src={`${emojiBase}/u${col.emoji}.svg`}
+                src={emojiSrc(emojiBase, col.emoji)}
                 alt=""
                 className={styles.columnEmoji}
                 width={EMOJI_SIZE}
@@ -174,7 +173,7 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
                 {/* Ghost placeholder */}
                 <Ghost
                   x={cx - noteW / 2} y={y - noteH / 2}
-                  width={noteW} height={noteH} rx={NOTE_RX}
+                  width={noteW} height={noteH} rx={0}
                   fill={`var(--visual-bg-${color})`}
                   stroke={`var(--visual-${color})`}
                   mounted={mounted} reached={rowReached}
@@ -183,7 +182,7 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
                 <g className={clsx(styles.row, rowReached && styles.rowIn)}>
                   <rect
                     x={cx - noteW / 2} y={y - noteH / 2}
-                    width={noteW} height={noteH} rx={NOTE_RX}
+                    width={noteW} height={noteH} rx={0}
                     fill={`var(--visual-bg-${color})`}
                     stroke={`var(--visual-${color})`}
                     strokeWidth={1}

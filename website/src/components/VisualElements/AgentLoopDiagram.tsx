@@ -2,7 +2,8 @@ import React, { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './AgentLoopDiagram.module.css';
 import shared from './diagram.module.css';
-import { NotoEmoji } from './ActorNodes';
+import { EmojiImage } from './ActorNodes';
+import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
@@ -18,7 +19,7 @@ import { CONNECTOR_STYLE, ARROWHEAD_POINTS, arrowOpacity } from './diagramConsta
 //   Act       (lower-right):  center=(335,274)   rect x=311 y=250 48×48
 //   Observe   (lower-left):   center=(205,274)   rect x=181 y=250 48×48
 //   Verify    (upper-left):   center=(165,151)   rect x=141 y=127 48×48
-//   Done      (exit, below-left of verify): rect x=72 y=240 48×48 rx=12
+//   Done      (exit, below-left of verify): rect x=72 y=240 48×48 rx=0
 //
 // Arc paths computed via scripts/compute-agent-loop-arcs.js (BULGE=30, REF_X=5); node and label positions are hand-placed
 //   Arc 1 perceive→reason:  M 294 75 Q 350.71 75.75 372.86 122.48
@@ -78,7 +79,7 @@ export default function AgentLoopDiagram() {
     >
       {/* ── Perceive node — act 0 (threshold 0.00), visible on mount; no ghost needed ── */}
       <g className={clsx(shared.node, shared.nodeIn)}>
-        <NotoEmoji codepoint="1f52c" x={250} y={55} size={40} />
+        <EmojiImage asset={EMOJI.microscope} x={250} y={55} size={40} />
       </g>
       <text x={270} y={33}
         fill="var(--visual-indigo)"
@@ -99,14 +100,14 @@ export default function AgentLoopDiagram() {
       </g>
 
       {/* ── Reason ghost placeholder ──────────────────────────────────────── */}
-      <Ghost x={351} y={127} width={48} height={48} rx={12}
+      <Ghost x={351} y={127} width={48} height={48} rx={0}
         fill="var(--visual-bg-violet)" stroke="var(--visual-violet)"
         mounted={mounted} reached={reasonReached}
       />
 
       {/* ── Reason node ───────────────────────────────────────────────────── */}
       <g className={clsx(shared.node, reasonReached && shared.nodeIn)}>
-        <NotoEmoji codepoint="1f9e0" x={355} y={131} size={40} />
+        <EmojiImage asset={EMOJI.brain} x={355} y={131} size={40} />
       </g>
       <text x={414.56} y={138.03}
         fill="var(--visual-violet)"
@@ -127,14 +128,14 @@ export default function AgentLoopDiagram() {
       </g>
 
       {/* ── Act ghost placeholder ─────────────────────────────────────────── */}
-      <Ghost x={311} y={250} width={48} height={48} rx={12}
+      <Ghost x={311} y={250} width={48} height={48} rx={0}
         fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)"
         mounted={mounted} reached={actReached}
       />
 
       {/* ── Act node ──────────────────────────────────────────────────────── */}
       <g className={clsx(shared.node, actReached && shared.nodeIn)}>
-        <NotoEmoji codepoint="1f9be" x={315} y={254} size={40} />
+        <EmojiImage asset={EMOJI.act} x={315} y={254} size={40} />
       </g>
       <text x={359.34} y={307.97}
         fill="var(--visual-cyan)"
@@ -155,14 +156,14 @@ export default function AgentLoopDiagram() {
       </g>
 
       {/* ── Observe ghost placeholder ─────────────────────────────────────── */}
-      <Ghost x={181} y={250} width={48} height={48} rx={12}
+      <Ghost x={181} y={250} width={48} height={48} rx={0}
         fill="var(--visual-bg-magenta)" stroke="var(--visual-magenta)"
         mounted={mounted} reached={observeReached}
       />
 
       {/* ── Observe node ─────────────────────────────────────────────────── */}
       <g className={clsx(shared.node, observeReached && shared.nodeIn)}>
-        <NotoEmoji codepoint="1f440" x={185} y={254} size={40} />
+        <EmojiImage asset={EMOJI.observe} x={185} y={254} size={40} />
       </g>
       <text x={180.66} y={307.97}
         fill="var(--visual-magenta)"
@@ -183,14 +184,14 @@ export default function AgentLoopDiagram() {
       </g>
 
       {/* ── Verify ghost placeholder ──────────────────────────────────────── */}
-      <Ghost x={141} y={127} width={48} height={48} rx={12}
+      <Ghost x={141} y={127} width={48} height={48} rx={0}
         fill="var(--visual-bg-warning)" stroke="var(--visual-warning)"
         mounted={mounted} reached={verifyReached}
       />
 
       {/* ── Verify node ───────────────────────────────────────────────────── */}
       <g className={clsx(shared.node, verifyReached && shared.nodeIn)}>
-        <NotoEmoji codepoint="1f4cf" x={145} y={131} size={40} />
+        <EmojiImage asset={EMOJI.ruler} x={145} y={131} size={40} />
       </g>
       {/* label nudged left/down from computed (125.4, 138) to avoid overlap with the "Yes" arc label */}
       <text x={108} y={155}
@@ -235,14 +236,14 @@ export default function AgentLoopDiagram() {
       >Yes</text>
 
       {/* ── Done ghost placeholder ────────────────────────────────────────── */}
-      <Ghost x={72} y={240} width={48} height={48} rx={12}
+      <Ghost x={72} y={240} width={48} height={48} rx={0}
         fill="var(--visual-bg-success)" stroke="var(--visual-success)"
         mounted={mounted} reached={loopReached}
       />
 
       {/* ── Done node ─────────────────────────────────────────────────────── */}
       <g className={clsx(shared.node, loopReached && shared.nodeIn)}>
-        <NotoEmoji codepoint="2705" x={76} y={244} size={40} />
+        <EmojiImage asset={EMOJI.check} x={76} y={244} size={40} />
       </g>
       <text x={96} y={300}
         fill="var(--visual-success)"

@@ -6,193 +6,238 @@ sidebar_custom_props:
 title: 'Agents Demystified'
 ---
 
-import ContextBiasDiagram from '@site/src/components/VisualElements/ContextBiasDiagram';
-import AgentLoopDiagram from '@site/src/components/VisualElements/AgentLoopDiagram';
+import HarnessContextLoop from '@site/src/components/VisualElements/HarnessContextLoop';
 import ContextStreamBlock from '@site/src/components/VisualElements/ContextStreamBlock';
 import SequenceDiagram from '@site/src/components/VisualElements/SequenceDiagram';
 import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
 import { emailValidationStream } from '@site/src/components/VisualElements/contextStreamData';
+import { EMOJI } from '@site/src/components/VisualElements/emojiAssets';
 
 export const SEQ_COLUMNS = [
-  { id: 'user',  label: 'User',       emoji: '1f913', color: 'neutral' },
-  { id: 'agent', label: 'Agent (LLM)', emoji: '1f916', color: 'magenta' },
-  { id: 'tools', label: 'Tools',       emoji: '1f6e0', color: 'cyan' },
+  { id: 'user',  label: 'User',       emoji: EMOJI.operator, color: 'neutral' },
+  { id: 'agent', label: 'Agent Harness', emoji: EMOJI.agent, color: 'magenta' },
+  { id: 'tools', label: 'Tools',       emoji: EMOJI.tools, color: 'cyan' },
 ];
 
 export const SEQ_ROWS = [
-  { type: 'note',    on: 'agent', text: 'System Prompt', subtext: 'Defines tools & behavior' },
+  { type: 'note',    on: 'agent', text: 'System Prompt', subtext: 'Defines goals, constraints, tools, and output formats' },
   { type: 'message', from: 'user',  to: 'agent', label: 'User Prompt', sublabel: '"Add input validation to registration"' },
-  { type: 'note',    on: 'agent', text: 'Decides to use Grep tool' },
+  { type: 'note',    on: 'agent', text: 'LLM predicts a structured action' },
   { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Grep' },
-  { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: 'Grep results added to context as text', dashed: true },
-  { type: 'note',    on: 'agent', text: 'Decides to Read file' },
+  { type: 'message', from: 'tools', to: 'agent', label: 'Observation', sublabel: 'Search results serialized back into context', dashed: true },
+  { type: 'note',    on: 'agent', text: 'LLM predicts the next action from updated context' },
   { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Read' },
-  { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: 'File contents added to context as text', dashed: true },
-  { type: 'note',    on: 'agent', text: 'Decides to Edit file' },
+  { type: 'message', from: 'tools', to: 'agent', label: 'Observation', sublabel: 'File contents serialized back into context', dashed: true },
+  { type: 'note',    on: 'agent', text: 'LLM emits an edit request' },
   { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Edit' },
-  { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: '"Edit successful" added to context', dashed: true },
-  { type: 'note',    on: 'agent', text: 'Decides to run tests' },
+  { type: 'message', from: 'tools', to: 'agent', label: 'Observation', sublabel: 'Patch result serialized back into context', dashed: true },
+  { type: 'note',    on: 'agent', text: 'LLM emits a verification command' },
   { type: 'message', from: 'agent', to: 'tools', label: 'tool_call: Bash' },
-  { type: 'message', from: 'tools', to: 'agent', label: 'Tool Result', sublabel: 'Test output added to context', dashed: true },
-  { type: 'message', from: 'agent', to: 'user',  label: 'Agent Response', sublabel: '"Task complete"' },
+  { type: 'message', from: 'tools', to: 'agent', label: 'Observation', sublabel: 'Test output serialized back into context', dashed: true },
+  { type: 'message', from: 'agent', to: 'user',  label: 'Final Response', sublabel: 'Summary, verification, and remaining risks' },
 ];
 
-In Lesson 1, we established that **LLMs are brains** (token prediction engines) and **agent frameworks are bodies** (execution layers). Now let's understand how these components work together to create autonomous coding agents that can complete complex tasks.
+In Lesson 1, we reduced the model to its operating core: context in, predicted tokens out. A model can emit prose, code, a reasoning trace, or a tool-call-shaped message, but it is still predicting tokens from the supplied context.
 
-## The Agent Execution Loop
+An agent is the software system wrapped around that model call. The harness supplies context, exposes tools, parses structured outputs, executes approved actions, appends observations, and decides whether to continue. The LLM is the probabilistic engine; the agent is the control system that turns its outputs into useful work.
 
-An agent isn't just an LLM responding to prompts. It's a **feedback loop** that combines reasoning with action, allowing the LLM to iteratively work toward a goal.
+## The Minimal Agent Loop
 
-### Basic Loop: Perceive → Reason → Act → Verify → Iterate
+The minimal agent loop is not a cognitive cycle. It is an application loop around repeated LLM calls. Each pass prepares input context, gets model output, validates the output, performs any approved side effect, and serializes the result back into the next context.
 
-<ScrollDrivenFigure phaseEnd={0.585} caption="Perceive, reason, act, observe, verify — iterate until done.">
-  <AgentLoopDiagram />
-</ScrollDrivenFigure>
+<figure>
+  <HarnessContextLoop />
+  <figcaption>
+    The harness turns model output into a controlled loop: context in, validated action out, observation back into context.
+  </figcaption>
+</figure>
 
-**Key distinction:** A chat interface requires you to manually execute actions between prompts. An agent **autonomously loops** through this cycle.
+Once you see the loop as context flow, the agent boundary becomes explicit. The model only predicts the next token sequence. The harness owns validation, execution, observation capture, stopping conditions, and budget control.
 
-### Example: Implementing a Feature
+A minimal harness looks like normal application code:
 
-**Chat interface workflow:**
+```ts
+const observations = [];
 
-1. You: "How should I add authentication to this API?"
-2. LLM: "Here's the code..."
-3. **You manually edit files**
-4. You: "I got this error..."
-5. LLM: "Try this fix..."
-6. **You manually edit again**
+while (!done) {
+  const context = assembleContext({ task, memory, observations, tools });
+  const modelOutput = await llm.complete(context);
+  const action = parseAndValidate(modelOutput, { tools, policy });
 
-**Agent workflow:**
+  if (action.type === 'final') return action.response;
 
-1. You: "Add authentication to this API"
-2. Agent: [Perceive] Reads API files → [Reason] Plans implementation → [Act] Edits files → [Observe] Runs tests → [Verify] Tests fail → [Reason] Analyzes error → [Act] Fixes code → [Observe] Runs tests → [Verify] Tests pass → Done
+  const observation = await executeOutsideModel(action);
+  observations.push(serializeObservation(observation));
+  done = shouldStopOrIterate({ task, observations, budget });
+}
+```
 
-The agent **closes the loop** automatically, executing the full cycle without requiring manual intervention at each step.
+There is no separate agent substance in this loop. The leverage comes from context assembly, output parsing, execution policy, and iteration.
 
-## Under the Hood: It's All Just Text
+## Everything Useful Becomes Context
 
-Here's the fundamental truth that demystifies AI coding agents: **everything is just text flowing through a context window.**
+Agent behavior is shaped by the tokens available at the next model call. The model's statelessness follows from Lesson 1: each call sees only the supplied context. Conversation history, previous tool results, repo snippets, and summaries are not memories inside the model; they are input tokens selected by the agent system.
 
-No magic, no separate reasoning engine, no hidden state. When you interact with an agent, you're watching a conversation unfold in a single, large text buffer.
+That is why context engineering is the central operator skill. You are not programming a mind. You are shaping the input stream to a probabilistic dependency.
 
-### The Textual Flow
+### The Stateless Advantage
 
-Every agent interaction follows this pattern:
+Statelessness is useful because a fresh context can produce an independent review, alternate design, or clean re-run without defending earlier conversation drift. The advantage comes from software control over context, not from the model recalling anything.
 
-<ScrollDrivenFigure caption="Everything is text flowing through a context window.">
+### What the Context Stream Looks Like
+
+When you ask an agent to "Add email validation to the registration endpoint," the harness builds one continuous interaction stream: system instructions, your request, tool calls, tool results, and final response.
+
+<ContextStreamBlock entries={emailValidationStream} />
+
+That stream may be represented as provider-native messages rather than one literal string, and some providers hide parts of reasoning behind summarized "thinking" outputs. The operating model stays the same: the next LLM call is conditioned on the context the harness provides.
+
+## Memory Is Retrieval, Not Recall
+
+Agent "memory" is software-managed context selection. The LLM does not remember your project conventions, previous sessions, or domain facts unless the agent retrieves or stores them and feeds them into a later call.
+
+Common memory layers include:
+
+- **Working memory:** the current conversation, active files, recent tool observations, and task state.
+- **Persistent rules:** `CLAUDE.md`, `AGENTS.md`, project instructions, style guides, and saved preferences.
+- **Summaries:** compressed session state that keeps long work from exceeding the context budget.
+- **RAG and search:** keyword search, vector databases, hybrid retrieval, knowledge graphs, and documentation indexes.
+- **External records:** tickets, design docs, audit logs, prior decisions, and production telemetry.
+
+All of them solve the same problem: choose which tokens deserve space in the next request. Good memory systems retrieve precise, current, source-backed context. Bad memory systems flood the model with stale summaries, irrelevant vector hits, or unverified preferences.
+
+In code, memory is usually just another input to context assembly:
+
+```ts
+const context = [
+  systemPrompt,
+  await readFile('AGENTS.md'),
+  await retrieveRelevantDocs(task),
+  await summarizePreviousSession(task),
+  formatRecentObservations(observations),
+  userRequest,
+];
+```
+
+The quality question is not "does the model remember?" It is "did the software retrieve the right evidence and compress it without losing the constraint that matters?"
+
+## Tools Are Structured Requests
+
+Tools are functions, commands, or API operations exposed by the harness. The model requests them through structured output; the harness validates and executes them.
+
+<ScrollDrivenFigure caption="Tool calls are model outputs; tool execution happens in the harness.">
   <SequenceDiagram
-    ariaLabel="Agent interaction sequence: user sends prompt, agent calls tools, returns result"
+    ariaLabel="Agent harness sequence: user prompt, model tool requests, harness observations, final response"
     columns={SEQ_COLUMNS}
     rows={SEQ_ROWS}
   />
 </ScrollDrivenFigure>
 
-:::tip[Reasoning is Just Text]
-The agent doesn't "think" separately from its output. When you see the agent reasoning ("I should check the validation logic..."), that's not internal thought - it's text being generated in the context, visible to both you and the LLM itself.
+A coding harness typically exposes operations like:
 
-**Extended thinking modes complicate this further:** Providers like Anthropic and OpenAI now offer "extended thinking" where the model generates hidden reasoning tokens before producing visible output. What you see in the context is a _summary_ of that internal chain-of-thought, not the full reasoning process. You're billed for the complete hidden reasoning tokens, but you only see an abbreviated version. The actual reasoning is opaque - you can't inspect or debug it.
-:::
+- **Search:** `grep`, semantic search, symbol lookup, documentation lookup
+- **Read:** files, diffs, logs, issues, runtime state
+- **Modify:** edit, write, refactor, apply patch
+- **Execute:** tests, linters, builds, scripts, shell commands
+- **Integrate:** APIs, databases, cloud services, browsers, internal tools
 
-### Concrete Example: What the Context Actually Looks Like
+The failure boundary is also in the harness. It must reject malformed calls, enforce permissions, redact secrets, cap output, surface errors, and ask for approval when an action is risky. The model can suggest an action; the agent system owns execution.
 
-When you ask Claude Code to "Add email validation to the registration endpoint," the context window contains a single, continuous text stream. Here's exactly what flows through the agent's context - system instructions, your task, tool calls, results, and responses all as text:
-
-<ContextStreamBlock entries={emailValidationStream} />
-
-This entire conversation - system instructions, your task, tool calls, results, and responses - exists as **one continuous text stream** in the LLM's context window.
-
-### Why This Matters
-
-Understanding the textual nature of agents helps you:
-
-1. **Anticipate behavior** - The agent only knows what's in the context
-2. **Debug confusion** - If the agent forgets something, it probably scrolled out of context
-3. **Structure better prompts** - You're adding text to a conversation, not issuing commands
-4. **Recognize limitations** - Context windows are finite; complex tasks may lose details
-
-### The Stateless Advantage
-
-Here's a crucial insight that transforms how you work with AI coding agents: **The LLM is completely stateless.** Its only "world" is the current context window.
-
-The LLM doesn't "remember" previous conversations. It has no hidden internal state. Each response is generated solely from the text currently in the context. When the conversation continues, the LLM sees its previous responses as text in the context, not as memories it recalls.
-
-**This is a massive advantage, not a limitation.** You control what the agent knows by controlling what's in the context.
-
-**Clean-slate exploration:** Start a new conversation, and the agent has no bias from previous decisions. Ask it to implement authentication with JWT in one context, sessions in another - each gets evaluated on merit without defending earlier choices.
-
-**Unbiased code review:** The agent can critically audit its own work. Don't reveal code authorship, and it applies full scrutiny with no defensive bias.
-
-{/* phaseEnd: scroll 0.6 viewport-heights past entry trigger to animate all 12 context entries + verdict connectors */}
-<ScrollDrivenFigure phaseEnd={0.6} caption="Same code, same model — different context produces a different solution class.">
-  <ContextBiasDiagram />
-</ScrollDrivenFigure>
-
-The accumulated context pushes the actual code into what transformers treat as a low-attention zone — the **[U-shaped attention curve](/methodology/lesson-5-grounding#the-scale-problem-context-window-limits)** means the beginning and end of context get strong attention while the middle gets skimmed. Fresh context eliminates this problem entirely.
-
-The same code that gets "looks sound overall" in one context triggers "Critical security vulnerabilities: localStorage exposes tokens to XSS attacks" in a fresh context. This enables Generate → Review → Iterate workflows where the agent writes code then objectively audits it, or multi-perspective analysis (security review in one context, performance in another).
-
-**How you engineer context determines agent behavior.** This manipulation happens through tools - the mechanisms agents use to read files, run commands, and observe results.
-
-## Tools: Built-In vs External
-
-Agents become useful through **tools** - functions the LLM can call to interact with the world.
-
-### Built-In Tools: Optimized for Speed
-
-CLI coding agents ship with purpose-built tools for common workflows:
-
-**Read, Edit, Bash, Grep, Write, Glob** - These aren't just wrappers around shell commands. They're engineered with edge case handling, LLM-friendly output formats, safety guardrails, and token efficiency.
-
-### External Tools: MCP Protocol
-
-**MCP (Model Context Protocol)** is a standardized plugin system for adding custom tools. Use it to connect your agent to external systems:
-
-- Database clients (Postgres, MongoDB)
-- API integrations (Stripe, GitHub, Figma)
-- Cloud platforms (AWS, GCP, Azure)
-
-Configure MCP servers in your settings, and the agent discovers their tools at runtime:
+A model might emit a structured request like this:
 
 ```json
-// ~/.claude/mcp_settings.json
 {
-  "servers": {
-    "postgres": {
-      "command": "npx",
-      "args": [
-        "@modelcontextprotocol/server-postgres",
-        "postgresql://localhost/mydb"
-      ]
-    }
+  "tool": "bash",
+  "args": {
+    "command": "npm test -- --runInBand"
   }
 }
 ```
 
-## CLI Coding Agents: Why They Win
+The harness then applies policy before the side effect:
 
-While chat interfaces (ChatGPT, Copilot Chat) excel at answering questions and brainstorming, **CLI coding agents deliver superior developer experience** for actual implementation work.
+```ts
+const request = parseToolCall(modelOutput);
+assertAllowed(request, policy);
 
-### The Concurrent Work Advantage
+const result = await runTool(request.tool, request.args);
+observations.push(serializeObservation(result));
+```
 
-**Multiple terminal tabs = multiple agents working on different projects simultaneously.**
+The JSON did not run tests. The harness did.
 
-Open three tabs, run agents on different projects (refactoring in `project-a`, debugging in `project-b`, implementing in `project-c`). Context-switch freely. Each agent keeps working independently.
+## Integration: Prefer CLIs, Use MCP When It Fits
 
-**IDE agents (Cursor, Copilot)** are tightly coupled to a single window and project. You're blocked until the agent completes or you cancel and lose context.
+For developer agents, mature CLIs are often the best tool interface. Models have seen common CLIs in training data, command output is naturally textual, shell composition is powerful, and files/pipes give simple interoperability without spending context on large tool schemas.
 
-**Chat interfaces** reset context with each conversation. You manually copy-paste code and execute changes.
+MCP still matters, but it should be right-sized. Use MCP when you need remote service integration, OAuth or multi-tenant auth, governed access, auditability, standardized discovery, or a service that has no good CLI. Do not treat MCP as the default path for every local developer workflow.
 
-**CLI agents unlock parallelism** without managing conversation threads or multiple IDE instances.
-
-:::tip Preview: [Lesson 7 — Reliability Levers](../practical-techniques/lesson-7-reliability-levers.md)
-We'll dive deep into **reliability levers** in Lesson 7, including how to structure concurrent work across multiple agents, when to parallelize vs. serialize tasks, and how to coordinate complex multi-project workflows.
+:::tip[Practical default]
+Start with the smallest reliable interface the model already understands. For local code work, that is usually files plus commands. Add MCP when auth, governance, remote state, or missing CLIs justify the extra surface area.
 :::
 
-## Context Engineering and Steering
+## Two Agent Architectures
 
-Now that you understand agents as textual systems and LLMs as stateless, the core truth emerges: **effective AI-assisted coding is about engineering context to steer behavior**. The context window is the agent's entire world - everything it knows comes from the text flowing through it. You control that text: system prompts, your instructions, tool results, conversation history. Vague context produces wandering behavior; precise, scoped context steers the agent exactly where you need it. You can steer upfront with focused prompts, or dynamically mid-conversation when the agent drifts. The stateless nature means you can even steer the agent to objectively review its own code in a fresh conversation.
+The useful distinction is not CLI versus IDE versus chat UI. Those are interaction surfaces. The architectural distinction is who owns the control plane.
 
-This is system design thinking applied to text - you're already good at designing interfaces and contracts. The rest of this course teaches how to apply those skills to engineer context and steer agents across real coding scenarios.
+### 1. Interactive Harness Agents
+
+Interactive coding agents — Claude Code, Codex-style terminals, Pi, OpenClaw, Cursor/Copilot-style coding agents — let the LLM drive many next-step decisions through tool calls or command requests. The harness provides guardrails and execution, but the model often chooses the next search, read, edit, test, or question.
+
+They are strong when the work is open-ended:
+
+- exploring an unfamiliar codebase
+- implementing a feature with unclear local constraints
+- debugging through iterative evidence gathering
+- refactoring with human oversight
+- coordinating several investigative branches
+
+Their main dependency is operator skill. Good prompts, scoped tasks, rules files, verification commands, and review loops dramatically improve outcomes. Weak context produces wandering behavior, excessive tool use, and plausible but wrong conclusions.
+
+### 2. Structured Control-Plane Systems
+
+Structured agent systems put deterministic software in charge. The workflow, state transitions, routing, budgets, retries, validation, audit logs, and stop conditions live in code. LLM calls happen at bounded junctions where language understanding or generation is useful.
+
+Common patterns include:
+
+- search/research pipelines that gather sources, rank evidence, and ask the LLM to synthesize
+- extraction/classification/routing systems with schema validation
+- Temporal activities or durable workflows that call models inside explicit steps
+- LangGraph-style state graphs with typed transitions
+- CrewAI Flows or similar orchestration where code owns the process
+
+These systems are stronger when reliability, repeatability, cost control, and auditability matter more than broad autonomy. The model becomes a bounded worker inside a larger deterministic machine.
+
+A structured research pipeline, for example, should not let the model decide every step:
+
+```ts
+const sources = await retrieveSources(query);
+const rankedSources = rankByRelevanceAndTrust(sources);
+const draft = await llm.complete(synthesisPrompt(query, rankedSources));
+
+return validateCitations(draft, rankedSources);
+```
+
+The LLM handles synthesis. Deterministic code owns retrieval, ranking, citation validation, and the decision to reject an unsupported answer.
+
+## Tradeoffs
+
+| Dimension | Interactive harness agents | Structured control-plane systems |
+| --- | --- | --- |
+| Best for | Ambiguous coding work, exploration, debugging, implementation with oversight | Repeatable workflows, production pipelines, governed operations |
+| Control plane | LLM chooses many next actions; harness enforces boundaries | Code owns workflow, state, routing, validation, and budgets |
+| Strength | Flexibility, breadth, fast adaptation, high operator leverage | Reliability, auditability, predictable cost, easier productization |
+| Main risk | Drift, over-tooling, missed context, inconsistent judgment | Rigidity, upfront design cost, narrow task coverage |
+| Operator role | Steer, scope, review, approve, verify | Design workflow, define schemas, set policy, monitor metrics |
+| Validation | Often interactive: tests, reviews, diffs, approvals | Built in: typed outputs, gates, retries, audits, deterministic checks |
+
+Use interactive harness agents when discovery and adaptation dominate. Use structured control planes when the workflow is known and the cost of a bad autonomous step is high.
+
+## Why This Matters for the Rest of the Book
+
+The rest of this course is about operating the control surface around the model: grounding, context selection, task decomposition, verification, parallel work, and reliability levers. Those practices apply whether the interface is an interactive coding harness or a production workflow with bounded LLM calls.
+
+The agent is not magic. It is a token predictor embedded in software that controls context, tools, memory, and validation. Once you see that boundary clearly, agent operation becomes engineering.
 
 ---
 

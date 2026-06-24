@@ -18,21 +18,30 @@ const OPERATOR_SIZE = GRID * 5;
 const FLOW_Y = GRID * 18;
 const CARD_Y = FLOW_Y - CARD_H / 2;
 
+const GROUP_GAP = SPACE_5;
+const FAILURE_STEP_GAP = SPACE_6;
+const FAILURE_ZONE_PADDING_X = SPACE_2;
+const FAILURE_ZONE_PADDING_Y = SPACE_4;
+const CHECKPOINT_LINE_INSET = SPACE_2;
+const FAILURE_ZONE_CHECKPOINT_GAP = GROUP_GAP;
+const CHECKPOINT_RECOVERY_GAP = GROUP_GAP;
+
 const GOOD_1_X = SPACE_6;
-const GOOD_2_X = GOOD_1_X + SMALL_W + SPACE_5;
-const FAIL_1_X = GOOD_2_X + SMALL_W + SPACE_5;
-const FAIL_2_X = FAIL_1_X + CARD_W + SPACE_6;
-const FAILURE_ZONE_END_X = FAIL_2_X + CARD_W + SPACE_5;
-const CHECKPOINT_X = FAILURE_ZONE_END_X + SPACE_5;
-const RECOVER_X = CHECKPOINT_X + SPACE_5;
+const GOOD_2_X = GOOD_1_X + SMALL_W + GROUP_GAP;
+const FAIL_1_X = GOOD_2_X + SMALL_W + GROUP_GAP;
+const FAIL_2_X = FAIL_1_X + CARD_W + FAILURE_STEP_GAP;
+const FAILURE_ZONE_START_X = FAIL_1_X - FAILURE_ZONE_PADDING_X;
+const FAILURE_ZONE_END_X = FAIL_2_X + CARD_W + FAILURE_ZONE_PADDING_X;
+const CHECKPOINT_X = FAILURE_ZONE_END_X + FAILURE_ZONE_CHECKPOINT_GAP;
+const RECOVER_X = CHECKPOINT_X + CHECKPOINT_RECOVERY_GAP;
 const CAPSULE = {
-  x: FAIL_1_X - SPACE_2,
-  y: CARD_Y - SPACE_4,
-  w: FAILURE_ZONE_END_X - FAIL_1_X + SPACE_2,
-  h: CARD_H + SPACE_6,
+  x: FAILURE_ZONE_START_X,
+  y: CARD_Y - FAILURE_ZONE_PADDING_Y,
+  w: FAILURE_ZONE_END_X - FAILURE_ZONE_START_X,
+  h: CARD_H + FAILURE_ZONE_PADDING_Y * 2,
 };
-const CHECKPOINT_LINE_TOP = CAPSULE.y + SPACE_2;
-const CHECKPOINT_LINE_BOTTOM = CAPSULE.y + CAPSULE.h - SPACE_2;
+const CHECKPOINT_LINE_TOP = CAPSULE.y + CHECKPOINT_LINE_INSET;
+const CHECKPOINT_LINE_BOTTOM = CAPSULE.y + CAPSULE.h - CHECKPOINT_LINE_INSET;
 const CHECKPOINT_EMOJI_X = CHECKPOINT_X - OPERATOR_SIZE / 2;
 const CHECKPOINT_EMOJI_Y = CHECKPOINT_LINE_TOP - OPERATOR_SIZE - GRID;
 const CHECKPOINT_LABEL_Y = CAPSULE.y + CAPSULE.h + SPACE_3;
@@ -61,7 +70,7 @@ function NeutralStep({ x, label }: { x: number; label: string }) {
         y={CARD_Y + GRID / 2}
         width={SMALL_W}
         height={CARD_H - GRID}
-        rx={GRID}
+        rx={0}
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
         strokeWidth="var(--stroke-light)"
@@ -88,7 +97,7 @@ function FailureStep({ x, label, detail }: { x: number; label: string; detail: s
         y={CARD_Y}
         width={CARD_W}
         height={CARD_H}
-        rx="3"
+        rx="0"
         fill="var(--visual-bg-error)"
         stroke="var(--visual-error)"
         strokeWidth="var(--stroke-light)"
@@ -124,7 +133,7 @@ function RecoveredStep() {
         y={CARD_Y}
         width={CARD_W}
         height={CARD_H}
-        rx={GRID}
+        rx={0}
         fill="var(--visual-bg-success)"
         stroke="var(--visual-success)"
         strokeWidth="var(--stroke-light)"
@@ -222,7 +231,7 @@ export default function FailureStickinessChain({
         y={GRID}
         width={VW - GRID * 2}
         height={VH - GRID * 2}
-        rx={GRID * 2}
+        rx={0}
         fill="var(--surface-page)"
         stroke="var(--border-subtle)"
       />
@@ -243,14 +252,14 @@ export default function FailureStickinessChain({
         y={CAPSULE.y}
         width={CAPSULE.w}
         height={CAPSULE.h}
-        rx={GRID * 2}
+        rx={0}
         fill="var(--visual-bg-error)"
         stroke="var(--visual-error)"
         strokeWidth="var(--stroke-fine)"
         strokeDasharray="5 5"
       />
       <text
-        x={CAPSULE.x + GRID * 2}
+        x={CAPSULE.x + FAILURE_ZONE_PADDING_X}
         y={CAPSULE.y + GRID * 3}
         fontFamily="var(--font-mono-keyword)"
         fontSize="var(--text-xs)"

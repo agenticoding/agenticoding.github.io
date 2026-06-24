@@ -11,11 +11,12 @@ import GroundingDiagram from '@site/src/components/VisualElements/GroundingDiagr
 import SubAgentDiagram from '@site/src/components/VisualElements/SubAgentDiagram';
 import SequenceDiagram from '@site/src/components/VisualElements/SequenceDiagram';
 import PromptExample from '@site/src/components/PromptExample';
+import { EMOJI } from '@site/src/components/VisualElements/emojiAssets';
 
 export const MS_COLUMNS = [
-  { id: 'code', label: 'Code Research', emoji: '1f916', color: 'cyan' },
-  { id: 'orch', label: 'Orchestrator',  emoji: '1f916', color: 'magenta' },
-  { id: 'web',  label: 'Web Research',  emoji: '1f916', color: 'indigo' },
+  { id: 'code', label: 'Code Research', emoji: EMOJI.agent, color: 'cyan' },
+  { id: 'orch', label: 'Orchestrator',  emoji: EMOJI.agent, color: 'magenta' },
+  { id: 'web',  label: 'Web Research',  emoji: EMOJI.agent, color: 'indigo' },
 ];
 
 export const MS_ROWS = [

@@ -1,0 +1,124 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  max-width: 720px;
+}
+
+.container.compact {
+  margin: 0 auto;
+  max-width: 95%;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.desktopDiagram {
+  max-width: 720px;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 320px;
+}
+
+.card,
+.exitTile {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.idleBeat {
+  animation: idleHarnessBeat 6300ms ease-in-out infinite both;
+}
+
+.card rect,
+.exitTile rect {
+  vector-effect: non-scaling-stroke;
+}
+
+.connector path,
+.connector polygon {
+  opacity: 0.78;
+}
+
+.loopLabel,
+.branchLabel,
+.stepNumber,
+.cardTitle,
+.cardDetail {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.loopLabel {
+  font-family: var(--font-mono-spec);
+  font-size: 11px;
+  letter-spacing: 0.2px;
+}
+
+.branchLabel {
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+}
+
+.stepNumber {
+  font-family: var(--font-mono-keyword);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cardTitle {
+  font-family: var(--font-mono-spec);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.cardDetail {
+  font-family: var(--font-mono-keyword);
+  font-size: 9px;
+}
+
+@keyframes idleHarnessBeat {
+  0%,
+  14%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  7% {
+    opacity: 0.82;
+    transform: scale(1.03);
+  }
+}
+
+@container (max-width: 560px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 580px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idleBeat {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

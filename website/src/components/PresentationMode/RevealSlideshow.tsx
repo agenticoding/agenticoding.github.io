@@ -28,7 +28,13 @@ import KnowledgeExpansionDiamond from '../VisualElements/KnowledgeExpansionDiamo
 import SystemFlowDiagram from '../VisualElements/SystemFlowDiagram';
 import SystemBoundaryDiagram from '../VisualElements/SystemBoundaryDiagram';
 import SpecCodeZoomDiagram from '../VisualElements/SpecCodeZoomDiagram';
+import ContextQualityLeverDiagram from '../VisualElements/ContextQualityLeverDiagram';
 import FailureStickinessChain from '../VisualElements/FailureStickinessChain';
+import HITLCheckpointLeverDiagram from '../VisualElements/HITLCheckpointLeverDiagram';
+import OrchestrationLeverDiagram from '../VisualElements/OrchestrationLeverDiagram';
+import ReliabilityLeversControlPanel from '../VisualElements/ReliabilityLeversControlPanel';
+import SamplingLeverDiagram from '../VisualElements/SamplingLeverDiagram';
+import PatternToUsefulWorkFunnel from '../VisualElements/PatternToUsefulWorkFunnel';
 
 interface SpeakerNotes {
   talkingPoints: string;
@@ -103,7 +109,13 @@ const VISUAL_COMPONENTS = {
   SystemFlowDiagram,
   SystemBoundaryDiagram,
   SpecCodeZoomDiagram,
+  ContextQualityLeverDiagram,
   FailureStickinessChain,
+  HITLCheckpointLeverDiagram,
+  OrchestrationLeverDiagram,
+  ReliabilityLeversControlPanel,
+  SamplingLeverDiagram,
+  PatternToUsefulWorkFunnel,
 };
 
 export default function RevealSlideshow({
