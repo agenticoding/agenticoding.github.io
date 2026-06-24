@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './ColorPaletteGenerator.module.css';
 
-interface ColorPaletteGeneratorProps extends PresentationAwareProps {}
+type ColorPaletteGeneratorProps = PresentationAwareProps;
 
 type HarmonyMode = 'monochromatic' | 'analogous' | 'complementary' | 'triadic';
 

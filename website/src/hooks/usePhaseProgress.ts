@@ -27,7 +27,7 @@ export function usePhaseProgress(
   useEffect(() => {
     if (!cbRef.current) return;
     cbRef.current(t);
-  }, [phase, start, end]); // eslint-disable-line react-hooks/exhaustive-deps — t is derived from these deps; cbRef avoids stale closure without being listed
+  }, [t]);
 
   return t;
 }

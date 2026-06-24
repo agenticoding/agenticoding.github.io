@@ -6,7 +6,7 @@ export type ActDef = { id: string; threshold: number };
  * Phase-gated act hook (DESIGN_SYSTEM.md §Motion — Act System).
  * phase: 0–1, sourced from useAnimationPhase() (ScrollDrivenFigure context).
  * Acts are purely reactive to the current phase value — they re-evaluate on every
- * render and can reverse when phase decreases. Enforce monotonicity at the call site
+ * render and can reverse when phase decreases. Enforce one-way progression at the call site
  * with a useRef guard when one-way semantics are required.
  */
 export function useActs(actDefs: readonly ActDef[], phase: number) {
