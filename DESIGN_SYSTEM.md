@@ -7,10 +7,10 @@ You are implementing UI for a monochrome-first design system. Color exists only 
 1. **Achromatic base** — Use pure gray for all surfaces, borders, and text. Do NOT use tinted neutrals. Instead, use the neutral palette (C:0.000) for all non-semantic elements.
 2. **Color = meaning** — Apply chromatic color only for semantic callouts, diagrams, status indicators, and data viz. Before using any color, answer: "what does this hue mean here?" If there is no semantic answer, use neutral gray instead.
 3. **Equal hue standing** — All 9 chromatic hues have equal weight. Do NOT treat any single hue as "the brand color." Instead, select hue based on semantic meaning (see Color Selection Procedure).
-4. **Flat construction** — Do NOT use gradients, shadows, or glows. Instead, use solid fills, clean borders (1px solid), and whitespace for visual hierarchy. Exception: All emoji representations (Noto SVGs via `scripts/fetch-emoji.js`, custom inline SVG recreations, or `<img>` fallbacks) are exempt — emoji visuals must never be modified to conform to this system.
+4. **Flat construction** — Do NOT use gradients, shadows, or glows. Instead, use solid fills, clean borders (1px solid), and whitespace for visual hierarchy. Exception: OpenMoji SVG assets fetched via `scripts/fetch-openmoji.js`, custom inline SVG recreations, and `<img>` fallbacks are exempt — emoji visuals must never be modified to conform to this system.
 5. **Typographic interaction** — Identify interactive elements by typography and shape. Use underlines + font-weight for links. Use dark/light fills for buttons. Do NOT rely on color to signal interactivity. Instead, use shape, weight, and underlines.
 6. **Color budget: 60-30-10** — 60% achromatic surfaces, 30% elevated gray, 10% semantic color. Default to 95/5 for content pages. Reserve 60-30-10 for diagram-heavy pages only.
-7. **Curved default, angular accent** — Use rounded forms (squircle containers, Bezier connectors) as the default shape vocabulary. Reserve angular forms (diamonds, chevrons, sharp miters) for high-arousal semantic states (error, warning, code). Do NOT mix angular containers with positive-valence content. Instead, match shape curvature to semantic valence (see Illustration System).
+7. **Square containers, curved connectors** — Use sharp rectangular containers and controls by default. Preserve curves only when the geometry is semantically circular, elliptical, radial, or a connector path. Do NOT use rounded corners, squircles, pills, or capsules for cards, badges, tabs, bars, controls, or diagram boxes.
 8. **Motion is purposive** — Every animated element must answer: "what does this motion orient, teach, or confirm?" If no answer, use no animation. Do NOT animate for decoration. Reserve looping motion (idle states) for semantic signals only: active authoring, AI processing, data flow, system readiness. Max 2 simultaneous idle loop *classes* per figure (staggered DOM instances of the same animation class count as 1).
 9. **Static completeness** — Design the final settled state first. Animation reveals content; it does not define it. Every figure must communicate its full concept in the phase=1 state with no motion.
 
@@ -286,27 +286,16 @@ Apply `max-width: 66ch` to text containers.
 | Token | Value |
 |-------|-------|
 | `--radius-none` | 0px |
-| `--radius-sm` | 4px |
-| `--radius-md` | 8px |
-| `--radius-lg` | 12px |
-| `--radius-xl` | 16px |
-| `--radius-2xl` | 24px |
-| `--radius-full` | 9999px |
+| `--radius-sm` | 0px |
+| `--radius-md` | 0px |
+| `--radius-lg` | 0px |
+| `--radius-xl` | 0px |
+| `--radius-2xl` | 0px |
+| `--radius-full` | 0px |
 
-| Context | Adjustment | Radius |
-|---------|-----------|--------|
-| Error/danger | -50% | 2px |
-| Warning | -25% | 2px |
-| Success | +25% | 4px |
-| Neutral/info | default | 3px |
-| Avatar | circle | 50% |
-| Input fields | -25% | 2px |
+All radius tokens resolve to `0px`. Use them for compatibility with existing selectors only; they must not create curved corners.
 
-Do NOT apply high curvature (`--radius-full`) to error or warning elements. Instead, use `--radius-sm` or lower.
-
-Use `--radius-md` (8px) for cards and containers. Use `--radius-sm` (4px) for inputs and badges.
-
-Do NOT apply border-radius to accent-bordered elements (3–4px `border-left` or `border-top` callouts, blockquotes, step indicators). Radius rounds the accent stroke's endpoints into decoration that communicates nothing. Instead, use `border-radius: 0` and let the accent border terminate with sharp edges. Exception: cards with a full surrounding `border` (all four sides) may use `--radius-md` even when one side carries a thicker accent override.
+Do NOT apply border-radius to cards, inputs, badges, pills, tabs, callouts, blockquotes, step indicators, data bars, diagram containers, or controls. Instead, use `border-radius: 0` and sharp rectangular endpoints. Preserve true geometry curves only for `<circle>`, `<ellipse>`, radial gradients, emoji/OpenMoji internals, workflow-cycle diagrams, chart dots/markers, and connector paths where curvature carries semantic flow.
 
 ### Line Weight
 
@@ -482,7 +471,7 @@ Example (cyan dark): `background: #007576; color: #fff;`
 
 ### Cards
 
-- Border: `1px solid var(--border-default)`, `border-radius: var(--radius-md)`
+- Border: `1px solid var(--border-default)`, `border-radius: 0`
 - Background: `var(--surface-raised)` or `var(--surface-page)`
 - Hover: shift border to neutral-400. Do NOT add color on hover. Instead, increase border contrast only.
 
@@ -528,7 +517,7 @@ Do NOT apply background tints to admonitions. Instead, use `--surface-raised` fo
 
 ## Illustration System
 
-Curved forms (Smooth Circuit) are default. Angular forms (Terminal Geometry) reserved for high-arousal states. See `ILLUSTRATION_GUIDE.md`.
+Sharp rectangular containers are default. Curved connector paths and true circular or elliptical geometry remain available when the curve carries semantic meaning. Angular accents (Terminal Geometry) remain reserved for high-arousal states. See `ILLUSTRATION_GUIDE.md`.
 
 ### Actor Primitives
 
@@ -557,32 +546,32 @@ Do NOT place primary and worker actors in the same horizontal row without applyi
 
 #### Construction
 
-**OperatorNode** — Smooth Circuit head, Terminal Geometry legs:
+**OperatorNode** — circular head, Terminal Geometry legs:
 - Head circle: `r = BB × 0.15`. Fill `--visual-bg-neutral`, stroke `--visual-neutral` 2px.
-- Shoulder U-path: Smooth Circuit (`stroke-linecap="round"` `stroke-linejoin="round"`). Span = BB × 0.90, corner radius = BB × 0.10.
+- Shoulder U-path: curved connector geometry (`stroke-linecap="round"` `stroke-linejoin="round"`). Span = BB × 0.90; preserve the curve because it describes anatomy, not a container corner.
 - Legs: two lines (Terminal Geometry, `stroke-linecap="square"`) spreading to BB base.
 
-**AgentNode** — Original Google Noto 🤖 emoji (`/img/emoji/u1f916.svg`):
-- Delegates to `NotoEmoji` component with `codepoint="1f916"`.
-- Gradient ID isolation is automatic; SVG `<image>` renders as a separate document.
+**AgentNode** — OpenMoji 🤖 emoji (`/img/emoji/1F916.svg`):
+- Delegates to `EmojiImage` with `EMOJI.agent` from `emojiAssets.ts`.
+- SVG internals are isolated; `<image>` renders the asset as a separate document.
 
-**NotoEmoji** — Generic wrapper for any Noto emoji:
-- `<NotoEmoji codepoint="1f4a1" x={...} y={...} size={40} />` renders `/img/emoji/u1f4a1.svg`.
-- Add new emojis via `node scripts/fetch-emoji.js <codepoint>` — caches raw in `scripts/.noto-cache/`, writes cleaned SVG to `website/static/img/emoji/u{cp}.svg`.
+**EmojiImage** — Generic wrapper for OpenMoji assets:
+- `<EmojiImage asset={EMOJI.lightBulb} x={...} y={...} size={40} />` renders `/img/emoji/1F4A1.svg`.
+- Add new emojis via `node scripts/fetch-openmoji.js <codepoint>` — caches raw in `scripts/.openmoji-cache/`, writes normalized SVGs to `website/static/img/emoji/{OPENMOJI_HEXCODE}.svg`.
 
-#### Animated Emoji: `NotoEmoji` vs Hand-Coded Components
+#### Animated Emoji: `EmojiImage` vs Hand-Coded Components
 
-Use **`NotoEmoji`** (via `<image>`) for static emoji nodes. The SVG renders as an opaque sub-document — individual paths inside it are not accessible to the parent SVG's CSS or SMIL, so per-path animation is impossible.
+Use **`EmojiImage`** (via `<image>`) for static emoji nodes. The SVG renders as an opaque sub-document — individual paths inside it are not accessible to the parent SVG's CSS or SMIL, so per-path animation is impossible.
 
-Use a **hand-coded component** (e.g. `AuthorWaveNode`) when the emoji needs animation. Inline the paths directly into the parent SVG so CSS transforms and `className` can target individual elements. Obtain source paths from the Noto SVG (via `scripts/fetch-emoji.js`); simplify fills to flat colors (no gradients) and omit any paths not visible at the target size.
+Use a **hand-coded component** when the emoji needs path-level animation. Inline the paths directly into the parent SVG so CSS transforms and `className` can target individual elements. Obtain source paths from OpenMoji (via `scripts/fetch-openmoji.js`); simplify fills to flat colors (no gradients) and omit any paths not visible at the target size.
 
 #### Emoji Node Rendering
 
-ALL `NotoEmoji` instances render **bare** — no background `<rect>`, no filled container, no exceptions.
+ALL `EmojiImage` instances render **bare** — no background `<rect>`, no filled container, no exceptions.
 
 - The emoji IS the node. Its bounding box IS the hit area.
-- Do NOT wrap `NotoEmoji` in a colored `<rect>`, `<circle>`, or any other filled shape.
-- Do NOT add squircle or pill containers behind emoji nodes — those are structural region shapes (see Shape Selection Procedure).
+- Do NOT wrap `EmojiImage` in a colored `<rect>`, `<circle>`, or any other filled shape.
+- Do NOT add squircle or pill containers behind emoji nodes. Emoji nodes render bare unless a sharp rectangular region is semantically required.
 
 #### Ghost Placeholders
 
@@ -609,28 +598,27 @@ Do NOT use other metaphors (looms, punch cards, pipes) for prompt artifacts.
 
 | Family | Forms | Superellipse n | Default For |
 |--------|-------|----------------|-------------|
-| Smooth Circuit | Squircle containers, Bezier connectors, circular endpoints, round caps | n = 3–4 (squircle), n = 2 (circle) | Positive-valence: success, AI, system, knowledge, progress |
+| Sharp Rectilinear | Rectangular containers, square controls, square chips, angular miters | n = 1, 90° corners | Cards, badges, tabs, bars, controls, diagram boxes, structural regions |
+| Curved Geometry | Bezier connectors, circular endpoints, true circles/ellipses, round caps | n = 2 for circles | Flow lines, workflow cycles, chart markers, radial geometry |
 | Terminal Geometry | Diamond accents, chevron arrows, angular miters, bracket syntax | n = 1–1.5 (diamond), 45° angles | High-arousal: error, warning, code structure, human action |
 
-Do NOT use strict-rectangle-only construction (90° routing, sharp corners on all containers). Instead, use squircle containers (n=3–4) even for box-like elements.
-
-Do NOT apply angular containers (diamonds, sharp-cornered shapes) to success, AI, or system content. Instead, use squircle or circular containers for positive-valence elements.
+Do NOT use rounded containers, squircles, pills, or capsules. Instead, use sharp rectangles for box-like elements and reserve curves for true geometry or connector flow.
 
 ### Shape Selection Procedure
 
-Smooth Circuit for all hues except Error and Warning (Terminal Geometry).
+Use sharp rectilinear containers for all hues. Use Terminal Geometry for Error and Warning accents.
 
 #### Step 1: Select container shape
 
 | Content Type | Container | SVG Implementation |
 |-------------|-----------|-------------------|
-| System node / module | Squircle | `<rect rx="10">` (40px box) or superellipse `<path>` |
-| Agent / AI process region | Circle or pill | `<circle>` or `<rect rx="50%">` |
-| Data / knowledge | Rounded rect | `<rect rx="8">` |
-| Human actor region | Circle or squircle | `<circle>` or `<rect rx="10">` |
-| Generic container | Squircle | `<rect rx="10">` to `<rect rx="14">` |
-| Code / terminal | Diamond or sharp rect | `<polygon>` (4-point) or `<rect rx="2">` |
-| Error state | Sharp rect or diamond | `<rect rx="2">` or `<polygon>` |
+| System node / module | Sharp rect | `<rect rx="0">` |
+| Agent / AI process region | Sharp rect or true circle | `<rect rx="0">` or `<circle>` when semantically circular |
+| Data / knowledge | Sharp rect | `<rect rx="0">` |
+| Human actor region | Sharp rect or true circle | `<rect rx="0">` or `<circle>` when semantically circular |
+| Generic container | Sharp rect | `<rect rx="0">` |
+| Code / terminal | Diamond or sharp rect | `<polygon>` (4-point) or `<rect rx="0">` |
+| Error state | Sharp rect or diamond | `<rect rx="0">` or `<polygon>` |
 | Warning state | Triangle or diamond | `<polygon>` (3-point up) |
 
 > **Note:** These containers describe **structural regions and grouping shapes** — not per-node backgrounds. Emoji icon nodes always render bare (see Actor Primitives → Emoji Node Rendering). `AgentNode` is a bare 🤖 emoji, not a circle container; "Agent / AI process region" refers to a panel or zone grouping multiple agent nodes.
@@ -672,7 +660,7 @@ Use Standard (6px) by default. Use Large (8px) only in narrow viewBox diagrams (
 
 1. **Grid snap** — All anchor points snap to the 8px spatial grid (`--space-*` tokens). Minimum shape dimension = 8px.
 2. **Preferred angles** — 15°, 30°, 45°, 60°, 75°, 90°. Other angles require justification.
-3. **Proportional corner radius** — Scale `rx` proportionally: `rx = height × 0.25` (range 8–16px). Do NOT use a fixed `rx` regardless of box size.
+3. **Zero corner radius** — Set rectangular `rx`, `ry`, and CSS `border-radius` to `0`. Do NOT use proportional rounding, pills, capsules, or token-derived corner curves.
 4. **Minimum gap** — 8px (`--space-1`) between shapes. 16px (`--space-2`) between shape and label.
 5. **Label placement** — Labels go directly adjacent to elements (spatial contiguity). Do NOT use a separate legend when inline labels fit.
 6. **Coherence** — Every shape serves a communicative purpose. Do NOT add decorative shapes.
@@ -694,7 +682,7 @@ Do NOT use `box-shadow` on diagram containers. Instead, use `border` with `--bor
 | Tier | Canvas / viewBox | Style | Use |
 |------|-----------------|-------|-----|
 | UI icon | `0 0 24 24` | Outline stroke (`currentColor`) | Inline text, buttons, nav, phase indicators |
-| Illustration icon | `0 0 128 128` | Flat filled (Noto emoji style) | Bullet icons, feature cards, hero callouts |
+| Illustration icon | `0 0 128 128` | Flat filled (OpenMoji-compatible style) | Bullet icons, feature cards, hero callouts |
 
 Both tiers share `--icon-*` size tokens for rendered width/height. The viewBox is fixed per tier; scaling is via `width`/`height` attributes.
 
@@ -717,12 +705,12 @@ Do NOT create icons at arbitrary sizes. Instead, use `--icon-*` tokens.
 | `fill` | `none` (outline style) |
 | `stroke` | `currentColor` |
 | `stroke-width` | `2` (at 24px canvas) |
-| `stroke-linecap` | `round` (Smooth Circuit) or `square` (Terminal Geometry) |
-| `stroke-linejoin` | `round` (Smooth Circuit) or `miter` (Terminal Geometry) |
+| `stroke-linecap` | `round` for semantic curves or `square` for rectilinear/Terminal Geometry |
+| `stroke-linejoin` | `round` for semantic curves or `miter` for rectilinear/Terminal Geometry |
 
 ### Illustration Icon Construction
 
-Illustration icons follow a Noto Color Emoji–inspired flat construction standard. All 128×128 viewBox icons must comply. This section applies to *custom* illustration icons — emoji representations (fetched, inlined, or recreated from Noto) are exempt per constraint #4.
+Illustration icons follow an OpenMoji-compatible flat construction standard. All 128×128 viewBox icons must comply. This section applies to *custom* illustration icons — emoji representations (fetched, inlined, or recreated from OpenMoji) are exempt per constraint #4.
 
 #### Core Principles
 
@@ -866,7 +854,7 @@ Five archetypes. Each has a fixed animation grammar. Do NOT mix grammars.
 
 ### Act System
 
-An **act** is a discrete visual state of a figure. Acts advance monotonically as scroll phase increases — never reverse.
+An **act** is a discrete visual state of a figure. Acts advance one-way as scroll phase increases — never reverse.
 
 ```
 phase 0→1  (from ScrollDrivenFigure context, or chapter ID from NarrativeFigure)

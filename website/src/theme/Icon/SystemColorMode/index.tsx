@@ -1,7 +1,7 @@
 import {type ReactNode} from 'react';
 import type {Props} from '@theme/Icon/SystemColorMode';
 
-// Stroked circle with vertical line — Smooth Circuit family (design system)
+// Stroked circle with vertical line — curved geometry family (design system)
 // Circle r=9 at center (12,12). Vertical line from (12,3) to (12,21).
 // Conveys "split between light and dark" without using fill.
 export default function IconSystemColorMode(props: Props): ReactNode {

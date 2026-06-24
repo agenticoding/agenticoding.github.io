@@ -1,7 +1,7 @@
 import {type ReactNode} from 'react';
 import type {Props} from '@theme/Icon/LightMode';
 
-// Stroked sun icon — Smooth Circuit family (design system)
+// Stroked sun icon — curved geometry family (design system)
 // Circle r=5 at center (12,12). 8 rays from r=8 to r=11.
 // Diagonal coordinates computed: cos/sin at 45° intervals.
 export default function IconLightMode(props: Props): ReactNode {

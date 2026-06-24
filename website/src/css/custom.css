@@ -98,12 +98,12 @@
 
   /* === BORDER RADIUS === */
   --radius-none: 0px;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 24px;
-  --radius-full: 9999px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-full: 0px;
 
   /* === STROKE WEIGHT SCALE — SVG illustration strokes === */
   --stroke-fine: 1px;
@@ -143,14 +143,14 @@
      Code blocks: angular (0px radius), background: --surface-muted.
      --ifm-code-border-radius also applies to inline <code> via Infima,
      so inline radius is set separately below via direct selector. */
-  --ifm-code-border-radius: 0;  /* Constraint #7: angular forms for code */
+  --ifm-code-border-radius: 0; /* Constraint #7: angular forms for code */
   --ifm-code-background: var(--surface-muted); /* neutral-100 (#e8e8e8) */
 
   /* === NAVBAR — Flat, line-based (Design System rule #4) === */
   --ifm-navbar-background-color: var(--surface-page);
   --ifm-navbar-shadow: none;
-  --ifm-navbar-height: var(--space-7);              /* 80px — 8px grid */
-  --ifm-navbar-padding-horizontal: var(--space-5);  /* 48px */
+  --ifm-navbar-height: var(--space-7); /* 80px — 8px grid */
+  --ifm-navbar-padding-horizontal: var(--space-5); /* 48px */
   --ifm-navbar-padding-vertical: 0;
   --ifm-navbar-item-padding-horizontal: var(--space-2); /* 16px */
   --ifm-navbar-item-padding-vertical: 0;
@@ -158,21 +158,27 @@
   --ifm-navbar-link-hover-color: var(--text-heading);
 
   /* === BREADCRUMBS — Metadata/wayfinding level === */
-  --ifm-breadcrumb-color-active: var(--text-body);          /* #505050 — current page item */
-  --ifm-breadcrumb-item-background-active: var(--surface-raised); /* token-aligned pill bg */
+  --ifm-breadcrumb-color-active: var(
+    --text-body
+  ); /* #505050 — current page item */
+  --ifm-breadcrumb-item-background-active: var(
+    --surface-raised
+  ); /* token-aligned selection bg */
 
   /* === DOC SIDEBAR — Design system tokens === */
   --ifm-menu-color: var(--text-body);
   --ifm-menu-color-active: var(--text-heading);
   --ifm-menu-color-background-active: var(--surface-raised);
   --ifm-menu-color-background-hover: var(--surface-muted);
-  --ifm-menu-link-padding-horizontal: var(--space-2);     /* 16px, was 12px */
-  --ifm-menu-link-padding-vertical: var(--space-1);       /* 8px, was 6px → 40px touch targets */
+  --ifm-menu-link-padding-horizontal: var(--space-2); /* 16px, was 12px */
+  --ifm-menu-link-padding-vertical: var(
+    --space-1
+  ); /* 8px, was 6px → 40px touch targets */
   --ifm-menu-link-sublist-icon-filter: none;
   --ifm-toc-border-color: var(--border-default);
-  --ifm-toc-link-color: var(--text-muted);       /* #808080 light / #9b9b9b dark */
-  --ifm-toc-padding-vertical: var(--space-1);    /* 8px — 8px grid */
-  --ifm-toc-padding-horizontal: var(--space-1);  /* 8px — 8px grid */
+  --ifm-toc-link-color: var(--text-muted); /* #808080 light / #9b9b9b dark */
+  --ifm-toc-padding-vertical: var(--space-1); /* 8px — 8px grid */
+  --ifm-toc-padding-horizontal: var(--space-1); /* 8px — 8px grid */
   --docusaurus-collapse-button-bg: var(--surface-raised);
   --docusaurus-collapse-button-bg-hover: var(--surface-muted);
   --ifm-scrollbar-track-background-color: var(--surface-raised);
@@ -181,14 +187,18 @@
 
   /* === SURFACE / TEXT / BORDER — Semantic layout tokens === */
   --surface-page: #ffffff;
-  --surface-raised: var(--neutral-50);   /* #f5f5f5 */
-  --surface-muted: var(--neutral-100);   /* #e8e8e8 */
-  --text-heading: var(--neutral-900);    /* #2b2b2b */
-  --text-body: var(--neutral-700);       /* #505050 */
-  --text-muted: var(--neutral-500);      /* #808080 */
-  --border-default: var(--neutral-300);  /* #b7b7b7 — structural container borders */
-  --border-subtle: var(--neutral-200);   /* #d4d4d4 — hairline dividers */
-  --border-emphasis: var(--neutral-500); /* #808080 — strong borders, interactive outlines */
+  --surface-raised: var(--neutral-50); /* #f5f5f5 */
+  --surface-muted: var(--neutral-100); /* #e8e8e8 */
+  --text-heading: var(--neutral-900); /* #2b2b2b */
+  --text-body: var(--neutral-700); /* #505050 */
+  --text-muted: var(--neutral-500); /* #808080 */
+  --border-default: var(
+    --neutral-300
+  ); /* #b7b7b7 — structural container borders */
+  --border-subtle: var(--neutral-200); /* #d4d4d4 — hairline dividers */
+  --border-emphasis: var(
+    --neutral-500
+  ); /* #808080 — strong borders, interactive outlines */
 
   /* Map to Infima layout variables */
   --ifm-background-color: var(--surface-page);
@@ -198,7 +208,7 @@
   /* === ADMONITIONS — Flat construction, 3px accent border ===
      Colors are set per-variant below. These tokens fix structure for all variants. */
   --ifm-alert-shadow: none;
-  --ifm-alert-border-radius: 0px;
+  --ifm-alert-border-radius: 0;
   --ifm-alert-border-left-width: 3px;
   --ifm-alert-padding-vertical: var(--space-2);
   --ifm-alert-padding-horizontal: var(--space-2);
@@ -215,11 +225,11 @@
   --cyan-700: #005c5c;
 
   /* === SEMANTIC COLORS === */
-  --semantic-success: #00894d;  /* Success optimal OKLCH(0.552 0.137 155°) */
-  --semantic-warning: #a76900;  /* Warning optimal OKLCH(0.575 0.125 70°) */
-  --semantic-error: #ee0028;    /* Error optimal OKLCH(0.598 0.242 25°) */
-  --semantic-info: #0079d1;     /* Indigo optimal OKLCH(0.568 0.161 250°) */
-  --semantic-neutral: #666666;  /* Neutral-600 — achromatic, unchanged */
+  --semantic-success: #00894d; /* Success optimal OKLCH(0.552 0.137 155°) */
+  --semantic-warning: #a76900; /* Warning optimal OKLCH(0.575 0.125 70°) */
+  --semantic-error: #ee0028; /* Error optimal OKLCH(0.598 0.242 25°) */
+  --semantic-info: #0079d1; /* Indigo optimal OKLCH(0.568 0.161 250°) */
+  --semantic-neutral: #666666; /* Neutral-600 — achromatic, unchanged */
 
   /* === MAP TO INFIMA (Docusaurus Framework) — Neutral primary === */
   --ifm-color-primary: var(--neutral-900);
@@ -239,30 +249,50 @@
      If values here change, update prism-theme.ts to match. */
 
   /* Role-based (universal UI) */
-  --visual-error: var(--semantic-error);      /* #ee0028 — Danger, critical */
-  --visual-warning: var(--semantic-warning);  /* #a76900 — Caution, attention */
-  --visual-success: var(--semantic-success);  /* #00894d — Validated, complete */
-  --visual-neutral: var(--semantic-neutral);  /* #666666 — Neutral */
+  --visual-error: var(--semantic-error); /* #ee0028 — Danger, critical */
+  --visual-warning: var(--semantic-warning); /* #a76900 — Caution, attention */
+  --visual-success: var(--semantic-success); /* #00894d — Validated, complete */
+  --visual-neutral: var(--semantic-neutral); /* #666666 — Neutral */
 
   /* Hue-based (categorical) */
-  --visual-lime: var(--visual-success);      /* Alias → success; lime removed from spectrum */
-  --visual-cyan: #008485;                    /* Cyan C=0.095 OKLCH(0.557 0.095 195°) — gamut limit */
-  --visual-indigo: #307ac0;                  /* Indigo C=0.13 OKLCH(0.567 0.13 250°) */
-  --visual-violet: #736cc3;                  /* Violet C=0.13 OKLCH(0.578 0.13 285°) */
-  --visual-magenta: #9d5fab;                 /* Magenta C=0.13 OKLCH(0.583 0.13 320°) */
-  --visual-rose: var(--visual-neutral);      /* Alias → neutral; rose removed from spectrum */
+  --visual-lime: var(
+    --visual-success
+  ); /* Alias → success; lime removed from spectrum */
+  --visual-cyan: #008485; /* Cyan C=0.095 OKLCH(0.557 0.095 195°) — gamut limit */
+  --visual-indigo: #307ac0; /* Indigo C=0.13 OKLCH(0.567 0.13 250°) */
+  --visual-violet: #736cc3; /* Violet C=0.13 OKLCH(0.578 0.13 285°) */
+  --visual-magenta: #9d5fab; /* Magenta C=0.13 OKLCH(0.583 0.13 320°) */
+  --visual-rose: var(
+    --visual-neutral
+  ); /* Alias → neutral; rose removed from spectrum */
 
   /* === VISUAL ELEMENT BACKGROUNDS — 10% tint in light mode === */
   --visual-bg-error: color-mix(in srgb, var(--visual-error) 10%, transparent);
-  --visual-bg-warning: color-mix(in srgb, var(--visual-warning) 10%, transparent);
-  --visual-bg-lime: var(--visual-bg-success);                                     /* Follows lime alias */
-  --visual-bg-success: color-mix(in srgb, var(--visual-success) 10%, transparent);
+  --visual-bg-warning: color-mix(
+    in srgb,
+    var(--visual-warning) 10%,
+    transparent
+  );
+  --visual-bg-lime: var(--visual-bg-success); /* Follows lime alias */
+  --visual-bg-success: color-mix(
+    in srgb,
+    var(--visual-success) 10%,
+    transparent
+  );
   --visual-bg-cyan: color-mix(in srgb, var(--visual-cyan) 10%, transparent);
   --visual-bg-indigo: color-mix(in srgb, var(--visual-indigo) 10%, transparent);
   --visual-bg-violet: color-mix(in srgb, var(--visual-violet) 10%, transparent);
-  --visual-bg-magenta: color-mix(in srgb, var(--visual-magenta) 10%, transparent);
-  --visual-bg-rose: var(--visual-bg-neutral);                                      /* Follows rose alias */
-  --visual-bg-neutral: color-mix(in srgb, var(--visual-neutral) 10%, transparent);
+  --visual-bg-magenta: color-mix(
+    in srgb,
+    var(--visual-magenta) 10%,
+    transparent
+  );
+  --visual-bg-rose: var(--visual-bg-neutral); /* Follows rose alias */
+  --visual-bg-neutral: color-mix(
+    in srgb,
+    var(--visual-neutral) 10%,
+    transparent
+  );
 
   /* === TYPOGRAPHY & CODE === */
   --ifm-code-font-size: 95%;
@@ -291,7 +321,7 @@
   --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="%23808080" stroke-width="1.5"/><line x1="9.68" y1="9.68" x2="14" y2="14" stroke="%23808080" stroke-width="1.5" stroke-linecap="round"/></svg>');
 
   /* === ANNOUNCEMENT BAR === */
-  --announcement-bg: #ffe3c3;  /* warning-100 */
+  --announcement-bg: #ffe3c3; /* warning-100 */
   --announcement-text: #402400; /* warning-900 */
 }
 
@@ -305,23 +335,29 @@
    re-declare in [data-theme='dark'] so no separate dark rules are needed.
    ======================================================================== */
 
-.alert--secondary { /* :::note */
+.alert--secondary {
+  /* :::note */
   --ifm-alert-foreground-color: var(--visual-neutral);
   --ifm-alert-background-color: var(--surface-raised);
   --ifm-alert-border-color: var(--visual-neutral);
   --ifm-alert-background-color-highlight: var(--surface-muted);
   color: var(--text-body);
 }
-.alert--secondary .alert__heading { color: var(--visual-neutral); }
+.alert--secondary .alert__heading {
+  color: var(--visual-neutral);
+}
 
-.alert--success { /* :::tip */
+.alert--success {
+  /* :::tip */
   --ifm-alert-foreground-color: var(--visual-cyan);
   --ifm-alert-background-color: var(--surface-raised);
   --ifm-alert-border-color: var(--visual-cyan);
   --ifm-alert-background-color-highlight: var(--surface-muted);
   color: var(--text-body);
 }
-.alert--success .alert__heading { color: var(--visual-cyan); }
+.alert--success .alert__heading {
+  color: var(--visual-cyan);
+}
 
 /* Docusaurus Details component renders as <details class="alert alert--info ...">
    and sets border: 1px solid var(--ifm-alert-border-color) — so it inherits indigo
@@ -332,32 +368,77 @@ details.alert {
   border-color: var(--border-default);
 }
 
-.alert--info { /* :::info */
+.alert--info {
+  /* :::info */
   --ifm-alert-foreground-color: var(--visual-indigo);
   --ifm-alert-background-color: var(--surface-raised);
   --ifm-alert-border-color: var(--visual-indigo);
   --ifm-alert-background-color-highlight: var(--surface-muted);
   color: var(--text-body);
 }
-.alert--info .alert__heading { color: var(--visual-indigo); }
+.alert--info .alert__heading {
+  color: var(--visual-indigo);
+}
 
-.alert--warning { /* :::warning, :::caution */
+.alert--warning {
+  /* :::warning, :::caution */
   --ifm-alert-foreground-color: var(--visual-warning);
   --ifm-alert-background-color: var(--surface-raised);
   --ifm-alert-border-color: var(--visual-warning);
   --ifm-alert-background-color-highlight: var(--surface-muted);
   color: var(--text-body);
 }
-.alert--warning .alert__heading { color: var(--visual-warning); }
+.alert--warning .alert__heading {
+  color: var(--visual-warning);
+}
 
-.alert--danger { /* :::danger */
+.alert--danger {
+  /* :::danger */
   --ifm-alert-foreground-color: var(--visual-error);
   --ifm-alert-background-color: var(--surface-raised);
   --ifm-alert-border-color: var(--visual-error);
   --ifm-alert-background-color-highlight: var(--surface-muted);
   color: var(--text-body);
 }
-.alert--danger .alert__heading { color: var(--visual-error); }
+.alert--danger .alert__heading {
+  color: var(--visual-error);
+}
+
+/* Purpose-built principle callouts highlight operating rules without implying
+   Docusaurus admonition semantics. */
+.principle-callout {
+  margin: var(--space-3) 0;
+  padding: var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-left-width: 3px;
+  border-radius: 0;
+  color: var(--text-body);
+}
+
+.principle-callout__label {
+  margin-bottom: var(--space-1);
+  color: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: var(--lh-tight);
+  text-transform: uppercase;
+}
+
+.principle-callout p {
+  margin: 0;
+  color: var(--text-body);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  line-height: var(--lh-lg);
+}
+
+.principle-callout--system {
+  border-left-color: var(--visual-cyan);
+}
 
 /* ========================================================================
    DARK MODE — Optimized Colors for Dark Backgrounds
@@ -369,11 +450,11 @@ details.alert {
 
 [data-theme='dark'] {
   /* === SEMANTIC COLORS — shade-400 for dark mode === */
-  --semantic-success: #48b475;  /* Success-400 */
-  --semantic-warning: #cd8c37;  /* Warning-400 */
-  --semantic-error: #ec7069;    /* Error-400 */
-  --semantic-info: #53a0ec;     /* Indigo-400 */
-  --semantic-neutral: #9b9b9b;  /* Neutral-400 */
+  --semantic-success: #48b475; /* Success-400 */
+  --semantic-warning: #cd8c37; /* Warning-400 */
+  --semantic-error: #ec7069; /* Error-400 */
+  --semantic-info: #53a0ec; /* Indigo-400 */
+  --semantic-neutral: #9b9b9b; /* Neutral-400 */
 
   /* === MAP TO INFIMA — Neutral primary === */
   --ifm-color-primary: var(--neutral-100);
@@ -385,40 +466,56 @@ details.alert {
   --ifm-color-primary-lightest: #ffffff;
 
   /* === VISUAL ELEMENT COLORS — shade-400 for dark mode === */
-  --visual-indigo: #53a0ec;     /* Indigo-400 — override :root hardcode */
+  --visual-indigo: #53a0ec; /* Indigo-400 — override :root hardcode */
   --visual-cyan: var(--cyan-400); /* Cyan-400 */
-  --visual-violet: #938eeb;     /* Violet-400 */
-  --visual-magenta: #c07ecf;    /* Magenta-400 */
+  --visual-violet: #938eeb; /* Violet-400 */
+  --visual-magenta: #c07ecf; /* Magenta-400 */
   /* --visual-lime and --visual-rose removed; they alias success and neutral */
 
   /* === VISUAL ELEMENT BACKGROUNDS — 15% tint in dark mode === */
   --visual-bg-error: color-mix(in srgb, var(--visual-error) 15%, transparent);
-  --visual-bg-warning: color-mix(in srgb, var(--visual-warning) 15%, transparent);
-  --visual-bg-success: color-mix(in srgb, var(--visual-success) 15%, transparent);
+  --visual-bg-warning: color-mix(
+    in srgb,
+    var(--visual-warning) 15%,
+    transparent
+  );
+  --visual-bg-success: color-mix(
+    in srgb,
+    var(--visual-success) 15%,
+    transparent
+  );
   --visual-bg-cyan: color-mix(in srgb, var(--visual-cyan) 15%, transparent);
   --visual-bg-indigo: color-mix(in srgb, var(--visual-indigo) 15%, transparent);
   --visual-bg-violet: color-mix(in srgb, var(--visual-violet) 15%, transparent);
-  --visual-bg-magenta: color-mix(in srgb, var(--visual-magenta) 15%, transparent);
-  --visual-bg-neutral: color-mix(in srgb, var(--visual-neutral) 15%, transparent);
+  --visual-bg-magenta: color-mix(
+    in srgb,
+    var(--visual-magenta) 15%,
+    transparent
+  );
+  --visual-bg-neutral: color-mix(
+    in srgb,
+    var(--visual-neutral) 15%,
+    transparent
+  );
   /* --visual-bg-lime and --visual-bg-rose follow their aliases (success and neutral) */
 
   /* === SURFACE / TEXT / BORDER — Dark mode === */
   --surface-page: #0d1117;
   --surface-raised: #161b22;
-  --surface-muted: #3d3d3d;       /* neutral-800 */
-  --text-heading: #e8e8e8;        /* neutral-100 */
-  --text-body: #d4d4d4;           /* neutral-200 */
-  --text-muted: #9b9b9b;          /* neutral-400 */
-  --border-default: #505050;      /* neutral-700 */
-  --border-subtle: #3d3d3d;       /* neutral-800 — hairline dividers */
-  --border-emphasis: #808080;     /* neutral-500 — strong borders, interactive outlines */
+  --surface-muted: #3d3d3d; /* neutral-800 */
+  --text-heading: #e8e8e8; /* neutral-100 */
+  --text-body: #d4d4d4; /* neutral-200 */
+  --text-muted: #9b9b9b; /* neutral-400 */
+  --border-default: #505050; /* neutral-700 */
+  --border-subtle: #3d3d3d; /* neutral-800 — hairline dividers */
+  --border-emphasis: #808080; /* neutral-500 — strong borders, interactive outlines */
 
   /* === DARK MODE BACKGROUNDS === */
   --ifm-background-color: var(--surface-page);
   --ifm-background-surface-color: var(--surface-raised);
   --code-bg-dark: #222222; /* neutral-950 */
   --ifm-font-color-base: #d4d4d4; /* neutral-200 */
-  --ifm-heading-color: #e8e8e8;   /* neutral-100 */
+  --ifm-heading-color: #e8e8e8; /* neutral-100 */
   --code-bg: var(--neutral-950);
   --text-subtle: var(--neutral-400);
   --icon-star: #fcca91; /* warning-200 */
@@ -450,7 +547,7 @@ details.alert {
   --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="%239b9b9b" stroke-width="1.5"/><line x1="9.68" y1="9.68" x2="14" y2="14" stroke="%239b9b9b" stroke-width="1.5" stroke-linecap="round"/></svg>');
 
   /* === ANNOUNCEMENT BAR === */
-  --announcement-bg: #8e5900;  /* warning-600 */
+  --announcement-bg: #8e5900; /* warning-600 */
   --announcement-text: #fff3e6; /* warning-50 */
 }
 
@@ -469,12 +566,12 @@ details.alert {
    output; direct selector required.
    ======================================================================== */
 article h1 {
-  font-size: var(--text-4xl);  /* 40px */
-  line-height: var(--lh-3xl);  /* 48px */
+  font-size: var(--text-4xl); /* 40px */
+  line-height: var(--lh-3xl); /* 48px */
 }
 
 /* ========================================================================
-   RESEARCH AGENT COMPARISON TABLE — Noto emoji alignment
+   RESEARCH AGENT COMPARISON TABLE — emoji alignment
    ======================================================================== */
 
 .research-agent-table .check-cell {
@@ -495,12 +592,12 @@ article h1 {
    ======================================================================== */
 
 .table-of-contents {
-  font-size: var(--text-sm);    /* 13px — secondary/metadata navigation */
+  font-size: var(--text-sm); /* 13px — secondary/metadata navigation */
   font-family: var(--font-body);
 }
 
 .table-of-contents__link {
-  line-height: var(--lh-sm);   /* 24px — 8px-snapped */
+  line-height: var(--lh-sm); /* 24px — 8px-snapped */
 }
 
 /* Active + hover: contrast shift within neutral palette, not a hue shift */
@@ -508,7 +605,7 @@ article h1 {
 .table-of-contents__link:hover code,
 .table-of-contents__link--active,
 .table-of-contents__link--active code {
-  color: var(--text-body);     /* One step up from --text-muted in the hierarchy */
+  color: var(--text-body); /* One step up from --text-muted in the hierarchy */
 }
 
 /* ========================================================================
@@ -520,8 +617,14 @@ article h1 {
    ======================================================================== */
 
 @keyframes channelEnter {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 [class*='docMainContainer'] > .container {
@@ -538,19 +641,19 @@ article h1 {
    MERMAID DIAGRAM STYLING
    ======================================================================== */
 
-[class*="container_"]:has(> svg[id^="mermaid"]) {
+[class*='container_']:has(> svg[id^='mermaid']) {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: var(--space-4) auto;
   padding: var(--space-3);
   background: var(--ifm-background-surface-color);
-  border-radius: var(--radius-md);
+  border-radius: 0;
   border: 1px solid var(--border-default);
   text-align: center;
 }
 
-[class*="container_"]:has(> svg[id^="mermaid"]) > svg {
+[class*='container_']:has(> svg[id^='mermaid']) > svg {
   max-width: 100%;
   height: auto;
   display: block;
@@ -564,7 +667,7 @@ article h1 {
 .visual-container {
   margin: var(--space-4) 0;
   padding: var(--space-3);
-  border-radius: var(--radius-md);
+  border-radius: 0;
   border: 1px solid var(--border-default);
 }
 
@@ -635,7 +738,7 @@ article h1 {
   gap: 0.75rem;
   padding: 1rem;
   background: var(--ifm-background-surface-color);
-  border-radius: 6px;
+  border-radius: 0;
   border: 1px solid var(--ifm-color-emphasis-200);
   transition: border-color 0.2s ease;
 }
@@ -677,14 +780,31 @@ article h1 {
 }
 
 /* ========================================================================
-   NAVBAR — Hidden on desktop, minimal on mobile
+   NAVBAR — Wide-shell desktop, compact-shell mobile
    ========================================================================
-   All navigation is unified into the left sidebar on desktop (≥997px).
-   Mobile retains the navbar shell (brand + hamburger only).
+   The doc shell becomes desktop only when the viewport is both wide enough
+   and wide-shaped enough. 4:3 tablets stay on the compact shell even when
+   their width crosses Infima's desktop breakpoint.
    ======================================================================== */
 
-/* Hide navbar on desktop — sidebar-first layout */
-@media (min-width: 997px) {
+.doc-shell-desktop {
+  display: none;
+}
+
+.doc-shell-mobile {
+  display: block;
+}
+
+/* Hide navbar only on truly wide screens — sidebar-first layout */
+@media (min-width: 997px) and (min-aspect-ratio: 7/5) {
+  .doc-shell-desktop {
+    display: block;
+  }
+
+  .doc-shell-mobile {
+    display: none;
+  }
+
   .navbar {
     display: none;
   }
@@ -696,13 +816,25 @@ article h1 {
   [data-theme='dark'] {
     --ifm-navbar-height: 0px;
   }
-}
 
-/* Sidebar container — no structural borders */
-@media (min-width: 997px) {
   .theme-doc-sidebar-container {
     border-right: none;
     border-bottom: none;
+  }
+}
+
+/* Compact shell on wide but tall-ish screens still needs the hamburger path */
+@media (min-width: 997px) and (max-aspect-ratio: 1399/1000) {
+  .navbar__toggle {
+    display: inherit;
+  }
+
+  .navbar__item {
+    display: none;
+  }
+
+  .navbar__search-input {
+    width: 9rem;
   }
 }
 
@@ -733,7 +865,6 @@ article h1 {
   letter-spacing: -0.01em;
 }
 
-
 /* Nav links: Inter, small caps feel via uppercase + tracking */
 .navbar__link {
   font-family: var(--font-body);
@@ -745,7 +876,9 @@ article h1 {
   text-decoration: none;
   padding-bottom: 2px;
   border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease, font-weight 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    font-weight 0.15s ease;
 }
 
 /* Hover: underline appears */
@@ -769,7 +902,7 @@ article h1 {
 .navbar__search-input {
   background: var(--surface-page);
   border: 1px solid var(--neutral-300);
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   font-family: var(--font-body);
   font-size: var(--text-sm);
   height: var(--target-sm);
@@ -794,21 +927,23 @@ article h1 {
 /* Color mode toggle — stable selector via swizzled Navbar/ColorModeToggle wrapper */
 .color-mode-toggle button {
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);    /* 4px — input radius */
-  width: var(--target-sm);            /* 32px — tertiary action */
+  border-radius: 0;
+  width: var(--target-sm); /* 32px — tertiary action */
   height: var(--target-sm);
-  color: var(--text-muted);           /* match footer link weight */
-  transition: background 0.15s ease, color 0.15s ease;
+  color: var(--text-muted); /* match footer link weight */
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .color-mode-toggle svg {
-  width: var(--icon-sm);              /* 16px — match search icon */
+  width: var(--icon-sm); /* 16px — match search icon */
   height: var(--icon-sm);
 }
 
 .color-mode-toggle button:hover {
   background: var(--surface-muted);
-  color: var(--text-heading);         /* match footer link hover */
+  color: var(--text-heading); /* match footer link hover */
 }
 
 .color-mode-toggle button:focus-visible {
@@ -823,7 +958,7 @@ article h1 {
 /* Search dropdown — flat border replaces shadow (design system: flat construction) */
 [class*='dropdownMenu'] {
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);    /* 8px — container radius */
+  border-radius: 0;
 }
 
 /* Search dropdown — sidebar context: align left, cap width to sidebar */
@@ -832,7 +967,6 @@ article h1 {
   right: auto;
   max-width: calc(var(--doc-sidebar-width) - var(--space-4));
 }
-
 
 /* Mobile hamburger toggle */
 @media (max-width: 996px) {
@@ -865,15 +999,15 @@ article h1 {
 /* Figure — reset UA margins, apply design-system spacing consistently */
 figure {
   margin-inline: 0;
-  margin-block: var(--space-4);  /* 32px — matches ScrollDrivenFigure */
+  margin-block: var(--space-4); /* 32px — matches ScrollDrivenFigure */
 }
 
 figure figcaption {
   text-align: center;
-  font-size: var(--text-sm);        /* 13px — caption scale per DESIGN_SYSTEM */
-  line-height: var(--lh-sm);        /* 24px — 8px-grid snap */
+  font-size: var(--text-sm); /* 13px — caption scale per DESIGN_SYSTEM */
+  line-height: var(--lh-sm); /* 24px — 8px-grid snap */
   color: var(--text-muted);
-  margin-top: var(--space-1);       /* 8px */
+  margin-top: var(--space-1); /* 8px */
 }
 
 /* Content area links — typographic interaction (Design System rule #4) */
@@ -893,20 +1027,31 @@ article a {
 
 /* Inline <code> — badge-scale radius, not container-scale */
 :not(pre) > code {
-  border-radius: var(--radius-sm); /* 4px — badge/input token */
-  border: none;                    /* Infima adds a faint border; remove it */
+  border-radius: 0; /* 4px — badge/input token */
+  border: none; /* Infima adds a faint border; remove it */
 }
 
 /* Font features for all monospace containers */
-code, pre, kbd, [class*="codeBlock"] {
+code,
+pre,
+kbd,
+[class*='codeBlock'] {
   font-feature-settings: var(--font-mono-features);
 }
 
 /* Voice utility classes (per DESIGN_SYSTEM.md) */
-.mono-ai { font-family: var(--font-mono-ai); }
-.mono-spec { font-family: var(--font-mono-spec); }
-.mono-human { font-family: var(--font-mono-human); }
-.mono-keyword { font-family: var(--font-mono-keyword); }
+.mono-ai {
+  font-family: var(--font-mono-ai);
+}
+.mono-spec {
+  font-family: var(--font-mono-spec);
+}
+.mono-human {
+  font-family: var(--font-mono-human);
+}
+.mono-keyword {
+  font-family: var(--font-mono-keyword);
+}
 
 /* Prompt example block — Neon base, Krypton highlights */
 .prompt-example {
@@ -917,7 +1062,7 @@ code, pre, kbd, [class*="codeBlock"] {
   color: var(--text-body);
   background: var(--surface-raised);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: 0;
   padding: var(--space-3) var(--space-4);
   margin: var(--space-3) 0;
 }
@@ -936,9 +1081,15 @@ code, pre, kbd, [class*="codeBlock"] {
 }
 
 /* Voice overrides inside prompt blocks — higher specificity than .prompt-example code */
-.prompt-example code.mono-spec   { font-family: var(--font-mono-spec); }
-.prompt-example code.mono-human  { font-family: var(--font-mono-human); }
-.prompt-example code.mono-ai     { font-family: var(--font-mono-ai); }
+.prompt-example code.mono-spec {
+  font-family: var(--font-mono-spec);
+}
+.prompt-example code.mono-human {
+  font-family: var(--font-mono-human);
+}
+.prompt-example code.mono-ai {
+  font-family: var(--font-mono-ai);
+}
 
 .prompt-example .md-punct {
   color: var(--visual-cyan);
@@ -956,35 +1107,35 @@ code, pre, kbd, [class*="codeBlock"] {
 /* Typography ------------------------------------------------------------ */
 
 .menu {
-  font-weight: 400;                     /* was 500; active items get 600 below */
+  font-weight: 400; /* was 500; active items get 600 below */
 }
 
 .menu__link {
-  font-size: var(--text-sm);            /* 13px, was ~14px inherited */
-  line-height: var(--lh-sm);            /* 24px, was 1.25 (~17.5px) */
+  font-size: var(--text-sm); /* 13px, was ~14px inherited */
+  line-height: var(--lh-sm); /* 24px, was 1.25 (~17.5px) */
 }
 
 .menu__link--sublist {
-  font-family: var(--font-display);     /* Space Grotesk for section headings */
+  font-family: var(--font-display); /* Space Grotesk for section headings */
   font-weight: 600;
   font-size: var(--text-sm);
   letter-spacing: -0.01em;
 }
 
 .menu__link--active:not(.menu__link--sublist) {
-  font-weight: 600;                     /* active leaf item: weight bump */
+  font-weight: 600; /* active leaf item: weight bump */
 }
 
 /* Interactive states ---------------------------------------------------- */
 
 .menu__link:hover {
-  color: var(--text-heading);           /* contrast shift on hover */
+  color: var(--text-heading); /* contrast shift on hover */
 }
 
 /* Spacing --------------------------------------------------------------- */
 
 .menu > .menu__list > .menu__list-item:not(:first-child) {
-  margin-top: var(--space-2);           /* 16px between category groups */
+  margin-top: var(--space-2); /* 16px between category groups */
 }
 
 /* Icon column alignment: override Content module's 0px right padding
@@ -1007,31 +1158,35 @@ code, pre, kbd, [class*="codeBlock"] {
   -webkit-mask-repeat: no-repeat;
   mask-position: center;
   -webkit-mask-position: center;
-  height: var(--icon-sm);               /* 16px, was 20px */
+  height: var(--icon-sm); /* 16px, was 20px */
   width: var(--icon-sm);
 }
 
 .menu__link--sublist-caret::after {
-  min-width: var(--icon-sm);            /* 16px, was 20px */
+  min-width: var(--icon-sm); /* 16px, was 20px */
 }
 
 /* §N section marker — typographically secondary reference tag ----------- */
 
 .sidebar-section-number {
   display: inline-block;
-  font-family: var(--font-mono-keyword);  /* Monaspace Krypton — technical/mechanical voice */
-  font-size: var(--text-xs);             /* 11px — visually subordinate */
-  line-height: var(--lh-sm);            /* 24px — stays on baseline */
-  color: var(--text-muted);             /* #808080 light / #9b9b9b dark */
+  font-family: var(
+    --font-mono-keyword
+  ); /* Monaspace Krypton — technical/mechanical voice */
+  font-size: var(--text-xs); /* 11px — visually subordinate */
+  line-height: var(--lh-sm); /* 24px — stays on baseline */
+  color: var(--text-muted); /* #808080 light / #9b9b9b dark */
   font-weight: 400;
   letter-spacing: 0.02em;
-  margin-right: var(--space-0h);         /* 4px gap before label text */
-  min-width: 1.8em;                      /* prevents label shift as numbers grow: §1 vs §14 */
+  margin-right: var(--space-0h); /* 4px gap before label text */
+  min-width: 1.8em; /* prevents label shift as numbers grow: §1 vs §14 */
   font-feature-settings: var(--font-mono-features);
 }
 
 .menu__link--active .sidebar-section-number {
-  color: var(--text-body);              /* lift to body color when active — subtle emphasis */
+  color: var(
+    --text-body
+  ); /* lift to body color when active — subtle emphasis */
 }
 
 /* ========================================================================
@@ -1087,75 +1242,202 @@ div[class*='announcementBar'] {
 
 /* ── Idle micro-animations (DESIGN_SYSTEM.md §Motion) ─────────────────────── */
 @keyframes idleCursorBlink {
-  0%, 100% { opacity: 1; } 50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 @keyframes idleStatusPulse {
-  0%, 100% { opacity: 1; } 50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 @keyframes idleAlternatingEmphasis {
-  0%, 34%, 100% { opacity: 1; }
-  12%, 22%      { opacity: 0.45; }
+  0%,
+  34%,
+  100% {
+    opacity: 1;
+  }
+  12%,
+  22% {
+    opacity: 0.45;
+  }
 }
 @keyframes idleFlowDrift {
-  0%, 100% { transform: translateX(0); } 50% { transform: translateX(2px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(2px);
+  }
 }
 @keyframes idleReadyBreathe {
-  0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+@keyframes idleCloudServe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.035);
+  }
+}
+@keyframes idleEyeRead {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
 }
 @keyframes pingOnce {
-  0%   { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.4); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
 }
 @keyframes idleArmRock {
-  0%, 45%, 100% { transform: rotate(0deg); }
-  20%           { transform: rotate(-4deg); }
+  0%,
+  45%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-4deg);
+  }
 }
 @keyframes idlePalmWave {
-  0%, 5%    { transform: rotate(0deg);   }
-  12%       { transform: rotate(-18deg); }
-  19%       { transform: rotate(16deg);  }
-  26%       { transform: rotate(-14deg); }
-  33%       { transform: rotate(10deg);  }
-  40%       { transform: rotate(-4deg);  }
-  45%, 100% { transform: rotate(0deg);   }
+  0%,
+  5% {
+    transform: rotate(0deg);
+  }
+  12% {
+    transform: rotate(-18deg);
+  }
+  19% {
+    transform: rotate(16deg);
+  }
+  26% {
+    transform: rotate(-14deg);
+  }
+  33% {
+    transform: rotate(10deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  45%,
+  100% {
+    transform: rotate(0deg);
+  }
 }
 @keyframes idleGearSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 @keyframes idleStopwatchHand {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 @keyframes idleBugLegsA {
-  0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(8deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
 }
 @keyframes idleBugLegsB {
-  0%, 100% { transform: rotate(0deg); }
-  50%      { transform: rotate(-8deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
 }
 @keyframes idleBugAntennae {
-  0%, 100% { transform: rotate(0deg); }
-  25%      { transform: rotate(5deg); }
-  75%      { transform: rotate(-5deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
 }
 @keyframes idleMagnifySearch {
-  0%     { transform: translate( 0px,  3px); }
-  12.5%  { transform: translate( 2.1px, 2.1px); }
-  25%    { transform: translate( 3px,  0px); }
-  37.5%  { transform: translate( 2.1px,-2.1px); }
-  50%    { transform: translate( 0px, -3px); }
-  62.5%  { transform: translate(-2.1px,-2.1px); }
-  75%    { transform: translate(-3px,  0px); }
-  87.5%  { transform: translate(-2.1px, 2.1px); }
-  100%   { transform: translate( 0px,  3px); }
+  0% {
+    transform: translate(0px, 3px);
+  }
+  12.5% {
+    transform: translate(2.1px, 2.1px);
+  }
+  25% {
+    transform: translate(3px, 0px);
+  }
+  37.5% {
+    transform: translate(2.1px, -2.1px);
+  }
+  50% {
+    transform: translate(0px, -3px);
+  }
+  62.5% {
+    transform: translate(-2.1px, -2.1px);
+  }
+  75% {
+    transform: translate(-3px, 0px);
+  }
+  87.5% {
+    transform: translate(-2.1px, 2.1px);
+  }
+  100% {
+    transform: translate(0px, 3px);
+  }
 }
 @keyframes idleBrushArc {
-  from { transform: rotate(-3.9deg); }
-  to   { transform: rotate(3.9deg); }
+  from {
+    transform: rotate(-3.9deg);
+  }
+  to {
+    transform: rotate(3.9deg);
+  }
 }
 @keyframes idleMicroscopeRock {
-  from { transform: rotate(-2deg); }
-  to   { transform: rotate(2deg); }
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(2deg);
+  }
 }
 /* Ruler – tick-mark sweep, forward then reverse (5000ms cycle).
    Each tick fires twice: fwd pass (delays 0→10) then return pass (delays 10→0).
@@ -1163,44 +1445,195 @@ div[class*='announcementBar'] {
    receive two independent `animationDelay` values (one per direction) via
    inline style. Do not collapse the dual `animation` shorthand into one. */
 @keyframes idleRulerTick {
-  0%, 100% { opacity: 0.35; }
-  10%       { opacity: 1; }
-  20%       { opacity: 0.35; }
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  10% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.35;
+  }
 }
 /* Robot – teeth progress-bar sweep */
 @keyframes idleRobotTeeth {
-  0%        { opacity: 0.35; }
-  10%       { opacity: 1; }
-  20%, 100% { opacity: 0.35; }
+  0% {
+    opacity: 0.35;
+  }
+  10% {
+    opacity: 1;
+  }
+  20%,
+  100% {
+    opacity: 0.35;
+  }
 }
 /* Robot – eye blink */
 @keyframes idleRobotBlink {
-  0%, 16%, 100% { opacity: 0; }
-  8%            { opacity: 1; }
+  0%,
+  16%,
+  100% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
 }
 /* Robot – antenna sparks */
 @keyframes idleRobotSpark {
-  0%, 30%  { opacity: 0; transform: scale(0); }
-  15%      { opacity: 1; transform: scale(1); }
+  0%,
+  30% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 /* Landing zone – thumbnail highlight glow */
 @keyframes idleLandingGlow {
-  0%, 100% { opacity: 0.3; }
-  50%      { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* Inference cycle – read context tokens → process → emit next token. */
+@keyframes idleInferenceToken {
+  0%,
+  14%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  6% {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+  12% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+}
+/* Vertical variant: adds downward drift for mobile top→bottom flow. */
+@keyframes idleInferenceTokenVertical {
+  0%,
+  14%,
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  6% {
+    opacity: 1;
+    transform: scale(1.035) translateY(2px);
+  }
+  12% {
+    opacity: 0.72;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes idleInferenceLlm {
+  0%,
+  50% {
+    transform: rotate(0turn);
+  }
+  76%,
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes idleInferenceOutput {
+  0%,
+  82%,
+  96%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  89% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  96% {
+    opacity: 0.82;
+    transform: scale(1);
+  }
 }
 .idle-landing-glow {
   animation: idleLandingGlow 2500ms ease-in-out infinite;
 }
+.idle-inference-cycle {
+  animation-duration: 4200ms;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+.inference-token-cycle,
+.inference-llm-cycle,
+.inference-output-cycle {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.inference-token-cycle {
+  animation-name: idleInferenceToken;
+}
+@container (max-width: 420px) {
+  .inference-token-cycle {
+    animation-name: idleInferenceTokenVertical;
+  }
+}
+@media (max-width: 430px) {
+  .inference-token-cycle {
+    animation-name: idleInferenceTokenVertical;
+  }
+}
+.inference-llm-cycle {
+  animation-name: idleInferenceLlm;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+}
+.inference-output-cycle {
+  animation-name: idleInferenceOutput;
+}
 
-.idle-cursor-blink          { animation: idleCursorBlink          1000ms step-end infinite; }
-.idle-status-pulse          { animation: idleStatusPulse          2000ms ease-in-out infinite; }
-.idle-alternating-emphasis  { animation: idleAlternatingEmphasis  6000ms ease-in-out infinite; }
-.idle-flow-drift            { animation: idleFlowDrift            3000ms ease-in-out infinite; }
-.idle-ready-breathe { animation: idleReadyBreathe 4000ms ease-in-out infinite; }
-.ping-once          { animation: pingOnce 400ms var(--ease-exit) 1 both; }
-.idle-arm-rock      { animation: idleArmRock  5000ms ease-in-out infinite; }
-.idle-palm-wave     { animation: idlePalmWave 5000ms ease-in-out infinite; }
-.idle-gear-spin     { animation: idleGearSpin 2500ms linear infinite; }
+.idle-cursor-blink {
+  animation: idleCursorBlink 1000ms step-end infinite;
+}
+.idle-status-pulse {
+  animation: idleStatusPulse 2000ms ease-in-out infinite;
+}
+.idle-alternating-emphasis {
+  animation: idleAlternatingEmphasis 6000ms ease-in-out infinite;
+}
+.idle-flow-drift {
+  animation: idleFlowDrift 3000ms ease-in-out infinite;
+}
+.idle-ready-breathe {
+  animation: idleReadyBreathe 4000ms ease-in-out infinite;
+}
+.idle-cloud-serve {
+  animation: idleCloudServe 3600ms ease-in-out infinite;
+}
+.idle-eye-read {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: idleEyeRead 3600ms cubic-bezier(0.22, 0.68, 0, 1.07) infinite;
+}
+.ping-once {
+  animation: pingOnce 400ms var(--ease-exit) 1 both;
+}
+.idle-arm-rock {
+  animation: idleArmRock 5000ms ease-in-out infinite;
+}
+.idle-palm-wave {
+  animation: idlePalmWave 5000ms ease-in-out infinite;
+}
+.idle-gear-spin {
+  animation: idleGearSpin 2500ms linear infinite;
+}
 .idle-stopwatch-hand {
   transform-box: fill-box;
   transform-origin: 50% 90%;
@@ -1236,20 +1669,43 @@ div[class*='announcementBar'] {
 }
 /* DO NOT deduplicate — two animation layers needed for independent per-tick delay offsets (fwd/bwd) */
 .idle-ruler-tick {
-  animation: idleRulerTick 5000ms linear infinite,
-             idleRulerTick 5000ms linear infinite;
+  animation:
+    idleRulerTick 5000ms linear infinite,
+    idleRulerTick 5000ms linear infinite;
 }
 /* Bookmark tabs – rests at full opacity, brief dip sweeps top→bottom then bottom→top.
    Inverted from idleRulerTick: rest is 1.0, event is a dim dip.
    DO NOT deduplicate — two animation layers needed for independent per-tab delay offsets (fwd/bwd) */
 @keyframes idleBookmarkTab {
-  0%, 100% { opacity: 1; }
-  10%       { opacity: 0.4; }
-  20%       { opacity: 1; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  20% {
+    opacity: 1;
+  }
 }
 .idle-bookmark-tab {
-  animation: idleBookmarkTab 4000ms linear infinite,
-             idleBookmarkTab 4000ms linear infinite;
+  animation:
+    idleBookmarkTab 4000ms linear infinite,
+    idleBookmarkTab 4000ms linear infinite;
+}
+/* White flash overlays on documentTabs text lines */
+@keyframes idleTextLine {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.idle-text-line {
+  animation: idleTextLine 4000ms linear infinite;
 }
 .idle-robot-teeth {
   animation: idleRobotTeeth 2500ms linear infinite;
@@ -1265,39 +1721,68 @@ div[class*='announcementBar'] {
 }
 
 @keyframes idleCompassNeedle {
-  from { transform: rotate(-15deg); }
-  to   { transform: rotate(15deg); }
+  from {
+    transform: rotate(-15deg);
+  }
+  to {
+    transform: rotate(15deg);
+  }
 }
 @keyframes idleBullseyeRing {
-  0%, 100% { opacity: 1; }
-  20%      { opacity: 0.45; }
-  40%      { opacity: 1; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.45;
+  }
+  40% {
+    opacity: 1;
+  }
 }
 .idle-compass-needle {
-  /* view-box (not fill-box): needle <g> bbox doesn't cover the compass center,
-     so we pivot at the SVG viewBox arc center (62.37, 65.63 from the outer ring path) */
-  transform-box: view-box;
-  transform-origin: 62.37px 65.63px;
+  /* transform-box and transform-origin are set inline by consumers:
+     - MoeIcon (table): fill-box + center (compass center in 72×72 viewBox)
+     - CompassEmoji (standalone <img>): defaults to 50% 50% (compass center) */
   animation: idleCompassNeedle 4000ms ease-in-out infinite alternate;
 }
 .idle-bullseye-ring {
   animation: idleBullseyeRing 5000ms ease-in-out infinite;
 }
 @keyframes idleAirStripe {
-  0%, 100% { opacity: 0; transform: translate(0, 0); }
-  50%      { opacity: 0.8; transform: translate(-4px, 4px); }
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-4px, 4px);
+  }
 }
 .idle-air-stripe {
   animation: idleAirStripe 2000ms ease-in-out infinite;
 }
 @keyframes idleCrossShake {
   /* Wag (translateX + rotateZ) occupies the first ~13% of the cycle; rest is idle. */
-  0%   { transform: translateX(0)    rotateZ(0deg); }
-  3%   { transform: translateX(-4px) rotateZ(-5deg); }
-  7%   { transform: translateX(4px)  rotateZ(5deg); }
-  10%  { transform: translateX(-3px) rotateZ(-3deg); }
-  13%  { transform: translateX(0)    rotateZ(0deg); }
-  100% { transform: translateX(0)    rotateZ(0deg); }
+  0% {
+    transform: translateX(0) rotateZ(0deg);
+  }
+  3% {
+    transform: translateX(-4px) rotateZ(-5deg);
+  }
+  7% {
+    transform: translateX(4px) rotateZ(5deg);
+  }
+  10% {
+    transform: translateX(-3px) rotateZ(-3deg);
+  }
+  13% {
+    transform: translateX(0) rotateZ(0deg);
+  }
+  100% {
+    transform: translateX(0) rotateZ(0deg);
+  }
 }
 .idle-cross-shake {
   transform-box: fill-box;
@@ -1307,12 +1792,24 @@ div[class*='announcementBar'] {
 
 @keyframes idleCheckBreathe {
   /* Heartbeat double-pulse: large beat → small beat → long rest. */
-  0%   { transform: scale(1); }
-  8%   { transform: scale(1.12); }
-  16%  { transform: scale(1); }
-  22%  { transform: scale(1.06); }
-  30%  { transform: scale(1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  8% {
+    transform: scale(1.12);
+  }
+  16% {
+    transform: scale(1);
+  }
+  22% {
+    transform: scale(1.06);
+  }
+  30% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 .idle-check-breathe {
   transform-box: fill-box;
@@ -1321,8 +1818,12 @@ div[class*='announcementBar'] {
 }
 
 @keyframes idleBabysitRock {
-  from { transform: rotate(-6deg); }
-  to   { transform: rotate(6deg); }
+  from {
+    transform: rotate(-6deg);
+  }
+  to {
+    transform: rotate(6deg);
+  }
 }
 .idle-babysit-rock {
   /* view-box (not fill-box): pivot is bottom-center of the 128×128 viewBox (64, 124),
@@ -1341,24 +1842,47 @@ div[class*='announcementBar'] {
 .wordmark-heading-sm {
   height: 72px;
 }
-[data-theme='dark'] .wordmark-light { display: none; }
+[data-theme='dark'] .wordmark-light {
+  display: none;
+}
 [data-theme='light'] .wordmark-dark,
-html:not([data-theme='dark']) .wordmark-dark { display: none; }
+html:not([data-theme='dark']) .wordmark-dark {
+  display: none;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .idle-cursor-blink, .idle-status-pulse,
+  .idle-cursor-blink,
+  .idle-status-pulse,
   .idle-alternating-emphasis,
-  .idle-flow-drift, .idle-ready-breathe, .ping-once,
-  .idle-arm-rock, .idle-palm-wave, .idle-gear-spin,
+  .idle-inference-cycle,
+  .idle-flow-drift,
+  .idle-ready-breathe,
+  .idle-cloud-serve,
+  .idle-eye-read,
+  .ping-once,
+  .idle-arm-rock,
+  .idle-palm-wave,
+  .idle-gear-spin,
   .idle-stopwatch-hand,
-  .idle-bug-legs-a, .idle-bug-legs-b, .idle-bug-antennae,
+  .idle-bug-legs-a,
+  .idle-bug-legs-b,
+  .idle-bug-antennae,
   .idle-magnify-search,
-  .idle-brush-arc, .idle-microscope-rock,
-  .idle-ruler-tick, .idle-bookmark-tab,
-  .idle-robot-teeth, .idle-robot-blink, .idle-robot-spark,
-  .idle-compass-needle, .idle-bullseye-ring,
-  .idle-air-stripe, .idle-babysit-rock,
-  .idle-cross-shake, .idle-check-breathe, .idle-landing-glow {
+  .idle-brush-arc,
+  .idle-microscope-rock,
+  .idle-ruler-tick,
+  .idle-bookmark-tab,
+  .idle-text-line,
+  .idle-robot-teeth,
+  .idle-robot-blink,
+  .idle-robot-spark,
+  .idle-compass-needle,
+  .idle-bullseye-ring,
+  .idle-air-stripe,
+  .idle-babysit-rock,
+  .idle-cross-shake,
+  .idle-check-breathe,
+  .idle-landing-glow {
     animation: none !important;
   }
 }
