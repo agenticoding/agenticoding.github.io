@@ -124,7 +124,7 @@
    RESPONSIVE
    ======================================================================== */
 
-@container (max-width: 48rem) {
+@media (max-width: 768px) {
   .heroInner {
     flex-direction: column;
     gap: 0;
@@ -142,7 +142,7 @@
   }
 }
 
-@container (max-width: 36rem) {
+@media (max-width: 576px) {
   .heroTitle {
     font-size: var(--text-3xl);
     line-height: var(--lh-2xl);

@@ -900,7 +900,7 @@ article h1 {
 
 /* Search input — flat, bordered */
 .navbar__search-input {
-  background: var(--surface-page);
+  background-color: var(--surface-page);
   border: 1px solid var(--neutral-300);
   border-radius: 0;
   font-family: var(--font-body);
@@ -915,7 +915,7 @@ article h1 {
 }
 
 [data-theme='dark'] .navbar__search-input {
-  background: var(--surface-page);
+  background-color: var(--surface-page);
   border-color: var(--neutral-700);
   color: var(--text-body);
 }

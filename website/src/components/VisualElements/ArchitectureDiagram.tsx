@@ -6,7 +6,8 @@ import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { useMounted } from '../../hooks/useMounted';
-import { NotoEmoji } from './ActorNodes';
+import { EmojiImage } from './ActorNodes';
+import { EMOJI } from './emojiAssets';
 import { CONNECTOR_STYLE } from './diagramConstants';
 import { Ghost } from './Ghost';
 
@@ -193,10 +194,10 @@ export default function ArchitectureDiagram() {
 
       {/* Emoji actors */}
       <g className={clsx(styles.emojiNode, actors && styles.emojiNodeIn)}>
-        <NotoEmoji codepoint="1f5fa" x={L_CX - EMOJI_SIZE / 2} y={56} size={EMOJI_SIZE} />
+        <EmojiImage asset={EMOJI.map} x={L_CX} y={56 + EMOJI_SIZE / 2} size={EMOJI_SIZE} />
       </g>
       <g className={clsx(styles.emojiNode, actors && styles.emojiNodeIn)} style={actors ? DELAY_80 : undefined}>
-        <NotoEmoji codepoint="1f9ed" x={R_CX - EMOJI_SIZE / 2} y={56} size={EMOJI_SIZE} />
+        <EmojiImage asset={EMOJI.compass} x={R_CX} y={56 + EMOJI_SIZE / 2} size={EMOJI_SIZE} />
       </g>
 
       {/* Left blocks — cyan */}

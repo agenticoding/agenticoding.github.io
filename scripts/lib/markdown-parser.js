@@ -5,14 +5,7 @@
  * and describe code blocks in a pedagogically meaningful way.
  */
 
-import { readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-// ES module __dirname equivalent
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const PROJECT_ROOT = join(__dirname, '../..');
+import { readFileSync } from 'fs';
 
 /**
  * Analyze code block context and generate appropriate description
@@ -140,100 +133,18 @@ function extractMdxImports(content) {
 }
 
 /**
- * Resolve @site import paths to filesystem paths
- * @param {string} importPath - Import path (e.g., '@site/shared-prompts/_file.mdx')
- * @returns {string} Resolved filesystem path
- */
-function resolveImportPath(importPath) {
-  // Remove escape characters (MDX escapes underscores as \_)
-  let cleaned = importPath.replace(/\\/g, '');
-
-  if (cleaned.startsWith('@site/')) {
-    return join(PROJECT_ROOT, 'website', cleaned.replace('@site/', ''));
-  }
-  return cleaned;
-}
-
-/**
  * Classify a component by its import source
  * @param {string} componentName - Name of the component
  * @param {Object} imports - Map of component names to import paths
- * @returns {'visual'|'shared-prompt'|'unknown'} Component classification
+ * @returns {'visual'|'unknown'} Component classification
  */
 function classifyComponent(componentName, imports) {
   const importPath = imports[componentName];
   if (!importPath) return 'unknown';
 
-  if (importPath.includes('shared-prompts/')) return 'shared-prompt';
   if (importPath.includes('VisualElements/')) return 'visual';
 
   return 'unknown';
-}
-
-/**
- * Read and parse shared-prompt MDX content for inlining
- * @param {string} importPath - The @site import path
- * @param {string} mode - Rendering mode
- * @param {boolean} preserveCode - Whether to preserve code blocks
- * @returns {string} Parsed content ready for inlining
- */
-function inlineSharedPrompt(importPath, mode, preserveCode) {
-  const resolvedPath = resolveImportPath(importPath);
-
-  if (!existsSync(resolvedPath)) {
-    return `[SHARED_PROMPT: File not found - ${importPath}]`;
-  }
-
-  const content = readFileSync(resolvedPath, 'utf-8');
-
-  // Remove frontmatter if present
-  let cleaned = content.replace(/^---[\s\S]*?---\n/, '');
-
-  // Remove any imports (shared prompts shouldn't have nested imports)
-  cleaned = cleaned.replace(/^import\s+.*$/gm, '');
-
-  // Process code blocks based on preserveCode flag
-  if (!preserveCode) {
-    // Find and describe code blocks
-    const codeBlocks = [];
-    const regex = /```[\s\S]*?```/g;
-    let match;
-
-    while ((match = regex.exec(cleaned)) !== null) {
-      const precedingStart = Math.max(0, match.index - 200);
-      const precedingContext = cleaned.substring(precedingStart, match.index);
-      const followingEnd = Math.min(cleaned.length, match.index + match[0].length + 200);
-      const followingContext = cleaned.substring(match.index + match[0].length, followingEnd);
-
-      codeBlocks.push({
-        original: match[0],
-        index: match.index,
-        precedingContext,
-        followingContext
-      });
-    }
-
-    let offset = 0;
-    for (const block of codeBlocks) {
-      const description = describeCodeBlock(block.original, block.precedingContext, block.followingContext);
-      const adjustedIndex = block.index + offset;
-      cleaned = cleaned.substring(0, adjustedIndex) +
-                description +
-                cleaned.substring(adjustedIndex + block.original.length);
-      offset += description.length - block.original.length;
-    }
-  }
-
-  // Clean up markdown links but keep text
-  cleaned = cleaned.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-
-  // Remove HTML comments
-  cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, '');
-
-  // Clean up excessive whitespace
-  cleaned = cleaned.replace(/\n{3,}/g, '\n\n').trim();
-
-  return cleaned;
 }
 
 /**
@@ -257,7 +168,6 @@ export function parseMarkdownContent(filePath, mode = 'doc', preserveCode = fals
 
   // Process React components based on their import source
   // - Visual components (from VisualElements/) → [VISUAL_COMPONENT: X]
-  // - Shared prompts (from shared-prompts/) → inline content
   // - Unknown → remove silently
   cleaned = cleaned.replace(/<([A-Z][a-zA-Z]*)\s*\/>/g, (match, componentName) => {
     const classification = classifyComponent(componentName, imports);
@@ -265,8 +175,6 @@ export function parseMarkdownContent(filePath, mode = 'doc', preserveCode = fals
     switch (classification) {
       case 'visual':
         return `[VISUAL_COMPONENT: ${componentName}]`;
-      case 'shared-prompt':
-        return inlineSharedPrompt(imports[componentName], mode, preserveCode);
       default:
         // Unknown component - remove silently (likely layout/UI)
         return '';
