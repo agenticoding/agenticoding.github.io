@@ -1,5 +1,106 @@
+.chapterItem {
+  margin: 0;
+}
+
+.chapterItem :global(.menu__link) {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  min-height: var(--target-md);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  border-radius: 0;
+  color: var(--text-body);
+}
+
+.chapterItem :global(.menu__link:hover) {
+  background: var(--surface-raised);
+  color: var(--text-heading);
+  text-decoration: none;
+}
+
+.chapterItem :global(.menu__link:focus-visible) {
+  outline: none;
+  border-color: var(--border-emphasis);
+}
+
+.chapterItem :global(.menu__link--active) {
+  background: var(--surface-muted);
+  color: var(--text-heading);
+  font-weight: 600;
+}
+
 .menuExternalLink {
   align-items: center;
+}
+
+.chapterNumber {
+  flex: 0 0 auto;
+  width: 2ch;
+  min-height: var(--lh-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono-keyword);
+  font-feature-settings: var(--font-mono-features);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: var(--lh-sm);
+  text-align: right;
+}
+
+.chapterItem :global(.menu__link--active) .chapterNumber {
+  color: var(--text-body);
+}
+
+.tocDisclosure {
+  display: grid;
+  overflow: hidden;
+  transform-origin: top;
+}
+
+.tocDisclosureEnter {
+  animation: tocDisclosureEnter var(--duration-subtle) var(--ease-enter) both;
+}
+
+.tocDisclosureExit {
+  animation: tocDisclosureExit var(--duration-subtle-exit) var(--ease-exit) both;
+}
+
+.tocDisclosureInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@keyframes tocDisclosureEnter {
+  from {
+    opacity: 0;
+    grid-template-rows: 0fr;
+    transform: translateY(calc(-1 * var(--space-0h)));
+  }
+  to {
+    opacity: 1;
+    grid-template-rows: 1fr;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tocDisclosureExit {
+  from {
+    opacity: 1;
+    grid-template-rows: 1fr;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    grid-template-rows: 0fr;
+    transform: translateY(calc(-1 * var(--space-0h)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tocDisclosureEnter,
+  .tocDisclosureExit {
+    animation-duration: 0.01ms !important;
+  }
 }
 
 .linkLabel {

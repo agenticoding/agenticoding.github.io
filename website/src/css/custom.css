@@ -1135,7 +1135,7 @@ kbd,
 /* Spacing --------------------------------------------------------------- */
 
 .menu > .menu__list > .menu__list-item:not(:first-child) {
-  margin-top: var(--space-2); /* 16px between category groups */
+  margin-top: 0;
 }
 
 /* Icon column alignment: override Content module's 0px right padding
@@ -1166,7 +1166,7 @@ kbd,
   min-width: var(--icon-sm); /* 16px, was 20px */
 }
 
-/* §N section marker — typographically secondary reference tag ----------- */
+/* Chapter number — typographically secondary spine marker ----------- */
 
 .sidebar-section-number {
   display: inline-block;
@@ -1177,9 +1177,8 @@ kbd,
   line-height: var(--lh-sm); /* 24px — stays on baseline */
   color: var(--text-muted); /* #808080 light / #9b9b9b dark */
   font-weight: 400;
-  letter-spacing: 0.02em;
-  margin-right: var(--space-0h); /* 4px gap before label text */
-  min-width: 1.8em; /* prevents label shift as numbers grow: §1 vs §14 */
+  letter-spacing: 0.04em;
+  min-width: 2ch;
   font-feature-settings: var(--font-mono-features);
 }
 

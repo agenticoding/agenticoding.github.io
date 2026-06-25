@@ -1,67 +1,37 @@
 import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+type ChapterKind = 'frontmatter' | 'lesson' | 'reference';
 
-/**
- * Creating a sidebar enables you to:
- - create an ordered group of docs
- - render a sidebar for each doc of that group
- - provide next/previous navigation
+function chapter(id: string, sectionNumber: number, chapterKind: ChapterKind = 'lesson') {
+  return {
+    type: 'doc' as const,
+    id,
+    customProps: { sectionNumber, chapterKind },
+  };
+}
 
- The sidebars can be generated from the filesystem, or explicitly defined here.
-
- Create as many sidebars as you want.
- */
 const sidebars: SidebarsConfig = {
   tutorialSidebar: [
-    'intro',
-    {
-      type: 'category',
-      label: 'Fundamentals',
-      collapsed: false,
-      items: [
-        'fundamentals/lesson-1-how-llms-work',
-        'fundamentals/lesson-2-how-agents-work',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Methodology',
-      collapsed: false,
-      items: [
-        'methodology/lesson-3-high-level-methodology',
-        'methodology/lesson-4-prompting-101',
-        'methodology/lesson-5-grounding',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Practical Techniques',
-      collapsed: false,
-      items: [
-        'practical-techniques/lesson-6-context-management',
-        'practical-techniques/lesson-7-reliability-levers',
-        'practical-techniques/lesson-8-spec-driven-development',
-        'practical-techniques/lesson-9-tests-as-guardrails',
-        'practical-techniques/lesson-10-reviewing-code',
-        'practical-techniques/lesson-11-debugging',
-        'practical-techniques/lesson-12-agent-friendly-code',
-        'practical-techniques/lesson-13-systems-thinking-specs',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Experience Engineering',
-      collapsed: false,
-      items: [
-        'experience-engineering/lesson-14-design-tokens',
-        'experience-engineering/lesson-15-ui-specs',
-        'experience-engineering/lesson-16-accessibility-i18n',
-        'experience-engineering/lesson-17-verification',
-      ],
-    },
-    'faq',
-    'about',
+    chapter('intro', 0, 'frontmatter'),
+    chapter('fundamentals/lesson-1-how-llms-work', 1),
+    chapter('fundamentals/lesson-2-how-agents-work', 2),
+    chapter('methodology/lesson-3-high-level-methodology', 3),
+    chapter('methodology/lesson-4-prompting-101', 4),
+    chapter('methodology/lesson-5-grounding', 5),
+    chapter('practical-techniques/lesson-6-context-management', 6),
+    chapter('practical-techniques/lesson-7-reliability-levers', 7),
+    chapter('practical-techniques/lesson-8-spec-driven-development', 8),
+    chapter('practical-techniques/lesson-9-tests-as-guardrails', 9),
+    chapter('practical-techniques/lesson-10-reviewing-code', 10),
+    chapter('practical-techniques/lesson-11-debugging', 11),
+    chapter('practical-techniques/lesson-12-agent-friendly-code', 12),
+    chapter('practical-techniques/lesson-13-systems-thinking-specs', 13),
+    chapter('experience-engineering/lesson-14-design-tokens', 14),
+    chapter('experience-engineering/lesson-15-ui-specs', 15),
+    chapter('experience-engineering/lesson-16-accessibility-i18n', 16),
+    chapter('experience-engineering/lesson-17-verification', 17),
+    chapter('faq', 18, 'reference'),
+    chapter('about', 19, 'reference'),
   ],
 };
 

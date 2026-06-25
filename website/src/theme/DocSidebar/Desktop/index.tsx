@@ -5,7 +5,6 @@ import type {WrapperProps} from '@docusaurus/types';
 import {useLocation} from '@docusaurus/router';
 import SidebarHeader from './SidebarHeader';
 import SidebarFooter from './SidebarFooter';
-import SidebarTOC from './SidebarTOC';
 import {getActiveIndex} from './channels';
 import styles from './styles.module.css';
 
@@ -20,7 +19,6 @@ export default function DesktopWrapper(props: Props): ReactNode {
       <div key={activeIndex} className={styles.sidebarScrollable}>
         <Desktop {...props} />
       </div>
-      <SidebarTOC />
       <SidebarFooter />
     </div>
   );
