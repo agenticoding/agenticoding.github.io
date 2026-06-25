@@ -1,0 +1,5 @@
+/* Mobile navbar drawer owns mobile-only navigation chrome. */
+.channelArea {
+  padding: var(--space-2);
+}
+
