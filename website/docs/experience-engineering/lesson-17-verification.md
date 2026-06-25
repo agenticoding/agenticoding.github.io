@@ -89,7 +89,7 @@ For projects using browser automation as the verification layer, add `snapshot -
 
 ## Detailed Behavior: Template-Driven Sections
 
-The [UI spec template](/prompts/specifications/experience-spec-template) provides the full structure for writing UI specs. Start with Components + Flows + State (Tier 1), then add sections as the code pulls depth (Tier 2–4):
+The UI spec structure starts with Components + Flows + State (Tier 1), then adds sections as the code pulls depth (Tier 2–4):
 
 | Tier | Sections | When to Add |
 |------|----------|-------------|

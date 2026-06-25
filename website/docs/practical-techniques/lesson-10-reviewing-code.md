@@ -6,9 +6,6 @@ sidebar_custom_props:
 title: 'Reviewing Code'
 ---
 
-import DualOptimizedPR from '@site/shared-prompts/\_dual-optimized-pr.mdx';
-import AIAssistedReview from '@site/shared-prompts/\_ai-assisted-review.mdx';
-
 You've completed the implementation. Tests pass. The agent executed your plan successfully. Now comes the critical question: is it actually correct?
 
 This is the **Validate** phase from [Lesson 3's four-phase workflow](../methodology/lesson-3-high-level-methodology.md)—the systematic quality gate before shipping. Code review catches the probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, edge cases handled incorrectly, patterns that don't quite fit your codebase.
@@ -65,10 +62,6 @@ DO NOT EDIT ANYTHING - only review.
 
 After implementing code ([Lesson 8](./lesson-8-spec-driven-development.md)), writing tests ([Lesson 9](./lesson-9-tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
 
-:::tip Reference
-See the complete prompt template with iterative review guidance: [Comprehensive Code Review](/prompts/code-review/comprehensive-review)
-:::
-
 ### Iterative Review: Repeat Until Green or Diminishing Returns
 
 Code review is rarely one-pass—first review finds issues, you fix them, re-run tests ([Lesson 9](./lesson-9-tests-as-guardrails.md)) to catch regressions, then review again in a fresh context (not the same conversation where the agent will defend its prior decisions). Continue this cycle: review in fresh context, fix issues, validate with tests, repeat.
@@ -104,8 +97,6 @@ Traditional PR descriptions optimize for one audience or the other—too verbose
 
 This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.mdx), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.mdx), and [Lesson 8 (Spec-Driven Development)](./lesson-8-spec-driven-development.md):
 
-<DualOptimizedPR />
-
 ### Mechanisms at Work
 
 **Sub-agents for context conservation ([Lesson 5](../methodology/lesson-5-grounding.mdx#solution-2-sub-agents-for-context-isolation)):**
@@ -119,10 +110,6 @@ This sub-agent capability is unique to [Claude Code CLI](/developer-tools/cli-co
 **Structured prompting ([Lesson 4](../methodology/lesson-4-prompting-101.mdx)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
 
 **Evidence requirements ([Lesson 4](../methodology/lesson-4-prompting-101.mdx#require-evidence-to-force-retrieval)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
-
-:::tip Reference
-See the complete prompt template with workflow integration tips: [PR Description Generator](/prompts/pull-requests/dual-optimized-pr)
-:::
 
 ### Reviewing PRs with AI Assistants
 
@@ -145,12 +132,6 @@ When you're on the receiving end of a PR with dual-optimized descriptions, you h
 #### The Review Prompt Pattern
 
 When reviewing a PR with dual-optimized descriptions, use this pattern with your AI assistant:
-
-<AIAssistedReview />
-
-:::tip Reference
-See the complete prompt template with Chain of Draft explanation: [AI-Assisted PR Review](/prompts/pull-requests/ai-assisted-review)
-:::
 
 :::tip Chain of Draft (CoD): An Efficient Alternative to Chain of Thought
 

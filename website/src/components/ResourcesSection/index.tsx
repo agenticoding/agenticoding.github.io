@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
-import promptsSidebars from '../../../sidebarsPrompts';
 import { rectanglePath } from '@site/src/utils/svgMath';
 import styles from './index.module.css';
 
@@ -9,101 +8,9 @@ import styles from './index.module.css';
 // Utilities
 // ---------------------------------------------------------------------------
 
-function countPrompts(): number {
-  let count = 0;
-  const traverse = (items: unknown[]) => {
-    for (const item of items) {
-      if (typeof item === 'string') {
-        count++;
-      } else if (item && typeof item === 'object' && 'type' in item) {
-        const obj = item as { type: string; items?: unknown[] };
-        if (obj.type === 'category' && obj.items) {
-          count += obj.items.length;
-        }
-      }
-    }
-  };
-  const sidebar = promptsSidebars.promptsSidebar as unknown[];
-  traverse(sidebar.slice(1));
-  return count;
-}
-
-const PROMPT_COUNT = countPrompts();
-
 // ---------------------------------------------------------------------------
 // Illustrations
 // ---------------------------------------------------------------------------
-
-/**
- * Cascading sharp prompt cards.
- * Three overlapping rectangular outlines fan rightward; the front card carries
- * abstract text lines and a magenta semantic accent.
- */
-function PromptIllustration() {
-  const rx = 34,
-    ry = 24;
-  return (
-    <svg
-      viewBox="0 0 160 80"
-      role="img"
-      aria-label="Stacked prompt cards"
-      className={styles.resourceIllustration}
-    >
-      <path
-        d={rectanglePath(68, 44, rx, ry)}
-        fill="var(--surface-raised)"
-        stroke="var(--border-subtle)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d={rectanglePath(78, 42, rx, ry)}
-        fill="var(--surface-raised)"
-        stroke="var(--border-default)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d={rectanglePath(88, 40, rx, ry)}
-        fill="var(--surface-raised)"
-        stroke="var(--visual-magenta)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Abstract text lines inside front card */}
-      <line
-        x1="72"
-        y1="34"
-        x2="104"
-        y2="34"
-        stroke="var(--border-default)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <line
-        x1="72"
-        y1="40"
-        x2="108"
-        y2="40"
-        stroke="var(--border-default)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <line
-        x1="72"
-        y1="46"
-        x2="96"
-        y2="46"
-        stroke="var(--border-default)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 /**
  * Terminal window — Terminal Geometry family.
@@ -503,30 +410,7 @@ export default function ResourcesSection() {
         <Heading as="h2" className={styles.sectionTitle}>
           Resources
         </Heading>
-        <p className={styles.sectionSubtitle}>
-          {PROMPT_COUNT} prompts + tools + open source projects
-        </p>
         <div className={styles.resourceGrid}>
-          <Link
-            to="/prompts"
-            className={clsx(styles.resourceCard, styles['resource-magenta'])}
-          >
-            <PromptIllustration />
-            <Heading as="h3" className={styles.resourceTitle}>
-              Prompt Library
-            </Heading>
-            <p className={styles.resourceDesc}>
-              Production-ready prompts for testing, debugging, code review, and
-              specifications
-            </p>
-            <div className={styles.resourceFooter}>
-              <span className={styles.resourceCount}>
-                {PROMPT_COUNT} prompts
-              </span>
-              <span className={styles.ghostLink}>Browse Prompts &rarr;</span>
-            </div>
-          </Link>
-
           <Link
             to="/developer-tools/cli-coding-agents"
             className={clsx(styles.resourceCard, styles['resource-cyan'])}

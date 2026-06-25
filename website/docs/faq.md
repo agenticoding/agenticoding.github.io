@@ -212,4 +212,4 @@ The fix: ground agents with real-time web research before generation. Instead of
 
 ---
 
-**Ready to start?** Begin with [Lesson 1: How LLMs Work](/fundamentals/lesson-1-how-llms-work) or explore the [Prompt Library](/prompts).
+**Ready to start?** Begin with [Lesson 1: How LLMs Work](/fundamentals/lesson-1-how-llms-work).

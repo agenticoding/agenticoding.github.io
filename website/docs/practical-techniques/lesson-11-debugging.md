@@ -6,8 +6,6 @@ sidebar_custom_props:
 title: 'Debugging with AI Agents'
 ---
 
-import EvidenceBasedDebug from '@site/shared-prompts/\_evidence-based-debug.mdx';
-
 Debugging with AI agents isn't about describing symptoms and hoping for solutions. It's about requiring evidence at every step. The core principle: **never accept a fix without reproducible proof it works**.
 
 ## Always Require Evidence
@@ -17,8 +15,6 @@ The fundamental shift in debugging with AI is moving from "what do you think is 
 **Anti-pattern:** Describing a bug and asking the agent to fix it blindly.
 
 **Production pattern:** Provide reproduction steps, give the agent access to diagnostic tools, and require before/after evidence.
-
-<EvidenceBasedDebug />
 
 ## Root Cause Analysis: Understanding Before Fixing
 

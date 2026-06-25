@@ -7,8 +7,6 @@ title: 'Tests as Guardrails'
 ---
 
 import ThreeContextWorkflow from '@site/src/components/VisualElements/ThreeContextWorkflow';
-import EdgeCaseDiscovery from '@site/shared-prompts/\_edge-case-discovery.mdx';
-import TestFailureDiagnosis from '@site/shared-prompts/\_test-failure-diagnosis.mdx';
 
 AI agents can refactor half your codebase in minutes. They'll rename functions, restructure modules, and update dozens of files—all while you grab coffee. This velocity is powerful, but dangerous. Small logic errors compound fast when changes happen at scale.
 
@@ -24,15 +22,7 @@ Good tests provide grounding. They show OAuth users skip email verification, dat
 
 Before writing tests, use the planning techniques from [Lesson 8](./lesson-8-spec-driven-development.md) to discover what needs testing. Questions load implementation details and existing edge cases into context.
 
-**Prompt pattern for edge case discovery:**
-
-<EdgeCaseDiscovery />
-
-The agent searches for the function, reads implementation, finds existing tests, and synthesizes findings from Step 1. This loads concrete constraints into context: OAuth users skip email verification, admin users bypass rate limits, deleted users are rejected. Step 2 analyzes the implementation against your questions and identifies untested paths. You now have a grounded list of edge cases derived from actual code, not generic testing advice.
-
-:::tip Reference
-See the complete prompt template with additional examples and adaptations: [Edge Case Discovery](/prompts/testing/edge-case-discovery)
-:::
+**Prompt pattern for edge case discovery:** The agent searches for the function, reads implementation, finds existing tests, and synthesizes findings from Step 1. This loads concrete constraints into context: OAuth users skip email verification, admin users bypass rate limits, deleted users are rejected. Step 2 analyzes the implementation against your questions and identifies untested paths. You now have a grounded list of edge cases derived from actual code, not generic testing advice.
 
 ### Closed Loop: Evolve Code Alongside Tests
 
@@ -173,8 +163,6 @@ When tests fail, apply the same four-phase workflow from [Lesson 3](../methodolo
 
 This diagnostic prompt applies techniques from [Lesson 4](../methodology/lesson-4-prompting-101.mdx): [Chain-of-Thought](../methodology/lesson-4-prompting-101.mdx#chain-of-thought-paving-a-clear-path) sequential steps, [constraints](../methodology/lesson-4-prompting-101.mdx#constraints-as-guardrails) requiring evidence, and [structured format](../methodology/lesson-4-prompting-101.mdx#applying-structure-to-prompts). Understanding why each element exists lets you adapt this pattern for other diagnostic tasks.
 
-<TestFailureDiagnosis />
-
 **Why this works:**
 
 - **Fenced code block** (``````) preserves error formatting and prevents the LLM from interpreting failure messages as instructions ([structured format](../methodology/lesson-4-prompting-101.mdx#applying-structure-to-prompts))
@@ -185,10 +173,6 @@ This diagnostic prompt applies techniques from [Lesson 4](../methodology/lesson-
 - **"Provide evidence"** requires file paths and line numbers—concrete proof via [require evidence](../methodology/lesson-4-prompting-101.mdx#require-evidence-to-force-retrieval), not vague assertions
 
 You can adapt this for performance issues, security vulnerabilities, or deployment failures by changing the diagnostic steps while preserving the structure: sequential CoT → constrained decision → evidence requirement.
-
-:::tip Reference
-See the complete prompt template with detailed usage examples and adaptations: [Test Failure Diagnosis](/prompts/testing/test-failure-diagnosis)
-:::
 
 ## Key Takeaways
 

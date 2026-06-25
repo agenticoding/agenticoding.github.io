@@ -28,7 +28,7 @@ Five architectural decisions for every UI spec:
 
 Automated tools (axe-core, Lighthouse) catch ~30% of WCAG issues. The remaining 70% requires keyboard-only testing and screen reader verification. Browser automation via `snapshot -ic` covers both — the accessibility tree reveals missing landmarks, broken focus order, and absent live regions. For **visual** correctness (layout shifts, color contrast in actual rendering, overlapping elements), complement with visual regression testing (Chromatic, Percy, Playwright's `toHaveScreenshot()`). The spec defines structural correctness; visual regression catches what the accessibility tree cannot.
 
-The [UI spec template](/prompts/specifications/experience-spec-template) has the full table structure for landmarks, keyboard models, focus management triggers, live regions, and constraint indices.
+A UI spec should include the table structure for landmarks, keyboard models, focus management triggers, live regions, and constraint indices.
 
 ## Internationalization Architecture
 

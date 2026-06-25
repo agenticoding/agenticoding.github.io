@@ -304,7 +304,7 @@ Where does trust end? What can an attacker control?
 | Secret exposure | Secrets from env vars, never logged |
 
 :::tip Deep Security Checklist
-For systems with significant attack surface, also specify: **Authentication** (how are identities verified?), **Authorization** (who can do what? default deny), **Data Protection** (what's PII? encrypted at rest? retention policy?). See the [full template](/prompts/specifications/spec-template) for the complete format.
+For systems with significant attack surface, also specify: **Authentication** (how are identities verified?), **Authorization** (who can do what? default deny), **Data Protection** (what's PII? encrypted at rest? retention policy?). A system spec should include security checklists covering authentication, authorization, and data protection.
 :::
 
 ### Observability
@@ -318,7 +318,7 @@ How do you know it's working?
 | duplicate_webhook_rate | counter | > 10/min |
 
 :::tip Deep Observability Checklist
-For production-critical systems, also specify: **Logging** (structured format, correlation IDs, PII redaction), **SLOs** (availability/latency targets, burn-rate alerts), **Tracing** (propagation standard, sampling strategy, key spans). See the [full template](/prompts/specifications/spec-template) for the complete format.
+For production-critical systems, also specify: **Logging** (structured format, correlation IDs, PII redaction), **SLOs** (availability/latency targets, burn-rate alerts), **Tracing** (propagation standard, sampling strategy, key spans). A system spec should include observability checklists covering logging, SLOs, and tracing.
 :::
 
 ## Deployment and Integration: The Operational Boundary
@@ -350,10 +350,10 @@ Each loop through this cycle reveals what the spec missed. The first pass might 
 
 **You're done when the loop produces no new gaps:** the code passes all behavioral scenarios, the spec accounts for all constraints the code revealed, and the last pass surfaces nothing new. That's a testable termination condition. A simple feature converges in one loop. A complex architectural change might take five. But you discover which you're dealing with *by running the loop*, not by predicting it.
 
-**Iteration speed is the multiplier.** Code generation is approaching post-scarcity[^1]—the scarce resource is your judgment about *what* to build. The engineer who runs ten hypothesis→experiment→verify loops per day outperforms the one who runs two with a more thorough upfront spec[^4][^5]. This is the same insight that made Agile outperform Waterfall, compressed from weeks-per-iteration to minutes. Use [exploration planning](/methodology/lesson-3-high-level-methodology#phase-2-plan-strategic-decision) (Lesson 3) and ChunkHound `websearch` ([Lesson 5](/methodology/lesson-5-grounding#production-pattern-multi-source-grounding)) to research before each loop. For system-level work, start from the [full template](/prompts/specifications/spec-template). Validate through the [SDD workflow](/practical-techniques/lesson-8-spec-driven-development)—gap-analyze, implement, then delete the spec. What survives deletion: constraint IDs inlined in code ([Lesson 12](/practical-techniques/lesson-12-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents)), and the small WHY residual (rejected alternatives, business rationale) committed as decision records.
+**Iteration speed is the multiplier.** Code generation is approaching post-scarcity[^1]—the scarce resource is your judgment about *what* to build. The engineer who runs ten hypothesis→experiment→verify loops per day outperforms the one who runs two with a more thorough upfront spec[^4][^5]. This is the same insight that made Agile outperform Waterfall, compressed from weeks-per-iteration to minutes. Use [exploration planning](/methodology/lesson-3-high-level-methodology#phase-2-plan-strategic-decision) (Lesson 3) and ChunkHound `websearch` ([Lesson 5](/methodology/lesson-5-grounding#production-pattern-multi-source-grounding)) to research before each loop. For system-level work, use a spec template. Validate through the [SDD workflow](/practical-techniques/lesson-8-spec-driven-development)—gap-analyze, implement, then delete the spec. What survives deletion: constraint IDs inlined in code ([Lesson 12](/practical-techniques/lesson-12-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents)), and the small WHY residual (rejected alternatives, business rationale) committed as decision records.
 
 :::info Template Sections Not Covered
-The [full spec template](/prompts/specifications/spec-template) includes sections not taught in this lesson: **Background** (problem statement + baseline metrics), **Caching** (strategy/TTL/invalidation), **Endpoints** (REST contract details), **Cleanup Flows** (teardown/rollback sequences), **Code Traceability** (file:line evidence columns). Use these when the code pulls them from you—not before.
+The spec template includes sections not taught in this lesson: **Background** (problem statement + baseline metrics), **Caching** (strategy/TTL/invalidation), **Endpoints** (REST contract details), **Cleanup Flows** (teardown/rollback sequences), **Code Traceability** (file:line evidence columns). Use these when the code pulls them from you—not before.
 :::
 
 ## Key Takeaways

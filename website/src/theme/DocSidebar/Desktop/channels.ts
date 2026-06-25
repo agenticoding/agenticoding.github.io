@@ -1,6 +1,5 @@
 export const channels = [
   {label: 'Reference', path: '/', match: '/'},
-  {label: 'Prompts', path: '/prompts', match: '/prompts'},
   {label: 'Toolbox', path: '/developer-tools/cli-coding-agents', match: '/developer-tools'},
 ] as const;
 

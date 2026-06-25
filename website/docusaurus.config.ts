@@ -131,18 +131,6 @@ const config: Config = {
     [
       '@docusaurus/plugin-content-docs',
       {
-        id: 'prompts',
-        path: 'prompts',
-        routeBasePath: 'prompts',
-        sidebarPath: './sidebarsPrompts.ts',
-        editUrl,
-        showLastUpdateTime: false,
-        showLastUpdateAuthor: false,
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
         id: 'developer-tools',
         path: 'developer-tools',
         routeBasePath: 'developer-tools',

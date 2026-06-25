@@ -36,7 +36,7 @@ Metrics are the completion test. When the agent's implementation meets these thr
 
 Components are units of UI responsibility with explicit APIs. Props define what a component **accepts**. Rendered output defines what it **guarantees**. Accessibility attributes are **non-negotiable** — always present, never conditional.
 
-Throughout the Experience Engineering lessons and the [UI spec template](/prompts/specifications/experience-spec-template), you'll see IDs like `A-001` or `L-003`. These are constraint IDs — labels you put in the spec that the agent carries into code comments during implementation, making rules grep-able and verifiable across the codebase. For the code-level mechanics, see [Lesson 12](/practical-techniques/lesson-12-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents).
+Throughout the Experience Engineering lessons, you'll see IDs like `A-001` or `L-003`. These are constraint IDs — labels you put in the spec that the agent carries into code comments during implementation, making rules grep-able and verifiable across the codebase. For the code-level mechanics, see [Lesson 12](/practical-techniques/lesson-12-agent-friendly-code#comments-as-context-engineering-critical-sections-for-agents).
 
 ### Component Table
 
@@ -122,7 +122,7 @@ All user-visible strings in flows use translation keys. Pluralization follows IC
 
 ### Behavioral Scenarios
 
-Each flow step above is a behavioral scenario waiting to happen. The [UI spec template](/prompts/specifications/experience-spec-template) includes a Given/When/Then table for converting flow steps into concrete, automatable test cases. At minimum, cover five edge categories: boundary values (min/max inputs), null/empty states (no data loaded), error propagation (API failures), concurrency (rapid clicks, simultaneous updates), and temporal edge cases (slow network, stale data).
+Each flow step above is a behavioral scenario waiting to happen. A UI spec includes a Given/When/Then table for converting flow steps into concrete, automatable test cases. At minimum, cover five edge categories: boundary values (min/max inputs), null/empty states (no data loaded), error propagation (API failures), concurrency (rapid clicks, simultaneous updates), and temporal edge cases (slow network, stale data).
 
 Agents handle the happy path correctly and miss the error and edge branches. Annotating each flow step with all three outcomes (success, expected error, unexpected error) prevents the agent from generating optimistic-only implementations.
 
@@ -176,7 +176,7 @@ RTL layouts mirror the entire grid — sidebar switches sides, reading order rev
 
 Agents implement desktop-first by default. If your layout spec requires mobile-first breakpoints, state this explicitly: "implement mobile layout first, then add tablet and desktop as progressive enhancements." Without this constraint, the agent generates desktop CSS and retrofits mobile as an afterthought — producing brittle media queries.
 
-The [UI spec template](/prompts/specifications/experience-spec-template) includes a **Performance Budget** section with Core Web Vitals targets (FCP, LCP, CLS, INP) and bundle size limits. Include these when performance is a constraint — particularly on mobile where bundle size and INP thresholds are tighter.
+A UI spec should include a **Performance Budget** section with Core Web Vitals targets (FCP, LCP, CLS, INP) and bundle size limits. Include these when performance is a constraint — particularly on mobile where bundle size and INP thresholds are tighter.
 
 ## Key Takeaways
 
