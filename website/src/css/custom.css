@@ -924,6 +924,144 @@ article h1 {
   border-color: var(--neutral-400);
 }
 
+.navbar-github-item {
+  align-items: center;
+  padding: 0;
+}
+
+.navbar-github-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--target-sm);
+  height: var(--target-sm);
+  border: 1px solid transparent;
+  border-radius: 0;
+  color: var(--text-muted);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navbar-github-link svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.navbar-github-link:hover {
+  background: var(--surface-muted);
+  color: var(--text-heading);
+  text-decoration: none;
+}
+
+.navbar-github-link:focus-visible {
+  border-color: var(--neutral-600);
+  outline: none;
+}
+
+[data-theme='dark'] .navbar-github-link:focus-visible {
+  border-color: var(--neutral-400);
+}
+
+.navbar-sidebar .navbar-github-item {
+  display: none;
+}
+
+@media (max-width: 576px) {
+  .navbar {
+    --ifm-navbar-padding-horizontal: var(--space-2);
+  }
+
+  .navbar__inner {
+    gap: var(--space-1);
+  }
+
+  .navbar__brand {
+    max-width: 14rem;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .navbar__items--right {
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .navbar > .navbar__inner .navbar__items--right > * {
+    flex: 0 0 auto;
+    position: static;
+  }
+
+  .navbar > .navbar__inner .navbar__items--right > *:has(.navbar__search) {
+    width: var(--target-sm);
+  }
+
+  .navbar > .navbar__inner .navbar-github-item {
+    display: flex;
+    flex: 0 0 var(--target-sm);
+    margin: 0;
+  }
+
+  .navbar__search,
+  .navbar__search-input {
+    min-width: 0;
+    transition: none;
+  }
+
+  .navbar > .navbar__inner .navbar__search {
+    margin-left: 0;
+    width: var(--target-sm);
+  }
+
+  .navbar > .navbar__inner .navbar__search-input:not(:focus) {
+    width: var(--target-sm);
+    padding: 0;
+    background-color: transparent;
+    background-position: center;
+    border-color: transparent;
+    color: transparent;
+  }
+
+  .navbar > .navbar__inner .navbar__search-input:not(:focus)::placeholder {
+    color: transparent;
+  }
+
+  /* Mobile takeover is instant: animated width changes collide with the brand. */
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar__brand {
+    display: none;
+  }
+
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar__items:not(.navbar__items--right) {
+    flex: 0 0 auto;
+  }
+
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar__items--right {
+    flex: 1 1 auto;
+  }
+
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar-github-item {
+    display: none;
+  }
+
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar__items--right > * {
+    flex: 1 1 auto;
+    min-width: 0;
+    position: static;
+    width: 100%;
+  }
+
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) > .navbar__inner .navbar__search {
+    flex: 1 1 auto;
+    margin-left: 0;
+    width: 100% !important;
+  }
+
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) > .navbar__inner .navbar__search > span,
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) > .navbar__inner .navbar__search-input {
+    width: 100% !important;
+  }
+}
+
 /* Color mode toggle — stable selector via swizzled Navbar/ColorModeToggle wrapper */
 .color-mode-toggle button {
   border: 1px solid transparent;
@@ -990,6 +1128,15 @@ article h1 {
 .navbar-sidebar__brand {
   box-shadow: none;
   border-bottom: 1px solid var(--neutral-300);
+}
+
+.navbar-sidebar .navbar__search {
+  margin-left: 0;
+  width: 100%;
+}
+
+.navbar-sidebar .navbar__search-input {
+  width: 100% !important;
 }
 
 [data-theme='dark'] .navbar-sidebar__brand {
