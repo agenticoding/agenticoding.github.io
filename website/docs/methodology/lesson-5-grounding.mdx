@@ -40,30 +40,10 @@ Here's the fundamental issue: **The agent doesn't know your codebase exists.** I
 
 **Grounding is how you inject reality into the context window.** You retrieve relevant external information—your codebase patterns, current docs, best practices—and feed it to the agent before generation. This lesson covers the engineering techniques that anchor agents in your actual system instead of hypothetical ones.
 
-<!-- doc-only-start -->
 <ScrollDrivenFigure phaseEnd={0.75} caption="Grounded vs. ungrounded agents approaching the same task.">
   <GroundingDiagram />
 </ScrollDrivenFigure>
-<!-- doc-only-end -->
 
-<!-- presentation-only-start -->
-
-**Without Grounding:**
-
-- Works from generic training patterns frozen at Jan 2025
-- Guesses your architecture and libraries
-- Hallucinates plausible implementations that don't match your codebase
-- Misses current security vulnerabilities and API changes
-- Confidently wrong solutions built from statistical patterns
-
-**With Grounding:**
-
-- Works from your actual codebase (ChunkHound retrieves real code)
-- Uses current documentation (ChunkHound web search retrieves current sources)
-- Aware of recent security advisories and breaking changes
-- Follows your existing patterns and architecture
-- Solutions that integrate cleanly with your system
-<!-- presentation-only-end -->
 
 :::info Full Disclosure
 [ChunkHound](https://chunkhound.github.io/) is an open source project by the course author. Alternatives are noted inline throughout.
@@ -180,23 +160,10 @@ For small scopes, agentic search or a built-in research agent is usually enough.
 
 In production, ground the agent the same way you would investigate the problem yourself. If the answer depends on your system, inspect the code. If the answer depends on external behavior, current docs, advisories, or ecosystem practice, inspect the web. If it depends on both, use both.
 
-<!-- doc-only-start -->
 <ScrollDrivenFigure caption="Multi-source grounding: orchestrator delegates code and web research to isolated research agents, receives compact syntheses, stays in the high-accuracy context range.">
   <SequenceDiagram columns={MS_COLUMNS} rows={MS_ROWS} ariaLabel="Multi-source grounding sequence: orchestrator delegates to code and web research agents, receives compact syntheses." />
 </ScrollDrivenFigure>
-<!-- doc-only-end -->
 
-<!-- presentation-only-start -->
-
-1. **Code research** (ChunkHound `code_research`): How does existing authentication work?
-   - Returns: Current session-based auth architecture, middleware patterns (3,200 tokens)
-
-2. **Web research** (ChunkHound `websearch`): What are current OAuth2 best practices and known CVEs?
-   - Returns: RFC 6749 guidance, security considerations, recent vulnerabilities (4,800 tokens)
-
-3. **Implementation**: Synthesize both sources — follows your architecture (code-grounded) using current security standards (web-grounded)
-
-<!-- presentation-only-end -->
 
 This multi-source approach prevents two failure modes:
 
