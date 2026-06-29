@@ -11,14 +11,8 @@ import DocItemContent from '@theme/DocItem/Content';
 import DocBreadcrumbs from '@theme/DocBreadcrumbs';
 import ContentVisibility from '@theme/ContentVisibility';
 import type { Props } from '@theme/DocItem/Layout';
-import PresentationToggle from '@site/src/components/PresentationMode/PresentationToggle';
 
 import styles from './styles.module.css';
-
-interface CustomFrontMatter {
-  presentation?: boolean;
-  [key: string]: unknown;
-}
 
 /**
  * Decide if the toc should be rendered, and publish it to the sidebar TOC store.
@@ -41,11 +35,7 @@ function useDocTOC() {
 
 export default function DocItemLayout({ children }: Props): ReactNode {
   const docTOC = useDocTOC();
-  const { metadata, frontMatter } = useDoc();
-
-  // Get lesson path for presentation lookup
-  const lessonPath = metadata.source?.replace('@site/docs/', '') || '';
-  const customFrontMatter = frontMatter as CustomFrontMatter;
+  const { metadata } = useDoc();
 
   return (
     <div className="row">
@@ -56,11 +46,6 @@ export default function DocItemLayout({ children }: Props): ReactNode {
           <article>
             <div className={styles.docHeader}>
               <DocBreadcrumbs />
-              {false && customFrontMatter.presentation !== false && (
-                <div className={styles.presentationToggleWrapper}>
-                  <PresentationToggle lessonPath={lessonPath} />
-                </div>
-              )}
             </div>
             <DocVersionBadge />
             {docTOC.mobile}

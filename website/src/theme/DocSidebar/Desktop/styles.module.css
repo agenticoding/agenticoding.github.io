@@ -218,30 +218,35 @@
 /* ── Inline chapter TOC — current page only ─────────────────── */
 
 .tocInline {
+  --toc-rail-width: 1px;
+  --toc-active-rail-width: 3px;
+  --toc-rail-color: var(--border-subtle);
+
   margin: var(--space-1) 0 var(--space-2) var(--space-4);
   padding-left: var(--space-2);
-  border-left: 1px solid var(--border-subtle);
+  border-left: var(--toc-rail-width) solid var(--toc-rail-color);
 }
 
 .tocLink,
 .tocSublink {
+  position: relative;
   display: block;
   font-family: var(--font-body);
   line-height: var(--lh-sm);
   color: var(--text-muted);
   text-decoration: none;
-  border-left: 2px solid transparent;
 }
 
 .tocLink {
   min-height: var(--target-sm);
   padding: var(--space-0h) var(--space-1);
+  padding-left: calc(var(--space-1) + var(--toc-active-rail-width));
   font-size: var(--text-sm);
 }
 
 .tocSublink {
   min-height: var(--target-sm);
-  padding: var(--space-0h) var(--space-1) var(--space-0h) var(--space-3);
+  padding: var(--space-0h) var(--space-1) var(--space-0h) calc(var(--space-3) + var(--toc-active-rail-width));
   font-size: var(--text-xs);
 }
 
@@ -258,11 +263,20 @@
   outline-offset: -1px;
 }
 
-/* Active position is a neutral cursor: weight + rule, never hue. */
+/* Active position is monochrome: weight + geometry, never hue. */
 .tocLinkActive {
   color: var(--text-body);
   font-weight: 600;
-  border-left-color: var(--border-emphasis);
+}
+
+.tocLinkActive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * var(--space-2) - var(--toc-rail-width) - ((var(--toc-active-rail-width) - var(--toc-rail-width)) / 2));
+  width: var(--toc-active-rail-width);
+  background: var(--toc-rail-color);
 }
 
 .tocSublink.tocLinkActive {

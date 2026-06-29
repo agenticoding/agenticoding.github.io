@@ -69,14 +69,22 @@ function useDisclosureState(show: boolean, activePath: string) {
   return {render, closing};
 }
 
-function TocDisclosure({show, activePath}: {show: boolean; activePath: string}) {
+function TocDisclosure({
+  show,
+  activePath,
+  onNavigate,
+}: {
+  show: boolean;
+  activePath: string;
+  onNavigate?: () => void;
+}) {
   const {render, closing} = useDisclosureState(show, activePath);
   if (!render) return null;
 
   return (
     <div className={clsx(styles.tocDisclosure, closing ? styles.tocDisclosureExit : styles.tocDisclosureEnter)}>
       <div className={styles.tocDisclosureInner}>
-        <SidebarTOC />
+        <SidebarTOC onNavigate={onNavigate} />
       </div>
     </div>
   );
@@ -87,7 +95,7 @@ export default function DocSidebarItemLink({
   onItemClick,
   activePath,
   level,
-  index,
+  index: _index,
   ...props
 }: Props): ReactNode {
   const {href, label, className, autoAddBaseUrl, customProps} = item;
@@ -95,6 +103,7 @@ export default function DocSidebarItemLink({
   const isActive = isActiveSidebarItem(item, activePath);
   const isInternalLink = isInternalUrl(href);
   const showInlineTOC = isActive && isInternalLink;
+  const handleNavigate = onItemClick ? () => onItemClick(item) : undefined;
   return (
     <li
       className={clsx(
@@ -117,13 +126,13 @@ export default function DocSidebarItemLink({
         aria-current={isActive ? 'page' : undefined}
         to={href}
         {...(isInternalLink && {
-          onClick: onItemClick ? () => onItemClick(item) : undefined,
+          onClick: handleNavigate,
         })}
         {...props}>
         <LinkLabel label={label} sectionNumber={sectionNumber} />
         {!isInternalLink && <IconExternalLink />}
       </Link>
-      <TocDisclosure show={showInlineTOC} activePath={activePath} />
+      <TocDisclosure show={showInlineTOC} activePath={activePath} onNavigate={handleNavigate} />
     </li>
   );
 }

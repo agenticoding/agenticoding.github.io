@@ -5,7 +5,6 @@ import { useDoc } from '@docusaurus/plugin-content-docs/client';
 import Heading from '@theme/Heading';
 import MDXContent from '@theme/MDXContent';
 import type { Props } from '@theme/DocItem/Content';
-import LessonAudioPlayer from '@site/src/components/LessonAudioPlayer';
 import SiteHero from '@site/src/components/SiteHero';
 
 /**
@@ -40,7 +39,6 @@ export default function DocItemContent({ children }: Props): ReactNode {
       {hasHeader && (
         <header>
           {isIntroPage ? <SiteHero /> : <Heading as="h1">{syntheticTitle}</Heading>}
-          {!isIntroPage && <LessonAudioPlayer />}
         </header>
       )}
       <MDXContent>{children}</MDXContent>
