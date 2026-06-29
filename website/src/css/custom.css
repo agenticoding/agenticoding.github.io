@@ -7,8 +7,7 @@
 /* Self-hosted font faces */
 @import './fonts.css';
 
-/* Import unified presentation system */
-@import '../styles/presentation-system.css';
+
 
 /* Motion tokens: durations, easings, stagger, reveal offsets */
 @import './motion-tokens.css';
@@ -780,39 +779,18 @@ article h1 {
 }
 
 /* ========================================================================
-   NAVBAR — Wide-shell desktop, compact-shell mobile
+   NAVBAR — Docusaurus shell-aligned responsive behavior
    ========================================================================
-   The doc shell becomes desktop only when the viewport is both wide enough
-   and wide-shaped enough. 4:3 tablets stay on the compact shell even when
-   their width crosses Infima's desktop breakpoint.
+   Docusaurus owns the shell breakpoint: <=996px mobile, >=997px desktop.
+   Desktop navigation lives in the docs sidebar; mobile keeps the top navbar.
    ======================================================================== */
 
-.doc-shell-desktop {
-  display: none;
-}
-
-.doc-shell-mobile {
-  display: block;
-}
-
-/* Hide navbar only on truly wide screens — sidebar-first layout */
-@media (min-width: 997px) and (min-aspect-ratio: 7/5) {
-  .doc-shell-desktop {
-    display: block;
-  }
-
-  .doc-shell-mobile {
-    display: none;
-  }
-
+@media (min-width: 997px) {
   .navbar {
     display: none;
   }
 
-  :root {
-    --ifm-navbar-height: 0px;
-  }
-
+  :root,
   [data-theme='dark'] {
     --ifm-navbar-height: 0px;
   }
@@ -820,21 +798,6 @@ article h1 {
   .theme-doc-sidebar-container {
     border-right: none;
     border-bottom: none;
-  }
-}
-
-/* Compact shell on wide but tall-ish screens still needs the hamburger path */
-@media (min-width: 997px) and (max-aspect-ratio: 1399/1000) {
-  .navbar__toggle {
-    display: inherit;
-  }
-
-  .navbar__item {
-    display: none;
-  }
-
-  .navbar__search-input {
-    width: 9rem;
   }
 }
 
@@ -965,7 +928,7 @@ article h1 {
   display: none;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 996px) {
   .navbar {
     --ifm-navbar-padding-horizontal: var(--space-2);
   }
@@ -1026,7 +989,11 @@ article h1 {
     color: transparent;
   }
 
-  /* Mobile takeover is instant: animated width changes collide with the brand. */
+  .navbar__search [class*='searchHint'] {
+    display: none;
+  }
+
+  /* Compact-shell takeover is instant: animated width changes collide with the brand. */
   .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar__brand {
     display: none;
   }
@@ -1039,7 +1006,8 @@ article h1 {
     flex: 1 1 auto;
   }
 
-  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar-github-item {
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar-github-item,
+  .navbar:has(> .navbar__inner .navbar__search-input:focus) .color-mode-toggle {
     display: none;
   }
 
@@ -1205,7 +1173,7 @@ kbd,
   font-family: var(--font-mono);
   font-feature-settings: var(--font-mono-features);
   font-size: var(--text-sm);
-  line-height: var(--lh-md);
+  line-height: var(--lh-sm);
   color: var(--text-body);
   background: var(--surface-raised);
   border: 1px solid var(--border-default);
@@ -1216,6 +1184,32 @@ kbd,
 
 .prompt-example p {
   margin: 0;
+}
+
+.prompt-example .prompt-md-section + .prompt-md-section {
+  margin-top: var(--space-2);
+}
+
+.prompt-example .prompt-md-heading,
+.prompt-example .prompt-md-line {
+  display: block;
+}
+
+.prompt-example .prompt-md-heading {
+  margin-bottom: var(--space-1);
+  color: var(--text-body);
+}
+
+.prompt-example .prompt-md-heading-token,
+.prompt-example .prompt-line-number,
+.prompt-example .prompt-md-heading .md-punct,
+.prompt-example .prompt-md-heading-token .md-punct {
+  color: var(--text-body);
+}
+
+.prompt-example .prompt-md-heading .md-punct,
+.prompt-example .prompt-md-heading-token .md-punct {
+  animation: none;
 }
 
 .prompt-example code {
@@ -1240,6 +1234,60 @@ kbd,
 
 .prompt-example .md-punct {
   color: var(--visual-cyan);
+  animation: promptPunctuationCadence 5200ms ease-in-out infinite;
+}
+
+.prompt-example code {
+  --prompt-signal: var(--visual-cyan);
+  --prompt-signal-bg: var(--visual-bg-cyan);
+  --prompt-signal-rest: var(--text-body);
+  color: var(--prompt-signal-rest);
+  background-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.14em;
+  text-decoration-color: transparent;
+  animation: promptSemanticEmphasis 5600ms ease-in-out infinite;
+}
+
+@keyframes promptPunctuationCadence {
+  0%,
+  100% {
+    opacity: 0.65;
+    color: var(--visual-cyan);
+  }
+  12%,
+  46% {
+    opacity: 1;
+    color: var(--visual-indigo);
+  }
+  62% {
+    opacity: 0.65;
+    color: var(--visual-cyan);
+  }
+}
+
+@keyframes promptSemanticEmphasis {
+  0%,
+  100% {
+    color: var(--prompt-signal-rest);
+    background-color: transparent;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+  }
+  12%,
+  52% {
+    color: var(--prompt-signal-rest);
+    background-color: var(--prompt-signal-bg);
+    text-decoration-color: var(--prompt-signal);
+    text-decoration-thickness: 2px;
+  }
+  72% {
+    color: var(--prompt-signal-rest);
+    background-color: transparent;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+  }
 }
 
 /* ========================================================================
@@ -1909,60 +1957,6 @@ div[class*='announcementBar'] {
 .idle-air-stripe {
   animation: idleAirStripe 2000ms ease-in-out infinite;
 }
-@keyframes idleCrossShake {
-  /* Wag (translateX + rotateZ) occupies the first ~13% of the cycle; rest is idle. */
-  0% {
-    transform: translateX(0) rotateZ(0deg);
-  }
-  3% {
-    transform: translateX(-4px) rotateZ(-5deg);
-  }
-  7% {
-    transform: translateX(4px) rotateZ(5deg);
-  }
-  10% {
-    transform: translateX(-3px) rotateZ(-3deg);
-  }
-  13% {
-    transform: translateX(0) rotateZ(0deg);
-  }
-  100% {
-    transform: translateX(0) rotateZ(0deg);
-  }
-}
-.idle-cross-shake {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  animation: idleCrossShake 5000ms ease-in-out infinite;
-}
-
-@keyframes idleCheckBreathe {
-  /* Heartbeat double-pulse: large beat → small beat → long rest. */
-  0% {
-    transform: scale(1);
-  }
-  8% {
-    transform: scale(1.12);
-  }
-  16% {
-    transform: scale(1);
-  }
-  22% {
-    transform: scale(1.06);
-  }
-  30% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-.idle-check-breathe {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  animation: idleCheckBreathe 3200ms ease-in-out infinite;
-}
-
 @keyframes idleBabysitRock {
   from {
     transform: rotate(-6deg);
@@ -2026,9 +2020,14 @@ html:not([data-theme='dark']) .wordmark-dark {
   .idle-bullseye-ring,
   .idle-air-stripe,
   .idle-babysit-rock,
-  .idle-cross-shake,
-  .idle-check-breathe,
-  .idle-landing-glow {
+  .idle-landing-glow,
+  .prompt-example code,
+  .prompt-example .md-punct {
     animation: none !important;
+  }
+
+  .prompt-example code {
+    background-color: transparent;
+    text-decoration-color: transparent;
   }
 }
