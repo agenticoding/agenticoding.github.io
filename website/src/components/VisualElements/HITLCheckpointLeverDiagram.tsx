@@ -1,6 +1,5 @@
 import React, { useId } from 'react';
 
-import type { PresentationAwareProps } from '@site/src/components/PresentationMode/types';
 import { OperatorNode } from './ActorNodes';
 import { Arrow, G, Marker, Step, TextLine, svgStyle } from './ReliabilityLeverPrimitives';
 
@@ -23,12 +22,12 @@ function Checkpoint() {
   );
 }
 
-export default function HITLCheckpointLeverDiagram({ compact = false }: PresentationAwareProps = {}) {
+export default function HITLCheckpointLeverDiagram() {
   const uid = useId().replace(/:/g, '');
   const errorMarker = `hitl-error-${uid}`;
   const successMarker = `hitl-success-${uid}`;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" role="img" aria-label="Human in the loop checkpoint diagram: a flawed plan would contaminate execution through a red propagation path, but a human checkpoint blocks it and creates a green reset path into validated execution, reducing failure stickiness S." xmlns="http://www.w3.org/2000/svg" style={svgStyle(compact, W)}>
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" role="img" aria-label="Human in the loop checkpoint diagram: a flawed plan would contaminate execution through a red propagation path, but a human checkpoint blocks it and creates a green reset path into validated execution, reducing failure stickiness S." xmlns="http://www.w3.org/2000/svg" style={svgStyle(W)}>
       <defs><Marker id={errorMarker} tone="var(--visual-error)" /><Marker id={successMarker} tone="var(--visual-success)" /></defs>
       <rect x={G} y={G} width={W - G * 2} height={H - G * 2} rx={0} fill="var(--surface-page)" stroke="var(--border-subtle)" />
       <TextLine x={56} y={48} tone="var(--text-heading)" size="var(--text-lg)" weight={700} family="var(--font-display)">HITL checkpoints lower stickiness S</TextLine>

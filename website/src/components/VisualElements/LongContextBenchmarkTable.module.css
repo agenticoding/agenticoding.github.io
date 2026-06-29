@@ -1,4 +1,5 @@
 .container {
+  container-type: inline-size;
   margin: var(--space-5) 0;
   overflow-x: auto;
 }
@@ -237,37 +238,6 @@
   text-decoration-thickness: 2px;
 }
 
-.compact {
-  margin: 0 auto;
-  max-width: 95%;
-}
-
-.compact .caption,
-.compact .detailBlock h4,
-.compact .conceptLinks {
-  display: none;
-}
-
-.compact .table {
-  font-size: var(--text-xs);
-}
-
-.compact .table th,
-.compact .table td {
-  padding: var(--space-1);
-}
-
-.compact .detailPanel {
-  grid-template-columns: 1fr;
-  gap: var(--space-1);
-  padding: var(--space-2);
-}
-
-.compact .detailBlock {
-  grid-column: 1;
-  padding: var(--space-1);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .chevron,
   .detailFrame {
@@ -275,7 +245,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 48rem) {
   .container {
     overflow-x: visible;
   }

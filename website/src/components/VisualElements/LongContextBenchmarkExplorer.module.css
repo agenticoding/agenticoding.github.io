@@ -1,4 +1,5 @@
 .container {
+  container-type: inline-size;
   margin: var(--space-5) 0;
   padding: 0;
 }
@@ -488,10 +489,6 @@
   gap: var(--space-1);
 }
 
-.compactMetrics {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .metric {
   display: grid;
   gap: var(--space-0h);
@@ -817,18 +814,6 @@
   text-underline-offset: 0.18em;
 }
 
-.compact {
-  max-width: 95%;
-  margin: 0 auto;
-  padding: var(--space-2);
-}
-
-.compact .header p:not(.eyebrow),
-.compact .chartFigure figcaption,
-.compact .textFallback {
-  display: none;
-}
-
 @media (max-width: 980px) {
   .summaryRow {
     grid-template-columns: 1fr 1fr;
@@ -845,7 +830,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 48rem) {
   .container {
     padding: var(--space-2);
   }
@@ -866,8 +851,7 @@
     min-width: 0;
   }
 
-  .metricStrip,
-  .compactMetrics {
+  .metricStrip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

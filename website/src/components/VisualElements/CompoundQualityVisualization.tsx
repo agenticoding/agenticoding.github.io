@@ -1,5 +1,4 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './CompoundQualityVisualization.module.css';
 
 interface IterationPoint {
@@ -10,12 +9,9 @@ interface IterationPoint {
 }
 
 export default function CompoundQualityVisualization({
-  compact = false,
   homepageMode = false,
-}: PresentationAwareProps & { homepageMode?: boolean } = {}) {
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
+}: { homepageMode?: boolean } = {}) {
+  const containerClassName = styles.container;
 
   // SVG dimensions
   const width = 800;
@@ -91,15 +87,6 @@ export default function CompoundQualityVisualization({
       role="region"
       aria-label="Compound quality visualization showing positive and negative feedback loops"
     >
-      {!compact && (
-        <div className={styles.header}>
-          <h4 className={styles.title}>Quality Compounds Exponentially</h4>
-          <p className={styles.subtitle}>
-            Each iteration amplifies the dominant pattern—good code generates
-            more good code, bad code generates more bad code
-          </p>
-        </div>
-      )}
 
       <div className={styles.comparisonWrapper}>
         <svg
@@ -408,17 +395,6 @@ export default function CompoundQualityVisualization({
         </div>
       </div>
 
-      {!compact && (
-        <div className={styles.circuitBreakerBox}>
-          <strong>Your Role as Circuit Breaker:</strong> Code review (
-          <a href="/practical-techniques/lesson-10-reviewing-code">
-            Lesson 10
-          </a>
-          ) is where you intervene. Accepting bad patterns lets them enter the
-          compounding cycle. Rejecting them breaks the negative feedback loop
-          before it accelerates.
-        </div>
-      )}
     </div>
   );
 }

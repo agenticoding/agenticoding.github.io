@@ -5,11 +5,6 @@
   max-width: 720px;
 }
 
-.container.compact {
-  margin: 0 auto;
-  max-width: 95%;
-}
-
 .diagram {
   display: block;
   width: 100%;
@@ -37,7 +32,8 @@
 }
 
 .card rect,
-.exitTile rect {
+.exitTile rect,
+.cardDivider {
   vector-effect: non-scaling-stroke;
 }
 
@@ -67,19 +63,26 @@
 
 .stepNumber {
   font-family: var(--font-mono-keyword);
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .cardTitle {
   font-family: var(--font-mono-spec);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cardDivider {
+  opacity: 0.45;
+  stroke-width: 1;
 }
 
 .cardDetail {
   font-family: var(--font-mono-keyword);
-  font-size: 9px;
+  font-size: 9.5px;
+  letter-spacing: 0.01em;
 }
 
 @keyframes idleHarnessBeat {

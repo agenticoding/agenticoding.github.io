@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import type { ReactNode } from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './LongContextBenchmarkTable.module.css';
 
 export type ConceptLink = { label: string; href: string };
@@ -164,9 +163,9 @@ function DetailBlock({ title, children }: { title: string; children: ReactNode }
   return <div className={styles.detailBlock}><h4>{title}</h4><p>{children}</p></div>;
 }
 
-export default function LongContextBenchmarkTable({ compact = false }: PresentationAwareProps = {}) {
+export default function LongContextBenchmarkTable() {
   const [openRows, setOpenRows] = useState<Set<string>>(new Set());
-  const containerClassName = compact ? `${styles.container} ${styles.compact}` : styles.container;
+  const containerClassName = styles.container;
   const toggleRow = (id: string) => setOpenRows((current) => toggleSet(current, id));
 
   return <div className={containerClassName}><table className={styles.table}><caption className={styles.caption}>Long-context retrieval benchmarks. Expand a row to translate the curve into product-selection guidance.</caption><thead><tr><th scope="col">Model</th><th scope="col">Window</th><th scope="col">Benchmark</th><th scope="col">Moderate context</th><th scope="col">Long context</th><th scope="col">Point drop</th><th scope="col">Selection signal</th></tr></thead><tbody>{benchmarkRows.map((row) => <BenchmarkTableRows key={row.id} row={row} open={openRows.has(row.id)} toggleRow={toggleRow} />)}</tbody></table></div>;

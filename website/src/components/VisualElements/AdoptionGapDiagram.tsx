@@ -1,11 +1,7 @@
 import React from 'react';
 
-interface Props {
-  compact?: boolean;
-}
-
-export default function AdoptionGapDiagram({ compact = false }: Props) {
-  const viewBox = compact ? '0 0 560 200' : '0 0 560 210';
+export default function AdoptionGapDiagram() {
+  const viewBox = '0 0 560 210';
 
   return (
     <svg

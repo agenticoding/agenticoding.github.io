@@ -1,9 +1,9 @@
 import React from 'react';
 import clsx from 'clsx';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
 import { useActs } from '../../hooks/useActs';
 import { useMounted } from '../../hooks/useMounted';
+import { DiagramTile } from './DiagramTile';
 import styles from './HarnessLoopDiagram.module.css';
 
 const ACTS = [
@@ -56,18 +56,18 @@ const MOBILE_STEPS: readonly Step[] = [
 ];
 
 function StepBox({ label, sublabel, x, y, tone, visible, width = BOX.width, height = BOX.height }: BoxProps) {
-  const color = COLORS[tone];
-
   return (
-    <g className={clsx(styles.box, visible && styles.visible)}>
-      <rect x={x} y={y} width={width} height={height} rx={0} fill={color.fill} stroke={color.stroke} strokeWidth="1" />
-      <text x={x + width / 2} y={y + height / 2 - 4} textAnchor="middle" dominantBaseline="middle" className={styles.boxText} fill={color.text}>
-        {label}
-      </text>
-      <text x={x + width / 2} y={y + height / 2 + 12} textAnchor="middle" dominantBaseline="middle" className={styles.smallText} fill="var(--text-muted)">
-        {sublabel}
-      </text>
-    </g>
+    <DiagramTile
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      tone={tone}
+      title={label}
+      detail={sublabel}
+      variant="compact"
+      className={clsx(styles.box, visible && styles.visible)}
+    />
   );
 }
 
@@ -131,14 +131,14 @@ function MobileDiagram({ visible }: { visible: Visibility }) {
   );
 }
 
-export default function HarnessLoopDiagram({ compact = false }: PresentationAwareProps = {}) {
+export default function HarnessLoopDiagram() {
   const phase = useAnimationPhase();
   const { wasReached } = useActs(ACTS, phase);
   const mounted = useMounted();
   const visible = Object.fromEntries(ACTS.map(({ id }) => [id, mounted && wasReached(id)])) as Visibility;
 
   return (
-    <div className={clsx(styles.container, compact && styles.compact)} role="img" aria-label={ARIA_LABEL}>
+    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
       <DesktopDiagram visible={visible} />
       <MobileDiagram visible={visible} />
     </div>

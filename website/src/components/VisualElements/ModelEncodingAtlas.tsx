@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import styles from './ModelEncodingAtlas.module.css';
 
-const MAX_ACTIVE_PULSES = 14;
-const MOBILE_ACTIVE_PULSES = 7;
+const MAX_ACTIVE_PULSES = 10;
+const MOBILE_ACTIVE_PULSES = 5;
 const NODE_SIZE = 30;
 const NODE_PORT_OFFSET = NODE_SIZE / 2;
+const MODEL_TAB_ICON_SIZE = 18;
 
 // SVG mirrors DESIGN_SYSTEM.md spacing so geometry changes stay token-bound.
 const SPACE_1 = 8;
@@ -28,7 +28,6 @@ const FIELD_BOUNDARY_RUN_LIMIT = 9;
 const FIELD_PADDING = SPACE_3;
 const FIELD_CONTENT_FIT = 0.98;
 const FIELD_LABEL_CLEARANCE = GRID;
-const ROUTE_BEND = SPACE_4;
 
 type FieldId = 'knowledge' | 'action';
 type EdgeKind = FieldId | 'cross';
@@ -119,8 +118,9 @@ type PulseStyle = React.CSSProperties & {
 
 const STORY_COPY = {
   label:
-    'Venn-style map of world knowledge and action patterns interconnected inside one LLM parameter mesh',
-  eyebrow: 'encoded statistical structure',
+    'Map of knowledge and action patterns interwoven inside one LLM model parameter mesh',
+  modelTitle: 'inside the model',
+  modelSubtitle: 'one encoded parameter mesh',
   desktopCaption:
     'knowledge and actions are intertwined across one parameter mesh',
   mobileCaption: 'one interconnected model mesh',
@@ -227,7 +227,7 @@ const EDGE_INFO: Record<EdgeId, Omit<Edge, 'd' | 'curve'>> = {
 
 const VIEWPORT_LAYOUTS = {
   desktop: {
-    viewBox: { x: 0, y: 0, width: 640, height: 360 },
+    viewBox: { x: 0, y: 0, width: 640, height: 376 },
     surfaceInset: SPACE_2,
     frame: { x: SPACE_4, y: SPACE_10 - GRID, width: 576, height: 244 },
     eyebrow: { x: SPACE_5, y: SPACE_4 },
@@ -269,57 +269,57 @@ type Route = {
 };
 
 const DESKTOP_NODE_SLOTS: Record<NodeId, Point> = {
-  facts: { x: -0.62, y: -0.22 },
-  docs: { x: 0, y: -0.48 },
-  formats: { x: -0.35, y: 0.38 },
-  code: { x: 0.38, y: 0.34 },
-  answer: { x: -0.18, y: -0.46 },
-  ask: { x: -0.12, y: 0.38 },
-  repair: { x: 0.58, y: -0.18 },
-  validate: { x: 0.42, y: 0.38 },
+  facts: { x: -0.62, y: -0.2 },
+  docs: { x: -0.14, y: -0.6 },
+  formats: { x: -0.42, y: 0.4 },
+  code: { x: 0.18, y: 0.34 },
+  answer: { x: -0.12, y: -0.55 },
+  ask: { x: -0.06, y: 0.4 },
+  repair: { x: 0.54, y: -0.18 },
+  validate: { x: 0.42, y: 0.4 },
 };
 
 const MOBILE_NODE_SLOTS: Record<NodeId, Point> = {
-  facts: { x: -0.42, y: -0.56 },
-  docs: { x: 0.62, y: -0.45 },
-  formats: { x: -0.5, y: 0.16 },
-  code: { x: -0.06, y: 0.32 },
-  answer: { x: 0.2, y: -0.42 },
-  ask: { x: -0.66, y: 0.24 },
-  repair: { x: 0.34, y: 0.28 },
-  validate: { x: 0, y: 0.44 },
+  facts: { x: -0.5, y: -0.56 },
+  docs: { x: 0.42, y: -0.42 },
+  formats: { x: -0.52, y: 0.35 },
+  code: { x: 0.08, y: 0.42 },
+  answer: { x: 0.18, y: -0.5 },
+  ask: { x: -0.18, y: 0.2 },
+  repair: { x: 0.6, y: -0.32 },
+  validate: { x: 0.48, y: 0.38 },
 };
 
 const ROUTES: Record<Viewport, Record<EdgeId, Route>> = {
   desktop: {
-    'facts-docs': route('right', 'left', ROUTE_BEND, ROUTE_BEND, -SPACE_1),
-    'facts-formats': route('bottom', 'top', SPACE_3, SPACE_3, -SPACE_1),
-    'docs-code': route('bottom', 'top', SPACE_5, SPACE_5, -SPACE_2),
-    'formats-code': route('right', 'left', SPACE_5, SPACE_5, SPACE_3),
-    'answer-repair': route('right', 'top', SPACE_5, SPACE_5, -SPACE_3),
-    'answer-ask': route('bottom', 'top', SPACE_5, SPACE_5, SPACE_1),
-    'ask-validate': route('right', 'left', SPACE_5, SPACE_5, SPACE_6),
-    'repair-validate': route('bottom', 'top', SPACE_3, SPACE_3, SPACE_1),
-    'docs-answer': route('right', 'left', SPACE_5, SPACE_5, -SPACE_2),
-    'formats-ask': route('bottom', 'left', SPACE_7, SPACE_7, SPACE_5),
-    'code-repair': route('right', 'left', SPACE_8, SPACE_8, SPACE_4),
-    'code-validate': route('bottom', 'bottom', SPACE_7, SPACE_7, -SPACE_6),
-    'facts-validate': route('left', 'bottom', SPACE_10, SPACE_6, -SPACE_8),
+    'facts-docs': route('right', 'left', SPACE_4, SPACE_4, -SPACE_2),
+    'facts-formats': route('bottom', 'top', SPACE_3, SPACE_3, 0),
+    'docs-code': route('bottom', 'top', SPACE_5, SPACE_5, 0),
+    'formats-code': route('right', 'left', SPACE_4, SPACE_4, SPACE_2),
+    'answer-repair': route('right', 'left', SPACE_6, SPACE_6, -SPACE_4),
+    'answer-ask': route('bottom', 'top', SPACE_4, SPACE_4, 0),
+    'ask-validate': route('right', 'left', SPACE_4, SPACE_4, SPACE_3),
+    'repair-validate': route('bottom', 'top', SPACE_3, SPACE_3, 0),
+    'docs-answer': route('right', 'left', SPACE_4, SPACE_4, -SPACE_2),
+    'formats-ask': route('right', 'left', SPACE_4, SPACE_4, SPACE_5),
+    'code-repair': route('right', 'left', SPACE_7, SPACE_7, -SPACE_4),
+    'code-validate': route('right', 'left', SPACE_4, SPACE_4, SPACE_3),
+    'facts-validate': route('bottom', 'bottom', SPACE_10, SPACE_10, 0),
   },
   mobile: {
     'facts-docs': route('right', 'left', SPACE_5, SPACE_5, -SPACE_3),
-    'facts-formats': route('bottom', 'top', SPACE_6, SPACE_6, -SPACE_2),
-    'docs-code': route('bottom', 'top', SPACE_10, SPACE_10, SPACE_3),
-    'formats-code': route('right', 'left', SPACE_3, SPACE_3, SPACE_2),
-    'answer-repair': route('right', 'right', SPACE_8, SPACE_6, -SPACE_10),
-    'answer-ask': route('left', 'top', SPACE_10, SPACE_5, SPACE_4),
-    'ask-validate': route('right', 'left', SPACE_6, SPACE_6, SPACE_3),
-    'repair-validate': route('bottom', 'right', SPACE_4, SPACE_4, SPACE_1),
-    'docs-answer': route('bottom', 'right', SPACE_7, SPACE_5, -SPACE_4),
-    'formats-ask': route('bottom', 'top', SPACE_8, SPACE_8, SPACE_1),
-    'code-repair': route('right', 'top', SPACE_7, SPACE_5, -SPACE_3),
-    'code-validate': route('bottom', 'top', SPACE_7, SPACE_6, SPACE_5),
-    'facts-validate': route('left', 'left', SPACE_10, SPACE_10, -SPACE_8),
+    'facts-formats': route('left', 'left', SPACE_5, SPACE_5, -SPACE_2),
+    'docs-code': route('bottom', 'top', SPACE_5, SPACE_5, SPACE_1),
+    'formats-code': route('right', 'left', SPACE_3, SPACE_3, -SPACE_1),
+    'answer-repair': route('right', 'left', SPACE_3, SPACE_3, 0),
+    'answer-ask': route('bottom', 'top', SPACE_4, SPACE_4, -SPACE_1),
+    'ask-validate': route('right', 'left', SPACE_4, SPACE_4, -SPACE_1),
+    'repair-validate': route('right', 'right', SPACE_4, SPACE_4, -SPACE_3),
+    'docs-answer': route('right', 'left', SPACE_5, SPACE_5, -SPACE_2),
+    'formats-ask': route('bottom', 'top', SPACE_4, SPACE_4, 0),
+    'code-repair': route('right', 'top', SPACE_5, SPACE_5, -SPACE_2),
+    'code-validate': route('bottom', 'left', SPACE_2, SPACE_4, 0),
+    'facts-validate': route('left', 'bottom', SPACE_8, SPACE_8, -SPACE_6),
   },
 };
 
@@ -366,7 +366,7 @@ function caption(layout: (typeof VIEWPORT_LAYOUTS)[Viewport]) {
       ? STORY_COPY.desktopCaption
       : STORY_COPY.mobileCaption;
   const surface = insetBox(layout.viewBox, layout.surfaceInset);
-  return { x: layout.viewBox.width / 2, y: bottom(surface) - SPACE_2, copy };
+  return { x: layout.viewBox.width / 2, y: bottom(surface) - SPACE_3, copy };
 }
 
 function insetBox(box: LayoutBox, inset: number): LayoutBox {
@@ -872,13 +872,16 @@ const INTENTIONAL_EDGE_CROSSINGS: Record<Viewport, Set<string>> = {
       'docs-code/facts-validate',
       'facts-formats/facts-validate',
       'formats-code/facts-validate',
+      'formats-code/formats-ask',
       'answer-ask/code-repair',
       'answer-ask/facts-validate',
       'ask-validate/code-repair',
       'ask-validate/code-validate',
       'ask-validate/facts-validate',
+      'answer-repair/code-repair',
       'formats-ask/code-repair',
       'formats-ask/code-validate',
+      'code-repair/code-validate',
       'formats-ask/facts-validate',
       'code-repair/facts-validate',
       'code-validate/facts-validate',
@@ -889,10 +892,21 @@ const INTENTIONAL_EDGE_CROSSINGS: Record<Viewport, Set<string>> = {
       'docs-code/docs-answer',
       'docs-code/answer-ask',
       'formats-code/answer-ask',
+      'formats-code/code-validate',
+      'formats-ask/code-validate',
+      'docs-code/facts-validate',
+      'formats-code/formats-ask',
+      'code-repair/facts-validate',
+      'facts-formats/facts-validate',
+      'formats-code/facts-validate',
       'answer-repair/code-repair',
       'answer-repair/docs-answer',
+      'docs-answer/code-repair',
       'answer-ask/code-repair',
       'answer-ask/code-validate',
+      'answer-repair/code-validate',
+      'ask-validate/code-validate',
+      'code-repair/code-validate',
       'answer-ask/facts-validate',
       'answer-ask/formats-ask',
       'ask-validate/facts-validate',
@@ -906,9 +920,16 @@ const INTENTIONAL_EDGE_FIELD_PROXIMITIES: Record<Viewport, Set<string>> = {
   desktop: new Set([
     'docs-code/action',
     'formats-code/action',
+    'ask-validate/knowledge',
     'answer-repair/knowledge',
   ]),
-  mobile: new Set(['answer-ask/knowledge']),
+  mobile: new Set([
+    'docs-code/action',
+    'formats-code/action',
+    'ask-validate/knowledge',
+    'answer-repair/knowledge',
+    'answer-ask/knowledge',
+  ]),
 };
 
 const ENDPOINT_LABEL_PROXIMITIES: Record<Viewport, Set<string>> = {
@@ -927,6 +948,8 @@ const ENDPOINT_LABEL_PROXIMITIES: Record<Viewport, Set<string>> = {
     'facts-formats/facts',
     'docs-code/docs',
     'formats-code/formats',
+    'ask-validate/ask',
+    'code-validate/formats',
     'docs-answer/docs',
     'answer-repair/answer',
     'answer-ask/answer',
@@ -949,6 +972,7 @@ const INTENTIONAL_EDGE_NODE_PROXIMITIES = new Set([
   'code-validate/repair',
   'facts-validate/formats',
   'answer-ask/formats',
+  'code-validate/formats',
   'code-repair/answer',
 ]);
 
@@ -1048,10 +1072,6 @@ function makePulse(id: string, edgeId: EdgeId, phase: PhaseId): ActivePulse {
   };
 }
 
-function fieldClassName(id: FieldId) {
-  return id === 'knowledge' ? styles.knowledgeField : styles.actionField;
-}
-
 function edgeClassName(edge: Edge) {
   return [
     styles.meshEdge,
@@ -1060,35 +1080,24 @@ function edgeClassName(edge: Edge) {
   ].join(' ');
 }
 
-function FieldHalo({ field }: { field: Field }) {
-  return (
-    <g>
-      <ellipse
-        cx={field.center.x}
-        cy={field.center.y}
-        rx={field.radius.x}
-        ry={field.radius.y}
-        className={`${styles.fieldPlate} ${fieldClassName(field.id)}`}
-      />
-      <ellipse
-        cx={field.center.x}
-        cy={field.center.y}
-        rx={field.radius.x}
-        ry={field.radius.y}
-        className={`${styles.fieldBoundary} ${fieldClassName(field.id)}`}
-      />
-      <FieldLabel field={field} />
-    </g>
-  );
+function FieldHalo({ field, viewport }: { field: Field; viewport: Viewport }) {
+  return <FieldLabel field={field} viewport={viewport} />;
 }
 
-function FieldLabel({ field }: { field: Field }) {
+function FieldLabel({
+  field,
+  viewport,
+}: {
+  field: Field;
+  viewport: Viewport;
+}) {
+  const label = viewport === 'mobile' ? mobileFieldLabelPoint(field) : field;
   const color =
     field.id === 'knowledge' ? 'var(--visual-indigo)' : 'var(--visual-magenta)';
   return (
     <>
       <text
-        {...textProps(field.label, field.textAnchor)}
+        {...textProps(label.label, label.textAnchor)}
         fontSize="12"
         fontWeight="600"
         fill={color}
@@ -1097,8 +1106,8 @@ function FieldLabel({ field }: { field: Field }) {
       </text>
       <text
         {...textProps(
-          { x: field.label.x, y: field.subtitleY },
-          field.textAnchor
+          { x: label.label.x, y: label.subtitleY },
+          label.textAnchor
         )}
         fontSize="10"
         fill="var(--text-muted)"
@@ -1107,6 +1116,19 @@ function FieldLabel({ field }: { field: Field }) {
       </text>
     </>
   );
+}
+
+function mobileFieldLabelPoint(field: Field) {
+  const x = snap(field.center.x);
+  const y =
+    field.id === 'knowledge'
+      ? snap(field.center.y - field.radius.y - SPACE_2)
+      : snap(field.center.y + field.radius.y * 0.86);
+  return {
+    label: { x, y },
+    subtitleY: snap(y + SPACE_1 + GRID),
+    textAnchor: 'middle' as const,
+  };
 }
 
 function textProps(point: Point, textAnchor: Field['textAnchor'] = 'start') {
@@ -1196,7 +1218,7 @@ function FieldMeshLayer({
   return (
     <>
       {spec.fields.map((field) => (
-        <FieldHalo key={field.id} field={field} />
+        <FieldHalo key={field.id} field={field} viewport={viewport} />
       ))}
       {spec.edges.map((edge) => (
         <MeshEdge key={edge.id} edge={edge} viewport={viewport} />
@@ -1247,6 +1269,56 @@ function layoutBox(layout: LayoutBox) {
   };
 }
 
+function ModelFrameLabel({
+  surface,
+  anchor,
+}: {
+  surface: LayoutBox;
+  anchor: Point;
+}) {
+  const tab = modelTab(surface);
+  return (
+    <g>
+      <rect {...layoutBox(tab)} className={styles.modelTab} />
+      <EmojiImage
+        asset={EMOJI.gear}
+        x={tab.x + SPACE_1}
+        y={tab.y + GRID}
+        size={MODEL_TAB_ICON_SIZE}
+      />
+      <text
+        x={tab.x + SPACE_1 + MODEL_TAB_ICON_SIZE + SPACE_1}
+        y={tab.y + SPACE_2}
+        fontFamily="var(--font-mono-spec)"
+        fontSize="11"
+        fontWeight="600"
+        fill="var(--text-heading)"
+      >
+        {STORY_COPY.modelTitle}
+      </text>
+      <text
+        x={boxCenter(surface).x}
+        y={anchor.y}
+        textAnchor="middle"
+        fontFamily="var(--font-mono-spec)"
+        fontSize="11"
+        fill="var(--text-muted)"
+      >
+        {STORY_COPY.modelSubtitle}
+      </text>
+    </g>
+  );
+}
+
+function modelTab(surface: LayoutBox) {
+  return {
+    x: surface.x + SPACE_3,
+    y: surface.y - SPACE_2 + GRID,
+    width: SPACE_10 * 2,
+    height: SPACE_3,
+  };
+}
+
 function AtlasSvg({
   spec,
   className,
@@ -1272,17 +1344,9 @@ function AtlasSvg({
         {...layoutBox(spec.surface)}
         fill="var(--surface-raised)"
         stroke="var(--border-default)"
-        strokeWidth="1"
+        strokeWidth="1.5"
       />
-      <text
-        x={spec.eyebrow.x}
-        y={spec.eyebrow.y}
-        fontFamily="var(--font-mono-spec)"
-        fontSize="11"
-        fill="var(--text-muted)"
-      >
-        {STORY_COPY.eyebrow}
-      </text>
+      <ModelFrameLabel surface={spec.surface} anchor={spec.eyebrow} />
       <FieldMeshLayer spec={spec} viewport={viewport} />
       <PulseLayer spec={spec} pulses={pulses} onDone={onDone} />
       <NodeLayer nodes={spec.nodes} viewport={viewport} />
@@ -1300,9 +1364,7 @@ function AtlasSvg({
   );
 }
 
-export default function ModelEncodingAtlas({
-  compact = false,
-}: PresentationAwareProps = {}) {
+export default function ModelEncodingAtlas() {
   const pulseIdRef = useRef(0);
   const phaseIndexRef = useRef(0);
   const [activePulses, setActivePulses] = useState<ActivePulse[]>([]);
@@ -1321,9 +1383,7 @@ export default function ModelEncodingAtlas({
     []
   );
 
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
+  const containerClassName = styles.container;
   return (
     <div className={containerClassName}>
       <AtlasSvg

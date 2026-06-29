@@ -1,5 +1,4 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './WorkflowCircle.module.css';
 
 interface Phase {
@@ -16,9 +15,7 @@ interface Connection {
   endY: number;
 }
 
-export default function WorkflowCircle({
-  compact = false,
-}: PresentationAwareProps = {}) {
+export default function WorkflowCircle() {
   const centerX = 250;
   const centerY = 250;
   const radius = 170;
@@ -97,7 +94,7 @@ export default function WorkflowCircle({
 
   return (
     <div
-      className={`${styles.container} ${compact ? styles.compact : ''}`}
+      className={styles.container}
       role="img"
       aria-label="Four-phase iterative workflow diagram showing Research, Plan, Execute, and Validate phases in a continuous cycle"
     >
@@ -186,12 +183,10 @@ export default function WorkflowCircle({
       </svg>
 
       {/* Text description for additional context */}
-      {!compact && (
-        <p className={styles.description}>
-          Each phase flows into the next in a continuous cycle. After
-          validation, iterate back to research as needed to refine and improve.
-        </p>
-      )}
+      <p className={styles.description}>
+        Each phase flows into the next in a continuous cycle. After
+        validation, iterate back to research as needed to refine and improve.
+      </p>
     </div>
   );
 }

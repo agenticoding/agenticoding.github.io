@@ -1,8 +1,7 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './ThreeContextWorkflow.module.css';
 
-interface ThreeContextWorkflowProps extends PresentationAwareProps {
+interface ThreeContextWorkflowProps {
   vertical?: boolean;
 }
 
@@ -121,7 +120,7 @@ function VerticalLayout() {
   );
 }
 
-function HorizontalLayout({ compact }: { compact: boolean }) {
+function HorizontalLayout() {
   const boxWidth = 550;
   const boxHeight = 280;
   const boxGap = 150;
@@ -242,16 +241,7 @@ function HorizontalLayout({ compact }: { compact: boolean }) {
             {context.label}
           </text>
 
-          {!compact && (
-            <text
-              x={context.x + boxWidth / 2}
-              y={centerY + 50}
-              className={styles.contextDescription}
-              textAnchor="middle"
-            >
-              {context.description}
-            </text>
-          )}
+
         </g>
       ))}
     </svg>
@@ -259,18 +249,17 @@ function HorizontalLayout({ compact }: { compact: boolean }) {
 }
 
 export default function ThreeContextWorkflow({
-  compact = false,
   vertical = false,
 }: ThreeContextWorkflowProps = {}) {
   return (
     <div
-      className={`${styles.container} ${compact ? styles.compact : ''} ${vertical ? styles.vertical : ''} three-context-workflow`}
+      className={`${styles.container} ${vertical ? styles.vertical : ''} three-context-workflow`}
       role="img"
       aria-label="Three-context workflow showing separated contexts for writing code, tests, and triage to prevent shared assumptions"
     >
-      {vertical ? <VerticalLayout /> : <HorizontalLayout compact={compact} />}
+      {vertical ? <VerticalLayout /> : <HorizontalLayout />}
 
-      {!compact && !vertical && (
+      {!vertical && (
         <p className={styles.description}>
           Each context operates independently with fresh state, preventing
           shared assumptions and bias between code, tests, and diagnostic

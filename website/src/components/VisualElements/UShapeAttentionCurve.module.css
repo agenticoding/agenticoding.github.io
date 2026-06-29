@@ -11,11 +11,6 @@
   border-radius: 0;
 }
 
-.container.compact {
-  margin: 0 auto;
-  padding: var(--space-1);
-}
-
 /* --- SVG ------------------------------------------------------------------ */
 
 .svg {

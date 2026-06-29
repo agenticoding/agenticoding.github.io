@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './AgentLoopDiagram.module.css';
 import shared from './diagram.module.css';
-import { EmojiImage } from './ActorNodes';
+import { DiagramNode } from './DiagramNode';
 import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
@@ -78,15 +78,7 @@ export default function AgentLoopDiagram() {
       style={{ display: 'block', maxWidth: '520px', margin: '0 auto' }}
     >
       {/* ── Perceive node — act 0 (threshold 0.00), visible on mount; no ghost needed ── */}
-      <g className={clsx(shared.node, shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.microscope} x={250} y={55} size={40} />
-      </g>
-      <text x={270} y={33}
-        fill="var(--visual-indigo)"
-        style={{ fontFamily: 'var(--font-mono-ai)' }}
-        fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, shared.labelIn)}
-      >perceive</text>
+      <DiagramNode x={250} y={55} emoji={EMOJI.microscope} label="perceive" tone="context" reached labelX={270} labelY={33} />
 
       {/* ── Arc 1: perceive → reason ──────────────────────────────────────── */}
       <path
@@ -106,15 +98,7 @@ export default function AgentLoopDiagram() {
       />
 
       {/* ── Reason node ───────────────────────────────────────────────────── */}
-      <g className={clsx(shared.node, reasonReached && shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.brain} x={355} y={131} size={40} />
-      </g>
-      <text x={414.56} y={138.03}
-        fill="var(--visual-violet)"
-        style={{ fontFamily: 'var(--font-mono-ai)' }}
-        fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, reasonReached && shared.labelIn)}
-      >reason</text>
+      <DiagramNode x={355} y={131} emoji={EMOJI.brain} label="reason" tone="model" reached={reasonReached} labelX={414.56} labelY={138.03} />
 
       {/* ── Arc 2: reason → act ───────────────────────────────────────────── */}
       <path
@@ -134,15 +118,7 @@ export default function AgentLoopDiagram() {
       />
 
       {/* ── Act node ──────────────────────────────────────────────────────── */}
-      <g className={clsx(shared.node, actReached && shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.act} x={315} y={254} size={40} />
-      </g>
-      <text x={359.34} y={307.97}
-        fill="var(--visual-cyan)"
-        style={{ fontFamily: 'var(--font-mono-ai)' }}
-        fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, actReached && shared.labelIn)}
-      >act</text>
+      <DiagramNode x={315} y={254} emoji={EMOJI.act} label="act" tone="system" reached={actReached} labelX={359.34} labelY={307.97} />
 
       {/* ── Arc 3: act → observe ─────────────────────────────────────────── */}
       <path
@@ -162,15 +138,7 @@ export default function AgentLoopDiagram() {
       />
 
       {/* ── Observe node ─────────────────────────────────────────────────── */}
-      <g className={clsx(shared.node, observeReached && shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.observe} x={185} y={254} size={40} />
-      </g>
-      <text x={180.66} y={307.97}
-        fill="var(--visual-magenta)"
-        style={{ fontFamily: 'var(--font-mono-ai)' }}
-        fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, observeReached && shared.labelIn)}
-      >observe</text>
+      <DiagramNode x={185} y={254} emoji={EMOJI.observe} label="observe" tone="magenta" reached={observeReached} labelX={180.66} labelY={307.97} />
 
       {/* ── Arc 4: observe → verify ───────────────────────────────────────── */}
       <path
@@ -190,16 +158,7 @@ export default function AgentLoopDiagram() {
       />
 
       {/* ── Verify node ───────────────────────────────────────────────────── */}
-      <g className={clsx(shared.node, verifyReached && shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.ruler} x={145} y={131} size={40} />
-      </g>
-      {/* label nudged left/down from computed (125.4, 138) to avoid overlap with the "Yes" arc label */}
-      <text x={108} y={155}
-        fill="var(--visual-warning)"
-        style={{ fontFamily: 'var(--font-mono-ai)' }}
-        fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, verifyReached && shared.labelIn)}
-      >verify</text>
+      <DiagramNode x={145} y={131} emoji={EMOJI.ruler} label="verify" tone="warning" reached={verifyReached} labelX={108} labelY={155} />
 
       {/* ── Arc 5: verify → perceive (iterate / "No") ────────────────────── */}
       <path
@@ -242,15 +201,7 @@ export default function AgentLoopDiagram() {
       />
 
       {/* ── Done node ─────────────────────────────────────────────────────── */}
-      <g className={clsx(shared.node, loopReached && shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.check} x={76} y={244} size={40} />
-      </g>
-      <text x={96} y={300}
-        fill="var(--visual-success)"
-        style={{ fontFamily: 'var(--font-mono-spec)' }}
-        fontSize={9} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, loopReached && shared.labelIn)}
-      >done</text>
+      <DiagramNode x={76} y={244} emoji={EMOJI.check} label="done" tone="success" reached={loopReached} labelX={96} labelY={300} labelVoice="spec" />
     </svg>
   );
 }

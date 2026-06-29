@@ -4,12 +4,7 @@
   padding: 1.5rem 0;
 }
 
-/* Compact mode for presentations - maximize content area */
-.container.compact {
-  margin: 0 auto;
-  padding: 0;
-  max-width: 100%;
-}
+
 
 /* SVG Sizing */
 .svg {
@@ -108,18 +103,6 @@
 }
 
 /* Presentation Mode Adjustments */
-.container.compact .svg {
-  max-width: 100%;
-}
-
-.container.compact .contextTitle {
-  font-size: 32px;
-}
-
-.container.compact .contextLabel {
-  font-size: 52px;
-}
-
 /* Vertical Layout - Subtle preview aesthetic */
 .container.vertical .contextBox {
   stroke-width: 1.5;
@@ -158,31 +141,4 @@
   .contextDescription {
     font-size: 14px;
   }
-}
-
-/* Dark mode specific adjustments for presentations */
-:global(.reveal) .contextBox {
-  fill: color-mix(in srgb, var(--visual-cyan) 20%, transparent);
-  stroke: var(--visual-cyan);
-  stroke-width: 3;
-}
-
-:global(.reveal) .arrow {
-  stroke: var(--visual-cyan);
-  stroke-width: 5;
-}
-
-:global(.reveal) .arrowMarker {
-  fill: var(--visual-cyan);
-}
-
-:global(.reveal) .barrier {
-  stroke: var(--visual-indigo);
-  opacity: 0.4;
-}
-
-:global(.reveal) .contextTitle,
-:global(.reveal) .contextLabel,
-:global(.reveal) .contextDescription {
-  fill: var(--neutral-100);
 }

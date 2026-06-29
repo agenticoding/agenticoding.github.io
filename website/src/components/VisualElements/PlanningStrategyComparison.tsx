@@ -1,5 +1,4 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './ComparisonLayout.module.css';
 import CompassEmoji from './CompassEmoji';
 import BullseyeEmoji from './BullseyeEmoji';
@@ -17,14 +16,12 @@ const ENTRIES = [
   },
 ] as const;
 
-export default function PlanningStrategyComparison({
-  compact = false,
-}: PresentationAwareProps = {}) {
+export default function PlanningStrategyComparison() {
   return (
     <div
       role="img"
       aria-label="Comparison of two planning strategies: exploration (compass) for uncertain problems versus exact planning (bullseye) for known solutions"
-      style={{ maxWidth: compact ? '95%' : 520, margin: '0 auto' }}
+      style={{ maxWidth: 520, margin: '0 auto' }}
     >
       <div className={styles.halves}>
         {ENTRIES.map((entry, i) => (

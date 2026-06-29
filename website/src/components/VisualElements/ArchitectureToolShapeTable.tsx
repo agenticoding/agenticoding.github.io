@@ -166,7 +166,7 @@ function AttentionIcon() {
         strokeLinejoin="round"
       />
       {/* Animated iris + pupil, centered on eyeballs */}
-      <g className="idle-eye-read" aria-hidden="true">
+      <g className={styles.architectureEye} aria-hidden="true">
         <circle cx="19.5" cy="38" r="8" fill="#A57939" />
         <circle cx="19.5" cy="38" r="3.6" fill="#000" />
         <circle cx="52.5" cy="38" r="8" fill="#A57939" />
@@ -197,7 +197,7 @@ function MoeIcon() {
       />
       {/* Actual compass needle — animated around (36,36) */}
       <g
-        className="idle-compass-needle"
+        className={styles.architectureCompass}
         style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
         aria-hidden="true"
       >
@@ -287,7 +287,7 @@ function ContextIcon() {
       {lines.map((l, i) => (
         <line
           key={l.y}
-          className="idle-text-line"
+          className={styles.architectureTextLine}
           x1="35.24"
           x2={l.x2}
           y1={l.y}
@@ -296,8 +296,8 @@ function ContextIcon() {
           strokeWidth="2"
           strokeLinecap="round"
           style={{
-            animationDelay: `${i * 300}ms`,
-          }}
+            '--line-delay': `${i * 300}ms`,
+          } as React.CSSProperties}
           aria-hidden="true"
         />
       ))}
@@ -324,7 +324,7 @@ function ModalityIcon({ clipId }: { clipId: string }) {
 function ServingIcon() {
   return (
     <g
-      className="idle-cloud-serve"
+      className={styles.architectureCloud}
       style={{ transformBox: 'view-box', transformOrigin: '44px 24px' }}
     >
       <EmojiImage asset={EMOJI.cloud} x={26} y={6} size={36} />
@@ -340,8 +340,7 @@ function RowIcon({ row }: { row: Row }) {
         x={30}
         y={10}
         size={28}
-        className="idle-gear-spin"
-        style={{ animationDuration: '12000ms' }}
+        className={styles.architectureGear}
       />
     ) : row.icon === 'moe' ? (
       <MoeIcon />
@@ -427,10 +426,10 @@ export default function ArchitectureToolShapeTable() {
       aria-label="Architecture choices and operator implications"
     >
       <div className={styles.header}>
-        <p className={styles.kicker}>Architecture defines the tool shape</p>
+        <p className={styles.kicker}>Architecture defines the operating envelope</p>
         <p>
-          Read architecture as product strategy: mechanism → routing →
-          visibility → capacity → input channels → runtime.
+          Architecture choices show up as production behavior: speed, cost,
+          context reliability, modality support, and deployment constraints.
         </p>
       </div>
       <div className={styles.rows}>

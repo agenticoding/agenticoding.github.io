@@ -1,5 +1,4 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './CheckpointedAttritionFunnel.module.css';
 
 const VIEWBOX_W = 960;
@@ -47,12 +46,8 @@ function stageCenterX(stage: (typeof STAGES)[number]) {
   return stage.x + stage.w / 2;
 }
 
-export default function CheckpointedAttritionFunnel({
-  compact = false,
-}: PresentationAwareProps = {}) {
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
+export default function CheckpointedAttritionFunnel() {
+  const containerClassName = styles.container;
 
   return (
     <div className={containerClassName}>

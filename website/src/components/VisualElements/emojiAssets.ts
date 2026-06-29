@@ -22,6 +22,7 @@ export const EMOJI = {
   compass: asset('1F9ED.svg', 'compass'),
   computer: asset('1F4BB.svg', 'computer'),
   crying: asset('1F62D.svg', 'crying'),
+  database: asset('1F5C4.svg', 'database'),
   documentTabs: asset('1F4D1.svg', 'document tabs'),
   factory: asset('1F3ED.svg', 'factory'),
   gear: asset('2699.svg', 'gear'),

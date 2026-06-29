@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import clsx from 'clsx';
 import shared from './diagram.module.css';
-import { EmojiImage } from './ActorNodes';
+import { DiagramNode } from './DiagramNode';
 import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
 import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
@@ -57,18 +57,7 @@ export default function ExecutionLoopDiagram() {
       style={{ display: 'block', maxWidth: '480px', margin: '0 auto' }}
     >
       {/* ── Brain node (LLM) — always visible ─────────────────────────── */}
-      <g className={clsx(shared.node, shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.brain} x={220} y={36} size={40} />
-      </g>
-
-      {/* "predict" label */}
-      <text
-        x={240} y={16}
-        fill="var(--visual-violet)"
-        style={{ fontFamily: 'var(--font-mono-ai)' }}
-        fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, predictReached && shared.labelIn)}
-      >predict</text>
+      <DiagramNode x={220} y={36} emoji={EMOJI.brain} label="predict" tone="model" reached labelReached={predictReached} labelX={240} labelY={16} />
 
       {/* ── Arc 1: brain → execute ────────────────────────────────────── */}
       <path
@@ -88,18 +77,7 @@ export default function ExecutionLoopDiagram() {
       />
 
       {/* ── Execute node (Body) ───────────────────────────────────────── */}
-      <g className={clsx(shared.node, executeReached && shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.act} x={316} y={156} size={40} />
-      </g>
-
-      {/* "execute" label */}
-      <text
-        x={336} y={216}
-        fill="var(--visual-cyan)"
-        style={{ fontFamily: 'var(--font-mono-ai)' }}
-        fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, executeReached && shared.labelIn)}
-      >execute</text>
+      <DiagramNode x={316} y={156} emoji={EMOJI.act} label="execute" tone="system" reached={executeReached} labelX={336} labelY={216} />
 
       {/* ── Arc 2: execute → observe ──────────────────────────────────── */}
       <path
@@ -119,18 +97,7 @@ export default function ExecutionLoopDiagram() {
       />
 
       {/* ── Observe node (Result) ─────────────────────────────────────── */}
-      <g className={clsx(shared.node, observeReached && shared.nodeIn)}>
-        <EmojiImage asset={EMOJI.observe} x={124} y={156} size={40} />
-      </g>
-
-      {/* "observe" label */}
-      <text
-        x={144} y={216}
-        fill="var(--visual-indigo)"
-        style={{ fontFamily: 'var(--font-mono-ai)' }}
-        fontSize={10} fontWeight={500} textAnchor="middle"
-        className={clsx(shared.label, observeReached && shared.labelIn)}
-      >observe</text>
+      <DiagramNode x={124} y={156} emoji={EMOJI.observe} label="observe" tone="context" reached={observeReached} labelX={144} labelY={216} />
 
       {/* ── Arc 3: observe → brain ────────────────────────────────────── */}
       <path

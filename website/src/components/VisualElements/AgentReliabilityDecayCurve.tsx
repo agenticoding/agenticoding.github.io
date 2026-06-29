@@ -1,7 +1,5 @@
 import React from 'react';
 
-import type { PresentationAwareProps } from '@site/src/components/PresentationMode/types';
-
 const WIDTH = 920;
 const HEIGHT = 488;
 const PLOT = { x: 72, y: 96, w: 520, h: 344 };
@@ -240,15 +238,12 @@ function Card({
   );
 }
 
-export default function AgentReliabilityDecayCurve({
-  compact = false,
-}: PresentationAwareProps = {}) {
+export default function AgentReliabilityDecayCurve() {
   const path = curvePath();
   const labelStyle = { fontFamily: 'var(--font-mono-keyword)' };
   const bodyStyle = { fontFamily: 'var(--font-body)' };
   const headingStyle = { fontFamily: 'var(--font-display)' };
   const r20 = reliability(20);
-  const scale = compact ? 0.96 : 1;
 
   return (
     <svg
@@ -260,8 +255,6 @@ export default function AgentReliabilityDecayCurve({
       xmlns="http://www.w3.org/2000/svg"
       style={{
         display: 'block',
-        transform: `scale(${scale})`,
-        transformOrigin: 'center',
       }}
     >
       <defs>

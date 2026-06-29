@@ -6,11 +6,6 @@
   container-type: inline-size;
 }
 
-.compact {
-  margin: 0 auto;
-  max-width: 95%;
-}
-
 .diagram {
   display: block;
   width: 100%;
@@ -22,6 +17,12 @@
 .mobileDiagram {
   display: none;
   max-width: 360px;
+}
+
+.modelTab {
+  fill: var(--surface-raised);
+  stroke: var(--border-default);
+  stroke-width: 1.5;
 }
 
 @container (max-width: 520px) {
@@ -42,33 +43,6 @@
   .mobileDiagram {
     display: block;
   }
-}
-
-.fieldPlate {
-  opacity: 0.24;
-  stroke: none;
-}
-
-.fieldBoundary {
-  fill: none;
-  opacity: 0.46;
-  stroke-width: 1.15;
-}
-
-.knowledgeField.fieldPlate {
-  fill: var(--visual-bg-indigo);
-}
-
-.actionField.fieldPlate {
-  fill: var(--visual-bg-magenta);
-}
-
-.knowledgeField.fieldBoundary {
-  stroke: var(--visual-indigo);
-}
-
-.actionField.fieldBoundary {
-  stroke: var(--visual-magenta);
 }
 
 .meshEdge {

@@ -1,5 +1,4 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './SystemFlowDiagram.module.css';
 
 interface FlowStep {
@@ -19,7 +18,7 @@ interface ExitMarker {
   type: 'error' | 'success';
 }
 
-interface SystemFlowDiagramProps extends PresentationAwareProps {
+interface SystemFlowDiagramProps {
   phases?: FlowPhase[];
   exitMarkers?: ExitMarker[];
 }
@@ -68,7 +67,6 @@ const EXIT_PILL_HEIGHT = 32;
 const EXIT_PILL_GAP = 18;
 
 export default function SystemFlowDiagram({
-  compact = false,
   phases = DEFAULT_PHASES,
   exitMarkers = DEFAULT_EXIT_MARKERS,
 }: SystemFlowDiagramProps = {}) {
@@ -180,7 +178,7 @@ export default function SystemFlowDiagram({
 
   return (
     <div
-      className={`${styles.container} ${compact ? styles.compact : ''} system-flow-diagram`}
+      className={`${styles.container} system-flow-diagram`}
       role="img"
       aria-label="System processing flow: Receive request, Verify signature (400 on failure), Deduplicate by event ID (200 if duplicate), Store in database (500 on failure), then continue processing"
     >

@@ -1,4 +1,12 @@
 .container {
+  --translator-gap: var(--space-2);
+  --translator-layout-block-size: 13.5rem;
+  --translator-claim-block-size: auto;
+  --translator-output-block-size: auto;
+  --translator-decode-block-size: var(--target-md);
+  --translator-note-block-size: calc(var(--space-9) + var(--space-1));
+
+  container-type: inline-size;
   display: grid;
   gap: var(--space-2);
   margin: var(--space-4) 0;
@@ -110,9 +118,9 @@
 .translator {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: var(--space-2);
+  gap: var(--translator-gap);
   align-items: stretch;
-  block-size: 13.5rem;
+  block-size: var(--translator-layout-block-size);
   animation: exampleEnter var(--duration-moderate) var(--ease-enter) both;
 }
 
@@ -141,11 +149,13 @@
 .marketingPane {
   --phase-color: var(--visual-warning);
   grid-template-rows: auto minmax(0, 1fr);
+  block-size: var(--translator-claim-block-size);
   border-left: 3px solid var(--visual-warning);
 }
 
 .engineeringPane {
   --phase-color: var(--visual-cyan);
+  block-size: var(--translator-output-block-size);
   border-left: 3px solid var(--visual-cyan);
 }
 
@@ -315,7 +325,7 @@
   align-content: start;
   gap: var(--space-2);
   align-items: start;
-  block-size: calc(var(--space-9) + var(--space-1));
+  block-size: var(--translator-note-block-size);
   overflow: hidden;
   padding: var(--space-2);
   border-left: 3px solid var(--visual-neutral);
@@ -347,30 +357,6 @@
   border-color: var(--visual-neutral);
   background: var(--surface-muted);
   animation: stepConfirm var(--duration-subtle) var(--ease-enter) both;
-}
-
-.compact {
-  gap: var(--space-1);
-  margin: 0 auto;
-  max-width: 95%;
-  padding: var(--space-2);
-}
-
-.compact .header h3,
-.compact .marketingPane blockquote {
-  font-size: var(--text-lg);
-}
-
-.compact .translator {
-  block-size: 12rem;
-}
-
-.compact .note {
-  block-size: calc(var(--space-9) + var(--space-1));
-}
-
-.compact .selector {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @keyframes exampleEnter {
@@ -433,7 +419,18 @@
   }
 }
 
-@media (max-width: 860px) {
+@container (max-width: 48rem) {
+  .header,
+  .translator {
+    gap: var(--space-1);
+  }
+
+  .pane,
+  .note {
+    gap: var(--space-0h);
+    padding: var(--space-1);
+  }
+
   .pauseButton {
     min-block-size: var(--target-lg);
     min-inline-size: var(--target-lg);
@@ -441,13 +438,24 @@
   }
 
   .translator {
-    block-size: auto;
+    --translator-gap: var(--space-1);
+    --translator-claim-block-size: calc(var(--space-9) + var(--space-8));
+    --translator-output-block-size: calc(var(--space-9) + var(--space-2));
+    --translator-layout-block-size: calc(
+      var(--translator-claim-block-size) +
+      var(--translator-decode-block-size) +
+      var(--translator-output-block-size) +
+      var(--translator-gap) +
+      var(--translator-gap)
+    );
+
     grid-template-columns: 1fr;
   }
 
   .decode {
     justify-self: center;
-    min-block-size: var(--target-md);
+    block-size: var(--translator-decode-block-size);
+    min-block-size: var(--translator-decode-block-size);
     min-width: 0;
     inline-size: var(--target-md);
     overflow: hidden;
@@ -462,7 +470,13 @@
     grid-template-rows: auto auto;
     block-size: var(--target-md);
     inline-size: var(--target-md);
-    font-size: var(--text-2xl);
+    font-size: var(--text-lg);
+  }
+
+  .translatorArrow {
+    block-size: var(--space-2);
+    inline-size: var(--space-2);
+    line-height: 1;
   }
 
   .translatorArrowBack {
@@ -485,104 +499,18 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .selectorButton {
+    min-block-size: var(--target-md);
+    padding: 0 var(--space-2);
+  }
+
   .note {
-    block-size: auto;
+    --translator-note-block-size: calc(var(--space-9) + var(--space-2));
   }
 
   .header h3,
   .marketingPane blockquote {
     font-size: var(--text-lg);
-  }
-}
-
-@media (max-width: 520px) {
-  .container {
-    gap: var(--space-1);
-    padding: var(--space-2);
-  }
-
-  .header,
-  .translator {
-    gap: var(--space-1);
-  }
-
-  .pane,
-  .note {
-    gap: var(--space-0h);
-  }
-
-  .header h3 {
-    font-size: var(--text-sm);
-    line-height: var(--lh-sm);
-  }
-
-  .marketingPane blockquote {
-    font-size: 0.78rem;
-    line-height: 1.15;
-  }
-
-  .marketingPane footer,
-  .engineeringPane p,
-  .note p {
-    font-size: 0.72rem;
-    line-height: 1.15;
-  }
-
-  .roleLabel,
-  .selectorButton,
-  .pauseButton {
-    font-size: 0.62rem;
-    letter-spacing: 0.04em;
-  }
-
-  .pane,
-  .note {
-    padding: var(--space-1);
-  }
-
-  .marketingPane {
-    block-size: calc(var(--space-9) + var(--space-1));
-    padding-block-end: var(--space-2);
-  }
-
-  .engineeringPane,
-  .note {
-    block-size: calc(var(--space-7) + var(--space-1));
-  }
-
-  .decode {
-    min-block-size: var(--target-md);
-    inline-size: var(--target-md);
-    padding: 0;
-  }
-
-  .translatorGlyph {
-    block-size: var(--target-sm);
-    inline-size: var(--target-sm);
-    font-size: var(--text-base);
-  }
-
-  .translatorArrow {
-    block-size: var(--space-2);
-    inline-size: var(--space-2);
-    line-height: 1;
-  }
-
-  .selector {
-    grid-auto-columns: max-content;
-    grid-auto-flow: column;
-    grid-template-columns: none;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: inline proximity;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .selectorButton {
-    min-block-size: var(--target-md);
-    padding: 0 var(--space-2);
-    scroll-snap-align: start;
-    white-space: nowrap;
   }
 }
 

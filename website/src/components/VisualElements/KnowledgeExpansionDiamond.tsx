@@ -1,21 +1,14 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './KnowledgeExpansionDiamond.module.css';
 
-export default function KnowledgeExpansionDiamond({
-  compact = false,
-}: PresentationAwareProps = {}) {
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
-
+export default function KnowledgeExpansionDiamond() {
   // Layout constants
   const viewBoxWidth = 460;
   const viewBoxHeight = 400;
   const centerX = viewBoxWidth / 2;
 
-  // Compact mode crops tighter since legend/annotations are hidden
-  const viewBox = compact ? '40 10 380 350' : `0 0 ${viewBoxWidth} ${viewBoxHeight}`;
+  const viewBox = `0 0 ${viewBoxWidth} ${viewBoxHeight}`;
+  const containerClassName = styles.container;
 
   // Box dimensions - consistent 1.25x progression for pleasing funnel effect
   const specBoxWidth = 140;
@@ -259,17 +252,7 @@ export default function KnowledgeExpansionDiamond({
           </text>
         </g>
 
-        {/* Source of Truth label - below CODE box */}
-        {!compact && (
-          <text
-            x={centerX}
-            y={codeY + codeBoxHeight + 14}
-            className={styles.codeSubtitle}
-            textAnchor="middle"
-          >
-            Source of Truth
-          </text>
-        )}
+
 
         {/* ===== LEFT ARROWS (Traditional - Purple, Downward) ===== */}
         <g className={styles.traditionalGroup}>
@@ -286,44 +269,7 @@ export default function KnowledgeExpansionDiamond({
             fill="none"
           />
 
-          {/* Left annotations - aligned to consistent x position */}
-          {!compact && (
-            <>
-              <text
-                x={leftAnnotationX}
-                y={annotation1Y - 5}
-                className={styles.annotation}
-                textAnchor="end"
-              >
-                adds: edge cases,
-              </text>
-              <text
-                x={leftAnnotationX}
-                y={annotation1Y + 9}
-                className={styles.annotation}
-                textAnchor="end"
-              >
-                constraints
-              </text>
 
-              <text
-                x={leftAnnotationX}
-                y={annotation2Y - 5}
-                className={styles.annotation}
-                textAnchor="end"
-              >
-                adds: implementation
-              </text>
-              <text
-                x={leftAnnotationX}
-                y={annotation2Y + 9}
-                className={styles.annotation}
-                textAnchor="end"
-              >
-                approach
-              </text>
-            </>
-          )}
         </g>
 
         {/* ===== RIGHT ARROWS (AI - Cyan, Upward) ===== */}
@@ -343,90 +289,49 @@ export default function KnowledgeExpansionDiamond({
             filter="url(#aiGlow)"
           />
 
-          {/* Right annotations - symmetric with left */}
-          {!compact && (
-            <>
-              <text
-                x={rightAnnotationX}
-                y={annotation2Y - 5}
-                className={styles.annotationAI}
-                textAnchor="start"
-              >
-                extracts: patterns,
-              </text>
-              <text
-                x={rightAnnotationX}
-                y={annotation2Y + 9}
-                className={styles.annotationAI}
-                textAnchor="start"
-              >
-                rules
-              </text>
 
-              <text
-                x={rightAnnotationX}
-                y={annotation1Y - 5}
-                className={styles.annotationAI}
-                textAnchor="start"
-              >
-                extracts: intent,
-              </text>
-              <text
-                x={rightAnnotationX}
-                y={annotation1Y + 9}
-                className={styles.annotationAI}
-                textAnchor="start"
-              >
-                boundaries
-              </text>
-            </>
-          )}
         </g>
 
         {/* ===== LEGEND ===== */}
-        {!compact && (
-          <g className={styles.legend}>
-            {/* Centered legend with equal spacing */}
-            <circle
-              cx={centerX - 95}
-              cy={legendY}
-              r={5}
-              className={styles.legendDotTraditional}
-            />
-            <text
-              x={centerX - 85}
-              y={legendY + 4}
-              className={styles.legendText}
-            >
-              Traditional (expansion)
-            </text>
+        <g className={styles.legend}>
+          {/* Centered legend with equal spacing */}
+          <circle
+            cx={centerX - 95}
+            cy={legendY}
+            r={5}
+            className={styles.legendDotTraditional}
+          />
+          <text
+            x={centerX - 85}
+            y={legendY + 4}
+            className={styles.legendText}
+          >
+            Traditional (expansion)
+          </text>
 
-            <circle
-              cx={centerX + 65}
-              cy={legendY}
-              r={5}
-              className={styles.legendDotAI}
-            />
-            <text
-              x={centerX + 75}
-              y={legendY + 4}
-              className={styles.legendText}
-            >
-              AI-Enabled (extraction)
-            </text>
-          </g>
-        )}
+          <circle
+            cx={centerX + 65}
+            cy={legendY}
+            r={5}
+            className={styles.legendDotAI}
+          />
+          <text
+            x={centerX + 75}
+            y={legendY + 4}
+            className={styles.legendText}
+          >
+            AI-Enabled (extraction)
+          </text>
+        </g>
       </svg>
 
       {/* Description text */}
-      {!compact && (
-        <p className={styles.description}>
-          <strong>Traditional:</strong> Knowledge expands from spec to code.{' '}
-          <br />
-          <strong>AI-enabled:</strong> Knowledge can now be extracted back —
-          code becomes the single source of truth.
-        </p>
-      )}
+      <p className={styles.description}>
+        <strong>Traditional:</strong> Knowledge expands from spec to code.{' '}
+        <br />
+        <strong>AI-enabled:</strong> Knowledge can now be extracted back —
+        code becomes the single source of truth.
+      </p>
     </div>
   );
 }

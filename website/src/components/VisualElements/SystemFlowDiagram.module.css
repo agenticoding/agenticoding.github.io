@@ -4,12 +4,7 @@
   padding: 1rem 0;
 }
 
-/* Compact mode for presentations - maximize content area */
-.container.compact {
-  margin: 0 auto;
-  padding: 0;
-  max-width: 100%;
-}
+
 
 /* SVG Sizing */
 .svg {
@@ -18,10 +13,6 @@
   display: block;
   margin: 0 auto;
   max-width: 580px;
-}
-
-.container.compact .svg {
-  max-width: 100%;
 }
 
 /* Animation */
@@ -161,66 +152,4 @@
   .checkmark {
     font-size: 18px;
   }
-}
-
-/* Dark mode specific adjustments for presentations */
-:global(.reveal) .stepBox {
-  fill: color-mix(in srgb, var(--visual-cyan) 20%, transparent);
-  stroke: var(--visual-cyan);
-  stroke-width: 3;
-}
-
-:global(.reveal) .mainArrow,
-:global(.reveal) .forkPath,
-:global(.reveal) .joinPath {
-  stroke: var(--visual-cyan);
-  stroke-width: 4;
-  stroke-linecap: round;
-}
-
-:global(.reveal) .arrowMarker {
-  fill: var(--visual-cyan);
-}
-
-:global(.reveal) .concurrentBracket {
-  stroke: var(--visual-cyan);
-  stroke-width: 3;
-}
-
-:global(.reveal) .stepLabel {
-  fill: var(--neutral-100);
-  font-size: 22px;
-}
-
-:global(.reveal) .successTerminal {
-  fill: color-mix(in srgb, var(--semantic-success) 20%, transparent);
-  stroke: var(--semantic-success);
-  stroke-width: 3;
-}
-
-:global(.reveal) .checkmark {
-  fill: var(--semantic-success);
-  font-size: 26px;
-}
-
-:global(.reveal) .exitPath {
-  stroke: var(--neutral-400);
-  stroke-width: 2.5;
-}
-
-:global(.reveal) .exitMarkerError {
-  fill: color-mix(in srgb, var(--semantic-error) 20%, transparent);
-  stroke: var(--semantic-error);
-  stroke-width: 2;
-}
-
-:global(.reveal) .exitMarkerSuccess {
-  fill: color-mix(in srgb, var(--semantic-success) 20%, transparent);
-  stroke: var(--semantic-success);
-  stroke-width: 2;
-}
-
-:global(.reveal) .exitCode {
-  fill: var(--neutral-100);
-  font-size: 16px;
 }

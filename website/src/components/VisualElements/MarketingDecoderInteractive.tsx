@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import InlineEmojiImage from './InlineEmojiImage';
 import styles from './MarketingDecoderInteractive.module.css';
@@ -25,8 +24,12 @@ const examples: TranslationExample[] = [
     sourceLabel: 'anthropic.com',
     output: (
       <>
-        Larger model: slower <ChapterLink href="#architecture-defines-the-tool-shape">inference</ChapterLink>{' '}
-        and higher <ChapterLink href="#what-an-llm-actually-is">token cost</ChapterLink>.
+        Larger model: slower{' '}
+        <ChapterLink href="#architecture-defines-the-tool-shape">
+          inference
+        </ChapterLink>{' '}
+        and higher{' '}
+        <ChapterLink href="#what-an-llm-actually-is">token cost</ChapterLink>.
       </>
     ),
     note: 'Use it when the quality gain beats slower feedback and premium spend.',
@@ -40,25 +43,32 @@ const examples: TranslationExample[] = [
     sourceLabel: 'blog.google',
     output: (
       <>
-        Higher <ChapterLink href="#architecture-defines-the-tool-shape">token throughput</ChapterLink>{' '}
-        improves perceived responsiveness.
+        Higher{' '}
+        <ChapterLink href="#architecture-defines-the-tool-shape">
+          token throughput
+        </ChapterLink>{' '}
+        means faster on-screen feedback, not faster task completion.
       </>
     ),
-    note: 'Human wait time improves; end-to-end task time still depends on tool calls and review.',
+    note: 'Streaming improves perceived speed; end-to-end task time is unchanged.',
   },
   {
     id: 'opus-longctx',
     context: 'Anthropic Opus 4.7 launch',
-    claim: 'The most consistent long-context performance of any model we tested.',
+    claim:
+      'The most consistent long-context performance of any model we tested.',
     sourceUrl: 'https://www.anthropic.com/news/claude-opus-4-7',
     sourceLabel: 'anthropic.com',
     output: (
       <>
-        Stable agent loops do not guarantee accurate{' '}
-        <ChapterLink href="#long-context-is-not-reliable-memory">retrieval at 1M tokens</ChapterLink>.
+        Loop stability improved.{' '}
+        <ChapterLink href="#long-context-is-not-reliable-memory">
+          Long-context retrieval
+        </ChapterLink>{' '}
+        fell from 78% to 32%.
       </>
     ),
-    note: 'Long context buys capacity; retrieval quality still needs chunking and verification.',
+    note: 'The tokenizer enabling stable loops broke needle-in-haystack recall.',
   },
   {
     id: 'opus-price',
@@ -68,12 +78,13 @@ const examples: TranslationExample[] = [
     sourceLabel: 'anthropic.com',
     output: (
       <>
-        Lower price exposed Opus 4 as{' '}
-        <ChapterLink href="#architecture-defines-the-tool-shape">overpriced infrastructure</ChapterLink>,
-        not a new default.
+        <ChapterLink href="#what-an-llm-actually-is">
+          Opus 4.1 was overpriced
+        </ChapterLink>
+        . The 66% price cut proved it.
       </>
     ),
-    note: 'The lesson is efficiency: Opus 4 quality was trapped behind avoidable premium pricing.',
+    note: 'The capability existed. The cost was the barrier.',
   },
   {
     id: 'gpt-multimodal',
@@ -84,11 +95,14 @@ const examples: TranslationExample[] = [
     sourceLabel: 'lushbinary.com',
     output: (
       <>
-        <ChapterLink href="#why-token-prediction-is-useful">Multimodal strength</ChapterLink>{' '}
-        can coexist with weaker pure coding depth.
+        Best for screenshot-to-code and UI automation.{' '}
+        <ChapterLink href="#architecture-defines-the-tool-shape">
+          SWE-bench Pro
+        </ChapterLink>{' '}
+        lags Claude by 6–11 points.
       </>
     ),
-    note: 'Choose it for vision-to-code workflows; route text-only coding by measured quality.',
+    note: 'Natively omnimodal — strong when vision drives the task, weaker on deep codebase work.',
   },
 ];
 
@@ -226,7 +240,8 @@ function useActiveSelectorScroll(activeIndex: number, reducedMotion: boolean) {
   useEffect(() => {
     const selector = selectorRef.current;
     const button = buttonRefs.current[activeIndex];
-    if (!selector || !button || selector.scrollWidth <= selector.clientWidth) return;
+    if (!selector || !button || selector.scrollWidth <= selector.clientWidth)
+      return;
     button.scrollIntoView({
       behavior: reducedMotion ? 'auto' : 'smooth',
       block: 'nearest',
@@ -242,8 +257,15 @@ function useActiveSelectorScroll(activeIndex: number, reducedMotion: boolean) {
   };
 }
 
-function ExampleSelector({ activeIndex, onSelect, reducedMotion }: ExampleSelectorProps) {
-  const { selectorRef, setButtonRef } = useActiveSelectorScroll(activeIndex, reducedMotion);
+function ExampleSelector({
+  activeIndex,
+  onSelect,
+  reducedMotion,
+}: ExampleSelectorProps) {
+  const { selectorRef, setButtonRef } = useActiveSelectorScroll(
+    activeIndex,
+    reducedMotion
+  );
 
   return (
     <nav
@@ -302,7 +324,13 @@ type ExampleSelectorButtonProps = {
 function PauseButton({ disabled, paused, onClick }: PauseButtonProps) {
   return (
     <button
-      aria-label={disabled ? 'Motion reduced' : paused ? 'Resume autoplay' : 'Pause autoplay'}
+      aria-label={
+        disabled
+          ? 'Motion reduced'
+          : paused
+            ? 'Resume autoplay'
+            : 'Pause autoplay'
+      }
       aria-pressed={paused || disabled}
       className={styles.pauseButton}
       disabled={disabled}
@@ -323,14 +351,10 @@ type PauseButtonProps = {
   onClick: () => void;
 };
 
-export default function MarketingDecoderInteractive({
-  compact = false,
-}: PresentationAwareProps = {}) {
+export default function MarketingDecoderInteractive() {
   const state = useTranslatorAutoplay();
   const example = examples[state.activeIndex];
-  const className = [styles.container, compact ? styles.compact : null]
-    .filter(Boolean)
-    .join(' ');
+  const className = styles.container;
 
   return (
     <section className={className} aria-label="Marketing Translator widget">
@@ -357,18 +381,19 @@ export default function MarketingDecoderInteractive({
           active={state.phase === 'source'}
           duration={phaseDurations.source}
           kind="marketingPane"
-          title={<RoleLabel asset={EMOJI.megaphone} label={`${example.context} says`} />}
+          title={
+            <RoleLabel
+              asset={EMOJI.megaphone}
+              label={`${example.context} says`}
+            />
+          }
         >
           <blockquote>
             <p>“{example.claim}”</p>
             <footer>
               —{' '}
               <cite>
-                <a
-                  href={example.sourceUrl}
-                  rel="noreferrer"
-                  target="_blank"
-                >
+                <a href={example.sourceUrl} rel="noreferrer" target="_blank">
                   {example.sourceLabel}
                 </a>
               </cite>

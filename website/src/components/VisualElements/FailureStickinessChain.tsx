@@ -1,6 +1,5 @@
 import React, { useId } from 'react';
 
-import type { PresentationAwareProps } from '@site/src/components/PresentationMode/types';
 import { OperatorNode } from './ActorNodes';
 
 const GRID = 8;
@@ -202,9 +201,7 @@ function Arrow({ x1, x2, tone, markerId, angular = false }: {
   );
 }
 
-export default function FailureStickinessChain({
-  compact = false,
-}: PresentationAwareProps = {}) {
+export default function FailureStickinessChain() {
   const uid = useId().replace(/:/g, '');
   const neutralMarker = `stickiness-neutral-${uid}`;
   const errorMarker = `stickiness-error-${uid}`;
@@ -218,7 +215,7 @@ export default function FailureStickinessChain({
       role="img"
       aria-label="Failure stickiness diagram: two good steps complete normally, then a wrong import causes step n to fail. With high S, the bad premise carries forward and step n plus one also fails. A human checkpoint operator interrupts the red propagation chain, then execution resumes in a green recovered state."
       xmlns="http://www.w3.org/2000/svg"
-      style={{ display: 'block', maxWidth: compact ? '95%' : `${VW}px`, margin: '0 auto' }}
+      style={{ display: 'block', maxWidth: `${VW}px`, margin: '0 auto' }}
     >
       <defs>
         <Marker id={neutralMarker} fill="var(--visual-neutral)" />

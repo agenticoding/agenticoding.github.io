@@ -1,8 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
-import type { PresentationAwareProps } from '../PresentationMode/types';
-import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
+import { DiagramTile } from './DiagramTile';
 import styles from './HarnessContextLoop.module.css';
 
 const ARIA_LABEL = 'Agent harness context loop: assemble context, call the model, validate output, execute outside the model, append observation, choose whether to continue, then either iterate or exit with a final response.';
@@ -35,7 +34,7 @@ const STEPS = [
   { n: 2, title: 'Call model', detail: ['predict response', 'or structured action'], tone: 'model', icon: EMOJI.gear },
   { n: 3, title: 'Validate output', detail: ['schema + policy', 'budget + permissions'], tone: 'warning', icon: EMOJI.warning },
   { n: 4, title: 'Execute outside', detail: ['tool / command', 'edit / test'], tone: 'system', icon: EMOJI.tools },
-  { n: 5, title: 'Append obs.', detail: ['serialize result', 'into next context'], tone: 'context', icon: EMOJI.receipt },
+  { n: 5, title: 'Add observation', detail: ['tool result', 'into next context'], tone: 'context', icon: EMOJI.observe },
   { n: 6, title: 'Continue?', detail: ['LLM proposes next', 'harness gates choice'], tone: 'decision', icon: EMOJI.question },
 ] as const satisfies readonly Omit<Step, 'x' | 'y'>[];
 
@@ -63,30 +62,44 @@ function Arrow({ d, end, tone, label, labelX, labelY }: ArrowProps) {
 }
 
 function Card({ n, title, detail, tone, icon, x, y, width = CARD.width, height = CARD.height }: Step & { width?: number; height?: number }) {
-  const color = COLORS[tone];
-  const iconSize = width === MOBILE_CARD.width ? MOBILE_ICON : ICON;
-  const textX = x + 56;
   return (
-    <g className={clsx(styles.card, styles.idleBeat)} style={{ animationDelay: `${(n - 1) * LOOP_BEAT_MS}ms` }}>
-      <rect x={x} y={y} width={width} height={height} rx={0} fill={color.fill} stroke={color.stroke} strokeWidth="1" />
-      <EmojiImage asset={icon} x={x + 16} y={y + 16} size={iconSize} />
-      <text x={textX} y={y + 24} className={styles.cardTitle} fill={color.text}>{n}. {title}</text>
-      {detail.map((line, i) => (
-        <text key={line} x={textX} y={y + 48 + i * 16} className={styles.cardDetail} fill="var(--text-muted)">{line}</text>
-      ))}
-    </g>
+    <DiagramTile
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      tone={tone}
+      stepLabel={String(n).padStart(2, '0')}
+      icon={icon}
+      title={title}
+      detail={detail}
+      titleVoice="spec"
+      variant="rich"
+      className={clsx(styles.card, styles.idleBeat)}
+      style={{ animationDelay: `${(n - 1) * LOOP_BEAT_MS}ms` }}
+      density={width === MOBILE_CARD.width ? 'mobile' : 'desktop'}
+    />
   );
 }
 
-
 function ExitTile({ x, y, width = EXIT_TILE.width, height = EXIT_TILE.height }: { x: number; y: number; width?: number; height?: number }) {
   return (
-    <g className={clsx(styles.exitTile, styles.idleBeat)} style={{ animationDelay: `${STEPS.length * LOOP_BEAT_MS}ms` }}>
-      <rect x={x} y={y} width={width} height={height} rx={0} fill="var(--visual-bg-success)" stroke="var(--visual-success)" strokeWidth="1" />
-      <EmojiImage asset={EMOJI.check} x={x + 16} y={y + 16} size={32} />
-      <text x={x + 56} y={y + 26} className={styles.cardTitle} fill="var(--visual-success)">Exit loop</text>
-      <text x={x + 56} y={y + 50} className={styles.cardDetail} fill="var(--text-muted)">final response</text>
-    </g>
+    <DiagramTile
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      tone="success"
+      stepLabel="OK"
+      icon={EMOJI.check}
+      title="Exit loop"
+      detail="final response"
+      titleVoice="spec"
+      variant="rich"
+      className={clsx(styles.exitTile, styles.idleBeat)}
+      style={{ animationDelay: `${STEPS.length * LOOP_BEAT_MS}ms` }}
+      density={width === MOBILE_EXIT_TILE.width ? 'mobile' : 'desktop'}
+    />
   );
 }
 
@@ -123,9 +136,9 @@ function MobileDiagram() {
   );
 }
 
-export default function HarnessContextLoop({ compact = false }: PresentationAwareProps = {}) {
+export default function HarnessContextLoop() {
   return (
-    <div className={clsx(styles.container, compact && styles.compact)} role="img" aria-label={ARIA_LABEL}>
+    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
       <DesktopDiagram />
       <MobileDiagram />
     </div>

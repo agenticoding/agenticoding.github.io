@@ -8,37 +8,6 @@
   animation: fadeIn 0.5s ease-out;
 }
 
-/* Compact mode for presentations */
-.container.compact {
-  margin: 0 auto;
-  padding: 0;
-  max-width: 100%;
-  background: none;
-  border: none;
-  border-radius: 0;
-}
-
-.container.compact .layerLabel {
-  font-size: 16px;
-}
-
-.container.compact .codeLabel {
-  font-size: 18px;
-}
-
-.container.compact .arrowLabel,
-.container.compact .arrowLabelExtract {
-  font-size: 14px;
-}
-
-.container.compact .iterateLabel {
-  font-size: 13px;
-}
-
-.container.compact .sourceLabel {
-  font-size: 12px;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -251,41 +220,7 @@
   fill: var(--ifm-background-color);
 }
 
-/* Reveal.js presentation dark mode */
-:global(.reveal) .layerBox,
-:global(.reveal) .layerBoxCode {
-  fill: rgba(30, 30, 50, 0.9);
-}
-
-:global(.reveal) .layerLabel,
-:global(.reveal) .codeLabel {
-  fill: var(--neutral-100);
-}
-
-:global(.reveal) .subtitleLabel {
-  fill: var(--neutral-400);
-}
-
-:global(.reveal) .arrowLabel,
-:global(.reveal) .arrowLabelExtract {
-  font-size: 15px;
-}
-
-:global(.reveal) .iterateLabel {
-  fill: var(--neutral-200);
-  font-size: 14px;
-}
-
-:global(.reveal) .sourceLabel {
-  font-size: 12px;
-}
-
-/* Size diagram for presentation — align to top so it respects h2 margin spacing */
-:global(.reveal) .container {
-  align-self: flex-start;
-  min-height: 280px;
-  max-height: none;
-}
+/* ===== RESPONSIVE ===== */
 
 /* ===== RESPONSIVE ===== */
 

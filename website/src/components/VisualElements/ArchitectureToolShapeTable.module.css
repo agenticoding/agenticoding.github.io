@@ -1,4 +1,7 @@
 .container {
+  --architecture-idle-cycle: 4800ms;
+  --architecture-idle-cycle-slow: calc(var(--architecture-idle-cycle) * 2);
+  --architecture-idle-ease: ease-in-out;
   margin: var(--space-3) 0;
   border: 1px solid var(--border-default);
   border-radius: 0;
@@ -95,8 +98,87 @@
   height: 48px;
 }
 
+.architectureGear {
+  animation: architectureGearTurn var(--architecture-idle-cycle-slow) linear infinite;
+}
+
+.architectureCompass {
+  animation: architectureCompassSweep var(--architecture-idle-cycle) var(--architecture-idle-ease) infinite;
+}
+
+.architectureEye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: architectureEyeRead var(--architecture-idle-cycle) var(--architecture-idle-ease) infinite;
+}
+
+.architectureTextLine {
+  animation: architectureTextLine var(--architecture-idle-cycle) linear infinite;
+  animation-delay: var(--line-delay);
+}
+
+.architectureCloud {
+  animation: architectureCloudBreathe var(--architecture-idle-cycle) var(--architecture-idle-ease) infinite;
+}
+
 .modalityStream {
-  animation: modalityStreamWindow 40000ms linear infinite;
+  animation: modalityStreamWindow var(--architecture-idle-cycle-slow) linear infinite;
+}
+
+@keyframes architectureGearTurn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes architectureCompassSweep {
+  0%,
+  100% {
+    transform: rotate(-12deg);
+  }
+
+  50% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes architectureEyeRead {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  30% {
+    transform: translateX(-3px);
+  }
+
+  65% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes architectureTextLine {
+  0%,
+  38%,
+  72%,
+  100% {
+    opacity: 0;
+  }
+
+  55% {
+    opacity: 0.65;
+  }
+}
+
+@keyframes architectureCloudBreathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-2px) scale(1.025);
+  }
 }
 
 @keyframes modalityStreamWindow {
@@ -110,8 +192,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .architectureGear,
+  .architectureCompass,
+  .architectureEye,
+  .architectureTextLine,
+  .architectureCloud,
   .modalityStream {
     animation: none;
+  }
+
+  .modalityStream {
     transform: translateX(50px);
   }
 }

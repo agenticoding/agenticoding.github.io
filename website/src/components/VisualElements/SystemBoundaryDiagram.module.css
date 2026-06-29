@@ -4,11 +4,7 @@
   padding: 1rem 0;
 }
 
-.container.compact {
-  margin: 0 auto;
-  padding: 0;
-  max-width: 100%;
-}
+
 
 /* SVG */
 .svg {
@@ -17,10 +13,6 @@
   display: block;
   margin: 0 auto;
   max-width: 580px;
-}
-
-.container.compact .svg {
-  max-width: 100%;
 }
 
 /* Animation */
@@ -190,110 +182,3 @@
   }
 }
 
-/* Presentation overrides */
-:global(.reveal) .moduleBox {
-  fill: color-mix(in srgb, var(--visual-cyan) 20%, transparent);
-  stroke: var(--visual-cyan);
-  stroke-width: 3;
-}
-
-:global(.reveal) .actorBox {
-  fill: color-mix(in srgb, var(--neutral-400) 15%, transparent);
-  stroke: var(--neutral-400);
-  stroke-width: 3;
-}
-
-:global(.reveal) .boundary {
-  stroke: var(--neutral-500);
-  stroke-width: 3;
-}
-
-:global(.reveal) .boundaryLabel {
-  fill: var(--neutral-400);
-  font-size: 18px;
-}
-
-:global(.reveal) .moduleLabel {
-  fill: var(--neutral-100);
-  font-size: 22px;
-}
-
-:global(.reveal) .actorLabel {
-  fill: var(--neutral-100);
-  font-size: 20px;
-}
-
-:global(.reveal) .arrowLabel {
-  fill: var(--neutral-200);
-  font-size: 16px;
-  stroke: var(--ifm-background-color);
-  stroke-width: 6px;
-}
-
-:global(.reveal) .contractArrow {
-  stroke: var(--visual-cyan);
-  stroke-width: 4;
-}
-
-:global(.reveal) .contractMarker {
-  fill: var(--visual-cyan);
-}
-
-:global(.reveal) .inputArrow {
-  stroke: var(--visual-success);
-  stroke-width: 4;
-}
-
-:global(.reveal) .inputMarker {
-  fill: var(--visual-success);
-}
-
-:global(.reveal) .outputArrow {
-  stroke: var(--visual-warning);
-  stroke-width: 4;
-}
-
-:global(.reveal) .outputMarker {
-  fill: var(--visual-warning);
-}
-
-:global(.reveal) .legendLine {
-  stroke-width: 4;
-}
-
-:global(.reveal) .legendLabel {
-  fill: var(--neutral-100);
-  font-size: 16px;
-}
-
-/* Compact/horizontal layout: scale down for wider viewBox */
-:global(.reveal) .compact .moduleLabel {
-  font-size: 16px;
-}
-
-:global(.reveal) .compact .actorLabel {
-  font-size: 15px;
-}
-
-:global(.reveal) .compact .arrowLabel {
-  font-size: 12px;
-  stroke-width: 4px;
-}
-
-:global(.reveal) .compact .boundaryLabel {
-  font-size: 14px;
-}
-
-:global(.reveal) .compact .legendLabel {
-  font-size: 13px;
-}
-
-:global(.reveal) .compact .contractArrow,
-:global(.reveal) .compact .inputArrow,
-:global(.reveal) .compact .outputArrow {
-  stroke-width: 3;
-}
-
-:global(.reveal) .compact .legendLine {
-  stroke-width: 3;
-}

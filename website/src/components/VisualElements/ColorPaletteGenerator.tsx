@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './ColorPaletteGenerator.module.css';
-
-type ColorPaletteGeneratorProps = PresentationAwareProps;
 
 type HarmonyMode = 'monochromatic' | 'analogous' | 'complementary' | 'triadic';
 
@@ -116,16 +113,12 @@ function bestContrast(bgLum: number): number {
 
 // --- Component ---
 
-export default function ColorPaletteGenerator({
-  compact = false,
-}: ColorPaletteGeneratorProps) {
+export default function ColorPaletteGenerator() {
   const [hue, setHue] = useState(250);
   const [harmony, setHarmony] = useState<HarmonyMode>('monochromatic');
   const [darkMode, setDarkMode] = useState(false);
 
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
+  const containerClassName = styles.container;
 
   /** Get lightness for a shade index, respecting dark mode inversion */
   function getLightness(index: number): number {

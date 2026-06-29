@@ -154,8 +154,8 @@ function BaseModelCard() {
         width="160"
         height="160"
         rx={0}
-        fill="var(--visual-bg-indigo)"
-        stroke="var(--visual-indigo)"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
       />
       <text
         x="96"
@@ -315,8 +315,8 @@ function TuningBoard() {
         width="208"
         height="320"
         rx={0}
-        fill="var(--visual-bg-violet)"
-        stroke="var(--visual-violet)"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
       />
       <CardTitle
         x={240}
@@ -463,8 +463,8 @@ function MobileBaseCard() {
         width="296"
         height="88"
         rx={0}
-        fill="var(--visual-bg-indigo)"
-        stroke="var(--visual-indigo)"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
       />
       <EmojiImage asset={EMOJI.gear} x={58} y={76} size={36} />
       <text
@@ -546,8 +546,8 @@ function MobileTuningStack() {
         width="320"
         height="316"
         rx={0}
-        fill="var(--visual-bg-violet)"
-        stroke="var(--visual-violet)"
+        fill="var(--surface-raised)"
+        stroke="var(--border-default)"
       />
       <CardTitle
         x={44}

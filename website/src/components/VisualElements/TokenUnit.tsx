@@ -5,7 +5,8 @@ export type TokenUnitTone =
   | 'indigo'
   | 'violet'
   | 'cyan'
-  | 'magenta';
+  | 'magenta'
+  | 'warning';
 
 export type TokenUnitModality =
   | 'text'

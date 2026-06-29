@@ -5,11 +5,6 @@
   max-width: 640px;
 }
 
-.container.compact {
-  margin: 0 auto;
-  max-width: 95%;
-}
-
 .diagram {
   display: block;
   width: 100%;

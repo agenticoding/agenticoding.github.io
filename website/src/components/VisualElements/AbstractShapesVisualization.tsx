@@ -1,13 +1,8 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './AbstractShapesVisualization.module.css';
 
-export default function AbstractShapesVisualization({
-  compact = false,
-}: PresentationAwareProps = {}) {
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
+export default function AbstractShapesVisualization() {
+  const containerClassName = styles.container;
 
   return (
     <div

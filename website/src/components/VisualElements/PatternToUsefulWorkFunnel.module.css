@@ -3,11 +3,6 @@
   margin: var(--space-4) 0;
 }
 
-.container.compact {
-  margin: 0 auto;
-  max-width: 95%;
-}
-
 .diagram {
   display: block;
   width: 100%;
@@ -105,37 +100,6 @@
   animation-delay: var(--delay);
   transform-box: fill-box;
   transform-origin: center;
-}
-
-.tokenFlow {
-  animation-duration: 8800ms;
-  animation-fill-mode: both;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-out;
-  animation-delay: var(--delay);
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.inputTokenFlow {
-  animation-name: inputTokenTravel;
-}
-
-.mobileInputTokenFlow {
-  animation-name: mobileInputTokenTravel;
-}
-
-.gearTokenFlow {
-  animation-name: gearTokenTravel;
-}
-
-.outputTokenFlow {
-  animation-name: outputTokenTravel;
-}
-
-.mobileOutputTokenFlow {
-  animation-name: mobileOutputTokenTravel;
 }
 
 .nodeText {
@@ -248,101 +212,6 @@
   }
 }
 
-@keyframes inputTokenTravel {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translate(0, 0) scale(0.82);
-  }
-  3% {
-    opacity: 1;
-  }
-  10% {
-    opacity: 1;
-    transform: translate(126px, 0) scale(1);
-  }
-  14% {
-    opacity: 0;
-    transform: translate(140px, 0) scale(0.7);
-  }
-}
-
-@keyframes gearTokenTravel {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translate(0, 0) scale(0.82);
-  }
-  4% {
-    opacity: 1;
-  }
-  13% {
-    opacity: 1;
-    transform: translate(28px, 0) scale(1);
-  }
-  18% {
-    opacity: 0;
-    transform: translate(42px, 0) scale(0.7);
-  }
-}
-
-@keyframes mobileInputTokenTravel {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translate(0, 0) scale(0.82);
-  }
-  3% {
-    opacity: 1;
-  }
-  10% {
-    opacity: 1;
-    transform: translate(0, var(--travel-y)) scale(1);
-  }
-  14% {
-    opacity: 0;
-    transform: translate(0, var(--fade-y)) scale(0.7);
-  }
-}
-
-@keyframes outputTokenTravel {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translate(0, 0) scale(0.85);
-  }
-  4% {
-    opacity: 1;
-  }
-  14% {
-    opacity: 1;
-    transform: translate(128px, 0) scale(1);
-  }
-  19% {
-    opacity: 0;
-    transform: translate(142px, 0) scale(1.05);
-  }
-}
-
-@keyframes mobileOutputTokenTravel {
-  0%,
-  100% {
-    opacity: 0;
-    transform: translate(0, 0) scale(0.82);
-  }
-  4% {
-    opacity: 1;
-  }
-  14% {
-    opacity: 1;
-    transform: translate(0, var(--travel-y)) scale(1);
-  }
-  19% {
-    opacity: 0;
-    transform: translate(0, var(--fade-y)) scale(0.7);
-  }
-}
-
 @keyframes continuationEmit {
   0%,
   9%,
@@ -386,8 +255,7 @@
   .outputStory,
   .flowStory,
   .flowHead,
-  .gearStory,
-  .tokenFlow {
+  .gearStory {
     animation: none;
     transform: none;
     stroke-dashoffset: 0;
@@ -400,9 +268,5 @@
   .flowHead,
   .gearStory {
     opacity: 1;
-  }
-
-  .tokenFlow {
-    opacity: 0;
   }
 }

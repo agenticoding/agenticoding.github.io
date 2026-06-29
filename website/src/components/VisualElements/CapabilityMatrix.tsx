@@ -1,5 +1,4 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './CapabilityMatrix.module.css';
 
 interface Capability {
@@ -61,33 +60,7 @@ function getTrustIndicator(level: 'high' | 'medium' | 'low'): {
   }
 }
 
-export default function CapabilityMatrix({
-  compact = false,
-}: PresentationAwareProps = {}) {
-  // Compact mode: show simple three-badge preview
-  if (compact) {
-    const trustLevels = [
-      { level: 'high' as const, icon: '✅', label: 'Reliable' },
-      { level: 'medium' as const, icon: '⚠️', label: 'Verify' },
-      { level: 'low' as const, icon: '❌', label: 'Check docs' },
-    ];
-
-    return (
-      <div className={styles.compactView}>
-        {trustLevels.map(({ level, icon, label }) => (
-          <div
-            key={level}
-            className={`${styles.compactBadge} ${styles[level]}`}
-          >
-            <span className={styles.compactIcon}>{icon}</span>
-            <span className={styles.compactLabel}>{label}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // Full table view for lesson pages
+export default function CapabilityMatrix() {
   return (
     <div className={styles.container}>
       <div className={styles.tableWrapper}>

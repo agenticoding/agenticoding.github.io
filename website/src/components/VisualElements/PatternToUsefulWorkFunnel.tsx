@@ -1,15 +1,11 @@
 import React, { type CSSProperties } from 'react';
 import clsx from 'clsx';
 
-import type { PresentationAwareProps } from '@site/src/components/PresentationMode/types';
 import { EmojiImage } from './ActorNodes';
 import { centeredEmojiOffset, EMOJI, type EmojiAsset } from './emojiAssets';
 import { GearNode } from './GearNode';
-import {
-  TokenUnit,
-  type TokenUnitModality,
-  type TokenUnitSignal,
-} from './TokenUnit';
+import { AnimatedTokenFlow, tokenFlowSpecs } from './AnimatedTokenFlow';
+import { DiagramTile } from './DiagramTile';
 import { MIXED_CONTEXT_TOKENS, OUTPUT_TOKENS } from './TokenStream';
 import styles from './PatternToUsefulWorkFunnel.module.css';
 
@@ -29,15 +25,6 @@ type MotionStyle = CSSProperties & {
   '--travel-y'?: string;
   '--fade-y'?: string;
 };
-type FlowTokenSpec = {
-  delay: string;
-  modality: TokenUnitModality;
-  signal: TokenUnitSignal;
-};
-type TokenSequence = readonly {
-  modality: TokenUnitModality;
-  signal?: TokenUnitSignal;
-}[];
 
 const W = 744;
 const H = 360;
@@ -156,19 +143,8 @@ const OUTPUT_CHIPS: Chip[] = [
     delay: '5200ms',
   },
 ];
-function tokenFlowSpecs(
-  tokens: TokenSequence,
-  startDelayMs: number,
-  stepMs: number,
-): FlowTokenSpec[] {
-  return tokens.map(({ modality, signal = 'ordinary' }, index) => ({
-    delay: `${startDelayMs + index * stepMs}ms`,
-    modality,
-    signal,
-  }));
-}
-
 const INPUT_FLOW_TOKENS = tokenFlowSpecs(MIXED_CONTEXT_TOKENS, 1320, 160);
+const GEAR_FLOW_TOKENS = [{ delay: '2460ms', modality: 'generic', signal: 'compressed' }] as const;
 const OUTPUT_FLOW_TOKENS = tokenFlowSpecs(OUTPUT_TOKENS, 3520, 220);
 const CARDS: Card[] = [
   {
@@ -205,13 +181,6 @@ function toneVars(tone: Tone) {
 function motionStyle(delay: string): MotionStyle {
   return { '--delay': delay };
 }
-function mobileTokenMotionStyle(delay: string, travelY: number): MotionStyle {
-  return {
-    '--delay': delay,
-    '--travel-y': `${travelY}px`,
-    '--fade-y': `${travelY + 14}px`,
-  };
-}
 function chipContentLayout({
   x,
   width,
@@ -232,31 +201,7 @@ function chipContentLayout({
   return { iconX, textX: iconX + iconSize + CHIP_ICON_LABEL_GAP };
 }
 function CardBox({ title, detail, x, y, tone }: Card) {
-  const colors = toneVars(tone);
-  return (
-    <g className={styles.card}>
-      <rect
-        x={x}
-        y={y}
-        width={CARD_W}
-        height={CARD_H}
-        rx={0}
-        fill={colors.fill}
-        stroke={colors.stroke}
-      />
-      <text
-        x={x + CARD_W / 2}
-        y={y + 34}
-        className={styles.cardTitle}
-        fill={colors.stroke}
-      >
-        {title}
-      </text>
-      <text x={x + CARD_W / 2} y={y + 60} className={styles.cardDetail}>
-        {detail}
-      </text>
-    </g>
-  );
+  return <DiagramTile x={x} y={y} width={CARD_W} height={CARD_H} tone={tone} title={title} detail={detail} variant="centered" className={styles.card} />;
 }
 function ChipPill({
   label,
@@ -418,78 +363,6 @@ function MobileConnector({
     </g>
   );
 }
-function FlowToken({
-  x,
-  y,
-  delay,
-  className,
-  modality,
-  signal,
-  size = 20,
-}: {
-  x: number;
-  y: number;
-  delay: string;
-  className: string;
-  modality: TokenUnitModality;
-  signal: TokenUnitSignal;
-  size?: number;
-}) {
-  return (
-    <g
-      className={`${styles.tokenFlow} ${className}`}
-      style={motionStyle(delay)}
-      aria-hidden="true"
-    >
-      <TokenUnit
-        x={x}
-        y={y}
-        width={size}
-        height={size}
-        tone="violet"
-        modality={modality}
-        signal={signal}
-      />
-    </g>
-  );
-}
-
-function MobileTokenFlow({
-  x,
-  y,
-  travelY,
-  tokens,
-  className,
-}: {
-  x: number;
-  y: number;
-  travelY: number;
-  tokens: FlowTokenSpec[];
-  className: string;
-}) {
-  return (
-    <>
-      {tokens.map(({ delay, modality, signal }) => (
-        <g
-          key={`${delay}-${modality}`}
-          className={`${styles.tokenFlow} ${className}`}
-          style={mobileTokenMotionStyle(delay, travelY)}
-          aria-hidden="true"
-        >
-          <TokenUnit
-            x={x}
-            y={y}
-            width={MOBILE_STREAM_SIZE}
-            height={MOBILE_STREAM_SIZE}
-            tone="violet"
-            modality={modality}
-            signal={signal}
-          />
-        </g>
-      ))}
-    </>
-  );
-}
 function MobileStage({
   stage,
   y,
@@ -502,15 +375,7 @@ function MobileStage({
   const colors = toneVars(stage.tone);
   return (
     <g className={styles.mobileStage}>
-      <rect
-        x={MOBILE_STAGE_X}
-        y={y}
-        width={MOBILE_STAGE_W}
-        height={MOBILE_STAGE_H}
-        rx={0}
-        fill={colors.fill}
-        stroke={colors.stroke}
-      />
+      <DiagramTile x={MOBILE_STAGE_X} y={y} width={MOBILE_STAGE_W} height={MOBILE_STAGE_H} tone={stage.tone} title={stage.title} detail={stage.detail} variant="centered" density="mobile" />
       <circle
         cx={MOBILE_STAGE_X + 28}
         cy={y + 30}
@@ -520,17 +385,6 @@ function MobileStage({
       />
       <text x={MOBILE_STAGE_X + 28} y={y + 34} className={styles.stepNumber}>
         {index + 1}
-      </text>
-      <text
-        x={MOBILE_CENTER_X}
-        y={y + 34}
-        className={styles.mobileCardTitle}
-        fill={colors.stroke}
-      >
-        {stage.title}
-      </text>
-      <text x={MOBILE_CENTER_X} y={y + 58} className={styles.mobileCardDetail}>
-        {stage.detail}
       </text>
       {stage.tone === 'violet' ? (
         <>
@@ -602,24 +456,19 @@ function DesktopDiagram() {
         tipY={CENTER_Y}
         d={`M ${LEFT_X + CARD_W} ${CENTER_Y} C 250 ${CENTER_Y}, 260 ${CENTER_Y}, ${MID_X} ${CENTER_Y}`}
       />
-      {INPUT_FLOW_TOKENS.map(({ delay, modality, signal }) => (
-        <FlowToken
-          key={`${delay}-${modality}`}
-          x={LEFT_X + CARD_W - 8}
-          y={CENTER_Y - 10}
-          delay={delay}
-          className={styles.inputTokenFlow}
-          modality={modality}
-          signal={signal}
-        />
-      ))}
-      <FlowToken
+      <AnimatedTokenFlow
+        x={LEFT_X + CARD_W - 8}
+        y={CENTER_Y - 10}
+        tokens={INPUT_FLOW_TOKENS}
+        variant="input"
+        travelX={126}
+      />
+      <AnimatedTokenFlow
         x={MID_X + 76}
         y={CENTER_Y - 10}
-        delay="2460ms"
-        className={styles.gearTokenFlow}
-        modality="generic"
-        signal="compressed"
+        tokens={GEAR_FLOW_TOKENS}
+        variant="gear"
+        travelX={28}
       />
       <GearNode
         x={MID_X + 72}
@@ -637,17 +486,13 @@ function DesktopDiagram() {
         tipY={CENTER_Y}
         d={`M ${MID_X + CARD_W} ${CENTER_Y} C 500 ${CENTER_Y}, 510 ${CENTER_Y}, ${RIGHT_X} ${CENTER_Y}`}
       />
-      {OUTPUT_FLOW_TOKENS.map(({ delay, modality, signal }) => (
-        <FlowToken
-          key={`${delay}-${modality}`}
-          x={MID_X + 120}
-          y={CENTER_Y - 10}
-          delay={delay}
-          className={styles.outputTokenFlow}
-          modality={modality}
-          signal={signal}
-        />
-      ))}
+      <AnimatedTokenFlow
+        x={MID_X + 120}
+        y={CENTER_Y - 10}
+        tokens={OUTPUT_FLOW_TOKENS}
+        variant="output"
+        travelX={128}
+      />
       {OUTPUT_CHIPS.map((chip) => (
         <ChipPill
           key={chip.label}
@@ -681,35 +526,33 @@ function MobileDiagram() {
         tipY={MOBILE_INPUT_CONNECTOR_END_Y}
         delay="1300ms"
       />
-      <MobileTokenFlow
+      <AnimatedTokenFlow
         x={MOBILE_CENTER_X - MOBILE_STREAM_SIZE / 2}
         y={MOBILE_INPUT_CONNECTOR_START_Y - MOBILE_STREAM_SIZE / 2}
         travelY={MOBILE_INPUT_GEAR_BOUNDARY_Y - MOBILE_INPUT_CONNECTOR_START_Y}
         tokens={INPUT_FLOW_TOKENS}
-        className={styles.mobileInputTokenFlow}
+        variant="verticalInput"
+        size={MOBILE_STREAM_SIZE}
       />
       <MobileConnector
         startY={MOBILE_OUTPUT_CONNECTOR_START_Y}
         tipY={MOBILE_OUTPUT_CONNECTOR_END_Y}
         delay="3500ms"
       />
-      <MobileTokenFlow
+      <AnimatedTokenFlow
         x={MOBILE_CENTER_X - MOBILE_STREAM_SIZE / 2}
         y={MOBILE_OUTPUT_GEAR_BOUNDARY_Y - MOBILE_STREAM_SIZE / 2}
         travelY={MOBILE_OUTPUT_CONNECTOR_END_Y - MOBILE_OUTPUT_GEAR_BOUNDARY_Y}
         tokens={OUTPUT_FLOW_TOKENS}
-        className={styles.mobileOutputTokenFlow}
+        variant="verticalOutput"
+        size={MOBILE_STREAM_SIZE}
       />
     </svg>
   );
 }
 
-export default function PatternToUsefulWorkFunnel({
-  compact = false,
-}: PresentationAwareProps = {}) {
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
+export default function PatternToUsefulWorkFunnel() {
+  const containerClassName = styles.container;
 
   return (
     <div className={containerClassName}>

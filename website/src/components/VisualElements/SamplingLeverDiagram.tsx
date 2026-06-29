@@ -1,6 +1,5 @@
 import React, { useId } from 'react';
 
-import type { PresentationAwareProps } from '@site/src/components/PresentationMode/types';
 import { Arrow, G, Marker, Step, TextLine, svgStyle } from './ReliabilityLeverPrimitives';
 
 const W = 920;
@@ -24,11 +23,11 @@ function JudgeGate() {
   );
 }
 
-export default function SamplingLeverDiagram({ compact = false }: PresentationAwareProps = {}) {
+export default function SamplingLeverDiagram() {
   const uid = useId().replace(/:/g, '');
   const markerId = `sampling-${uid}`;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" role="img" aria-label="Sampling lever diagram: one noisy implementation step splits into three independent candidate lanes, then an independent judge selects a passing result, increasing effective reliability R eff." xmlns="http://www.w3.org/2000/svg" style={svgStyle(compact, W)}>
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" role="img" aria-label="Sampling lever diagram: one noisy implementation step splits into three independent candidate lanes, then an independent judge selects a passing result, increasing effective reliability R eff." xmlns="http://www.w3.org/2000/svg" style={svgStyle(W)}>
       <defs><Marker id={markerId} tone="var(--visual-violet)" /></defs>
       <rect x={G} y={G} width={W - G * 2} height={H - G * 2} rx={0} fill="var(--surface-page)" stroke="var(--border-subtle)" />
       <TextLine x={56} y={48} tone="var(--text-heading)" size="var(--text-lg)" weight={700} family="var(--font-display)">Sampling raises effective reliability</TextLine>

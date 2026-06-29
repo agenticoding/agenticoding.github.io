@@ -8,8 +8,8 @@ export const FONT = {
   human: 'var(--font-mono-human)',
 };
 
-export function svgStyle(compact: boolean, width: number) {
-  return { display: 'block', maxWidth: compact ? '95%' : `${width}px`, margin: '0 auto' };
+export function svgStyle(width: number) {
+  return { display: 'block', maxWidth: `${width}px`, margin: '0 auto' };
 }
 
 export function Marker({ id, tone }: { id: string; tone: string }) {

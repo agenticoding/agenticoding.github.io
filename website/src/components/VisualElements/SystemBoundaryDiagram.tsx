@@ -1,5 +1,4 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './SystemBoundaryDiagram.module.css';
 
 // Shared constants
@@ -55,49 +54,7 @@ const DEFAULT_LEGEND_ENTRIES = [
 
 const DEFAULT_VIEWBOX = { x: -47, y: -15, w: 587, h: 463 };
 
-// --- Compact layout (horizontal row, for widescreen presentations) ---
-// All three internal modules in a single row:
-//              Client App
-//                  ↓
-// Stripe ←→ webhook-handler → payment → notification → RabbitMQ
 
-const COMPACT_BOUNDARY = { x: 145, y: 85, w: 605, h: 162 };
-
-const COMPACT_MODULES = [
-  { id: 'webhook', label: 'webhook-handler', x: 170, y: 130, w: 155, h: 72 },
-  { id: 'payment', label: 'payment', x: 390, y: 130, w: 130, h: 72 },
-  { id: 'notification', label: 'notification', x: 585, y: 130, w: 140, h: 72 },
-] as const;
-
-const COMPACT_ACTORS = [
-  { id: 'stripe', label: 'Stripe', x: 0, y: 130, w: 105, h: 72 },
-  { id: 'client', label: 'Client App', x: 390, y: 5, w: 130, h: 65 },
-  { id: 'rabbit', label: 'RabbitMQ', x: 790, y: 130, w: 130, h: 72 },
-] as const;
-
-const COMPACT_CONTRACTS: ArrowDef[] = [
-  { from: 'webhook', to: 'payment', label: 'processEvent()', path: [325 + ARROW_GAP, 166, 390 - ARROW_GAP, 166], labelDy: -45 },
-  { from: 'payment', to: 'notification', label: 'PaymentEvent', path: [520 + ARROW_GAP, 166, 585 - ARROW_GAP, 166], labelDy: -45 },
-];
-
-const COMPACT_INPUTS: ArrowDef[] = [
-  { from: 'stripe', to: 'webhook', label: 'Stripe webhook', path: [105 + ARROW_GAP, 156, 170 - ARROW_GAP, 156], labelDy: -36 },
-  { from: 'client', to: 'payment', label: 'Order request', path: [455, 70 + ARROW_GAP, 455, 130 - ARROW_GAP], labelDx: 80 },
-];
-
-const COMPACT_OUTPUTS: ArrowDef[] = [
-  { from: 'webhook', to: 'stripe', label: 'Ack 200', path: [170 - ARROW_GAP, 176, 105 + ARROW_GAP, 176], labelDy: 35 },
-  { from: 'notification', to: 'rabbit', label: 'Queue message', path: [725 + ARROW_GAP, 166, 790 - ARROW_GAP, 166], labelDy: -45 },
-];
-
-const COMPACT_LEGEND_Y = 272;
-const COMPACT_LEGEND_ENTRIES = [
-  { x1: 240, x2: 270, textX: 277, label: 'Contract (internal)', arrowId: 'arrow-contract', strokeVar: 'var(--visual-cyan)' },
-  { x1: 420, x2: 450, textX: 457, label: 'Input (external)', arrowId: 'arrow-input', strokeVar: 'var(--visual-success)' },
-  { x1: 600, x2: 630, textX: 637, label: 'Output (external)', arrowId: 'arrow-output', strokeVar: 'var(--visual-warning)' },
-];
-
-const COMPACT_VIEWBOX = { x: -25, y: -20, w: 970, h: 300 };
 
 // Animation delays (shared)
 const DELAY_BOUNDARY = 0;
@@ -106,27 +63,26 @@ const DELAY_ACTORS = 0.3;
 const DELAY_ARROWS = 0.5;
 const DELAY_LEGEND = 0.7;
 
-export default function SystemBoundaryDiagram({ compact = false }: PresentationAwareProps = {}) {
-  const boundary = compact ? COMPACT_BOUNDARY : DEFAULT_BOUNDARY;
-  const modules = compact ? COMPACT_MODULES : DEFAULT_MODULES;
-  const actors = compact ? COMPACT_ACTORS : DEFAULT_ACTORS;
-  const contracts = compact ? COMPACT_CONTRACTS : DEFAULT_CONTRACTS;
-  const inputs = compact ? COMPACT_INPUTS : DEFAULT_INPUTS;
-  const outputs = compact ? COMPACT_OUTPUTS : DEFAULT_OUTPUTS;
-  const legendY = compact ? COMPACT_LEGEND_Y : DEFAULT_LEGEND_Y;
-  const legendEntries = compact ? COMPACT_LEGEND_ENTRIES : DEFAULT_LEGEND_ENTRIES;
-  const viewBox = compact ? COMPACT_VIEWBOX : DEFAULT_VIEWBOX;
+export default function SystemBoundaryDiagram() {
+  const boundary = DEFAULT_BOUNDARY;
+  const modules = DEFAULT_MODULES;
+  const actors = DEFAULT_ACTORS;
+  const contracts = DEFAULT_CONTRACTS;
+  const inputs = DEFAULT_INPUTS;
+  const outputs = DEFAULT_OUTPUTS;
+  const legendY = DEFAULT_LEGEND_Y;
+  const legendEntries = DEFAULT_LEGEND_ENTRIES;
+  const viewBox = DEFAULT_VIEWBOX;
 
-  // Smaller markers for the wider compact viewBox
-  const mW = compact ? 6 : 8;
-  const mH = compact ? 6 : 8;
-  const mRefX = compact ? 5 : 6;
-  const mRefY = compact ? 3 : 3;
-  const mPoly = compact ? '0 0, 6 3, 0 6' : '0 0, 8 3, 0 6';
+  const mW = 8;
+  const mH = 8;
+  const mRefX = 6;
+  const mRefY = 3;
+  const mPoly = '0 0, 8 3, 0 6';
 
   return (
     <div
-      className={`${styles.container} ${compact ? styles.compact : ''}`}
+      className={styles.container}
       role="img"
       aria-label="System boundary diagram: External actors (Stripe, Client App, RabbitMQ) connect to internal modules (webhook-handler, payment, notification) through input and output interfaces. Internal modules communicate via contracts."
     >

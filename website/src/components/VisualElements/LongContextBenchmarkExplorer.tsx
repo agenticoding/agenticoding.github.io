@@ -1,7 +1,6 @@
 import React, { useEffect, useId, useMemo, useState } from 'react';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import { benchmarkRows, type BenchmarkPoint, type BenchmarkRow } from './LongContextBenchmarkTable';
 import styles from './LongContextBenchmarkExplorer.module.css';
 
@@ -211,10 +210,10 @@ function normalizeSelectedIds(selectedIds: string[]) {
   return benchmarkRows.filter((row) => selectedSet.has(row.id)).map((row) => row.id);
 }
 
-export default function LongContextBenchmarkExplorer({ compact = false }: PresentationAwareProps = {}) {
+export default function LongContextBenchmarkExplorer() {
   const [selectedIds, setSelectedIds] = useState(defaultSelectedIds);
   const selectedRows = getSelectedRows(selectedIds);
-  const containerClassName = compact ? `${styles.container} ${styles.compact}` : styles.container;
+  const containerClassName = styles.container;
 
   return <section className={containerClassName} aria-labelledby="long-context-benchmark-title"><header className={styles.header}><p className={styles.eyebrow}>Long-context benchmark explorer</p><h3 id="long-context-benchmark-title">Choose by effective context, not advertised window.</h3><p>Context windows are capacity. Effective context is the part the model can still retrieve from when the prompt approaches production scale.</p></header><p className={styles.screenSummary}>The chart plots reported benchmark points from 8K to 1M where available. GPT-5.5 and some DeepSeek rows have full MRCR curves; Claude and Gemini rows use sparse measured points.</p><ChartStage selectedRows={selectedRows} selectedIds={selectedIds} onToggle={(id) => setSelectedIds((current) => toggleSelectedId(current, id))} /></section>;
 }

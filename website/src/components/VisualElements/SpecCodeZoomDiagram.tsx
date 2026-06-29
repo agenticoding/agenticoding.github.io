@@ -1,22 +1,14 @@
 import React from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './SpecCodeZoomDiagram.module.css';
 
-export default function SpecCodeZoomDiagram({
-  compact = false,
-}: PresentationAwareProps = {}) {
-  const containerClassName = compact
-    ? `${styles.container} ${styles.compact}`
-    : styles.container;
-
+export default function SpecCodeZoomDiagram() {
   // Layout constants
   const viewBoxWidth = 440;
   const viewBoxHeight = 380;
   const centerX = viewBoxWidth / 2;
 
-  const viewBox = compact
-    ? '30 0 380 340'
-    : `0 0 ${viewBoxWidth} ${viewBoxHeight}`;
+  const viewBox = `0 0 ${viewBoxWidth} ${viewBoxHeight}`;
+  const containerClassName = styles.container;
 
   // Box dimensions — SPEC smaller, CODE larger
   const specBoxWidth = 160;
@@ -285,34 +277,30 @@ export default function SpecCodeZoomDiagram({
         </text>
 
         {/* ===== LEGEND ===== */}
-        {!compact && (
-          <g className={styles.legend}>
-            <line
-              x1={centerX - 140}
-              y1={legendY}
-              x2={centerX - 125}
-              y2={legendY}
-              className={styles.legendLineGenerate}
-            />
-            <text
-              x={centerX - 120}
-              y={legendY + 4}
-              className={styles.legendText}
-            >
-              Spec sharpens through contact with implementation
-            </text>
-          </g>
-        )}
+        <g className={styles.legend}>
+          <line
+            x1={centerX - 140}
+            y1={legendY}
+            x2={centerX - 125}
+            y2={legendY}
+            className={styles.legendLineGenerate}
+          />
+          <text
+            x={centerX - 120}
+            y={legendY + 4}
+            className={styles.legendText}
+          >
+            Spec sharpens through contact with implementation
+          </text>
+        </g>
       </svg>
 
       {/* Description text */}
-      {!compact && (
-        <p className={styles.description}>
-          <strong>Spec</strong> = hypothesis.{' '}
-          <strong>Code</strong> = experiment.{' '}
-          Each pass reveals what the previous spec missed.
-        </p>
-      )}
+      <p className={styles.description}>
+        <strong>Spec</strong> = hypothesis.{' '}
+        <strong>Code</strong> = experiment.{' '}
+        Each pass reveals what the previous spec missed.
+      </p>
     </div>
   );
 }

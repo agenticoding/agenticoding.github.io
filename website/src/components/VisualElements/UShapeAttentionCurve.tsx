@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { PresentationAwareProps } from '../PresentationMode/types';
 import styles from './UShapeAttentionCurve.module.css';
 
-interface UShapeAttentionCurveProps extends PresentationAwareProps {
+interface UShapeAttentionCurveProps {
   initialContextFill?: number; // 0-100, default 30
 }
 
@@ -36,7 +35,6 @@ function getSeverity(contextFill: number): { tier: string; desc: string; color: 
 
 export default function UShapeAttentionCurve({
   initialContextFill = 30,
-  compact = false,
 }: UShapeAttentionCurveProps) {
   const [contextFill, setContextFill] = useState(Math.max(0, Math.min(100, initialContextFill)));
 
@@ -142,7 +140,7 @@ export default function UShapeAttentionCurve({
   }, [isDescWide]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className={`${styles.container} ${compact ? styles.compact : ''}`}>
+    <div className={styles.container}>
       <svg
         className={styles.svg}
         viewBox="0 0 800 320"
@@ -275,8 +273,7 @@ export default function UShapeAttentionCurve({
       </div>
 
       {/* Explanation cards */}
-      {!compact && (
-        <div className={styles.cards}>
+      <div className={styles.cards}>
           <div className={`${styles.card} ${styles.cardPrimacy}`}>
             <div className={styles.cardTitle}>PRIMACY EFFECT</div>
             <div className={styles.cardBody}>
@@ -314,7 +311,6 @@ export default function UShapeAttentionCurve({
             </div>
           </div>
         </div>
-      )}
     </div>
   );
 }

@@ -29,36 +29,30 @@
   stroke-width: var(--stroke-fine);
 }
 
-.checkpointMotion {
-  pointer-events: none;
+.tileBeat {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ownershipTileBeat 6200ms ease-in-out infinite both;
 }
 
-.checkpointTrace {
-  fill: none;
-  opacity: 0;
-  stroke: var(--visual-violet);
-  stroke-width: var(--stroke-heavy);
-  stroke-linecap: round;
-  stroke-dasharray: 0.1 100;
-  stroke-dashoffset: 100;
+.intentBeat {
+  animation-delay: 0ms;
 }
 
-.traceDelegated {
-  stroke: var(--visual-neutral);
-  animation: checkpointTraceDelegated 6400ms linear infinite;
+.agentBeat {
+  animation-delay: 850ms;
 }
 
-.traceGenerated {
-  animation: checkpointTraceGenerated 6400ms linear infinite;
+.candidateBeat {
+  animation-delay: 1700ms;
 }
 
-.traceToGate {
-  animation: checkpointTraceToGate 6400ms linear infinite;
+.gateBeat {
+  animation-delay: 3000ms;
 }
 
-.traceAccepted {
-  stroke: var(--visual-success);
-  animation: checkpointTraceAccepted 6400ms linear infinite;
+.acceptedBeat {
+  animation-delay: 4300ms;
 }
 
 .flow {
@@ -126,71 +120,14 @@
   fill: var(--visual-success);
 }
 
-@keyframes checkpointTraceDelegated {
+@keyframes ownershipTileBeat {
   0%,
-  3% {
-    opacity: 0;
-    stroke-dashoffset: 100;
-  }
-  6%,
-  14% {
-    opacity: 1;
-  }
-  18%,
+  14%,
   100% {
-    opacity: 0;
-    stroke-dashoffset: 0;
+    transform: scale(1);
   }
-}
-
-@keyframes checkpointTraceGenerated {
-  0%,
-  18% {
-    opacity: 0;
-    stroke-dashoffset: 100;
-  }
-  21%,
-  33% {
-    opacity: 1;
-  }
-  37%,
-  100% {
-    opacity: 0;
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes checkpointTraceToGate {
-  0%,
-  39% {
-    opacity: 0;
-    stroke-dashoffset: 100;
-  }
-  42%,
-  56% {
-    opacity: 1;
-  }
-  60%,
-  100% {
-    opacity: 0;
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes checkpointTraceAccepted {
-  0%,
-  62% {
-    opacity: 0;
-    stroke-dashoffset: 100;
-  }
-  66%,
-  76% {
-    opacity: 1;
-  }
-  82%,
-  100% {
-    opacity: 0;
-    stroke-dashoffset: 0;
+  6% {
+    transform: scale(1.03);
   }
 }
 
@@ -206,12 +143,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .flow,
-  .checkpointTrace {
+  .tileBeat {
     animation: none;
     transition: none;
   }
 
-  .checkpointTrace {
-    display: none;
+  .tileBeat {
+    opacity: 1;
+    transform: none;
   }
 }
