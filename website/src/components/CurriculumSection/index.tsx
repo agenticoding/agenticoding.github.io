@@ -86,8 +86,8 @@ export default function CurriculumSection() {
       title: 'Methodology',
       lessonCount: 3,
       hue: 'violet',
-      topics: ['Prompt structure', 'Grounding', 'Iteration patterns'],
-      link: '/methodology/lesson-3-high-level-methodology',
+      topics: ['Prompt structure', 'Workflow', 'Grounding'],
+      link: '/methodology/lesson-3-prompting-101',
     },
     {
       number: 3,
@@ -114,7 +114,7 @@ export default function CurriculumSection() {
           What You&apos;ll Learn
         </Heading>
         <p className={styles.sectionSubtitle}>
-          {LESSON_COUNT} lessons &middot; Docs &middot; Podcasts &middot; Slides
+          {LESSON_COUNT} lessons &middot; Docs
         </p>
         <div className={styles.moduleGrid}>
           {modules.map((m) => (

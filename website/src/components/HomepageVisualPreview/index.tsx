@@ -50,10 +50,10 @@ export default function CourseVisualsShowcase() {
           <PreviewTile
             title="Iterative AI Workflows"
             caption="Research, Plan, Execute, Validate - systematic AI-assisted development"
-            lessonLink="/methodology/lesson-3-high-level-methodology"
-            lessonNumber={3}
+            lessonLink="/methodology/lesson-4-high-level-methodology"
+            lessonNumber={4}
           >
-            <WorkflowCircle compact />
+            <WorkflowCircle />
           </PreviewTile>
 
           <PreviewTile
@@ -62,7 +62,7 @@ export default function CourseVisualsShowcase() {
             lessonLink="/practical-techniques/lesson-9-tests-as-guardrails"
             lessonNumber={9}
           >
-            <ThreeContextWorkflow compact vertical />
+            <ThreeContextWorkflow vertical />
           </PreviewTile>
 
           <PreviewTile
@@ -71,7 +71,7 @@ export default function CourseVisualsShowcase() {
             lessonLink="/practical-techniques/lesson-12-agent-friendly-code"
             lessonNumber={12}
           >
-            <CompoundQualityVisualization compact homepageMode />
+            <CompoundQualityVisualization homepageMode />
           </PreviewTile>
         </div>
       </div>

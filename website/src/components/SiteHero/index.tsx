@@ -1,6 +1,5 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import Heading from '@theme/Heading';
-import LessonAudioPlayer from '@site/src/components/LessonAudioPlayer';
 import styles from './index.module.css';
 
 // ---------------------------------------------------------------------------
@@ -152,7 +151,6 @@ export default function SiteHero(): ReactNode {
             </>
           )}
         </p>
-        <LessonAudioPlayer />
       </div>
 
       <aside className={styles.heroAside} aria-label="Reader testimonials">
