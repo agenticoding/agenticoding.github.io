@@ -1,0 +1,185 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  padding-block-end: var(--space-1);
+  max-width: 760px;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.desktopDiagram {
+  max-width: 760px;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 340px;
+}
+
+.vectorStroke,
+.divider {
+  vector-effect: non-scaling-stroke;
+}
+
+.divider {
+  opacity: 0.45;
+  stroke-width: 1;
+}
+
+.frameLabel,
+.eyebrow,
+.title,
+.detail,
+.chipText,
+.chipPrompt,
+.stageId,
+.stageText,
+.loopLabel,
+.contextNote {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.frameLabel,
+.eyebrow {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.frameLabel {
+  font-size: 10px;
+}
+
+.title {
+  font-size: var(--text-sm);
+  letter-spacing: 0.01em;
+}
+
+.human {
+  font-family: var(--font-mono-human);
+  font-weight: 400;
+}
+
+.ai {
+  font-family: var(--font-mono-ai);
+  font-weight: 500;
+}
+
+.spec {
+  font-family: var(--font-mono-spec);
+  font-weight: 600;
+}
+
+.detail,
+.contextNote {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.chipText,
+.chipPrompt,
+.loopLabel {
+  font-family: var(--font-mono-keyword);
+  letter-spacing: 0.01em;
+}
+
+.chipText {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.chipPrompt {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.loopLabel {
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.stageId {
+  font-family: var(--font-mono-spec);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.stageText {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.flowPulse {
+  animation-duration: 6400ms;
+  animation-iteration-count: infinite;
+  animation-name: flowPulse;
+  animation-timing-function: var(--ease-standard);
+  transform-box: fill-box;
+}
+
+.step1 {
+  animation-delay: 0ms;
+}
+
+.step2 {
+  animation-delay: 800ms;
+}
+
+.step3 {
+  animation-delay: 1600ms;
+}
+
+.step4 {
+  animation-delay: 2400ms;
+}
+
+.step5 {
+  animation-delay: 1200ms;
+}
+
+@keyframes flowPulse {
+  0%, 28%, 100% {
+    opacity: 1;
+  }
+
+  10%, 18% {
+    opacity: 0.72;
+  }
+}
+
+@container (max-width: 560px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 580px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowPulse {
+    animation: none;
+  }
+}

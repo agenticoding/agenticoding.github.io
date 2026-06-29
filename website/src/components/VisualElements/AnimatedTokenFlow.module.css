@@ -1,0 +1,223 @@
+.tokenFlow {
+  animation-duration: var(--flow-duration, 8800ms);
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-out;
+  animation-delay: var(--delay);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.inputTokenFlow {
+  animation-name: inputTokenTravel;
+}
+
+.gearTokenFlow {
+  animation-name: gearTokenTravel;
+}
+
+.outputTokenFlow {
+  animation-name: outputTokenTravel;
+}
+
+.verticalInputTokenFlow {
+  animation-name: verticalInputTokenTravel;
+}
+
+.verticalOutputTokenFlow {
+  animation-name: verticalOutputTokenTravel;
+}
+
+.directTokenFlow {
+  animation-name: directTokenTravel;
+}
+
+.burstOutputTokenFlow {
+  animation-name: burstOutputTokenTravel;
+}
+
+.burstVerticalInputTokenFlow {
+  animation-name: burstVerticalInputTokenTravel;
+}
+
+.burstVerticalOutputTokenFlow {
+  animation-name: burstVerticalOutputTokenTravel;
+}
+
+@keyframes inputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  3% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 1;
+    transform: translate(var(--travel-x), 0) scale(1);
+  }
+  14% {
+    opacity: 0;
+    transform: translate(var(--fade-x), 0) scale(0.7);
+  }
+}
+
+@keyframes gearTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  4% {
+    opacity: 1;
+  }
+  13% {
+    opacity: 1;
+    transform: translate(var(--travel-x), 0) scale(1);
+  }
+  18% {
+    opacity: 0;
+    transform: translate(var(--fade-x), 0) scale(0.7);
+  }
+}
+
+@keyframes outputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.85);
+  }
+  4% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 1;
+    transform: translate(var(--travel-x), 0) scale(1);
+  }
+  19% {
+    opacity: 0;
+    transform: translate(var(--fade-x), 0) scale(1.05);
+  }
+}
+
+@keyframes verticalInputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  3% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 1;
+    transform: translate(0, var(--travel-y)) scale(1);
+  }
+  14% {
+    opacity: 0;
+    transform: translate(0, var(--fade-y)) scale(0.7);
+  }
+}
+
+@keyframes verticalOutputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  4% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 1;
+    transform: translate(0, var(--travel-y)) scale(1);
+  }
+  19% {
+    opacity: 0;
+    transform: translate(0, var(--fade-y)) scale(0.7);
+  }
+}
+
+@keyframes directTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  4% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 1;
+    transform: translate(var(--travel-x), var(--travel-y)) scale(1);
+  }
+  19% {
+    opacity: 0;
+    transform: translate(var(--fade-x), var(--fade-y)) scale(0.7);
+  }
+}
+
+@keyframes burstOutputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  2% {
+    opacity: 1;
+  }
+  7% {
+    opacity: 1;
+    transform: translate(var(--travel-x), 0) scale(1);
+  }
+  9% {
+    opacity: 0;
+    transform: translate(var(--fade-x), 0) scale(0.7);
+  }
+}
+
+@keyframes burstVerticalInputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  2% {
+    opacity: 1;
+  }
+  7% {
+    opacity: 1;
+    transform: translate(0, var(--travel-y)) scale(1);
+  }
+  9% {
+    opacity: 0;
+    transform: translate(0, var(--fade-y)) scale(0.7);
+  }
+}
+
+@keyframes burstVerticalOutputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  2% {
+    opacity: 1;
+  }
+  7% {
+    opacity: 1;
+    transform: translate(0, var(--travel-y)) scale(1);
+  }
+  9% {
+    opacity: 0;
+    transform: translate(0, var(--fade-y)) scale(0.7);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tokenFlow {
+    animation: none;
+  }
+}

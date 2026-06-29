@@ -1,0 +1,199 @@
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.desktop {
+  max-width: 940px;
+}
+
+.diagram.mobile {
+  display: none;
+  max-width: 360px;
+}
+
+.title {
+  fill: var(--ifm-font-color-base);
+  font-family: var(--font-mono-ai);
+  font-size: 16px;
+  font-weight: 720;
+}
+
+.note,
+.columnLabel,
+.slideLabel,
+.filterLabel {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+  font-weight: 560;
+  letter-spacing: 0.02em;
+}
+
+.slide,
+.promptChip,
+.filterPlate,
+.projectionPanel {
+  stroke-width: var(--stroke-light);
+  vector-effect: non-scaling-stroke;
+}
+
+.slide {
+  fill: color-mix(in srgb, var(--ifm-background-color), transparent 12%);
+  stroke: var(--border-subtle);
+}
+
+.promptChip {
+  fill: var(--ifm-color-emphasis-100);
+  stroke: var(--border-subtle);
+}
+
+.promptText {
+  fill: var(--text-body);
+  font-family: var(--font-mono-keyword);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.cyan {
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
+}
+
+.indigo {
+  fill: var(--visual-bg-indigo);
+  stroke: var(--visual-indigo);
+}
+
+.neutral {
+  fill: var(--ifm-color-emphasis-100);
+  stroke: var(--ifm-color-emphasis-700);
+}
+
+.filterPlate {
+  stroke-width: var(--stroke-default);
+}
+
+.filterRole {
+  fill: var(--ifm-font-color-base);
+  font-family: var(--font-mono-ai);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.projectionPanel {
+  stroke-width: var(--stroke-light);
+}
+
+.behaviorText {
+  fill: var(--ifm-font-color-base);
+  font-family: var(--font-mono-ai);
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.detailText {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.rolePath {
+  fill: none;
+  stroke-width: var(--stroke-light);
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+.rolePath.cyan {
+  stroke: var(--visual-cyan);
+}
+
+.rolePath.indigo {
+  stroke: var(--visual-indigo);
+}
+
+.rolePath.neutral {
+  stroke: var(--visual-neutral);
+}
+
+.roleTip.cyan {
+  fill: var(--visual-cyan);
+}
+
+.roleTip.indigo {
+  fill: var(--visual-indigo);
+}
+
+.roleTip.neutral {
+  fill: var(--visual-neutral);
+}
+
+.mobileGuide {
+  fill: none;
+  stroke: var(--visual-violet);
+  stroke-width: var(--stroke-light);
+  stroke-linecap: square;
+  stroke-dasharray: var(--space-0h) var(--space-0h);
+  opacity: 0.48;
+  vector-effect: non-scaling-stroke;
+}
+
+.projectorGear {
+  opacity: 0.92;
+}
+
+.filterStory,
+.flowStory,
+.projectionStory {
+  animation-duration: var(--cycle-ms);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filterStory,
+  .flowStory,
+  .projectionStory {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .diagram.desktop {
+    display: none;
+  }
+
+  .diagram.mobile {
+    display: block;
+  }
+
+  .title {
+    font-size: 15px;
+  }
+
+  .note,
+  .columnLabel,
+  .slideLabel,
+  .filterLabel {
+    font-size: 9px;
+  }
+
+  .promptText,
+  .detailText {
+    font-size: 8px;
+  }
+
+  .filterRole,
+  .behaviorText {
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,209 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  padding-block-end: var(--space-1);
+  max-width: 760px;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.desktopDiagram {
+  max-width: 760px;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 340px;
+}
+
+.vectorStroke,
+.divider {
+  vector-effect: non-scaling-stroke;
+}
+
+.frameLabel,
+.eyebrow,
+.stageId,
+.stageText,
+.loopLabel,
+.contextNote,
+.chipText,
+.chipPrompt,
+.boxKicker,
+.boxTitle,
+.boxDetail,
+.railTitle,
+.ticketTitle,
+.ticketDetail,
+.miniCallTitle {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.frameLabel,
+.eyebrow {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.frameLabel {
+  font-size: 10px;
+}
+
+.contextNote {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.boxKicker {
+  font-family: var(--font-mono-spec);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.boxTitle {
+  font-family: var(--font-mono-spec);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.boxDetail {
+  font-family: var(--font-mono-keyword);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.railTitle {
+  font-family: var(--font-mono-spec);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.ticketTitle {
+  font-family: var(--font-mono-spec);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.ticketDetail {
+  font-family: var(--font-mono-keyword);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.miniCallTitle {
+  font-family: var(--font-mono-ai);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.chipText,
+.chipPrompt,
+.loopLabel {
+  font-family: var(--font-mono-keyword);
+  letter-spacing: 0.01em;
+}
+
+.chipText {
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.chipPrompt {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.loopLabel {
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.stageId {
+  font-family: var(--font-mono-spec);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.stageText {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.flowPulse {
+  transform-box: fill-box;
+}
+
+.step1 {
+  animation-delay: 0ms;
+}
+
+.step2 {
+  animation-delay: 700ms;
+}
+
+.step3 {
+  animation-delay: 1400ms;
+}
+
+.step4 {
+  animation-delay: 2100ms;
+}
+
+.step5 {
+  animation-delay: 2800ms;
+}
+
+@keyframes flowPulse {
+  0%, 30%, 100% {
+    opacity: 1;
+  }
+
+  10%, 20% {
+    opacity: 0.72;
+  }
+}
+
+@container (max-width: 560px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 580px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowPulse {
+    animation: none;
+  }
+}

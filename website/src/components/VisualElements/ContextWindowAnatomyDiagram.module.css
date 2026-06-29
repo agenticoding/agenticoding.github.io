@@ -1,0 +1,83 @@
+.diagram {
+  display: block;
+  width: 100%;
+  max-width: 820px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.mobile {
+  display: none;
+  max-width: 360px;
+}
+
+.frame {
+  fill: var(--ifm-background-surface-color);
+  stroke: var(--ifm-color-emphasis-400);
+  stroke-width: 1.5;
+}
+
+.layer {
+  stroke-width: 1.4;
+}
+
+.cyan {
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
+}
+
+.indigo {
+  fill: var(--visual-bg-indigo);
+  stroke: var(--visual-indigo);
+}
+
+.neutral {
+  fill: var(--ifm-color-emphasis-100);
+  stroke: var(--ifm-color-emphasis-500);
+}
+
+.violet {
+  fill: var(--visual-bg-violet);
+  stroke: var(--visual-violet);
+}
+
+.title,
+.label,
+.sideLabel {
+  fill: var(--ifm-font-color-base);
+  font-family: var(--font-mono-ai);
+  font-weight: 650;
+}
+
+.title {
+  font-size: 16px;
+}
+
+.label {
+  font-size: 12px;
+}
+
+.note,
+.sideNote {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+}
+
+.sideLabel {
+  fill: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.budgetLine {
+  stroke: var(--ifm-color-emphasis-500);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  fill: none;
+}
+
+@media (max-width: 640px) {
+  .desktop { display: none; }
+  .mobile { display: block; }
+}
