@@ -49,7 +49,7 @@ Agentic development extends agentic coding across the full software development 
 
 While these terms overlap conceptually, industry literature typically maintains a scope distinction.
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 4: The Four-Phase Workflow](/methodology/lesson-4-high-level-methodology).*
 
 ### Who is this course for?
 
@@ -73,7 +73,7 @@ Vibe coding, [coined by Andrej Karpathy](https://x.com/karpathy/status/188619218
 
 It's effective for throwaway prototypes and personal scripts, but produces unmaintainable, potentially insecure code unsuitable for production systems.
 
-*See [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology) for why this matters.*
+*See [Lesson 4: The Four-Phase Workflow](/methodology/lesson-4-high-level-methodology) for why this matters.*
 
 ### How is agentic coding different from vibe coding?
 
@@ -89,7 +89,7 @@ Both use AI to generate code, but agentic coding treats the human as the account
 | **Accountability** | None | Full ownership |
 | **Use case** | Prototypes | Production systems |
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 4: The Four-Phase Workflow](/methodology/lesson-4-high-level-methodology).*
 
 ### What is vibe engineering?
 
@@ -97,7 +97,7 @@ Vibe engineering, [coined by Simon Willison](https://simonwillison.net/2025/Oct/
 
 Agentic coding shares this accountability principle but adds explicit structure: the four-phase workflow (research, plan, execute, validate) that makes AI-assisted development predictable and repeatable.
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 4: The Four-Phase Workflow](/methodology/lesson-4-high-level-methodology).*
 
 ---
 
@@ -134,7 +134,7 @@ The methodology applies to any agent, but CLI agents unlock the parallel executi
 
 Prompt engineering optimizes individual prompts. Agentic coding is a complete methodology: research, plan, execute, validate. You still write prompts, but within a structured workflow that includes grounding agents in your codebase, reviewing plans before execution, and validating output against your mental model.
 
-*Learn more in [Lesson 4: Prompting 101](/methodology/lesson-4-prompting-101).*
+*Learn more in [Lesson 3: Prompting 101](/methodology/lesson-3-prompting-101).*
 
 ### Why "power tool" instead of "junior developer"?
 
@@ -146,13 +146,13 @@ A power tool doesn't 'understand' what you're building—it executes based on ho
 
 Four phases: Research (ground agents in your codebase patterns and external domain knowledge), Plan (choose exploration or exact planning strategy, make architectural decisions), Execute (delegate to agents in supervised or autonomous mode), Validate (decide iterate or regenerate based on alignment with your mental model and automated checks). Skipping any phase dramatically increases failure rate.
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 4: The Four-Phase Workflow](/methodology/lesson-4-high-level-methodology).*
 
 ### Why do some developers report being slower with AI tools?
 
 [Studies show](https://arxiv.org/abs/2507.09089) experienced developers are often slower on individual tasks with AI—despite believing they're faster. Speed per task is the wrong metric. This methodology teaches that the real productivity gain comes from parallelism: running multiple agents on different tasks while you attend meetings, review PRs, or handle other work. A senior engineer with three parallel agents ships more than one babysitting a single conversation.
 
-*Learn more in [Lesson 3: The Four-Phase Workflow](/methodology/lesson-3-high-level-methodology).*
+*Learn more in [Lesson 4: The Four-Phase Workflow](/methodology/lesson-4-high-level-methodology).*
 
 ---
 
