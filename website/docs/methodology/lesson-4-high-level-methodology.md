@@ -1,14 +1,13 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 sidebar_label: 'Four-Phase Workflow'
 sidebar_custom_props:
-  sectionNumber: 3
+  sectionNumber: 4
 title: 'Four-Phase Workflow'
 ---
 
 import OperatorCycleDiagram from '@site/src/components/VisualElements/OperatorCycleDiagram';
 import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
-import PlanningStrategyComparison from '@site/src/components/VisualElements/PlanningStrategyComparison';
 import BookmarkTabsEmoji from '@site/src/components/VisualElements/BookmarkTabsEmoji';
 import RobotEmoji from '@site/src/components/VisualElements/RobotEmoji';
 import StraightRulerEmoji from '@site/src/components/VisualElements/StraightRulerEmoji';
@@ -20,220 +19,259 @@ import CompassEmoji from '@site/src/components/VisualElements/CompassEmoji';
 import BullseyeEmoji from '@site/src/components/VisualElements/BullseyeEmoji';
 import PromptExample from '@site/src/components/PromptExample';
 
-[Lessons 1–2](../fundamentals/lesson-1-how-llms-work.mdx) established the operator mindset — you're directing tools, not writing every line. This lesson makes that practical: a systematic workflow for maintaining architectural control while delegating implementation at scale.
+Lesson 1 taught that LLMs are token prediction systems: context in, predicted tokens out. The model generates from the context you supply — it does not check against it. [Lesson 2](../fundamentals/lesson-2-how-agents-work.mdx) showed how the agent harness wraps that model in a loop: preparing context, calling the model, validating output, executing tools, appending observations, and deciding whether to continue. That is the harness loop — how the agent software is built. [Lesson 3](./lesson-3-prompting-101.mdx) gave you prompt-level controls for shaping single interactions: task targets, constraints, examples, evidence, and output structure.
 
-The core challenge: you can't read, verify, and mentally own 2,000 lines of generated implementation the way you owned 200 lines you wrote yourself. You ensure quality differently — by thinking systematically: Does this fit the architecture? Does it follow our patterns? Does the behavior match my mental model?
+This lesson moves up one level. The harness loop is the machine. This lesson is the operator loop — how you drive that machine on production work.
 
-You read _selectively_. When an agent generates 50 files, you review at the system level: module responsibilities, inputs and outputs, state management, integration points. You spot-check where your mental model says "this is risky."
+The operator loop has four phases:
 
-Here's the counterintuitive reality: **properly prompted AI-generated code is often easier to read than hand-written code**. LLMs follow patterns with mechanical precision. When you provide quality patterns and clear constraints, they replicate them perfectly. Your job shifts from ensuring every implementation detail is correct to ensuring the patterns themselves are correct.
+1. **Grounding** — pull relevant knowledge into context before asking the agent to act. Without it, the model generates from training data patterns instead of your reality. ([Lesson 1](../fundamentals/lesson-1-how-llms-work.mdx): the model generates from context, not checking against it.)
+2. **Planning** — orchestrate and split the work into bounded units the agent can execute. Complex tasks are not one prompt; they are a sequence of prompts with clear inputs, outputs, and checkpoints. ([Lesson 3](./lesson-3-prompting-101.mdx): orchestration is the next problem after single-prompt control.)
+3. **Execution** — maximize the time the agent works reliably without you watching. The harness gives the agent autonomy; your job is to push the boundary of how long that autonomy stays reliable.
+4. **Verification** — catch mistakes the probabilistic machine will inevitably make, even with perfect grounding and planning. Ownership never moves. ([Lesson 1](../fundamentals/lesson-1-how-llms-work.mdx): the model generates candidate work; you own the decision to accept it.)
 
-**One thing doesn't change: you own the results.** Every line of agent-generated code ships under your name, regardless of which tool writes the implementation.
+The industry calls the agent's internal loop Plan-Act-Observe: the model plans its next action, executes it, observes the result, and continues. The four phases above are the operator's workflow around that loop — grounding feeds the right context into each plan step, planning defines the bounds of each act, verification inspects each observation before deciding whether the loop should continue or restart.
 
 ## The Four-Phase Workflow
-
-Every significant agent interaction should follow this pattern:
 
 <ScrollDrivenFigure phaseEnd={0.5}>
   <OperatorCycleDiagram />
 </ScrollDrivenFigure>
 
-Each phase has a distinct purpose, and skipping any one of them dramatically increases your failure rate. Let's walk through each phase in detail.
+The loop is iterative, not linear. If verification fails because the agent missed an existing pattern, go back to grounding. If the approach is wrong, re-plan. If the plan is right but the implementation is incomplete, re-execute a smaller unit. If the output works but confidence is low, verify from another angle.
 
-## <MicroscopeEmoji size={28} /> Phase 1: Research (Grounding) {#phase-1-research-grounding}
+The point is not to make the first pass perfect. The point is to know which part of the system failed.
 
-You wouldn't start coding in a new codebase without first learning the architecture, patterns, and conventions. And you probably keep Google and Stack Overflow open while you work. Your agent needs the same context.
+## <MicroscopeEmoji size={28} /> Phase 1: Grounding {#phase-1-grounding-research}
 
-This is **grounding**—the bridge between the general-purpose knowledge and patterns embedded in the model and the actual real-world context it needs to operate in. Without grounding, agents hallucinate patterns, invent inconsistent APIs, and miss your existing implementations.
+Grounding is pulling relevant knowledge into the context before asking the agent to act.
 
-<a href="https://chunkhound.github.io/" target="_blank" rel="noopener noreferrer" style={{display:'block',textAlign:'center',marginBottom:'var(--space-2)'}}>
-  <img src="/img/wordmarks/chunkhound.svg" alt="ChunkHound" className="wordmark-heading wordmark-light" />
-  <img src="/img/wordmarks/chunkhound-dark.svg" alt="ChunkHound" className="wordmark-heading wordmark-dark" />
-</a>
+Lesson 1 established the fundamental limitation: the model generates from context, not checking against it. If the context does not contain the relevant code patterns, API contracts, or architectural constraints, the model will produce output that is statistically plausible but locally wrong — it will use patterns from its training data instead of patterns from your system. Grounding is the direct countermeasure.
 
-For code context, you need semantic code search. [ChunkHound](https://chunkhound.github.io/) performs **code deep research**—answering architectural questions like "How is authentication handled?" or "What's the error handling pattern?" instead of just keyword matching. It retrieves the relevant patterns and implementations from your codebase.
+Three sources cover most grounding needs:
 
-<a href="https://github.com/ArguSeek/arguseek" target="_blank" rel="noopener noreferrer" style={{display:'block',textAlign:'center',marginBottom:'var(--space-2)'}}>
-  <img src="/img/wordmarks/arguseek.svg" alt="ArguSeek" className="wordmark-heading wordmark-heading-sm" />
-</a>
+- **Code grounding** — how your system works: module responsibilities, integration points, naming conventions, error handling patterns, test contracts, and established invariants. This is architectural context, not just file lookup.
+- **Web grounding** — how the external world works: current framework docs, API references, migration guides, security advisories, and production patterns. The model's training data is stale for fast-moving ecosystems.
+- **Git history grounding** — why your code is shaped the way it is: prior migrations, reverted approaches, bug fixes that encode hidden constraints, and architectural decisions captured in commits.
 
-For domain knowledge, ArguSeek pulls information from Google directly and efficiently into your context. Need the latest API docs? Best practices from a specific framework? An algorithm buried in a 50-page research paper PDF? A solution from a GitHub issue? ArguSeek retrieves it and makes it available to your agent—no manual tab-switching, copy-pasting, or context reconstruction.
+Grounding is done when the agent can explain the relevant local patterns, external constraints, and risk areas in terms specific to your task — not in generic terms it could have generated from training data alone.
 
-**We'll cover both tools in detail in Lesson 5.** For now, understand the principle: ground your agent in both your codebase and domain knowledge before planning changes.
+[Lesson 5: Grounding](./lesson-5-grounding.mdx) covers the tools and techniques in detail: agentic search, semantic search, sub-agents, and how to choose the right grounding loop for the scale of the problem.
 
-## <BookmarkTabsEmoji size={28} /> Phase 2: Plan (Strategic Decision) {#phase-2-plan-strategic-decision}
+## <BookmarkTabsEmoji size={28} /> Phase 2: Plan / Orchestrate {#phase-2-plan-orchestrate}
 
-With research complete, you now plan the change. Planning isn't a single approach—it's a strategic choice based on whether you know the solution or need to discover it.
+Planning is orchestration design. It answers: how should this work be approached, split, sequenced, delegated, checked, and stopped if it goes wrong?
 
-<PlanningStrategyComparison />
+A weak plan says: "implement rate limiting." A useful orchestration plan says which modules are involved, what order to touch them, which changes can run autonomously, which require review, and what evidence will prove success.
 
-<!-- presentation-only-start -->
+<CompassEmoji size={22} /> **Plan before execution.** Vague plans produce vague code. A few minutes spent defining scope, constraints, and verification gates prevents hours of cleaning up plausible but wrong output.
 
-**Planning strategy comparison - both approaches are valid depending on project phase and certainty level. Use neutral styling.**
+<BullseyeEmoji size={22} /> **Plan around bounded autonomy.** The goal is not unlimited agent freedom. The goal is to give the agent enough autonomy to create leverage while keeping blast radius, review cost, and failure modes under control.
 
-<!-- presentation-only-end -->
+A good plan defines:
 
-<CompassEmoji size={22} /> **Exploration Planning:** Use this when the solution space is unclear or you need to discover the best approach. Rather than dictating a solution, frame the problem space and steer the agent to research your codebase patterns (via ChunkHound) and domain knowledge (via ArguSeek), explore alternatives, and iterate with you through reasoning-action cycles. You're discovering the approach together.
-
-This approach has higher cost and time investment, but it discovers better solutions, catches architectural issues early, and helps you build a clearer mental model before committing to implementation.
-
-<PromptExample>
-Our <code>Express</code> API has inconsistent error handling—some endpoints return raw errors, others JSON, and stack traces leak to production. Use <code>ChunkHound</code> to search for <code>"error handling patterns"</code> and <code>"error response format"</code> in our codebase. Use <code>ArguSeek</code> to research <code>Express</code> error handling best practices and <code>RFC 7807</code>. Analyze what you find, propose 2-3 standardization approaches with trade-offs, and recommend one.
-</PromptExample>
-
-<BullseyeEmoji size={22} /> **Exact Planning:** Use this when you know the solution and can articulate it precisely. Be directive. Define the task with specificity, specify integration points and patterns to follow, provide explicit constraints and requirements, list edge cases you've identified, and define clear acceptance criteria. The agent executes along a predetermined path.
-
-This approach is faster and more cost-effective, but requires upfront clarity and architectural certainty—if your plan is wrong or incomplete, the generated code will be wrong. Use exact planning when you've already done the architectural thinking and just need reliable, consistent implementation.
+- **Scope** — what will change.
+- **Non-goals** — what must not change.
+- **Grounding inputs** — code, web, and history evidence the agent should use.
+- **Orchestration units** — small work packages with clear inputs and outputs.
+- **Dependencies** — which units must happen before others.
+- **Execution mode** — supervised, autonomous, or hybrid per unit.
+- **Human checkpoints** — decisions that require approval before proceeding.
+- **Verification gates** — tests, builds, reviews, manual checks, and quality criteria.
+- **Rollback or regeneration criteria** — when to patch, when to discard, and when to re-plan.
 
 <PromptExample>
-Add rate limiting middleware to <code>/api/*</code> using <code>Redis</code>.<br />
-Follow the pattern in <code>src/middleware/auth.ts</code>.<br />
-Authenticated users: <code>1000 req/hour</code>, anonymous: <code>100 req/hour</code>, admins unlimited.<br />
-Return <code>429</code> with <code>Retry-After</code> header.<br />
-Fail open if <code>Redis</code> is down - log warning but allow request through.
+Create an orchestration plan for adding API rate limiting. Include scope, non-goals, relevant code patterns to inspect, work units, dependencies, execution mode per unit, human checkpoints, verification gates, and regenerate-vs-iterate criteria. Do not edit files until I approve the plan.
 </PromptExample>
 
-### Building Your Mental Model
+### Human checkpoints are part of the plan
 
-As you plan, you're refining your mental model of the system. You're not memorizing code—you're understanding relationships:
+Human review should not be an emergency brake you discover after the agent has already changed twenty files. Decide checkpoints before execution:
 
-- How authentication flows through middleware
-- Where data validation happens vs. business logic
-- How errors propagate to the client
-- Where performance bottlenecks might appear
-- What security boundaries exist
+| Checkpoint | Use when |
+|---|---|
+| Approve researched approach | Solution space is unclear |
+| Approve architecture boundary | Module ownership may change |
+| Approve schema/API contract | External callers or data shape are affected |
+| Approve security-sensitive edits | Auth, permissions, payments, secrets, or personal data are involved |
+| Review final diff | Result will ship or be handed to another engineer |
 
-This mental model is what allows you to validate generated code quickly. When the agent completes, you don't read every line. You check: "Does this fit my mental model of how this system works?" If yes, it's probably correct. If no, either your model is wrong (update it) or the code is wrong (regenerate).
+Planning is complete when the next action is obvious enough that the agent can execute a bounded unit without re-deciding the architecture.
 
-:::tip Plan Mode Across Different Tools
+## <RobotEmoji size={28} /> Phase 3: Execute {#phase-3-execute}
 
-**Claude Code:** Press `Shift+Tab` to enter dedicated plan mode for strategic discussion before execution.
+Execution is about maximizing the time the agent works reliably without you watching.
 
-**Other tools (Copilot CLI, Codex, Cursor, etc.):** Most AI coding assistants lack built-in plan mode. Use this baseline prompt template to simulate it:
+The harness loop from Lesson 2 gives the agent autonomy: it prepares context, calls the model, executes tools, observes results, and continues. The operator's job during execution is to push the boundary of how long that autonomy stays reliable. Every minute of unsupervised work is leverage — but only if the output is trustworthy when you come back.
 
-<details>
-<summary>Click to expand: Generic Plan Mode Prompt Template</summary>
-
-```markdown
-# PLANNING MODE - READ ONLY
-
-You are in planning mode. DO NOT make any code edits or modifications.
-
-## Your Task
-
-Analyze the following request and create a comprehensive execution plan:
-
-[USER REQUEST HERE]
-
-## Instructions
-
-1. **Think deeply** about the problem before responding. Consider:
-   - What is the actual goal vs. stated request?
-   - What are potential edge cases or complications?
-   - What assumptions am I making?
-
-2. **Ask clarifying questions** if ANY of these are unclear:
-   - Requirements or expected behavior
-   - Scope boundaries (what's in/out of scope)
-   - Success criteria
-   - Technical constraints or preferences
-   - Existing architecture or patterns to follow
-
-3. **Draft a structured execution plan** with:
-
-   **SCOPE**
-   - What will be changed
-   - What will NOT be changed
-   - Affected components/files
-
-   **REQUIREMENTS**
-   - Functional requirements
-   - Non-functional requirements (performance, security, etc.)
-   - Dependencies or prerequisites
-
-   **IMPLEMENTATION PLAN**
-   - Step-by-step breakdown
-   - For each step, specify:
-     - File(s) to modify
-     - Type of change (add/modify/delete)
-     - Key logic or patterns to implement
-
-   **VALIDATION**
-   - How to verify success
-   - Test cases or scenarios to cover
-   - Potential risks or rollback plan
-
-## Output Format
-
-- Use clear headers and bullet points
-- Be specific about file paths and function names
-- Flag any uncertainties or assumptions
-
-Ask your clarifying questions first, then provide the plan.
-```
-
-</details>
-
-This template provides a solid baseline for any planning task. In [Lesson 4: Prompting 101](./lesson-4-prompting-101.mdx), you'll learn the prompt engineering principles behind this structure so you can construct your own custom planning prompts rather than relying on templates.
-
-:::
-
-## <RobotEmoji size={28} /> Phase 3: Execute (Two Execution Modes) {#phase-3-execute-two-execution-modes}
-
-<!-- presentation-only-start -->
-
-**Execution modes comparison - both approaches are valid depending on context (learning stage, task criticality, grounding quality). Use neutral styling.**
-
-<!-- presentation-only-end -->
+How long the agent can run autonomously depends on what you did in the previous two phases. Strong grounding means the agent has the right facts and won't drift into plausible-but-wrong patterns. Precise planning means each orchestration unit is small enough and well-defined enough that the agent doesn't need to re-decide the architecture mid-execution. The better your grounding and planning, the longer the reliable autonomous window.
 
 <ExecutionModeComparison />
 
-With your plan complete, you execute—but how you interact with the agent during execution fundamentally changes your productivity. There are two modes: supervised (actively watching and steering) and autonomous (fire-and-forget). Most engineers start with supervised mode to build trust, then gradually shift to autonomous mode as they develop stronger grounding and planning skills. Here's the counterintuitive truth: the real productivity gain isn't about finishing individual tasks faster. It's about working on multiple projects simultaneously and maintaining extremely long work stretches. That's where 10x productivity actually hides.
+### <BabysitEmoji size={22} /> Supervised execution
 
-### <BabysitEmoji size={22} /> Supervised Mode ("Babysitting")
+In supervised mode, you watch the agent work and steer it through intermediate decisions. This is the fallback when grounding is weak, the plan is imprecise, or the blast radius is high. Supervision gives control and early correction, but it blocks your time — the agent is running, and so are you.
 
-In supervised mode, you actively monitor the agent as it works. You watch each action, review intermediate outputs, steer when it drifts, and intervene when it makes mistakes. This gives you maximum control and precision—you catch issues immediately and guide the agent toward the right solution in real time. The cost is massive: your throughput tanks because you're blocked while the agent works. You can't context-switch to another task, you can't step away, and you're burning your most valuable resource (attention) on implementation details. Use this mode when you're learning how agents behave, when working on critical security-sensitive code, or when tackling complex problems where you need to build your mental model as the agent explores. This is your training ground for developing the trust and intuition that eventually allows you to let go.
+Supervised execution is appropriate for:
 
-### <AirplaneEmoji size={22} /> Autonomous Mode ("Autopilot" / "YOLO")
+- authentication, authorization, payment, privacy, or data-loss paths
+- database migrations and irreversible operations
+- architecture changes
+- unfamiliar codebases where you need to build your own mental model while the agent explores
+- any task where intermediate choices matter more than final syntax
 
-In autonomous mode, you give the agent a well-defined task from your plan, let it run, and check the results when it's done. You're not watching it work. You're doing other things—working on a different project, attending a meeting, cooking dinner, running errands. You might check your phone occasionally to see if it's blocked or needs clarification, but mostly you're away. This is where the real productivity transformation happens, and it's not what most people think. Yes, sometimes the agent finishes a task faster than you would manually. But that's not the point. The point is **parallel work** and **continuous output**. You can have three agents running simultaneously on different projects. You can maintain 8-hour stretches of productive output while only spending 2 hours at your keyboard. You can genuinely multitask in software development for the first time in history. Even if you could hand-code something in 20 minutes and the agent takes 30, autonomous mode wins if it means you're cooking dinner instead of being blocked. This mode depends entirely on excellent grounding (Phase 1) and planning (Phase 2). If you skip those phases, the agent will drift, hallucinate, and produce garbage. If you do them well, you can trust the agent to execute correctly without supervision. Your goal is to maximize time in autonomous mode—that's where you become genuinely more productive, not just slightly faster.
+### <AirplaneEmoji size={22} /> Autonomous execution
 
-:::tip The Real 10x Productivity Gain
-Autonomous mode isn't about speed per task. It's about working on multiple tasks simultaneously while living your life. A senior engineer running three autonomous agents in parallel while attending meetings and cooking dinner ships more code than the same engineer babysitting one agent through a single task. That's the actual game changer.
-:::
+In autonomous mode, you give the agent a bounded unit, let it run, and review the result later. This is where agentic coding creates real leverage: parallel work, longer productive stretches, and less human attention spent on implementation mechanics.
 
-## <StraightRulerEmoji size={28} /> Phase 4: Validate (The Iteration Decision) {#phase-4-validate-the-iteration-decision}
+Autonomous execution is appropriate when:
 
-The agent completed. Here's the reality: **LLMs are probabilistic machines that almost never produce 100% perfect output on first pass.** This isn't failure—it's expected behavior.
+- grounding is strong — the agent has the right facts
+- the plan is precise — the agent knows exactly what to do
+- the work unit is small — the agent won't drift over long horizons
+- blast radius is limited — mistakes are cheap to revert
+- verification is clear — you know how to check the result
 
-Your validation goal isn't perfection verification. It's accurately identifying what's wrong or missing, then making a critical decision: **iterate with fixes or regenerate from scratch?**
+The trade-off is delayed discovery. If the agent goes wrong, you find out later. That risk is acceptable only when grounding, planning, and verification are all strong.
 
-This is art more than science, but remember: code generation is cheap. Don't get attached to the output. A general rule of thumb:
+### Execution mode rubric
 
-**Iterate when:** The output is aligned with your expectations but has gaps—missing edge cases, some tech debt, incomplete error handling, or pattern inconsistencies. The foundation is right; it needs refinement.
+| Work type | Default mode |
+|---|---|
+| Documentation updates | Autonomous |
+| Test generation for existing behavior | Autonomous |
+| Small isolated bug fix | Autonomous or lightly supervised |
+| Feature touching one module | Hybrid: approve plan, then autonomous |
+| Feature crossing module boundaries | Supervised checkpoints |
+| Auth, security, payments, personal data | Supervised |
+| Database migration | Supervised with explicit human checkpoint |
+| Architecture change | Human-led planning, supervised execution |
 
-**Regenerate when:** Something fundamental is wrong—the architecture doesn't match your mental model, the agent misunderstood requirements, or the approach itself is flawed. Don't patch fundamentally broken code. Fix the context and regenerate.
+The advanced pattern is not choosing one mode forever. It is assigning the right level of autonomy per orchestration unit — and knowing that the level you can assign is a function of how well you grounded and planned.
 
-**The key principle:** It's usually easier to fix your context (the prompt, examples, constraints) than to fix the generated code. Think of yourself as debugging your input, not the output.
+## <StraightRulerEmoji size={28} /> Phase 4: Verification {#phase-4-verification}
 
-### Run Your Code
+Verification exists because the model is probabilistic. Even with perfect grounding and planning, the agent will make mistakes — missed constraints, hallucinated APIs, locally correct but globally wrong implementations. That is not a failure of the technology; it is the nature of a token prediction system. The model generates the next likely continuation from context. It does not verify its own output against context. You do.
 
-Nothing beats actually running your implementation. Be the user. Test the happy path, try to break it, check edge cases. Does it handle errors gracefully? Is performance acceptable? Five minutes of manual testing reveals more than an hour of code review.
+Lesson 1 established the ownership boundary: the model generates candidate work, and you own the decision to accept it. Verification is where that ownership lives. It is not quality assurance bolted on at the end — it is the operator responsibility that makes the entire loop work. Without verification, you are accepting probabilistic output on faith.
 
-### Use the Agent Itself
+Verify from multiple independent angles. A single check — passing tests, a clean build, a quick review — is not enough. The agent can produce output that compiles, passes tests, and still violates architecture, leaks secrets, or solves the wrong problem. Multiple angles catch different failure modes.
 
-The agent is better at finding issues in code than generating perfect code on the first try. Use it to review its own work—we'll cover this self-review technique in [Lesson 10](../practical-techniques/lesson-10-reviewing-code.md). Similarly, have the agent create tests as guardrails—covered in [Lesson 9](../practical-techniques/lesson-9-tests-as-guardrails.md).
+### Functional verification
 
-**Automated checks still matter:** Run your build, tests, and linters. If these fail, you have clear signal that iteration or regeneration is needed. If they pass, manually verify behavior matches your plan and mental model.
+Check whether the artifact does what the plan said it should do:
+
+- happy path behavior
+- edge cases
+- failure modes
+- user-facing contracts
+- API compatibility
+- data correctness
+
+Be the user when possible. Run the feature, call the endpoint, inspect the UI, trigger errors, and try to break it.
+
+### Automated verification
+
+Run the mechanical checks that produce hard signal:
+
+- tests
+- build
+- typecheck
+- lint
+- format
+- dependency checks
+- security scanners where relevant
+
+Passing automated checks is not proof of correctness. Failing them is proof you are not done.
+
+### Architecture and maintainability verification
+
+Agent output often looks locally reasonable while damaging the system shape. Review for:
+
+- module boundary violations
+- duplicated logic
+- hidden coupling
+- inconsistent error handling
+- unnecessary abstractions
+- compatibility layers nobody asked for
+- dead code or unused dependencies
+- code that solves the prompt but not the system problem
+
+This is where senior judgment matters. You are checking whether the implementation belongs in the codebase, not whether it merely compiles.
+
+### Design system and product verification
+
+For UI work, verify the product artifact directly:
+
+- visual alignment with the design system
+- responsive behavior
+- empty, loading, error, and disabled states
+- accessibility basics
+- interaction feel
+- copy and information hierarchy
+
+Screenshots and browser automation help, but human visual review is still part of the quality gate.
+
+### Security and privacy verification
+
+Treat agent-generated code as untrusted until checked:
+
+- permissions and authorization boundaries
+- data exposure
+- secret handling
+- injection risks
+- unsafe dependency additions
+- logging of sensitive data
+- prompt-injection surfaces for agent-facing systems
+
+Security verification should be planned before execution, not added after a risky diff exists.
+
+### Agent-assisted verification
+
+Use agents to verify agent work, but do not confuse that with ownership transfer.
+
+Useful patterns:
+
+- ask the original agent to self-review against the plan
+- use a separate reviewer agent with no access to the implementation reasoning
+- run cross-model review for high-risk changes
+- ask an agent to search for missing tests, edge cases, and architectural drift
+- ask an agent to compare the diff against project conventions
+
+Independent agreement is useful signal. Divergence is even more useful: it tells you the task, plan, or implementation has ambiguity worth inspecting.
+
+<PromptExample>
+Review this diff against the approved plan. Check functional correctness, missing edge cases, architecture compliance, maintainability, security risks, test quality, and design-system impact. Separate blocking issues from non-blocking improvements. Do not rewrite code unless asked.
+</PromptExample>
+
+### Iterate, regenerate, re-ground, or re-plan
+
+When verification finds problems, choose the right repair loop:
+
+| Finding | Response |
+|---|---|
+| Local bug, missing edge case, small test gap | Iterate |
+| Correct structure but incomplete implementation | Re-execute a smaller unit |
+| Agent missed existing patterns or APIs | Re-ground |
+| Decomposition or sequencing was wrong | Re-plan |
+| Architecture is fundamentally wrong | Regenerate from a corrected plan |
+| Confidence is low but no defect is obvious | Verify from another angle |
+
+Code generation is cheap. Do not preserve a bad foundation because the diff looks substantial. Fix the context, plan, or grounding, then regenerate.
 
 ## Closing the Loop
 
-This workflow isn't linear—it's iterative. Validation often reveals gaps in your research or flaws in your plan. That's expected. The value isn't executing each phase perfectly the first time; it's having a systematic framework that catches issues before they compound.
+The four phases are a control system, and each phase addresses a specific limitation the reader learned in the previous chapters:
 
-The operator mindset from the opening matters here: you're not validating by reading every line. You're validating against your mental model. Does the architecture match your plan? Do the patterns align with your grounding? Does the behavior satisfy your requirements? If yes, ship it. If no, identify whether the problem is context (regenerate) or refinement (iterate).
+- **Grounding** addresses the context problem. The model generates from context, not checking against it ([Lesson 1](../fundamentals/lesson-1-how-llms-work.mdx)). Grounding ensures the context contains the right facts before the agent acts.
+- **Planning** addresses the orchestration problem. Complex work is a sequence of prompts, not one perfect prompt ([Lesson 3](./lesson-3-prompting-101.mdx)). Planning decomposes the task into bounded units the harness loop can execute ([Lesson 2](../fundamentals/lesson-2-how-agents-work.mdx)).
+- **Execution** addresses the autonomy problem. The harness gives the agent autonomy; the operator's job is to push the reliable-autonomy frontier outward through better grounding and planning.
+- **Verification** addresses the probabilistic problem. Ownership never moves ([Lesson 1](../fundamentals/lesson-1-how-llms-work.mdx)). The model will make mistakes. Verification is how you catch them before they ship.
 
-This workflow is the strategic framework. But strategy means nothing without execution, and execution happens through communication. Every phase—research queries, planning prompts, execution instructions, validation reviews—depends on how precisely you communicate with the agent. The workflow tells you _what_ to do. Prompting tells you _how_ to do it effectively.
+This is the operator loop. You are not trying to personally type every line or review every token. You are designing the conditions under which useful artifacts are likely — grounding the right context, planning the right units, maximizing reliable autonomous execution — then verifying the result from enough angles to own it.
+
+[Lesson 3](./lesson-3-prompting-101.mdx) gave you prompt-level controls. This lesson shows where those controls fit in the operator loop: grounding queries, orchestration plans, execution instructions, and verification reviews.
 
 ---
 
-**Next:** [Lesson 4: Prompting 101](./lesson-4-prompting-101.mdx) - Learn the specific techniques for crafting effective prompts that get reliable results.
+**Next:** [Lesson 5: Grounding](./lesson-5-grounding.mdx) — the deep dive into Phase 1: tools, techniques, and how to choose the right grounding loop for the scale of your problem.
