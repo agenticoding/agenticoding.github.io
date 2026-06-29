@@ -8,7 +8,7 @@ title: 'Reviewing Code'
 
 You've completed the implementation. Tests pass. The agent executed your plan successfully. Now comes the critical question: is it actually correct?
 
-This is the **Validate** phase from [Lesson 3's four-phase workflow](../methodology/lesson-3-high-level-methodology.md)—the systematic quality gate before shipping. Code review catches the probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, edge cases handled incorrectly, patterns that don't quite fit your codebase.
+This is the **Validate** phase from [Lesson 4's four-phase workflow](../methodology/lesson-4-high-level-methodology.md)—the systematic quality gate before shipping. Code review catches the probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, edge cases handled incorrectly, patterns that don't quite fit your codebase.
 
 The key insight: **review in a fresh context, separate from where the code was written.** This prevents confirmation bias and leverages the stateless nature of agents from [Lesson 1: LLMs Demystified](../fundamentals/lesson-1-how-llms-work.mdx) and [Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.mdx). An agent reviewing its own work in the same conversation will defend its decisions. An agent in a fresh context analyzes objectively, without attachment to prior choices.
 
@@ -26,7 +26,7 @@ The same engineering standards—DRY, YAGNI, architecture, maintainability, read
 
 ## The Review Prompt Template
 
-This template integrates techniques from [Lesson 4: Prompting 101](../methodology/lesson-4-prompting-101.mdx). Understanding **why** each element exists lets you adapt this pattern for other review tasks (security audits, performance analysis, architectural review).
+This template integrates techniques from [Lesson 3: Prompting 101](../methodology/lesson-3-prompting-101.mdx). Understanding **why** each element exists lets you adapt this pattern for other review tasks (security audits, performance analysis, architectural review).
 
 ```markdown
 You are an expert code reviewer. Analyze the current changeset and provide a critical review.
@@ -95,7 +95,7 @@ Traditional PR descriptions optimize for one audience or the other—too verbose
 
 ### The Advanced Prompt Pattern
 
-This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.mdx), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.mdx), and [Lesson 8 (Spec-Driven Development)](./lesson-8-spec-driven-development.md):
+This prompt demonstrates multiple techniques from [Lesson 3 (Prompting 101)](../methodology/lesson-3-prompting-101.mdx), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.mdx), and [Lesson 8 (Spec-Driven Development)](./lesson-8-spec-driven-development.md):
 
 ### Mechanisms at Work
 
@@ -107,9 +107,9 @@ This sub-agent capability is unique to [Claude Code CLI](/developer-tools/cli-co
 
 **Multi-source grounding ([Lesson 5](../methodology/lesson-5-grounding.mdx#production-pattern-multi-source-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
 
-**Structured prompting ([Lesson 4](../methodology/lesson-4-prompting-101.mdx)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
+**Structured prompting ([Lesson 3](../methodology/lesson-3-prompting-101.mdx)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
 
-**Evidence requirements ([Lesson 4](../methodology/lesson-4-prompting-101.mdx#require-evidence-to-force-retrieval)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
+**Evidence requirements ([Lesson 3](../methodology/lesson-3-prompting-101.mdx#require-evidence-to-force-retrieval)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
 
 ### Reviewing PRs with AI Assistants
 
@@ -158,11 +158,11 @@ This is **Chain of Draft (CoD)**—an optimization of Chain of Thought (CoT) pro
 
 - **Apply the same four-phase methodology to reviewing** - Research (understand intent) → Plan (structure review) → Execute (perform analysis) → Validate (decide to ship, fix, or regenerate).
 
-- **Use structured review prompts with Chain-of-Thought** - The review template from this lesson applies Lesson 4's prompting principles: persona, CoT, structure, grounding, constraints. Adapt this pattern for security reviews, performance analysis, or architectural validation.
+- **Use structured review prompts with Chain-of-Thought** - The review template from this lesson applies Lesson 3's prompting principles: persona, CoT, structure, grounding, constraints. Adapt this pattern for security reviews, performance analysis, or architectural validation.
 
 - **Iterate until green light or diminishing returns** - Fix issues, then re-review in fresh context. Stop when findings become trivial nitpicks or the agent hallucinates problems that don't exist.
 
-- **Evidence requirements force grounding** - "Provide file paths and line numbers" from [Lesson 4](../methodology/lesson-4-prompting-101.mdx#require-evidence-to-force-retrieval) ensures review findings are based on actual code, not statistical guesses.
+- **Evidence requirements force grounding** - "Provide file paths and line numbers" from [Lesson 3](../methodology/lesson-3-prompting-101.mdx#require-evidence-to-force-retrieval) ensures review findings are based on actual code, not statistical guesses.
 
 - **Generate dual-optimized PR descriptions for human and AI reviewers** - Humans need concise, scannable summaries (1-3 paragraphs). AI assistants need comprehensive, unambiguous technical context. Generate both in a coordinated workflow to serve both audiences effectively.
 

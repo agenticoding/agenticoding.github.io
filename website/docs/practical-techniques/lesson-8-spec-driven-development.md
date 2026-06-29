@@ -61,7 +61,7 @@ Research → Plan → Spec → Human read/approve → Execute → Gap analysis
 
 The key move is the one in the middle: a human gate between planning and execution that resets the chain before code begins.
 
-After research and planning — using the exploration workflow from [Lesson 3](../methodology/lesson-3-high-level-methodology.md) — you stop and write down the intended change in a form a human can evaluate quickly.
+After research and planning — using the exploration workflow from [Lesson 4](../methodology/lesson-4-high-level-methodology.md) — you stop and write down the intended change in a form a human can evaluate quickly.
 
 ### Require Evidence to Force Grounding {#require-evidence-to-force-grounding}
 
