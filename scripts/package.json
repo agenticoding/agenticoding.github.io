@@ -5,10 +5,6 @@
   "private": true,
   "description": "Utility scripts for AI Coding Course",
   "scripts": {
-    "generate-podcast": "node generate-podcast.js",
-    "generate-podcast-batch": "node generate-podcast.js --all",
-    "generate-podcast-script-only": "node generate-podcast.js --script-only",
-    "generate-podcast-audio-only": "node generate-podcast.js --audio-only",
     "generate-social-card": "node generate-social-card.js",
     "generate-favicons": "node generate-favicons.js",
     "generate-brand-assets": "node generate-social-card.js && node generate-favicons.js",
@@ -16,7 +12,6 @@
     "audit-openmoji": "node audit-openmoji-assets.js"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "png-to-ico": "^2.1.8",
     "sharp": "^0.33.0"
   }
