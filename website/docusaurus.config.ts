@@ -87,16 +87,6 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
-    preprocessor: ({ fileContent }) => {
-      // Strip presentation-only blocks entirely (for presentations, not docs)
-      let result = fileContent.replace(
-        /<!--\s*presentation-only-start\s*-->[\s\S]*?<!--\s*presentation-only-end\s*-->/g,
-        ''
-      );
-      // Strip doc-only markers (keep content)
-      result = result.replace(/<!--\s*doc-only-(start|end)\s*-->\n?/g, '');
-      return result;
-    },
   },
 
   presets: [
