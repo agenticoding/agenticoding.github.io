@@ -211,7 +211,6 @@ export default function FailureStickinessChain() {
     <svg
       viewBox={`0 0 ${VW} ${VH}`}
       width="100%"
-      height="auto"
       role="img"
       aria-label="Failure stickiness diagram: two good steps complete normally, then a wrong import causes step n to fail. With high S, the bad premise carries forward and step n plus one also fails. A human checkpoint operator interrupts the red propagation chain, then execution resumes in a green recovered state."
       xmlns="http://www.w3.org/2000/svg"

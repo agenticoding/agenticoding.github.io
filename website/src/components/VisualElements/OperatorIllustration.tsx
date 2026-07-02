@@ -5,7 +5,7 @@ import styles from './OperatorIllustration.module.css';
 // viewBox="0 0 560 280", center=(280,140), R=120, cr=26, nw=80, nh=24
 const NODES = [
   {
-    label: 'Research',
+    label: 'Grounding',
     // path lengths computed via numerical integration
     pathLen: 85,
     threadDelay: '0.00s',
@@ -70,9 +70,8 @@ export default function OperatorIllustration() {
     <svg
       viewBox="0 0 560 280"
       width="100%"
-      height="auto"
       role="img"
-      aria-label="One engineer at center directing six parallel AI agent tasks: Research, Plan, Execute, Validate, Review, and Debug."
+      aria-label="One engineer at center directing six parallel AI agent tasks: Grounding, Plan, Execute, Validate, Review, and Debug."
       xmlns="http://www.w3.org/2000/svg"
       style={{ display: 'block' }}
     >

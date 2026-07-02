@@ -1,8 +1,10 @@
 # Animation System Generation Guide for AI Agents
 
-Production animation system generation using perceptual timing research, easing curve psychophysics, spring mechanics, PAD-mapped motion personality, and scroll-driven reveal composition. Designed as agent-executable specification — every formula is code-ready. Calibrated for this project's specific design system, illustration vocabulary, and emotional targets.
+Production animation system generation using perceptual timing research, easing curve psychophysics, spring mechanics, PAD-mapped motion personality, and meaningful storytelling idle composition. Designed as agent-executable specification — every formula is code-ready. Calibrated for this project's specific design system, illustration vocabulary, and emotional targets.
 
-This guide is the motion counterpart to `COLOR_GUIDE.md` (color science, palette engineering), `SPATIAL_GUIDE.md` (spacing, curvature, proportions), and `ILLUSTRATION_GUIDE.md` (shape grammar, diagram construction). It takes three inputs — the validated color palette, spatial token system, and brand PAD emotional profile — and produces a complete, validated animation system: duration tokens, easing curves, spring presets, stagger algorithms, reveal sequences, and scroll-driven motion rules.
+**Project authority:** `DESIGN_SYSTEM.md` is authoritative for Agentic Coding visual rules. This guide supplies motion rationale and generated values; any generic guidance here is overridden by the design system's hierarchy, shape, color, and static-completeness guardrails.
+
+This guide is the motion counterpart to `COLOR_GUIDE.md` (color science, palette engineering), `SPATIAL_GUIDE.md` (spacing, curvature, proportions), and `ILLUSTRATION_GUIDE.md` (shape grammar, diagram construction). It takes three inputs — the validated color palette, spatial token system, and brand PAD emotional profile — and produces a complete, validated animation system: duration tokens, easing curves, spring presets, stagger algorithms, reveal sequences, semantic idle loops, and legacy scroll-exception rules.
 
 Two phases: **Motion Strategy** (human-driven brand personality decisions grounded in perception science) and **Motion Engineering** (agent-executable math producing token values). The first phase establishes the kinetic personality of the brand. The second phase computes every token from that personality.
 
@@ -18,17 +20,17 @@ The foundation for all animation token values. These thresholds are the most emp
 
 ### Human Perception Time Constants
 
-| Threshold | Value | Perceptual Meaning | Source |
-|-----------|-------|-------------------|--------|
-| Motion perception floor | ~40 ms | Below this, motion registers as a jump cut. No transition perceived. | Physiological: rod photoreceptor response |
-| Instantaneous perception | ≤ 100 ms | System feels like a direct extension of user action. Causal link preserved. | Miller (1968); Nielsen (1993) |
-| Action–feedback causal window | 100 ms | Any animation triggered by user action **must begin** within 100 ms or causality breaks | Miller (1968) via NNGroup |
-| Human visual perception cycle | ~230 ms | Model Human Processor average perceptual cycle. Below this, sequential events merge. | Card, Moran & Newell (1983) |
-| Animation fatigue onset | ≥ 500 ms | Anything longer than 400–500 ms is a net negative for user-triggered UI motion | NNGroup usability observations |
-| Flow-of-thought disruption | > 1,000 ms | User feels "waited on." Mental task model breaks. Progress indicator required. | Miller (1968); Nielsen (1993) |
-| Frame rate ceiling | 60 Hz (16.7 ms/frame) | Humans cannot reliably perceive differences above 60 fps | Physiological: flicker fusion |
+| Threshold                     | Value                 | Perceptual Meaning                                                                      | Source                                    |
+| ----------------------------- | --------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------- |
+| Motion perception floor       | ~40 ms                | Below this, motion registers as a jump cut. No transition perceived.                    | Physiological: rod photoreceptor response |
+| Instantaneous perception      | ≤ 100 ms              | System feels like a direct extension of user action. Causal link preserved.             | Miller (1968); Nielsen (1993)             |
+| Action–feedback causal window | 100 ms                | Any animation triggered by user action **must begin** within 100 ms or causality breaks | Miller (1968) via NNGroup                 |
+| Human visual perception cycle | ~230 ms               | Model Human Processor average perceptual cycle. Below this, sequential events merge.    | Card, Moran & Newell (1983)               |
+| Animation fatigue onset       | ≥ 500 ms              | Anything longer than 400–500 ms is a net negative for user-triggered UI motion          | NNGroup usability observations            |
+| Flow-of-thought disruption    | > 1,000 ms            | User feels "waited on." Mental task model breaks. Progress indicator required.          | Miller (1968); Nielsen (1993)             |
+| Frame rate ceiling            | 60 Hz (16.7 ms/frame) | Humans cannot reliably perceive differences above 60 fps                                | Physiological: flicker fusion             |
 
-**Critical insight:** The 100 ms threshold applies to when animation *begins*, not when it ends. An animation with a `200ms animation-delay` before it starts creates a 200 ms blank gap that reads as system latency, not intentional design. The first frame of motion must appear within 100 ms of the triggering event.
+**Critical insight:** The 100 ms threshold applies to when animation _begins_, not when it ends. An animation with a `200ms animation-delay` before it starts creates a 200 ms blank gap that reads as system latency, not intentional design. The first frame of motion must appear within 100 ms of the triggering event.
 
 ### Enter vs. Exit Asymmetry
 
@@ -49,7 +51,7 @@ This rule applies to all enter/exit pairs: modals, drawers, dropdowns, tooltips,
 
 **NNGroup slideshow case study:** A widget that took 8 seconds to download received only **1%** of eye-tracking attention when users waited. Users who saw the completed version immediately spent **20%** of their time in that area. Conclusion: animation that substitutes for content is severely penalized. Animation that accompanies content arrival is beneficial.
 
-**Operative rule:** Reveal animations are beneficial to perceived performance only when they begin *as content arrives* (paint-time), not after it. Stagger sequences must complete within the first paint window (< 500 ms from first paint).
+**Operative rule:** Reveal animations are beneficial to perceived performance only when they begin _as content arrives_ (paint-time), not after it. Stagger sequences must complete within the first paint window (< 500 ms from first paint).
 
 ---
 
@@ -61,47 +63,47 @@ Before computing animation tokens, ground the motion decisions in PAD-congruent 
 
 Animation operates on all three PAD axes simultaneously:
 
-| Motion Property | Primary PAD Axis | Direction | Research Basis |
-|----------------|-----------------|-----------|---------------|
-| Duration (speed) | Arousal | Faster ↑ Arousal; Slower ↓ Arousal | NNGroup timing research; Card et al. 1983 |
-| Easing curve type | Pleasure | Expressive (bouncy) ↑ Pleasure; Productive (precise) ↓ Pleasure | IBM Carbon expressive/productive distinction |
-| Translate distance | Arousal | Larger offset ↑ Arousal | Practitioner convergence (Valhead, Comeau) |
-| Spring bounce | Pleasure | Higher bounce ↑ Pleasure | Apple WWDC 2023 spring animation principles |
-| Stagger spread | Arousal | Tighter stagger ↑ Arousal (compressed reveal) | Card/Moran/Newell perception cycle threshold |
-| Animation direction | — | Semantic only — matches spatial content model | NNGroup directionality research |
-| Scale amplitude | Arousal | Larger scale range ↑ Arousal | Practitioner observation |
+| Motion Property     | Primary PAD Axis | Direction                                                       | Research Basis                               |
+| ------------------- | ---------------- | --------------------------------------------------------------- | -------------------------------------------- |
+| Duration (speed)    | Arousal          | Faster ↑ Arousal; Slower ↓ Arousal                              | NNGroup timing research; Card et al. 1983    |
+| Easing curve type   | Pleasure         | Expressive (bouncy) ↑ Pleasure; Productive (precise) ↓ Pleasure | IBM Carbon expressive/productive distinction |
+| Translate distance  | Arousal          | Larger offset ↑ Arousal                                         | Practitioner convergence (Valhead, Comeau)   |
+| Spring bounce       | Pleasure         | Higher bounce ↑ Pleasure                                        | Apple WWDC 2023 spring animation principles  |
+| Stagger spread      | Arousal          | Tighter stagger ↑ Arousal (compressed reveal)                   | Card/Moran/Newell perception cycle threshold |
+| Animation direction | —                | Semantic only — matches spatial content model                   | NNGroup directionality research              |
+| Scale amplitude     | Arousal          | Larger scale range ↑ Arousal                                    | Practitioner observation                     |
 
 ### Motion Style: Productive vs. Expressive
 
 IBM Carbon (the most precisely specified open design system) formalizes two motion styles. The distinction maps directly to brand PAD target:
 
-| Style | Easing Character | Duration Bias | PAD Target | Appropriate For |
-|-------|-----------------|---------------|------------|----------------|
-| **Productive** | Sharp ease-out, precise settle | Shorter (50–300 ms) | Low A, Med D | Task UIs, technical tools, documentation |
-| **Expressive** | Broader arc, more dramatic | Longer (200–500 ms) | High P, High A | Marketing, onboarding, consumer apps |
+| Style          | Easing Character               | Duration Bias       | PAD Target     | Appropriate For                          |
+| -------------- | ------------------------------ | ------------------- | -------------- | ---------------------------------------- |
+| **Productive** | Sharp ease-out, precise settle | Shorter (50–300 ms) | Low A, Med D   | Task UIs, technical tools, documentation |
+| **Expressive** | Broader arc, more dramatic     | Longer (200–500 ms) | High P, High A | Marketing, onboarding, consumer apps     |
 
 **Design rule:** Select one style as the system default. Use the other sparingly — at most 1–2 "expressive moments" per page (hero entrance, primary CTA activation). Mixing styles without a hierarchy creates visual incoherence.
 
 ### Kinetic Personality by Brand PAD Profile
 
-| Target PAD | Duration Bias | Stagger | Easing | Spring Bounce | Translate |
-|-----------|--------------|---------|--------|---------------|-----------|
-| Low A, Low D, High P (calm, warm) | Longer (200–350 ms) | 80–100 ms | Expressive entrance | 0.10–0.15 | 8–12px |
-| Low A, Med D (technical, precise) | Moderate (150–250 ms) | 60–80 ms | Productive entrance | 0.0 | 8px |
-| Med A, Med D (balanced, professional) | Moderate (200–300 ms) | 70–90 ms | Productive standard | 0.0–0.10 | 8–12px |
-| High A, High D (energetic, urgent) | Shorter (100–200 ms) | 40–60 ms | Productive exit-biased | 0.0 | 4–8px |
+| Target PAD                            | Duration Bias         | Stagger   | Easing                 | Spring Bounce | Translate |
+| ------------------------------------- | --------------------- | --------- | ---------------------- | ------------- | --------- |
+| Low A, Low D, High P (calm, warm)     | Longer (200–350 ms)   | 80–100 ms | Expressive entrance    | 0.10–0.15     | 8–12px    |
+| Low A, Med D (technical, precise)     | Moderate (150–250 ms) | 60–80 ms  | Productive entrance    | 0.0           | 8px       |
+| Med A, Med D (balanced, professional) | Moderate (200–300 ms) | 70–90 ms  | Productive standard    | 0.0–0.10      | 8–12px    |
+| High A, High D (energetic, urgent)    | Shorter (100–200 ms)  | 40–60 ms  | Productive exit-biased | 0.0           | 4–8px     |
 
 ### Input: Brand Motion Profile
 
 The only human judgment calls. Everything downstream is computable math.
 
-| Parameter | Value | Rationale |
-|-----------|-------|-----------|
-| Target Pleasure | Low / Medium / High | From brand PAD profile |
-| Target Arousal | Low / Medium / High | From brand PAD profile |
-| Target Dominance | Low / Medium / High | From brand PAD profile |
-| Motion style | Productive / Expressive / Hybrid | From brand context (task vs. marketing) |
-| Default entrance type | Fade-translate / Fade-only / Scale | From content type and diagram density |
+| Parameter             | Value                              | Rationale                               |
+| --------------------- | ---------------------------------- | --------------------------------------- |
+| Target Pleasure       | Low / Medium / High                | From brand PAD profile                  |
+| Target Arousal        | Low / Medium / High                | From brand PAD profile                  |
+| Target Dominance      | Low / Medium / High                | From brand PAD profile                  |
+| Motion style          | Productive / Expressive / Hybrid   | From brand context (task vs. marketing) |
+| Default entrance type | Fade-translate / Fade-only / Scale | From content type and diagram density   |
 
 ---
 
@@ -192,16 +194,16 @@ def compute_duration_tokens(arousal_level: str) -> dict:
    Generated from: compute_duration_tokens(arousal_level)
    Research: IBM Carbon duration scale; NNGroup 100–500ms window; Miller (1968) */
 
---duration-instant:    70ms;   /* toggle, checkbox, button state */
---duration-fast:      110ms;   /* opacity/color, badge update */
---duration-subtle:    150ms;   /* small spatial move, icon swap */
---duration-moderate:  240ms;   /* modal, drawer, dropdown */
---duration-deliberate: 400ms;  /* large panel, hero, section reveal */
---duration-ambient:   700ms;   /* background overlay only — not user-triggered */
+--duration-instant: 70ms; /* toggle, checkbox, button state */
+--duration-fast: 110ms; /* opacity/color, badge update */
+--duration-subtle: 150ms; /* small spatial move, icon swap */
+--duration-moderate: 240ms; /* modal, drawer, dropdown */
+--duration-deliberate: 400ms; /* large panel, hero, section reveal */
+--duration-ambient: 700ms; /* background overlay only — not user-triggered */
 
 /* Exit variants — 75% of enter (NNGroup asymmetry rule) */
---duration-fast-exit:      80ms;
---duration-subtle-exit:   110ms;
+--duration-fast-exit: 80ms;
+--duration-subtle-exit: 110ms;
 --duration-moderate-exit: 180ms;
 --duration-deliberate-exit: 300ms;
 ```
@@ -214,12 +216,12 @@ def compute_duration_tokens(arousal_level: str) -> dict:
 
 All design system authorities converge on three mandatory custom curves. The CSS default `ease` keyword must NOT be used — it is tuned for neither enter nor exit and produces a sluggish feeling. Use `cubic-bezier()` always.
 
-| Direction | Curve Behavior | Semantic Role |
-|-----------|---------------|---------------|
-| **Enter (ease-out)** | Fast start, slow finish | Elements arriving — decelerate to rest naturally |
-| **Exit (ease-in)** | Slow start, fast finish | Elements departing — accelerate, feel intentionally leaving |
-| **Reposition (ease-in-out)** | Slow–fast–slow | Elements traversing from visible A to visible B |
-| **Linear** | Constant velocity | Spinners, progress bars, video scrubbing only |
+| Direction                    | Curve Behavior          | Semantic Role                                               |
+| ---------------------------- | ----------------------- | ----------------------------------------------------------- |
+| **Enter (ease-out)**         | Fast start, slow finish | Elements arriving — decelerate to rest naturally            |
+| **Exit (ease-in)**           | Slow start, fast finish | Elements departing — accelerate, feel intentionally leaving |
+| **Reposition (ease-in-out)** | Slow–fast–slow          | Elements traversing from visible A to visible B             |
+| **Linear**                   | Constant velocity       | Spinners, progress bars, video scrubbing only               |
 
 **Polaris (Shopify) principle:** "A snappy animation starts rapidly and slows down toward the end." This describes ease-out as the default for most UI motion — content decelerates into its final position so it becomes readable as quickly as possible.
 
@@ -288,10 +290,15 @@ def compute_easing_tokens(motion_style: str, pleasure_level: str) -> dict:
    Generated from: compute_easing_tokens(motion_style, pleasure_level)
    Research: IBM Carbon productive/expressive system; Shopify Polaris "snappy" principle */
 
---ease-enter:    cubic-bezier(0.00, 0.00, 0.38, 0.9); /* entrance: decelerate to rest */
---ease-exit:     cubic-bezier(0.20, 0.00, 1.00, 0.9); /* exit: accelerate away */
---ease-standard: cubic-bezier(0.20, 0.00, 0.38, 0.9); /* reposition within viewport */
---ease-linear:   linear;                               /* spinners, progress, video only */
+--ease-enter: cubic-bezier(0, 0, 0.38, 0.9); /* entrance: decelerate to rest */
+--ease-exit: cubic-bezier(0.2, 0, 1, 0.9); /* exit: accelerate away */
+--ease-standard: cubic-bezier(
+  0.2,
+  0,
+  0.38,
+  0.9
+); /* reposition within viewport */
+--ease-linear: linear; /* spinners, progress, video only */
 ```
 
 ---
@@ -302,14 +309,14 @@ Springs are for gesture-continuation and physics-based interactions only. They m
 
 #### When to Use Springs vs. Cubic-Bezier
 
-| Trigger | Use | Rationale |
-|---------|-----|-----------|
-| User gesture release (swipe, drag) | Spring | Velocity continuity is required |
-| Button click / toggle / keyboard | Cubic-bezier | Zero initial velocity; spring adds no value |
-| Multi-property animation via gesture | Spring | Each property settles naturally at different rates |
-| Modal open (no gesture velocity) | Cubic-bezier | Simpler; predictable duration |
-| Pull-to-refresh, card flick | Spring | Physical continuation of gesture |
-| Page-load reveal | Cubic-bezier | No user velocity to continue |
+| Trigger                              | Use          | Rationale                                          |
+| ------------------------------------ | ------------ | -------------------------------------------------- |
+| User gesture release (swipe, drag)   | Spring       | Velocity continuity is required                    |
+| Button click / toggle / keyboard     | Cubic-bezier | Zero initial velocity; spring adds no value        |
+| Multi-property animation via gesture | Spring       | Each property settles naturally at different rates |
+| Modal open (no gesture velocity)     | Cubic-bezier | Simpler; predictable duration                      |
+| Pull-to-refresh, card flick          | Spring       | Physical continuation of gesture                   |
+| Page-load reveal                     | Cubic-bezier | No user velocity to continue                       |
 
 #### Spring Parameter Formula
 
@@ -480,13 +487,13 @@ def compute_stagger_parameters(
 ```css
 /* Stagger pattern: set --stagger-index on each child via JS or nth-child */
 .stagger-parent > * {
-    --stagger-index: 0; /* override per child */
-    animation-delay: calc(var(--stagger-index) * var(--motion-stagger));
+  --stagger-index: 0; /* override per child */
+  animation-delay: calc(var(--stagger-index) * var(--motion-stagger));
 }
 
 /* Duration tokens (medium arousal, 400ms budget) */
---motion-stagger-sm: 60ms;  /* 5+ items */
---motion-stagger-md: 80ms;  /* 3–4 items */
+--motion-stagger-sm: 60ms; /* 5+ items */
+--motion-stagger-md: 80ms; /* 3–4 items */
 --motion-stagger-lg: 100ms; /* 2 items */
 ```
 
@@ -498,13 +505,14 @@ def compute_stagger_parameters(
 
 Three canonical entrance patterns, ordered by cognitive overhead:
 
-| Type | CSS Properties | Cognitive Load | Best For |
-|------|---------------|---------------|---------|
-| **Fade + translate** (recommended) | `opacity`, `transform: translateY()` | Lowest | All page-load stagger, list reveals, section entrances |
-| **Fade only** | `opacity` | Lowest | Content-heavy pages; when spatial context is unambiguous |
-| **Scale + fade** | `opacity`, `transform: scale()` | Highest | Modal/dialog only; single focal element; never for lists |
+| Type                               | CSS Properties                       | Cognitive Load | Best For                                                 |
+| ---------------------------------- | ------------------------------------ | -------------- | -------------------------------------------------------- |
+| **Fade + translate** (recommended) | `opacity`, `transform: translateY()` | Lowest         | All page-load stagger, list reveals, section entrances   |
+| **Fade only**                      | `opacity`                            | Lowest         | Content-heavy pages; when spatial context is unambiguous |
+| **Scale + fade**                   | `opacity`, `transform: scale()`      | Highest        | Modal/dialog only; single focal element; never for lists |
 
 **Research basis:** Fade + small translate achieves the highest practitioner consensus for page-load context because:
+
 1. The translate provides a subtle directional cue (spatial context) without imposing navigational meaning
 2. 8–12px is below the threshold where the brain assigns "this came from outside the viewport"
 3. The fade prevents a "pop" artifact that would read as a rendering glitch
@@ -628,60 +636,62 @@ def plan_page_reveal_sequence(sections: list[dict]) -> list[dict]:
 ```css
 /* Page load reveal — hero entrance */
 @keyframes reveal-from-top {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Scroll-driven reveal — content rises into view */
 @keyframes reveal-from-bottom {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Modal entrance — scale from center */
 @keyframes reveal-modal {
-    from {
-        opacity: 0;
-        transform: scale(0.96);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Shared reveal class */
 .reveal {
-    animation-fill-mode: both;   /* hold from-state before start, to-state after end */
-    animation-timing-function: var(--ease-enter);
-    animation-duration: var(--duration-subtle);
+  animation-fill-mode: both; /* hold from-state before start, to-state after end */
+  animation-timing-function: var(--ease-enter);
+  animation-duration: var(--duration-subtle);
 }
 
 .reveal-hero {
-    animation-name: reveal-from-top;
-    animation-duration: var(--duration-moderate);
+  animation-name: reveal-from-top;
+  animation-duration: var(--duration-moderate);
 }
 
 .reveal-content {
-    animation-name: reveal-from-bottom;
-    animation-duration: var(--duration-subtle);
+  animation-name: reveal-from-bottom;
+  animation-duration: var(--duration-subtle);
 }
 
 /* Stagger via custom property */
 .stagger-item {
-    animation-delay: calc(var(--stagger-index, 0) * var(--motion-stagger-md, 80ms));
+  animation-delay: calc(
+    var(--stagger-index, 0) * var(--motion-stagger-md, 80ms)
+  );
 }
 ```
 
@@ -731,11 +741,11 @@ def compute_scroll_reveal_threshold(
 
 Elements that appear on scroll should animate in the direction consistent with scroll motion:
 
-| Scroll Direction | Element Enters From | Transform Start |
-|-----------------|--------------------|-----------------|
-| Scrolling down | Below viewport | `translateY(12px)` → `translateY(0)` |
-| Scrolling up | Above viewport | `translateY(-12px)` → `translateY(0)` |
-| Horizontal scroll | Right side | `translateX(12px)` → `translateX(0)` |
+| Scroll Direction  | Element Enters From | Transform Start                       |
+| ----------------- | ------------------- | ------------------------------------- |
+| Scrolling down    | Below viewport      | `translateY(12px)` → `translateY(0)`  |
+| Scrolling up      | Above viewport      | `translateY(-12px)` → `translateY(0)` |
+| Horizontal scroll | Right side          | `translateX(12px)` → `translateX(0)`  |
 
 **Research basis:** NNGroup directionality research — direction encodes a spatial contract. An element "rising to meet you" as you scroll down is spatially coherent. An element sliding down-to-up would imply the user is scrolling upward.
 
@@ -790,62 +800,80 @@ This section specifies how SVG diagram components are animated in this codebase.
 Three principles govern all animated figures. Every figure must satisfy all three before any animation is added.
 
 **1. Static Completeness (design target)**
-The final settled state (phase=1) is the primary design artifact. Animation is progressive disclosure — it reveals this state; it does not create meaning. Design the phase=1 layout first. A reader who never scrolls must still understand the concept. If the figure requires motion to be comprehensible, the static design has failed.
+The complete still figure is the primary design artifact. Animation does not reveal the concept and does not create meaning. A reader who disables animation, prints the page, or lands mid-page must still understand the figure. If motion is required for comprehension, the static design has failed.
 
-**2. Act-State Integrity (every phase is a valid composition)**
-Every scroll position must yield a visually complete, balanced composition. Elements that have not arrived yet must have placeholder mass — ghost geometry or neutral fill — that preserves spatial balance. A diagram that looks broken or unbalanced at any act boundary violates this principle. Verify compositional balance at each act boundary before adding transitions.
+**2. Semantic Idle Storytelling (default motion model)**
+Animation represents an ongoing process inside the complete figure: authoring, inference, retrieval, serialization, tool execution, data flow, validation, or readiness. The loop must answer: what is active, what is flowing, what is transforming, or what is waiting?
 
-**3. Semantic Stagger (appearance order = causal order)**
-The sequence in which elements appear must match the information hierarchy and causal order of the concept being illustrated. This is a hard rule, not a preference:
-- Causal upstream elements must appear before downstream elements.
-- Labels must appear after the elements they describe.
-- Parallel, equal-weight elements must appear simultaneously — stagger imposes false hierarchy.
+**3. Motion Restraint (no dummy loops)**
+Idle motion is not liveliness. Delete any loop whose only job is visual energy. Prefer slow, low-amplitude semantic roles that read as one coherent process story.
 
-### ScrollDrivenFigure: the wrapper contract
+### Storytelling Idle Animation Contract
 
-`ScrollDrivenFigure` is the required wrapper for any animated diagram. It manages three-tier fallback based on browser capability and user preference:
+Meaningful storytelling idle animation replaces scroll-driven reveal as the default diagram contract.
 
-| Tier | Mechanism | Condition |
-|------|-----------|-----------|
-| Primary | CSS `animation-timeline: view()` via `@supports` | Modern browsers |
-| Mirror | JS `scroll` listener → React context (`useAnimationPhase()`) | When CSS tier active — provides child component read access to phase |
-| Fallback | IntersectionObserver one-shot reveal (`threshold: 0.15`) | CSS unsupported |
-| Floor | `phase = 1`, `revealed = true` immediately | `prefers-reduced-motion: reduce` |
-
-**`phaseEnd` prop** (default `0.5`): controls when phase completes. With `phaseEnd={0.5}`, phase reaches 1.0 when the figure's bottom edge is at 50% viewport height. Complex narrative diagrams (IntroHookDiagram) use the default. Simple diagrams can use `phaseEnd={0.3}` for faster full-phase completion.
-
-**`useAnimationPhase()`**: the hook child components call to read phase (0–1). Cannot be called outside a `<ScrollDrivenFigure>` tree.
-
-### The Act System
-
-The Act System maps scroll phase thresholds to named animation events. Define an `ACTS` array:
-
-```ts
-const ACTS = [
-  { id: 'arc',       threshold: 0    },   // fires immediately on figure entry
-  { id: 'composing', threshold: 0.5  },   // fires at half-scroll
-  { id: 'dispatch',  threshold: 0.80 },
-] as const;
+```
+static-complete figure
+    │
+    ▼
+semantic process map → choose coherent idle roles
+    │
+    ├── active process     → loop while the process is conceptually active
+    ├── state change       → optional `ping-once`
+    └── reduced motion     → remove loops; keep complete static figure
 ```
 
-Pass to `useActs(ACTS, phase)` which returns `{ wasReached, isCurrentAct }`:
+Required motion spec before implementation:
 
-- **`wasReached(id)`** → `boolean`: fires the moment threshold is crossed. Use for **one-shot CSS class reveals** (adding `.entered` to nodes). Reverses when the user scrolls up — the phase is always reactive.
-- **`isCurrentAct(id)`** → `boolean`: true for the topmost reached act. Use for **idle-state indicators** (`idle-ready-breathe`).
-- **Monotonicity:** acts are not latched by default. When one-way semantics are required (e.g., worker nodes that should not un-bloom on scroll-back), add a `useRef` guard at the call site.
+| Field            | Required answer                                                            |
+| ---------------- | -------------------------------------------------------------------------- |
+| Story loop       | What ongoing process repeats in the concept?                               |
+| Semantic meaning | What does each moving element mean?                                        |
+| Reader benefit   | What does the motion teach, orient, or confirm?                            |
+| Static fallback  | Is the figure complete with all animation disabled?                        |
+| Loop coherence   | How do simultaneous idle roles map to process steps and read as one story? |
+| Rejection test   | Why is this not decoration?                                                |
 
-**Threshold 0 acts** fire as soon as the figure enters the viewport. Use them for structural elements that should be present from the start rather than arriving mid-scroll.
+If the motion spec cannot be answered in one or two concrete sentences per field, do not animate.
 
-### Figure Entrance: Canonical Parameters
+### Legacy ScrollDrivenFigure Exception
+
+`ScrollDrivenFigure`, `useAnimationPhase()`, phase thresholds, act-gated reveal, connector draw-on, and scroll-scrubbed artifact travel are legacy/exception mechanisms. Do not use them as the default for new figures.
+
+Allowed only when:
+
+- the figure specifically teaches scroll, viewport position, or document timeline behavior;
+- the same idea cannot be taught with a static-complete figure plus semantic idle loop;
+- `prefers-reduced-motion: reduce` renders the canonical static figure immediately;
+- an implementation comment names why the scroll exception exists.
+
+For existing legacy figures, keep the accessibility contract: `phase=1` under reduced motion, no concept hidden behind scroll position, and no direct scroll listeners outside the approved wrapper.
+
+### Semantic Loop Selection
+
+Select loops by the process being taught, not by visual preference.
+
+| Process state                | Preferred loop                             | Meaning                                       |
+| ---------------------------- | ------------------------------------------ | --------------------------------------------- |
+| Human authoring              | `.idle-cursor-blink`, `.idle-arm-rock`     | Intent is being written or operated           |
+| LLM inference                | `.idle-inference-cycle`, `.idle-gear-spin` | Context is being transformed into next tokens |
+| Retrieval / inspection       | `.idle-eye-read`                           | The system is reading/searching evidence      |
+| Context serialization        | `.idle-text-line`, `.idle-flow-drift`      | Observations become next-call context         |
+| Tool/model operation pending | `.idle-status-pulse`                       | Work is active but not complete               |
+| Data flow                    | `.idle-flow-drift`                         | Information moves through a channel           |
+| Validation / completion      | `.ping-once`                               | A state changed or check completed            |
+| Ready / waiting              | `.idle-ready-breathe`                      | The system is available for the next input    |
+
+### Figure Entrance: Exception Parameters
 
 `OperatorNode` and `AgentNode` at equivalent size roles use the **same entrance keyframe** with parameters scaled by size role:
 
-| Node type | Size | Role | Duration | Translate | Easing |
-|-----------|------|------|----------|-----------|--------|
-| `OperatorNode` | S=40 | Primary (human) | 300ms | `translateY(12px → 0)` | `var(--ease-enter)` |
-| `AgentNode` | S=40 | Primary (orchestrator) | 300ms | `translateY(12px → 0)` | `var(--ease-enter)` |
-| `AgentNode` | S=32 | Secondary (worker) | 250ms | `translateY(8px → 0)` | `var(--ease-enter)` |
-| `OperatorNode` | S=32 | Secondary | 250ms | `translateY(8px → 0)` | `var(--ease-enter)` |
+| Node type      | Size | Role                   | Duration | Translate              | Easing              |
+| -------------- | ---- | ---------------------- | -------- | ---------------------- | ------------------- |
+| `OperatorNode` | S=40 | Primary (human)        | 300ms    | `translateY(12px → 0)` | `var(--ease-enter)` |
+| `AgentNode`    | S=40 | Primary (orchestrator) | 300ms    | `translateY(12px → 0)` | `var(--ease-enter)` |
+| `AgentNode`    | S=32 | Secondary (worker)     | 250ms    | `translateY(8px → 0)`  | `var(--ease-enter)` |
+| `OperatorNode` | S=32 | Secondary              | 250ms    | `translateY(8px → 0)`  | `var(--ease-enter)` |
 
 **Semantic symmetry rule:** `OperatorNode` and `AgentNode` at equivalent size roles animate identically. Color (neutral vs. violet) carries the semantic distinction; motion does not layer on additional differentiation.
 
@@ -853,16 +881,27 @@ Canonical keyframe (reuse in every diagram module CSS — do not redeclare with 
 
 ```css
 @keyframes actEnter {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 ```
 
 Base/entered pattern:
 
 ```css
-.actorNode         { opacity: 0; transform: translateY(12px); }  /* hidden until act */
-.actorNode.entered { animation: actEnter 300ms var(--ease-enter) both; }
+.actorNode {
+  opacity: 0;
+  transform: translateY(12px);
+} /* hidden until act */
+.actorNode.entered {
+  animation: actEnter 300ms var(--ease-enter) both;
+}
 ```
 
 ### Idle State: idle-ready-breathe
@@ -882,57 +921,55 @@ className={clsx(styles.actorNode, wasReached('orchestrator') && styles.entered,
 
 Ghost placeholders provide visual mass for nodes that are anticipated but not yet revealed, preventing the diagram from feeling unbalanced before dispatch.
 
-Geometry: match the head squircle of the target `AgentNode` size exactly. For S=32: `x+2.4, y+2.4, width=27.2, height=27.2, rx=6.8`.
+Geometry: match the target node's expected visual mass without adding a settled-node container. Use sharp placeholder bounds unless the placeholder represents true circular anatomy.
 
 Three CSS states — apply via mount guard + dispatch state:
 
 ```css
-.ghostWorker       { opacity: 0; }
-.ghostWorkerShown  { opacity: 0.15; transition: opacity 300ms var(--ease-enter); }
-.ghostWorkerHidden { opacity: 0;    transition: opacity 200ms var(--ease-exit); }
+.ghostWorker {
+  opacity: 0;
+}
+.ghostWorkerShown {
+  opacity: 0.15;
+  transition: opacity 300ms var(--ease-enter);
+}
+.ghostWorkerHidden {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
 ```
 
 Fade-out on dispatch (200ms) must complete before worker entrance (first worker delay: 200ms). Ghost workers are hidden in `prefers-reduced-motion: reduce` (`opacity: 0 !important`).
 
-### SVG Path Animation: Two Modes
+### SVG Path Animation: Legacy Exception Modes
 
-**Mode A — Act-gated CSS keyframe (guide arcs, one-shot):**
+Do not use connector draw-on as the default storytelling model. A static connector with a semantic idle pulse/flow usually teaches better than a path hidden until scroll reaches a threshold.
+
+**Mode A — One-shot state change:**
 
 ```
 mount: dasharray = dashoffset = getTotalLength()
-act reached → add .arcDraw class → CSS plays drawPath once
+explicit state reached → add .arcDraw class → CSS plays drawPath once
 ```
 
-Use when the path should draw in one smooth motion at a specific scroll threshold, then remain drawn. Duration: 500ms `var(--ease-enter)`.
+Use only when the path appearing is itself the event being taught. Duration: 500ms `var(--ease-enter)`.
 
-**Mode B — JS scroll-driven continuous (fan arcs):**
+**Mode B — Scroll-driven continuous:**
 
 ```
-useEffect([phase]) → dashoffset = length * (1 - t)
-opacity toggled by phase threshold
+legacy exception only: useEffect([phase]) → dashoffset = length * (1 - t)
 ```
 
-Use when draw speed should track scroll velocity — the reader controls the pace.
-
-Fan arc stagger formula (per-arc phase offset):
-
-```ts
-const fanT = (i: number) => {
-  const start = DISPATCH_START + i * PHASE_STAGGER;  // e.g. 0.80 + i * 0.04
-  return clamp((phase - start) / (DISPATCH_END - start), 0, 1);
-};
-```
-
-`PHASE_STAGGER = 0.04` produces ~80ms of scroll-equivalent stagger between arcs at typical scroll velocity. This is the phase-space equivalent of the ms-stagger in §Stagger Algorithm.
+Use only for approved scroll exceptions. Do not make the reader scrub a connector to understand ordinary data flow; show the complete connector and apply a semantic flow loop instead.
 
 ### Artifact Travel: PromptIcon vs TravelingPromptCard
 
 Two distinct approaches; choice depends on trigger type:
 
-| Component | Animation mechanism | Trigger | Easing |
-|-----------|---------------------|---------|--------|
-| `PromptIcon` | Parent `transform: translate(pt.x, pt.y)` via `getPointAtLength` | Scroll phase (continuous) | Follows path geometry |
-| `TravelingPromptCard` | SMIL `<animateMotion>` with `begin="indefinite"` | Imperative: `motionRef.current.beginElement()` | `keySplines="0.20 0 0.38 0.9"` |
+| Component             | Animation mechanism                                              | Trigger                                        | Easing                         |
+| --------------------- | ---------------------------------------------------------------- | ---------------------------------------------- | ------------------------------ |
+| `PromptIcon`          | Parent `transform: translate(pt.x, pt.y)` via `getPointAtLength` | Scroll phase (continuous)                      | Follows path geometry          |
+| `TravelingPromptCard` | SMIL `<animateMotion>` with `begin="indefinite"`                 | Imperative: `motionRef.current.beginElement()` | `keySplines="0.20 0 0.38 0.9"` |
 
 **Use `PromptIcon` for scroll-driven diagrams.** The parent reads phase, queries the invisible `<defs>` path via `getPointAtLength(t * totalLength)`, and applies a `translate` transform.
 
@@ -979,11 +1016,17 @@ Each diagram gets its own `.module.css`. Keyframes are module-scoped — do not 
 **Static fallback card** (required for any diagram with traveling or scroll-driven animated elements):
 
 ```css
-.staticCard { display: none; }
+.staticCard {
+  display: none;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .staticCard { display: block; }   /* static prompt shape at semantic midpoint of arc */
-  .promptIcon { display: none; }    /* hides the animated version */
+  .staticCard {
+    display: block;
+  } /* static prompt shape at semantic midpoint of arc */
+  .promptIcon {
+    display: none;
+  } /* hides the animated version */
 }
 ```
 
@@ -997,14 +1040,14 @@ Placement rule: position the static card at the **semantic midpoint** of the mai
 
 ### Stagger Order Rules
 
-| Content Type | Stagger Order Rule |
-|-------------|-------------------|
-| List items (sequential, ordered) | Top-to-bottom, left-to-right — matches reading order |
-| Grid items (parallel, equal priority) | Simultaneous fade — stagger imposes false hierarchy |
-| Form fields | Top-to-bottom — mirrors completion sequence |
-| Navigation items | Simultaneously or as a unit — they are parallel |
-| Diagram nodes | Animate in data-flow order (source first, sinks last) |
-| Hero → body → secondary | Hero first; stagger each section as a unit |
+| Content Type                          | Stagger Order Rule                                    |
+| ------------------------------------- | ----------------------------------------------------- |
+| List items (sequential, ordered)      | Top-to-bottom, left-to-right — matches reading order  |
+| Grid items (parallel, equal priority) | Simultaneous fade — stagger imposes false hierarchy   |
+| Form fields                           | Top-to-bottom — mirrors completion sequence           |
+| Navigation items                      | Simultaneously or as a unit — they are parallel       |
+| Diagram nodes                         | Animate in data-flow order (source first, sinks last) |
+| Hero → body → secondary               | Hero first; stagger each section as a unit            |
 
 **Parallel content rule:** For content that is spatially parallel and equal-priority (e.g., a 3-column feature grid where all columns are equivalent), stagger imposes a false hierarchy. Use simultaneous fade. Reserve stagger for genuinely sequential content (steps, timelines, bullet points).
 
@@ -1036,16 +1079,16 @@ def select_stagger_strategy(
 
 ## Shape Vocabulary and Animation Congruence
 
-Illustration shape vocabulary (Smooth Circuit vs. Terminal Geometry from `ILLUSTRATION_GUIDE.md`) must be congruent with animation character. The same psychophysical principle that maps curved shapes to warmth maps curved easing to warmth.
+Illustration shape vocabulary must be congruent with animation character. Generic shape families below are background; for Agentic Coding, `DESIGN_SYSTEM.md` overrides them with sharp containers and semantic curves only.
 
 ### Shape × Easing Congruence Table
 
-| Shape Family | Easing Style | Spring Bounce | Duration Bias |
-|-------------|-------------|---------------|--------------|
-| **Smooth Circuit** (circles, squircles, Bezier connectors) | Expressive entrance, gradual ease-out | 0.05–0.15 | Standard to deliberate |
-| **Terminal Geometry** (diamonds, sharp rects, angular paths) | Productive, fast snap | 0.00 | Instant to subtle |
-| **Positive valence** (success, AI, system, knowledge) | Ease-out with gentle tail | 0.05–0.10 | Standard |
-| **High-arousal** (error, warning, code structure) | Near-linear or ease-in | 0.00 | Instant to fast |
+| Shape Family                                                        | Easing Style                          | Spring Bounce | Duration Bias          |
+| ------------------------------------------------------------------- | ------------------------------------- | ------------- | ---------------------- |
+| **Curved semantic geometry** (circles, ellipses, Bezier connectors) | Expressive entrance, gradual ease-out | 0.05–0.15     | Standard to deliberate |
+| **Terminal Geometry** (diamonds, sharp rects, angular paths)        | Productive, fast snap                 | 0.00          | Instant to subtle      |
+| **Positive valence** (success, AI, system, knowledge)               | Ease-out with gentle tail             | 0.05–0.10     | Standard               |
+| **High-arousal** (error, warning, code structure)                   | Near-linear or ease-in                | 0.00          | Instant to fast        |
 
 **Congruence rule:** An error dialog that bounces into view (spring bounce > 0) is semantically incoherent — it applies warm, playful motion to a negative-valence semantic state. Apply Terminal Geometry animation character to all error and warning elements: snap in, no overshoot, fast duration.
 
@@ -1079,11 +1122,11 @@ This section applies the above system to the Agentic Coding design system specif
 
 ### Brand PAD Profile
 
-| Axis | Level | Rationale |
-|------|-------|-----------|
-| Pleasure | Medium | Professional, clean, not cold. Smooth Circuit shapes as default. |
-| Arousal | Low–Medium | Technical reference for focused work. Calm and efficient. |
-| Dominance | Medium | Authoritative reference; not passive, not commanding. |
+| Axis      | Level      | Rationale                                                                  |
+| --------- | ---------- | -------------------------------------------------------------------------- |
+| Pleasure  | Medium     | Professional, clean, not cold. Sharp containers with semantic curves only. |
+| Arousal   | Low–Medium | Technical reference for focused work. Calm and efficient.                  |
+| Dominance | Medium     | Authoritative reference; not passive, not commanding.                      |
 
 **Motion style:** Productive. Technical reference documentation prioritizes task speed over emotional engagement. Expressive curves reserved for diagram reveals only.
 
@@ -1116,36 +1159,36 @@ stagger_8 = compute_stagger_parameters(item_count=8, arousal_level='medium')
    ============================================================ */
 
 /* Duration */
---duration-instant:       70ms;
---duration-fast:         110ms;
---duration-subtle:       150ms;
---duration-moderate:     240ms;
---duration-deliberate:   400ms;
---duration-ambient:      700ms;
+--duration-instant: 70ms;
+--duration-fast: 110ms;
+--duration-subtle: 150ms;
+--duration-moderate: 240ms;
+--duration-deliberate: 400ms;
+--duration-ambient: 700ms;
 
 /* Exit variants (×0.75) */
---duration-fast-exit:     80ms;
---duration-subtle-exit:  110ms;
+--duration-fast-exit: 80ms;
+--duration-subtle-exit: 110ms;
 --duration-moderate-exit: 180ms;
 --duration-deliberate-exit: 300ms;
 
 /* Easing — productive style */
---ease-enter:    cubic-bezier(0.00, 0.00, 0.38, 0.9);
---ease-exit:     cubic-bezier(0.20, 0.00, 1.00, 0.9);
---ease-standard: cubic-bezier(0.20, 0.00, 0.38, 0.9);
---ease-linear:   linear;
+--ease-enter: cubic-bezier(0, 0, 0.38, 0.9);
+--ease-exit: cubic-bezier(0.2, 0, 1, 0.9);
+--ease-standard: cubic-bezier(0.2, 0, 0.38, 0.9);
+--ease-linear: linear;
 
 /* Stagger */
---motion-stagger-sm: 60ms;   /* 5–8 items */
---motion-stagger-md: 80ms;   /* 3–4 items */
---motion-stagger-lg: 100ms;  /* 2 items */
+--motion-stagger-sm: 60ms; /* 5–8 items */
+--motion-stagger-md: 80ms; /* 3–4 items */
+--motion-stagger-lg: 100ms; /* 2 items */
 
 /* Reveal offsets */
---motion-reveal-y-load:   -8px;  /* page load: elements settle downward into position */
---motion-reveal-y-scroll:  12px;  /* scroll reveal: elements rise upward into viewport */
+--motion-reveal-y-load: -8px; /* page load: elements settle downward into position */
+--motion-reveal-y-scroll: 12px; /* scroll reveal: elements rise upward into viewport */
 --motion-reveal-x-forward: -16px; /* navigation forward: slide right */
---motion-reveal-x-back:    16px;  /* navigation back: slide left */
---motion-reveal-scale: 0.96;      /* modal/dialog only */
+--motion-reveal-x-back: 16px; /* navigation back: slide left */
+--motion-reveal-scale: 0.96; /* modal/dialog only */
 ```
 
 ### Diagram Animation Rules
@@ -1158,7 +1201,7 @@ stagger_8 = compute_stagger_parameters(item_count=8, arousal_level='medium')
 
 ### prefers-reduced-motion
 
-**Reduced-motion renders the canonical representation.** The phase=1 settled state is the primary design artifact — animation is an enhancement layer for capable browsers, not the content itself. When `prefers-reduced-motion: reduce` is active, `ScrollDrivenFigure` sets `phase=1` immediately, rendering every figure in its fully-settled final state. This is not a degradation path; it is the baseline design. Animation is a progressive enhancement for browsers that support it and users who prefer it.
+**Reduced-motion renders the canonical representation.** The complete static figure is the primary design artifact — storytelling idle animation is an enhancement layer, not the content itself. When `prefers-reduced-motion: reduce` is active, idle loops stop and legacy `ScrollDrivenFigure` exceptions set `phase=1` immediately. This is not a degradation path; it is the baseline design. Animation is a progressive enhancement for users who prefer it.
 
 WCAG 2.1 SC 2.3.3 (Level AAA) and SC 2.3.1 (Level A) cover motion sensitivity. Vestibular disorders affect approximately 10 million Americans. Large-scale motion can trigger nausea, headaches, and symptoms requiring bed rest. This is not aesthetic preference — ignoring it can cause physical harm.
 
@@ -1166,23 +1209,23 @@ WCAG 2.1 SC 2.3.3 (Level AAA) and SC 2.3.1 (Level A) cover motion sensitivity. V
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-delay: 0ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        transition-delay: 0ms !important;
-        scroll-behavior: auto !important;
-    }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
 
-    /* Preserve opacity transitions for content that uses them for show/hide logic */
-    .reveal,
-    .stagger-item {
-        opacity: 1 !important;
-        transform: none !important;
-    }
+  /* Preserve opacity transitions for content that uses them for show/hide logic */
+  .reveal,
+  .stagger-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 ```
 
@@ -1191,11 +1234,13 @@ WCAG 2.1 SC 2.3.3 (Level AAA) and SC 2.3.1 (Level A) cover motion sensitivity. V
 ### State Change Without Motion
 
 When `prefers-reduced-motion: reduce` is active:
+
 - Content appears instantly (no fade, no translate)
 - Stagger is eliminated — all elements appear simultaneously
-- Scroll-driven reveals trigger immediately on entering viewport (no animation)
+- Storytelling idle loops stop
+- Legacy scroll-driven reveals render immediately in their complete static state
 - Progress indicators use color change only (no spinning, no sweeping)
-- Diagrams render at final state — no draw-on animation
+- Diagrams remain fully readable with no draw-on or looped motion
 
 ### Minimum Animation Duration for Screen Readers
 
@@ -1208,41 +1253,56 @@ Some screen reader users rely on transition events for navigation cues. Never se
 For every generated animation sequence, verify:
 
 **Timing:**
+
 - [ ] All user-triggered animations begin within 100 ms of trigger (Miller 1968)
 - [ ] No user-triggered animation exceeds 500 ms duration
 - [ ] Exit animations are ≤ 75% of corresponding enter duration
 - [ ] No `animation-delay` on first element in any sequence
 
 **Easing:**
+
 - [ ] No CSS `ease` keyword used — only custom `cubic-bezier()` or named tokens
 - [ ] `linear` easing used only for spinners, progress bars, and video
 - [ ] Entrance uses ease-out (decelerating); exit uses ease-in (accelerating)
 - [ ] Repositioning uses ease-in-out; not ease-out (ease-out implies arrival, not transit)
 
 **Stagger:**
+
 - [ ] Total stagger sequence ≤ 400 ms (compress per-item delay if needed)
 - [ ] Stagger per step ≥ 40 ms (below this collapses to simultaneous)
 - [ ] Stagger order matches information hierarchy
 - [ ] Parallel equal-priority items use simultaneous fade, not stagger
 
-**Reveal (page load):**
+**Storytelling idle motion:**
+
+- [ ] Static figure communicates the concept with all animation disabled
+- [ ] Motion spec answers story loop, semantic meaning, reader benefit, static fallback, loop coherence, rejection test
+- [ ] Every loop maps to a real process state: authoring, inference, retrieval, serialization, tool execution, data flow, validation, or readiness
+- [ ] Coordinated idle roles read as one coherent story and support the surrounding text
+- [ ] No loop exists only for liveliness or decoration
+
+**Reveal (page load and legacy exceptions):**
+
 - [ ] Page-load elements use `translateY(-8px → 0)` (settle downward, not rise)
-- [ ] Scroll-reveal elements use `translateY(12px → 0)` (rise upward with scroll)
+- [ ] Scroll-reveal is legacy/exception only and has a written justification
 - [ ] Scale-in (`scale(0.96)`) used only for modals/dialogs — never lists
 - [ ] Navigation forward: enter from left; navigation back: enter from right
 - [ ] `animation-fill-mode: both` set on all reveal animations
 
 **Springs:**
+
 - [ ] Springs used only for gesture-continuation (drag release, pull-to-refresh)
 - [ ] `bounce: 0.0` (critically damped) for all non-gesture UI elements
 - [ ] No spring bounce on error, warning, or danger elements
 
 **Shape × Easing congruence:**
+
 - [ ] Error and warning elements use fast, snap-in animation (no bounce, no deliberate)
 - [ ] Success and positive-valence elements may use subtle bounce (≤ 0.10)
 - [ ] Diagram connectors draw after nodes (data-flow order maintained)
 
 **Accessibility:**
+
 - [ ] `@media (prefers-reduced-motion: reduce)` block present in CSS
 - [ ] All animations use `0.01ms !important` in reduced-motion block (not 0)
 - [ ] Reveal classes reset to final state (`opacity: 1`, `transform: none`) in reduced-motion
@@ -1250,36 +1310,38 @@ For every generated animation sequence, verify:
 - [ ] Parallax multiplier set to `0` in reduced-motion override
 
 **Performance:**
+
 - [ ] All animated properties are `opacity` and `transform` only — no `width`, `height`, `left`, `top`, `margin`, `padding`
-- [ ] No `scroll` event listeners for animation — use `IntersectionObserver` or CSS `@scroll-timeline`
+- [ ] No new scroll event listeners for storytelling animation
 - [ ] `will-change: transform, opacity` applied only to actively animating elements (remove after animation ends)
-- [ ] `animation-fill-mode: both` preferred over JavaScript state management for reveal
+- [ ] Reusable idle keyframes live in global vocabulary unless a component-local exception is justified
 
 **Diagram figures:**
-- [ ] `OperatorNode` and `AgentNode` at equivalent size roles use identical `actEnter` animation
+
+- [ ] Figure is static-complete before motion is added
 - [ ] `var(--ease-enter)` used, not `ease-out` keyword
-- [ ] S=40 primary entrance: 300ms, `translateY(12px)`. S=32 secondary: 250ms, `translateY(8px)`
-- [ ] `idle-ready-breathe` applied only to `AgentNode` during its "waiting for input" act
-- [ ] Ghost placeholders geometrically match their target node's head squircle bounds
-- [ ] Guide arcs (Mode A): CSS keyframe, 500ms, act-gated. Fan arcs (Mode B): JS scroll-driven
-- [ ] `PromptIcon` + `getPointAtLength` for scroll-driven travel; `TravelingPromptCard` for triggers
-- [ ] Mount guard applied to all elements with phase-conditional initial class
-- [ ] Static fallback card present; placed at semantic arc midpoint, not start/end state
-- [ ] Guide arcs in reduced-motion: `opacity: 0.35; stroke-dashoffset: 0 !important`
+- [ ] Semantic idle class chosen by process meaning, not visual preference
+- [ ] `idle-ready-breathe` applied only to a system/agent that is waiting for input
+- [ ] Flow direction matches causal direction; equal-priority items do not stagger into false hierarchy
+- [ ] Legacy `ScrollDrivenFigure` / scroll-scrubbed travel has an explicit exception comment
+- [ ] Legacy scroll exceptions render final static state in reduced motion
+- [ ] Static fallback is complete and placed at the semantic steady state
 
 ---
 
 ## References
 
 ### Perceptual Timing
-- **Miller, G. A.** — "The magical number seven, plus or minus two" (*Psychological Review*, 1956). Foundation for the 1,000 ms flow threshold.
-- **Miller, R. B.** — "Response time in man-computer conversational transactions" (*AFIPS Fall Joint Computer Conference*, 1968). Three response time thresholds: 100 ms, 1,000 ms, 10,000 ms.
-- **Card, S. K., Moran, T. P., & Newell, A.** — *The Psychology of Human-Computer Interaction* (Lawrence Erlbaum, 1983). Model Human Processor: 230 ms visual perception cycle.
-- **Card, S. K., Robertson, G. G., & Mackinlay, J. D.** — "The information visualizer" (*CHI '91*, 1991). Applied Miller thresholds to workstation interface timing.
+
+- **Miller, G. A.** — "The magical number seven, plus or minus two" (_Psychological Review_, 1956). Foundation for the 1,000 ms flow threshold.
+- **Miller, R. B.** — "Response time in man-computer conversational transactions" (_AFIPS Fall Joint Computer Conference_, 1968). Three response time thresholds: 100 ms, 1,000 ms, 10,000 ms.
+- **Card, S. K., Moran, T. P., & Newell, A.** — _The Psychology of Human-Computer Interaction_ (Lawrence Erlbaum, 1983). Model Human Processor: 230 ms visual perception cycle.
+- **Card, S. K., Robertson, G. G., & Mackinlay, J. D.** — "The information visualizer" (_CHI '91_, 1991). Applied Miller thresholds to workstation interface timing.
 - **Nielsen, J.** — "Response Times: The 3 Important Limits" (NNGroup, 1993; based on Miller 1968). 100 / 1,000 / 10,000 ms practitioner synthesis.
 - **Nielsen Norman Group** — "The Ideal Duration and Easing for UI Animations" (2015, updated 2023). Practitioner synthesis of animation duration research.
 
 ### Duration & Easing Systems
+
 - **IBM Carbon Design System** — "Motion" documentation. Six-tier duration scale (fast-01 70 ms → slow-02 700 ms); productive vs. expressive easing curves. Published under Apache 2.0.
 - **Apple Inc.** — WWDC 2023: "Wind down with SwiftUI animations." Spring animation perceptual model: `duration` + `bounce` parameters; bounce: 0.0 = critically damped; recommended 0.0–0.20 for UI.
 - **Shopify Polaris** — "Motion" design system documentation. "Snappy" principle: fast start, slow end (ease-out default).
@@ -1287,30 +1349,35 @@ For every generated animation sequence, verify:
 - **MUI (Material UI)** — `theme.transitions` documentation. 225 ms entering, 195 ms leaving defaults.
 
 ### Cognitive Effects of Animation
-- **Pratt, J., et al.** — "Visual sudden-onset in peripheral vision triggers orienting" (*Psychological Science*, 2010, 21(12), 1724–1730). Motion anywhere in visual field triggers automatic attention reorientation.
+
+- **Pratt, J., et al.** — "Visual sudden-onset in peripheral vision triggers orienting" (_Psychological Science_, 2010, 21(12), 1724–1730). Motion anywhere in visual field triggers automatic attention reorientation.
 - **Nielsen Norman Group** — "Animation for Attention and Comprehension" (2020). Animation directing attention to critical state changes; change blindness prevention.
 - **Nielsen Norman Group** — "Skeleton Screens 101" (Mejtoft, Långström & Söderström 2018, referenced). Skeleton screens create "illusion of progress," reducing perceived loading time.
 - **Nebraska-Lincoln study** (cited by NNGroup) — Users with animated progress bars tolerate **3× longer** wait vs. static/no indicator. Identical objective wait time.
-- **Thomas, F., & Johnston, O.** — *The Illusion of Life: Disney Animation* (Hyperion, 1981). 12 principles of animation; timing, ease-in/ease-out, staging, follow-through operationalized by Carbon, Apple.
+- **Thomas, F., & Johnston, O.** — _The Illusion of Life: Disney Animation_ (Hyperion, 1981). 12 principles of animation; timing, ease-in/ease-out, staging, follow-through operationalized by Carbon, Apple.
 
 ### Perceived Performance
+
 - **Nielsen Norman Group** — "Response Times: The 3 Important Limits." Slideshow case study: 1% vs. 20% eye-tracking attention differential.
 - **WCAG 2.1 Success Criterion 2.3.3** — "Animation from Interactions" (Level AAA). Required: provide mechanism to disable motion.
 - **vestibular.org** — Vestibular Disorders Association. ~10 million Americans affected by vestibular disorders; screen motion can trigger symptoms.
 
 ### Spatial Cognition and Direction
-- **Casasanto, D., & Bottini, R.** — "Mirror Reading Can Reverse the Flow of Time" and spatial metaphor research (*Frontiers in Psychology*, 2022). GOOD IS RIGHT; mental number line; cultural variation.
+
+- **Casasanto, D., & Bottini, R.** — "Mirror Reading Can Reverse the Flow of Time" and spatial metaphor research (_Frontiers in Psychology_, 2022). GOOD IS RIGHT; mental number line; cultural variation.
 - **Nielsen Norman Group** — "Animation in UX: The Science of Motion and Spatial Cognition" (2022). Directionality encodes navigational contracts; zoom in = deeper, zoom out = broader.
 - **Pratt et al. (2010)** — Peripheral motion capture (see above). Foundation for directional attention signaling.
 
 ### Stagger and Progressive Disclosure
-- **Card, S. K., Moran, T. P., & Newell, A.** — *The Psychology of Human-Computer Interaction* (1983). 230 ms perception cycle — interval below which sequential items merge perceptually.
+
+- **Card, S. K., Moran, T. P., & Newell, A.** — _The Psychology of Human-Computer Interaction_ (1983). 230 ms perception cycle — interval below which sequential items merge perceptually.
 - **Nielsen Norman Group** — "Progressive Disclosure" (2006, updated 2021). Sequential disclosure improves comprehension by forcing prioritization; working memory alignment.
 - **Miller, G. A.** (1956) — 7 ± 2 chunks; modern revision: 4 ± 1 for complex information. Informs stagger item count limits.
 - **Framer Motion documentation** — `stagger(0.3)` default for `whileInView` variants. 300 ms / item is starting point to override, not design recommendation.
 - **Josh W. Comeau** — "Action-driven motion" (joshwcomeau.com). ~125 ms entrance for hover micro-interactions. Sequential item stagger practitioner reference.
 
 ### Accessibility
+
 - **WCAG 2.1 SC 2.3.3** — Animation from Interactions. Provides mechanism to disable motion triggered by interaction (Level AAA).
 - **WCAG 2.1 SC 2.3.1** — Three Flashes or Below Threshold (Level A). No content flashes more than 3× per second.
 - **MDN Web Docs** — `prefers-reduced-motion` media query. Implementation guidance.

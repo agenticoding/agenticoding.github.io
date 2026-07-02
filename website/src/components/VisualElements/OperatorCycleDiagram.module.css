@@ -1,77 +1,76 @@
-/* ── OperatorCycleDiagram — Animation module ──────────────────────────────
-   actEnter keyframe and connector classes are in diagram.module.css.
-   shared.actEntered applied in TSX for phase nodes and cycle label.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ── OperatorCycleDiagram — control-room workflow ─────────────────────────── */
 
-/* ── Phase nodes — base state; shared.actEntered drives animation ── */
-.phaseNode {
-  opacity: 0;
-  transform: translateY(12px);
+.vectorStroke {
+  vector-effect: non-scaling-stroke;
 }
 
-/* ── Center iterate label — base state; shared.actEntered drives animation ── */
-.cycleLabel {
-  opacity: 0;
-  transform: translateY(6px);
+.operatorWatcher {
+  animation: operatorWatchLoop 9600ms linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes operatorWatchLoop {
+  0%, 10%, 100% { transform: translate(0, 0); }
+  25%, 35% { transform: translate(var(--operator-plan-x), var(--operator-plan-y)); }
+  50%, 60% { transform: translate(var(--operator-execute-x), var(--operator-execute-y)); }
+  75%, 85% { transform: translate(var(--operator-validate-x), var(--operator-validate-y)); }
 }
 
 /* ── Description grid ── */
 .descGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
   margin: var(--space-3) 0;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 300ms var(--ease-enter), transform 300ms var(--ease-enter);
-}
-.descGrid.descVisible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .descCell {
   display: flex;
   flex-direction: column;
   gap: var(--space-0h);
+  padding: var(--space-2);
+  background: var(--ifm-background-surface-color);
+  border: 1px solid;
 }
 
 .descLabel {
-  font-weight: 600;
-  font-size: var(--text-base);
-  font-family: var(--font-mono);
+  font-family: var(--font-mono-spec);
   font-feature-settings: var(--font-mono-features);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: var(--lh-sm);
+}
+
+.descQuestion {
+  color: var(--text-body);
+  font-family: var(--font-mono-ai);
+  font-feature-settings: var(--font-mono-features);
+  font-size: var(--text-sm);
   line-height: var(--lh-sm);
 }
 
 .descText {
+  color: var(--text-muted);
   font-size: var(--text-sm);
-  color: var(--text-body);
   line-height: var(--lh-sm);
 }
 
-/* ── Mobile: single column ── */
-@media (max-width: 639px) {
+@media (max-width: 799px) {
+  .descGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 479px) {
   .descGrid {
     grid-template-columns: 1fr;
   }
 }
 
-/* ── Reduced-motion overrides ── */
 @media (prefers-reduced-motion: reduce) {
-  .phaseNode {
-    opacity: 1;
-    transform: none;
+  .operatorWatcher {
     animation: none;
-  }
-  .cycleLabel {
-    opacity: 1;
-    transform: none;
-    animation: none;
-  }
-  .descGrid {
-    opacity: 1;
-    transform: none;
-    transition: none;
   }
 }

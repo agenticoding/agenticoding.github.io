@@ -1,10 +1,11 @@
+/* eslint-disable react/prop-types -- TypeScript owns prop validation for SVG primitive props. */
 import React, { type CSSProperties } from 'react';
-import clsx from 'clsx';
 import { EmojiImage } from './ActorNodes';
 import type { EmojiAsset } from './emojiAssets';
 import { TILE_LAYOUT, tileToneVars, voiceStyle, wrapSvgText, type DiagramTone, type DiagramVoice } from './diagramTileLayout';
+import { DIAGRAM_STROKE, PROCESS_TILE_SCALE } from './diagramScale';
 
-type Variant = 'rich' | 'compact' | 'centered' | 'accent';
+type Variant = 'rich' | 'compact' | 'centered' | 'accent' | 'process';
 type Density = 'desktop' | 'mobile';
 
 type DiagramTileProps = {
@@ -34,6 +35,7 @@ export function DiagramTile(props: DiagramTileProps) {
   if (props.variant === 'centered') return <CenteredTile {...props} />;
   if (props.variant === 'compact') return <CompactTile {...props} />;
   if (props.variant === 'accent') return <AccentTile {...props} />;
+  if (props.variant === 'process') return <ProcessTile {...props} />;
   return <RichTile {...props} />;
 }
 
@@ -41,7 +43,7 @@ function BaseTile({ props, children }: { props: DiagramTileProps; children: Reac
   const color = tileToneVars(props.tone);
   return (
     <g className={props.className} style={props.style}>
-      <rect x={props.x} y={props.y} width={props.width} height={props.height} rx={0} ry={0} fill={props.fill ?? color.fill} stroke={color.stroke} strokeWidth={props.weight ?? 1} className={props.rectClassName} vectorEffect="non-scaling-stroke" />
+      <rect x={props.x} y={props.y} width={props.width} height={props.height} rx={0} ry={0} fill={props.fill ?? color.fill} stroke={color.stroke} strokeWidth={props.weight ?? DIAGRAM_STROKE.thin} className={props.rectClassName} vectorEffect="non-scaling-stroke" />
       {children}
     </g>
   );
@@ -61,7 +63,7 @@ function RichTile(props: DiagramTileProps) {
       {props.stepLabel && <text x={props.x + TILE_LAYOUT.padding} y={props.y + 18} fill={color.text} style={stepStyle()}>{props.stepLabel}</text>}
       {props.icon && <EmojiImage asset={props.icon} x={props.x + TILE_LAYOUT.padding} y={layout.iconY} size={layout.iconSize} />}
       <TextLines x={layout.textX} y={layout.titleY} lines={titleLines} fill={color.title} style={voiceStyle(props.titleVoice ?? 'spec', 12, 700)} />
-      <line x1={layout.textX} y1={dividerY} x2={props.x + props.width - TILE_LAYOUT.padding} y2={dividerY} stroke={color.accent} opacity={0.45} strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <line x1={layout.textX} y1={dividerY} x2={props.x + props.width - TILE_LAYOUT.padding} y2={dividerY} stroke={color.accent} opacity={0.45} strokeWidth={DIAGRAM_STROKE.thin} vectorEffect="non-scaling-stroke" />
       <TextLines x={layout.textX} y={detailY} lines={detailLines} fill={color.muted} style={voiceStyle('keyword', detailFontSize, 400)} gap={12} />
     </BaseTile>
   );
@@ -101,6 +103,20 @@ function AccentTile(props: DiagramTileProps) {
   );
 }
 
+function ProcessTile(props: DiagramTileProps) {
+  const color = tileToneVars(props.tone);
+  const layout = processLayout(props);
+  return (
+    <BaseTile props={props}>
+      {props.stepLabel && <text x={props.x + PROCESS_TILE_SCALE.padding} y={props.y + 18} fill={color.text} style={processStepStyle()}>{props.stepLabel}</text>}
+      {props.icon && <EmojiImage asset={props.icon} x={props.x + PROCESS_TILE_SCALE.padding} y={layout.iconY} size={PROCESS_TILE_SCALE.iconSize} />}
+      <TextLines x={layout.textX} y={layout.titleY} lines={layout.titleLines} fill={color.title} style={voiceStyle(props.titleVoice ?? 'spec', PROCESS_TILE_SCALE.titleFontSize, 700)} />
+      <line x1={layout.textX} y1={layout.dividerY} x2={props.x + props.width - PROCESS_TILE_SCALE.padding} y2={layout.dividerY} stroke={color.accent} opacity={0.45} strokeWidth={DIAGRAM_STROKE.thin} vectorEffect="non-scaling-stroke" />
+      <TextLines x={layout.textX} y={layout.detailY} lines={layout.detailLines} fill={color.muted} style={voiceStyle('keyword', PROCESS_TILE_SCALE.detailFontSize, 400)} gap={PROCESS_TILE_SCALE.detailLineGap} />
+    </BaseTile>
+  );
+}
+
 function TextLines({ x, y, lines, fill, style, anchor = 'start', gap = 14 }: TextLineProps) {
   return <text x={x} y={y} textAnchor={anchor} fill={fill} style={style}>{lines.map((line, i) => <tspan key={`${line}-${i}`} x={x} dy={i === 0 ? 0 : gap}>{line}</tspan>)}</text>;
 }
@@ -117,10 +133,33 @@ function richIconSize(props: DiagramTileProps) {
   return props.density === 'mobile' ? TILE_LAYOUT.iconSize.mobile : TILE_LAYOUT.iconSize.desktop;
 }
 
+function processLayout(props: DiagramTileProps) {
+  const textX = props.x + PROCESS_TILE_SCALE.padding + PROCESS_TILE_SCALE.iconSize + PROCESS_TILE_SCALE.iconGap;
+  const textWidth = props.x + props.width - PROCESS_TILE_SCALE.padding - textX;
+  return {
+    textX,
+    textWidth,
+    iconY: props.y + processIconOffset(props),
+    titleY: props.y + (isShortProcessTile(props) ? 24 : 25),
+    dividerY: props.y + (isShortProcessTile(props) ? 38 : 40),
+    detailY: props.y + 52,
+    titleLines: wrapSvgText(props.title, textWidth, PROCESS_TILE_SCALE.titleFontSize, 1),
+    detailLines: detailText(props.detail, textWidth, PROCESS_TILE_SCALE.detailFontSize, 2),
+  };
+}
+
+function processIconOffset(props: DiagramTileProps) {
+  return isShortProcessTile(props) ? 24 : 32;
+}
+
+function isShortProcessTile(props: DiagramTileProps) {
+  return props.height <= PROCESS_TILE_SCALE.shortHeight;
+}
+
 function detailText(detail: DiagramTileProps['detail'], maxWidth: number, fontSize: number, maxLines: number) {
   if (!detail) return [];
-  if (Array.isArray(detail)) return detail.flatMap((line) => wrapSvgText(line, maxWidth, fontSize, 1)).slice(0, maxLines);
-  return wrapSvgText(detail, maxWidth, fontSize, maxLines);
+  if (typeof detail === 'string') return wrapSvgText(detail, maxWidth, fontSize, maxLines);
+  return detail.flatMap((line) => wrapSvgText(line, maxWidth, fontSize, 1)).slice(0, maxLines);
 }
 
 function eyebrowStyle() {
@@ -129,4 +168,8 @@ function eyebrowStyle() {
 
 function stepStyle() {
   return { ...voiceStyle('keyword', 10, 700), letterSpacing: '0.08em' };
+}
+
+function processStepStyle() {
+  return { ...voiceStyle('keyword', PROCESS_TILE_SCALE.stepFontSize, 700), letterSpacing: '0.08em' };
 }

@@ -187,7 +187,6 @@ export default function ContextMechanismMap() {
     <svg
       viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
       width="100%"
-      height="auto"
       role="img"
       aria-label="Five equal cards compare context files, MCP schemas, skills, runtime management, and sub-agents through the same four lenses: when each loads, where it lands in context, parent-context cost, and best-fit use."
       xmlns="http://www.w3.org/2000/svg"

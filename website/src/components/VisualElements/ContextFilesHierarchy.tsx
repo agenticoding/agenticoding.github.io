@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import styles from './ContextFilesHierarchy.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useMounted } from '../../hooks/useMounted';
 import { Ghost } from './Ghost';
@@ -84,7 +84,7 @@ const ACTS = [
 ] as const;
 
 export default function ContextFilesHierarchy() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const mounted = useMounted();
   const { wasReached } = useActs(ACTS, phase);
 
@@ -100,7 +100,6 @@ export default function ContextFilesHierarchy() {
     <svg
       viewBox="0 0 480 320"
       width="100%"
-      height="auto"
       role="img"
       aria-label="CLAUDE.md priority hierarchy: Enterprise Policy overrides Project CLAUDE.md, which overrides .claude/rules/, then User config, then .claude.local.md. Non-conflicting rules merge."
       xmlns="http://www.w3.org/2000/svg"

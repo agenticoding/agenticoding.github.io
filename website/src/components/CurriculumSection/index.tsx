@@ -8,11 +8,11 @@ import styles from './index.module.css';
 // Utilities
 // ---------------------------------------------------------------------------
 
-function countLessons(): number {
+function countChapters(): number {
   let count = 0;
   const traverse = (items: unknown[]) => {
     for (const item of items) {
-      if (typeof item === 'string' && item.includes('lesson-')) {
+      if (typeof item === 'string' && item.includes('chapter-')) {
         count++;
       } else if (item && typeof item === 'object' && 'items' in item) {
         traverse((item as { items: unknown[] }).items);
@@ -23,7 +23,7 @@ function countLessons(): number {
   return count;
 }
 
-const LESSON_COUNT = countLessons();
+const CHAPTER_COUNT = countChapters();
 
 // ---------------------------------------------------------------------------
 // Module card
@@ -32,7 +32,7 @@ const LESSON_COUNT = countLessons();
 interface ModuleCardProps {
   number: number;
   title: string;
-  lessonCount: number;
+  chapterCount: number;
   topics: string[];
   link: string;
   hue: 'indigo' | 'violet' | 'magenta' | 'rose';
@@ -41,7 +41,7 @@ interface ModuleCardProps {
 function ModuleCard({
   number,
   title,
-  lessonCount,
+  chapterCount,
   topics,
   link,
   hue,
@@ -55,7 +55,7 @@ function ModuleCard({
       <Heading as="h3" className={styles.moduleTitle}>
         {title}
       </Heading>
-      <span className={styles.moduleMeta}>{lessonCount} lessons</span>
+      <span className={styles.moduleMeta}>{chapterCount} chapters</span>
       <div className={styles.moduleTopics}>
         {topics.map((t, i) => (
           <span key={i} className={styles.moduleTopic}>
@@ -76,34 +76,26 @@ export default function CurriculumSection() {
     {
       number: 1,
       title: 'Fundamentals',
-      lessonCount: 2,
+      chapterCount: 2,
       hue: 'indigo',
       topics: ['LLM internals', 'How agents work'],
-      link: '/fundamentals/lesson-1-how-llms-work',
+      link: '/chapter-1-how-llms-work',
     },
     {
       number: 2,
       title: 'Methodology',
-      lessonCount: 3,
+      chapterCount: 3,
       hue: 'violet',
       topics: ['Prompt structure', 'Workflow', 'Grounding'],
-      link: '/methodology/lesson-3-prompting-101',
+      link: '/chapter-3-prompting-101',
     },
     {
       number: 3,
       title: 'Practical Techniques',
-      lessonCount: 8,
+      chapterCount: 8,
       hue: 'magenta',
       topics: ['CI integration', 'Test generation', 'Spec-driven development'],
-      link: '/practical-techniques/lesson-6-context-management',
-    },
-    {
-      number: 4,
-      title: 'Experience Engineering',
-      lessonCount: 4,
-      hue: 'rose',
-      topics: ['Design tokens', 'UI specs', 'Accessibility'],
-      link: '/experience-engineering/lesson-14-design-tokens',
+      link: '/chapter-6-context-management',
     },
   ];
 
@@ -114,7 +106,7 @@ export default function CurriculumSection() {
           What You&apos;ll Learn
         </Heading>
         <p className={styles.sectionSubtitle}>
-          {LESSON_COUNT} lessons &middot; Docs
+          {CHAPTER_COUNT} chapters &middot; Docs
         </p>
         <div className={styles.moduleGrid}>
           {modules.map((m) => (

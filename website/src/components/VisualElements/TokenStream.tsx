@@ -6,6 +6,7 @@ import {
   type TokenUnitSignal,
   type TokenUnitTone,
 } from './TokenUnit';
+import { seededTokenTrain } from './TokenTrainSequence';
 
 export type TokenStreamToken = {
   modality: TokenUnitModality;
@@ -42,11 +43,10 @@ export const TEXT_CONTEXT_TOKENS = [
   { modality: 'text', signal: 'salient' },
 ] as const satisfies readonly TokenStreamToken[];
 
-export const OUTPUT_TOKENS = [
-  { modality: 'code', signal: 'salient' },
-  { modality: 'text' },
-  { modality: 'generic', signal: 'compressed' },
-] as const satisfies readonly TokenStreamToken[];
+export const OUTPUT_TOKENS = seededTokenTrain(
+  'pattern-output',
+  8
+) satisfies readonly TokenStreamToken[];
 
 const positionFor = (index: number, direction: 'right' | 'down', step: number) => ({
   dx: direction === 'right' ? index * step : 0,

@@ -1,6 +1,8 @@
 import React from 'react';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
+import { ArrowMarker as SharedArrowMarker } from './diagramGeometry';
+import { DIAGRAM_STROKE } from './diagramScale';
 import styles from './PostTrainingTuningBoard.module.css';
 
 const VW = 640;
@@ -432,7 +434,7 @@ function Connector({ d, markerId }: { d: string; markerId: string }) {
       d={d}
       fill="none"
       stroke="var(--visual-violet)"
-      strokeWidth="2"
+      strokeWidth={DIAGRAM_STROKE.connector}
       strokeLinecap="butt"
       markerEnd={`url(#${markerId})`}
     />
@@ -440,18 +442,7 @@ function Connector({ d, markerId }: { d: string; markerId: string }) {
 }
 
 function ArrowMarker({ id }: { id: string }) {
-  return (
-    <marker
-      id={id}
-      markerWidth="6"
-      markerHeight="6"
-      refX="6"
-      refY="3"
-      orient="auto"
-    >
-      <polygon points="0 0, 6 3, 0 6" fill="var(--visual-violet)" />
-    </marker>
-  );
+  return <SharedArrowMarker id={id} fill="var(--visual-violet)" />;
 }
 
 function MobileBaseCard() {

@@ -1,6 +1,10 @@
 export const channels = [
-  {label: 'Reference', path: '/', match: '/'},
-  {label: 'Toolbox', path: '/developer-tools/cli-coding-agents', match: '/developer-tools'},
+  { label: 'Book', path: '/', match: '/' },
+  {
+    label: 'Toolbox',
+    path: '/developer-tools/cli-coding-agents',
+    match: '/developer-tools',
+  },
 ] as const;
 
 export function getActiveIndex(pathname: string): number {

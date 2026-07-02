@@ -5,7 +5,7 @@ import shared from './diagram.module.css';
 import { OperatorNode, AgentNode, EmojiImage } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { usePhaseProgress } from '../../hooks/usePhaseProgress';
@@ -43,7 +43,7 @@ const AGENT_POSITIONS = [
 ] as const;
 
 export default function ParadigmShiftDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const { wasReached } = useActs(ACTS, phase);
   const mounted = useMounted();
 
@@ -80,7 +80,6 @@ export default function ParadigmShiftDiagram() {
     <svg
       viewBox="0 0 480 264"
       width="100%"
-      height="auto"
       role="img"
       aria-label="Paradigm shift: the same operator moves from working with hand tools to directing three agents that collectively feed a factory below."
       xmlns="http://www.w3.org/2000/svg"

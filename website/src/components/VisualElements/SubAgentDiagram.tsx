@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './SubAgentDiagram.module.css';
 import shared from './diagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { useMounted } from '../../hooks/useMounted';
@@ -56,7 +56,7 @@ const RETURN_TIP_ANGLE = 206.6;
 const DELAY_80 = { transitionDelay: '80ms' } as const;
 
 export default function SubAgentDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const mounted = useMounted();
   const { wasReached } = useActs(ACTS, phase);
 
@@ -78,7 +78,6 @@ export default function SubAgentDiagram() {
     <svg
       viewBox="0 0 600 300"
       width="100%"
-      height="auto"
       role="img"
       aria-label="Sub-agent context isolation: orchestrator delegates research, sub-agent processes 50,000 tokens, returns 2,000 token synthesis."
       xmlns="http://www.w3.org/2000/svg"

@@ -29,7 +29,7 @@ function ChartStage({ selectedRows, selectedIds, onToggle }: { selectedRows: Ben
 function EvidenceChart({ selectedRows, selectedIds, onToggle }: { selectedRows: BenchmarkRow[]; selectedIds: string[]; onToggle: (id: string) => void }) {
   const labelLayout = useMemo(() => layoutCurveLabels(selectedRows, desktopChart), [selectedRows]);
   const labels = useRenderedCurveLabels(labelLayout);
-  return <figure className={styles.chartFigure}><ChartSvg chart={desktopChart} ticks={desktopXTicks} selectedIds={selectedIds} labels={labels} onToggle={onToggle} variant="desktop" /><ChartSvg chart={mobileChart} ticks={mobileXTicks} selectedIds={selectedIds} onToggle={onToggle} variant="mobile" /><MobileCurveSummary rows={selectedRows} /><figcaption>Reported benchmark points from 8K to 1M context, plotted on a log-scale x-axis.</figcaption></figure>;
+  return <div className={styles.chartFigure}><ChartSvg chart={desktopChart} ticks={desktopXTicks} selectedIds={selectedIds} labels={labels} onToggle={onToggle} variant="desktop" /><ChartSvg chart={mobileChart} ticks={mobileXTicks} selectedIds={selectedIds} onToggle={onToggle} variant="mobile" /><MobileCurveSummary rows={selectedRows} /><p className={styles.chartCaption}>Reported benchmark points from 8K to 1M context, plotted on a log-scale x-axis.</p></div>;
 }
 
 function ChartSvg({ chart, ticks, selectedIds, labels = [], onToggle, variant }: { chart: ChartLayout; ticks: number[]; selectedIds: string[]; labels?: RenderedCurveLabel[]; onToggle: (id: string) => void; variant: 'desktop' | 'mobile' }) {
@@ -215,5 +215,5 @@ export default function LongContextBenchmarkExplorer() {
   const selectedRows = getSelectedRows(selectedIds);
   const containerClassName = styles.container;
 
-  return <section className={containerClassName} aria-labelledby="long-context-benchmark-title"><header className={styles.header}><p className={styles.eyebrow}>Long-context benchmark explorer</p><h3 id="long-context-benchmark-title">Choose by effective context, not advertised window.</h3><p>Context windows are capacity. Effective context is the part the model can still retrieve from when the prompt approaches production scale.</p></header><p className={styles.screenSummary}>The chart plots reported benchmark points from 8K to 1M where available. GPT-5.5 and some DeepSeek rows have full MRCR curves; Claude and Gemini rows use sparse measured points.</p><ChartStage selectedRows={selectedRows} selectedIds={selectedIds} onToggle={(id) => setSelectedIds((current) => toggleSelectedId(current, id))} /></section>;
+  return <section className={containerClassName} aria-label="Long-context benchmark explorer"><p className={styles.screenSummary}>The chart plots reported benchmark points from 8K to 1M where available. GPT-5.5 and some DeepSeek rows have full MRCR curves; Claude and Gemini rows use sparse measured points.</p><ChartStage selectedRows={selectedRows} selectedIds={selectedIds} onToggle={(id) => setSelectedIds((current) => toggleSelectedId(current, id))} /></section>;
 }

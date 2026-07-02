@@ -32,21 +32,16 @@
 }
 
 .card rect,
-.exitTile rect,
-.cardDivider {
+.exitTile rect {
   vector-effect: non-scaling-stroke;
 }
 
-.connector path,
-.connector polygon {
+.connector path {
   opacity: 0.78;
 }
 
 .loopLabel,
-.branchLabel,
-.stepNumber,
-.cardTitle,
-.cardDetail {
+.branchLabel {
   font-feature-settings: var(--font-mono-features);
 }
 
@@ -59,30 +54,6 @@
 .branchLabel {
   font-family: var(--font-mono-spec);
   font-size: 10px;
-}
-
-.stepNumber {
-  font-family: var(--font-mono-keyword);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.cardTitle {
-  font-family: var(--font-mono-spec);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.cardDivider {
-  opacity: 0.45;
-  stroke-width: 1;
-}
-
-.cardDetail {
-  font-family: var(--font-mono-keyword);
-  font-size: 9.5px;
-  letter-spacing: 0.01em;
 }
 
 @keyframes idleHarnessBeat {

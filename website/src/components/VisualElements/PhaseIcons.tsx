@@ -14,8 +14,8 @@ interface Phase {
 const PHASES: Phase[] = [
   {
     icon: ResearchIcon,
-    label: 'Research',
-    description: 'Ground agents in codebase patterns and domain knowledge before acting',
+    label: 'Grounding',
+    description: "Ground the agent in the specific task's reality before acting",
   },
   {
     icon: ChecklistIcon,

@@ -9,23 +9,23 @@ import styles from './index.module.css';
 interface PreviewTileProps {
   title: string;
   caption: string;
-  lessonLink: string;
-  lessonNumber: number;
+  chapterLink: string;
+  chapterNumber: number;
   children: React.ReactNode;
 }
 
 function PreviewTile({
   title,
   caption,
-  lessonLink,
-  lessonNumber,
+  chapterLink,
+  chapterNumber,
   children,
 }: PreviewTileProps) {
   return (
-    <Link to={lessonLink} className={styles.previewTile}>
+    <Link to={chapterLink} className={styles.previewTile}>
       <div className={styles.visualWrapper}>{children}</div>
       <div className={styles.tileContent}>
-        <span className={styles.lessonBadge}>Lesson {lessonNumber}</span>
+        <span className={styles.chapterBadge}>Chapter {chapterNumber}</span>
         <Heading as="h3" className={styles.tileTitle}>
           {title}
         </Heading>
@@ -43,15 +43,15 @@ export default function CourseVisualsShowcase() {
           Interactive Course Content
         </Heading>
         <p className={styles.sectionSubtitle}>
-          Diagrams and visualizations from the lessons
+          Diagrams and visualizations from the chapters
         </p>
 
         <div className={styles.previewGrid}>
           <PreviewTile
             title="Iterative AI Workflows"
-            caption="Research, Plan, Execute, Validate - systematic AI-assisted development"
-            lessonLink="/methodology/lesson-4-high-level-methodology"
-            lessonNumber={4}
+            caption="Grounding, Plan, Execute, Validate - systematic AI-assisted development"
+            chapterLink="/chapter-4-high-level-methodology"
+            chapterNumber={4}
           >
             <WorkflowCircle />
           </PreviewTile>
@@ -59,8 +59,8 @@ export default function CourseVisualsShowcase() {
           <PreviewTile
             title="Context Isolation"
             caption="Separate contexts prevent bias between code, tests, and triage"
-            lessonLink="/practical-techniques/lesson-9-tests-as-guardrails"
-            lessonNumber={9}
+            chapterLink="/chapter-9-tests-as-guardrails"
+            chapterNumber={9}
           >
             <ThreeContextWorkflow vertical />
           </PreviewTile>
@@ -68,8 +68,8 @@ export default function CourseVisualsShowcase() {
           <PreviewTile
             title="Code Pattern Compounding"
             caption="Good patterns amplify quality, bad patterns compound technical debt"
-            lessonLink="/practical-techniques/lesson-12-agent-friendly-code"
-            lessonNumber={12}
+            chapterLink="/chapter-12-agent-friendly-code"
+            chapterNumber={12}
           >
             <CompoundQualityVisualization homepageMode />
           </PreviewTile>

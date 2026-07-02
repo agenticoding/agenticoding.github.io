@@ -75,7 +75,7 @@
   margin-top: auto;
 }
 
-.lessonBadge {
+.chapterBadge {
   display: inline-block;
   font-family: var(--font-mono-keyword);
   font-size: var(--text-xs);

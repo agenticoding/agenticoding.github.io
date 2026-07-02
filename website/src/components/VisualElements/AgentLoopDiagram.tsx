@@ -5,7 +5,7 @@ import shared from './diagram.module.css';
 import { DiagramNode } from './DiagramNode';
 import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { useMounted } from '../../hooks/useMounted';
@@ -41,7 +41,7 @@ const ACTS = [
 ] as const;
 
 export default function AgentLoopDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const { wasReached } = useActs(ACTS, phase);
   const mounted = useMounted();
 
@@ -71,7 +71,6 @@ export default function AgentLoopDiagram() {
     <svg
       viewBox="0 0 520 352"
       width="100%"
-      height="auto"
       role="img"
       aria-label="Agent execution loop: Perceive, Reason, Act, Observe, Verify — iterate until done."
       xmlns="http://www.w3.org/2000/svg"

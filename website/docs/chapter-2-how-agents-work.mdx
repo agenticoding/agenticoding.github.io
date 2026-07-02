@@ -1,0 +1,289 @@
+---
+sidebar_position: 2
+sidebar_label: 'Agents Demystified'
+sidebar_custom_props:
+  sectionNumber: 2
+title: 'Agents Demystified'
+---
+
+import HarnessContextLoop from '@site/src/components/VisualElements/HarnessContextLoop';
+import HarnessDeltaExplorer from '@site/src/components/VisualElements/HarnessDeltaExplorer';
+import InlineEmojiImage from '@site/src/components/VisualElements/InlineEmojiImage';
+import InteractiveHarnessWorkbench from '@site/src/components/VisualElements/InteractiveHarnessWorkbench';
+import StructuredControlPlaneWorkbench from '@site/src/components/VisualElements/StructuredControlPlaneWorkbench';
+import InstructionLayerAuthority from '@site/src/components/VisualElements/InstructionLayerAuthority';
+import LivingContextWindowStream from '@site/src/components/VisualElements/LivingContextWindowStream';
+import { EMOJI } from '@site/src/components/VisualElements/emojiAssets';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+
+In chapter 1, we reduced the model to its operating core: context in, predicted tokens out. A model can emit prose, code, a reasoning trace, or a tool-call-shaped message, but it is still predicting tokens from the supplied context.
+
+An agent is the software system wrapped around that model call. The harness supplies context, exposes tools, parses structured outputs, executes approved actions, appends observations, and decides whether to continue. The LLM is the probabilistic engine; the agent is the deterministic control plane that turns its outputs into useful work.
+
+## The Agent Loop
+
+The agent loop is not a cognitive cycle. It is an application loop around repeated LLM calls. Each pass prepares input context, gets model output, validates the output, performs any approved side effect, and serializes the result back into the next context.
+
+<DiagramFrame kicker="Agent mechanics" title="Agents run inside a harness loop" size="standard" caption={<>
+    The harness turns model output into a controlled loop: context in, validated
+    action out, observation back into context.
+</>}>
+    <HarnessContextLoop />
+</DiagramFrame>
+
+Once you see the loop as context flow, the agent boundary becomes explicit. The model only predicts the next token sequence. The harness owns validation, execution, observation capture, stopping conditions, and budget control.
+
+A stripped-down version looks like this:
+
+```ts
+// Fixed prefix: instructions, tool definitions, and the current task.
+const base = basePrompt(task);
+// Accumulated transcript: everything appended so far.
+const transcript = [];
+let finished = false;
+
+while (!finished) {
+  // Context is logically an append-only string.
+  // Each turn rebuilds it from the fixed prefix plus everything
+  // accumulated so far. The model has no memory of prior turns.
+  const context = base + transcript.join('');
+
+  // The model can emit any token sequence: a final answer, a tool
+  // request, a reasoning trace, code, or any combination.
+  const reply = await askModel(context);
+
+  // The harness inspects the raw output and decides how to act.
+  const action = checkModelReply(reply);
+
+  if (action.type === 'final') {
+    return action.message;
+  }
+
+  // Everything the model produces is appended to the transcript.
+  transcript.push(reply);
+
+  // If the model requested a tool, run it and append the observation.
+  if (action.type === 'tool_call') {
+    const observation = await runTool(action);
+    transcript.push(observation);
+  }
+
+  // Stop if the work is done, the step budget is exhausted,
+  // or the context window is full.
+  finished = shouldStopNow(task, transcript);
+}
+```
+
+There is no hidden agent substance here. The useful parts are the pieces around the model: context building, output checking, tool execution, result capture, and the decision to keep going.
+
+## Everything Useful Becomes Context
+
+The agent's working state is the context it sends to the next model call. At the API boundary this may be a provider-native message array with roles, tool schemas, and tool-result blocks. At the model boundary it becomes an ordered token sequence. For practical agent design, think of it as a big append-only string.
+
+The model does not remember the previous step. The harness makes the previous step matter by appending it to the next request: instructions, prior messages, tool calls, tool results, retrieved evidence, and the current task.
+
+That boundary matters. A failed test, a repo convention, a project rule, or a prior decision has no effect until the harness includes it in a later call.
+
+:::tip[Why conversations can be cached]
+Prompt caching works because agent conversations usually keep a stable prefix and append new tokens. System instructions, developer instructions, tool definitions, and earlier turns can be reused from cache when the provider sees the same prefix again. The next turn mostly adds the new user input, generated output, tool call, or tool result.
+
+Provider details vary, but the shape is the same: stable content belongs early, variable content belongs late, and each turn pays the full attention cost of what the model must see while cached prefixes reduce repeated input cost.
+:::
+
+### What Enters the Request
+
+A model request is not just your latest prompt. Depending on the harness, it may include:
+
+- <InlineEmojiImage asset={EMOJI.compass} size={18} /> **System or developer
+  instructions:** durable rules, behavior constraints, safety policy, and output
+  format.
+- <InlineEmojiImage asset={EMOJI.plug} size={18} /> **Tool definitions:** names,
+  descriptions, and schemas for actions the model may request.
+- <InlineEmojiImage asset={EMOJI.chat} size={18} /> **Conversation history:**
+  prior user and assistant messages replayed as context.
+- <InlineEmojiImage asset={EMOJI.tools} size={18} /> **Assistant tool calls:**
+  structured action requests the model emitted on earlier turns.
+- <InlineEmojiImage asset={EMOJI.receipt} size={18} /> **Tool observations:**
+  command output, file contents, search results, test failures, and API
+  responses.
+- <InlineEmojiImage asset={EMOJI.database} size={18} /> **Retrieved context:**
+  selected files, docs, tickets, issues, or memory records.
+- <InlineEmojiImage asset={EMOJI.operator} size={18} /> **Current user
+  request:** the active task the model is supposed to solve now.
+
+These pieces are still one request, but they are not semantically flat. Modern models are trained on role hierarchies and tool-use formats, so system instructions, user messages, tool definitions, tool calls, and tool results carry different learned meanings. A tool result is not just prose; it is evidence returned by the environment. A tool definition is not just documentation; it is an action contract the model may invoke.
+
+### Role Determines Meaning
+
+The request is one token stream, but modern models are not trained to treat every section as equally authoritative. They learn role and source boundaries: system or developer text has different authority from user text, and tool results are evidence from the environment rather than new commands.
+
+The harness does not just decide which content to include. It decides which role carries it, and that selection changes how the model interprets the same words. System instructions constrain behavior. User messages express tasks. Tool results report environmental evidence. Putting content in the wrong role invites the wrong interpretation — an idea the section on [Same Instruction, Different Source Role](#same-instruction-different-source-role) demonstrates concretely.
+
+### What the Context Window Looks Like
+
+When you ask an agent to inspect the registration flow and find where email validation should happen, watch the context window grow. The user request enters first. The model emits a tool call. The harness executes the tool outside the model. The tool result is appended as an observation. The next model call sees that larger context and predicts from it.
+
+<DiagramFrame kicker="Agent mechanics" title="The context window is a living stream" size="wide" caption="Each turn rebuilds the context window. The layer view is only a source map; tool calls and tool results matter after the harness serializes them into raw context for a later request.">
+  <LivingContextWindowStream />
+</DiagramFrame>
+
+The stream may be represented as provider-native messages rather than one literal string, and some providers hide parts of reasoning behind summarized "thinking" outputs. The important part is the data flow: observations only influence future behavior after the harness serializes them back into the next call.
+
+### The Stateless Advantage
+
+Because the harness rebuilds context, it can also reset, fork, compact, or prune it. A fresh context can produce an independent review, alternate design, or clean re-run without defending earlier conversation drift. Statelessness is useful because the software controls what gets carried forward.
+
+## Memory Is Retrieval, Not Recall
+
+Memory is not a separate model ability. It is one more source the harness can place into the request. The LLM does not remember your project conventions, previous sessions, or domain facts unless the agent retrieves or stores them and feeds them into a later call.
+
+Common memory sources include:
+
+- **Working memory:** the current conversation, active files, recent tool observations, and task state.
+- **Persistent rules:** `CLAUDE.md`, `AGENTS.md`, project instructions, style guides, and saved preferences.
+- **Summaries:** compressed session state that keeps long work from exceeding the context budget.
+- **RAG and search:** keyword search, vector databases, hybrid retrieval, knowledge graphs, and documentation indexes.
+- **External records:** tickets, design docs, audit logs, prior decisions, and production telemetry.
+
+All of them solve the same problem: choose which tokens deserve space in the next request. Good memory systems retrieve precise, current, source-backed context. Bad memory systems flood the model with stale summaries, irrelevant vector hits, or unverified preferences. The subtlest failure is invisible: every stored fact is a cached copy of an external source, and caches go silent when they go stale.
+
+The quality question is not "does the model remember?" It is "did the software retrieve the right evidence and compress it without losing the constraint that matters?"
+
+:::warning[Memory is a cache; caches drift silently]
+Every fact stored in memory is a cached copy of an external source — a codebase, a document, a database, a ticket system. When the source evolves, the copy stays frozen. No error fires. The agent acts on outdated premises until the drift is large enough to notice. Prefer reading the source directly; use memory only for what the environment cannot express.
+
+For codebases, [ChunkHound](https://chunkhound.ai) implements this principle: it indexes code structure directly and retrieves fresh research, search hits, and cited reports on demand, rather than storing extracted facts that can silently drift. (ChunkHound is an open-source project by the course author.)
+:::
+
+## Same Instruction, Different Source Role
+
+The harness does not only choose what the model sees. It chooses which source role carries that text.
+
+Take one instruction:
+
+> Always return JSON with `summary`, `risks`, and `next_action`.
+
+The words are identical in every case. The source role changes how the model is expected to treat them.
+
+<DiagramFrame kicker="Agent mechanics" title="The same words behave differently by source role" size="wide" caption="Same words, different source role: the role boundary changes the model's predicted continuation.">
+  <InstructionLayerAuthority />
+</DiagramFrame>
+
+This behavior is not incidental formatting. Chat models are trained to use message roles as part of the input. During instruction tuning and safety training, examples teach the model that system and developer text should constrain the conversation, user text should express the active request, and tool or observation text should be treated as environmental evidence.
+
+That training is why the same sentence can predict different continuations. In a high-authority role, it behaves like a standing rule. In the current user request, it behaves like a task preference. In an observation, file, webpage, or command output, it is data to interpret, not a command to obey.
+
+The security version of this idea is the instruction hierarchy: when instructions conflict, the model should prefer the higher-authority source and ignore lower-authority attempts to override it. OpenAI formalizes this in the [Model Spec chain of command](https://model-spec.openai.com/2025-12-18.html) and describes training models for it in [The Instruction Hierarchy](https://openai.com/index/the-instruction-hierarchy/) and the [Instruction Hierarchy Challenge](https://openai.com/index/instruction-hierarchy-challenge/). The research paper [The Instruction Hierarchy](https://arxiv.org/abs/2404.13208) frames this as a prompt-injection defense; [Role Separation Learning](https://arxiv.org/html/2505.00626v2) studies why models need explicit role signals rather than relying on shortcuts.
+
+For agent design, the operating rule is straightforward: message roles are not metadata around the prompt. They are part of the prompt the model was trained to interpret.
+
+## Integration: CLI as Default, MCP Where Structure Pays
+
+Tool interface design is a context-budget decision. Every tool schema the model must hold competes with instructions, evidence, and reasoning. A CLI skill costs ~50–100 tokens to describe. An MCP tool schema costs ~500–3,600+ tokens. That gap compounds with every tool.
+
+CLI commands also leverage model training data (git, curl, jq, rg, pipes), compose through shell operators without protocol overhead, and produce text the model can read directly — at the cost of parsing ambiguity.
+
+### The Agent-Optimized CLI Generation
+
+A 2026 wave of CLIs is purpose-built for agent consumption, collapsing the efficiency-structure tradeoff:
+
+| Domain          | Tool                                                                | How It Helps Agents                                                                                                                                                                                                                                                                                                                             |
+| --------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Browser         | **[Playwright CLI](https://playwright.dev/agent-cli/introduction)** | 68 token skill, 4.6× fewer tokens than MCP (25K vs 115K per session). State on disk (YAML snapshots), compact element refs (`e21`), daemon persistence.                                                                                                                                                                                         |
+| Browser         | **[agent-browser](https://agent-browser.dev)** (Vercel)             | ~200–400 token accessibility snapshots (15× smaller than DOM). Ref-based addressing (`@e1`), ~1ms warm daemon latency, security boundaries.                                                                                                                                                                                                     |
+| Version control | **[GitHub CLI (`gh`)](https://cli.github.com)**                     | `--json` flag on most commands for structured output. `gh api` grants access to any GitHub endpoint with JSON responses. Covers PRs, issues, repos, Actions, releases — the full developer workflow agents need. No Docker, no cloud dependency, zero setup beyond `gh auth login`.                                                             |
+| Database        | **[Supabase CLI](https://supabase.com/docs/guides/cli)**            | Starts a full local Postgres stack (`supabase start`) with a single command — database, auth, storage, realtime, edge functions — all inside Docker with `--json` output. Agents get a disposable, production-like database sandbox for schema migrations, query testing, and seed data. No cloud dependency, no config beyond `supabase init`. |
+
+Common thread: **structured output, externalized state, minimal context overhead — all without a formal protocol.**
+
+### When MCP Still Makes Sense
+
+MCP's structured guarantees justify the cost when the problem is structural, not incidental: remote services with OAuth, governed access with audit trails, dynamic tool ecosystems that need runtime discovery, or services with no CLI at all. For local developer workflows, an agent-optimized CLI delivers equivalent structure at a fraction of the context cost.
+
+**Decision Rule:** Default to CLI; escalate to MCP only when the problem demands protocol-level guarantees.
+
+## Two Agent Architectures
+
+The useful distinction is not CLI versus IDE versus chat UI. Those are interaction surfaces. The architectural distinction is whether the LLM or deterministic code owns the next step — harness agents let the model choose; structured systems put orchestration in code.
+
+### 1. Interactive Harness Agents
+
+Interactive coding agents — Claude Code, Codex-style terminals, Pi, OpenClaw, Cursor/Copilot-style coding agents — let the LLM drive many next-step decisions through tool calls or command requests. The harness provides guardrails and execution, but the model often chooses the next search, read, edit, test, or question.
+
+<DiagramFrame kicker="Agent mechanics" title="Harnesses turn model calls into controlled work" size="wide" caption="Interactive harness agents hand more autonomy to the LLM; the tradeoff is higher operator skill in scope, review, and verification.">
+  <InteractiveHarnessWorkbench />
+</DiagramFrame>
+
+Harness agents hand more autonomy to the LLM; the harness enforces boundaries, but the model chooses the next search, read, edit, or question. This makes them the most flexible architecture and the simplest to build — a loop, guardrails, and tool bindings. The tradeoff is operator-dependent accuracy. The same harness in different hands produces different results: a skilled operator who scopes tasks well, writes precise rules, runs verification, and reviews critically gets reliable output at reasonable cost. A weak operator gets wandering behavior, excessive tool calls, and plausible but wrong conclusions — and pays for every token along the way.
+
+#### The Harness Attention Budget
+
+Chapter 1 established that LLMs are finite machines. The context window is a fixed pool, and every token the model must process competes with every other token for influence on the next prediction. A harness helps the model act, but it is not free: tool definitions, planning prompts, output schemas, permissions, memory rules, and coordination protocols all enter the same context as the user's task.
+
+That means harness design is an attention-allocation decision. Instruction-following benchmarks such as IFScale show the same pattern under load: as simultaneous instructions increase, models miss more constraints, overweight earlier instructions, and eventually drop requirements instead of merely executing them imperfectly. Harness instructions are part of that load.
+
+Rich harnesses also ask the model to operate the harness itself. The model may need to maintain a plan, choose among tools, manage subagents, summarize history, update task state, or produce UX metadata. Some of that work improves reliability. Some of it is product polish. Either way, it uses tokens and attention that are no longer available for the user's task.
+
+#### The Harness Spectrum
+
+This tradeoff creates a spectrum across harness agent products. Different products sit at different points:
+
+|                             | Minimal harness                                                  | Rich harness                                                           |
+| --------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Examples**                | Pi, raw API loops                                                | Claude Code, Codex-style agents                                        |
+| **Context overhead**        | Low                                                              | High                                                                 |
+| **Token cost**              | Low                                                            | High                                                                 |
+| **UX appearance**           | Open-ended — visible exploration, false starts, and backtracking | Structured — visible planning, progress tracking, polished interaction |
+| **Operator skill required** | High — must steer, scope, verify                                 | Lower — harness manages more workflow                                  |
+| **Attention for user task** | More of the context can stay task-focused                        | More context spent on coordination, tools, safety, and UX              |
+
+The benchmark evidence is easiest to read when the harness is the axis and the model is held constant. Terminal-Bench 2.0 reports several same-model rows across different coding harnesses; the spread makes harness effects visible, even when it does not isolate every design choice inside the harness.
+
+<DiagramFrame kicker="Agent mechanics" title="Harness design changes agent behavior" size="full" caption="Terminal-Bench reports task accuracy for submitted harnesses; holding the model group constant exposes harness effects.">
+
+  <HarnessDeltaExplorer />
+
+</DiagramFrame>
+In less structured harnesses, the reasoning loop is more exposed. ReAct-style coding agents solve tasks by observing, trying an action, reading the result, and revising the next step; from the outside, that can look like tangents, false starts, or contradictory approaches. That loop is useful only when bounded by verification — tests, builds, diffs, reviews, budgets, or human approval.
+
+Richer harnesses make the same work look more controlled by adding planning modes, structured tools, permissions, compaction, subagents, and progress UI. Those structures can improve reliability and operator experience, but they also consume context and narrow the model's action space. The engineering choice is not minimal versus rich. It is how much scaffolding the task needs before the scaffolding itself becomes overhead.
+
+### 2. Structured Control-Plane Agents
+
+Structured control-plane agents put deterministic code in charge of the workflow. The harness becomes a directed graph, a pipeline, or a state machine; LLM calls happen at bounded junctions where its capabilities are needed — classification, verification, summarization, critique, code understanding. This makes them harder to build and narrower in scope — each step must be designed, typed, and tested — but the payoff is consistency. The same pipeline in different hands produces the same result. Operator skill matters at design time, not at run time.
+
+<DiagramFrame kicker="Agent mechanics" title="Structured control planes bound agent autonomy" size="wide" caption={'Structured control-plane agents make orchestration the primary actor. The LLM is a bounded subroutine called, validated, retried, audited, and stopped by deterministic code.'}>
+    <StructuredControlPlaneWorkbench />
+</DiagramFrame>
+
+A customer support pipeline does not let the model decide the escalation path. Deterministic code classifies intent, routes to the right specialist agent, enforces policy at each handoff, and logs every transition for audit. The LLM handles conversation, summarization, and sentiment — but the workflow, the guardrails, and the stop conditions are code.
+
+The pattern scales across domains. [Perplexity](https://perplexity.ai) processes 200 million daily queries through a deterministic retrieval pipeline — hybrid search, three-tier reranking, and citation binding all happen before the LLM synthesizes. [Sourcegraph Cody](https://sourcegraph.com/cody) abandoned embeddings entirely in favor of a structural code graph for retrieval, using BM25 and PageRank for ranking — the model only sees 4–6 curated snippets. [Harvey AI](https://harvey.ai) validates each legal knowledge source through a 150K-token evaluation pipeline before it becomes available to the agent.
+
+In the coding domain, [ChunkHound](https://chunkhound.ai) scales deep research to hundreds of millions of lines of code on a developer's laptop — a deterministic research loop with AST-aware indexing, an evidence ledger, constants extraction, LLM-guided exploration, and map-reduce synthesis across code, git history, and web search. The LLM directs the search; the pipeline owns retrieval and evidence integrity.
+
+In every case, the LLM is a bounded subroutine — called where its capabilities are needed, stopped where determinism matters.
+
+## Tradeoffs
+
+| Dimension            | Interactive harness agents                                                           | Structured control-plane agents                                                |
+| -------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| Best for             | Ambiguous coding work, exploration, debugging, implementation with oversight         | Repeatable workflows, production pipelines, governed operations                |
+| Control plane        | LLM chooses many next actions; harness enforces boundaries                           | Code owns workflow, state, routing, validation, and budgets                    |
+| Strength             | Flexibility, breadth, fast adaptation, high operator leverage                        | Reliability, auditability, predictable cost, easier productization             |
+| Main risk            | Drift, over-tooling, missed context, inconsistent judgment                           | Rigidity, upfront design cost, narrow task coverage                            |
+| Attention allocation | LLM splits attention between user task and harness self-management (18–56% overhead) | Harness code pays its own cost; LLM attention goes entirely to bounded subtask |
+| Operator role        | Steer, scope, review, approve, verify                                                | Design workflow, define schemas, set policy, monitor metrics                   |
+| Validation           | Often interactive: tests, reviews, diffs, approvals                                  | Built in: typed outputs, gates, retries, audits, deterministic checks          |
+
+Use interactive harness agents when discovery and adaptation dominate. Use structured control planes when the workflow is known and the cost of a bad autonomous step is high.
+
+## Why This Matters for the Rest of the Book
+
+This chapter established two architectures and the tradeoff between them. Structured control-plane agents put deterministic code in charge — harder to build, narrower in scope, but consistent and operator-independent. Harness agents flip that tradeoff: maximum flexibility, simplest to build, but the operator is the wildcard. The same harness in different hands produces different results.
+
+The rest of this book focuses on the harness side — because that is where operator skill has the most leverage. Prompting, grounding, task decomposition, verification, and reliability are all techniques for narrowing the gap between what the harness can do and what it actually does in your hands.
+
+---
+
+**Next:** [Chapter 3: Prompting 101](./chapter-3-prompting-101.mdx)

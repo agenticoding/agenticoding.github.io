@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './ArchitectureDiagram.module.css';
 import shared from './diagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { useMounted } from '../../hooks/useMounted';
@@ -62,7 +62,7 @@ const RIGHT_STEPS = ['scan', 'analyze', 'pivot', 'refine', 'synthesize'] as cons
 const DELAY_80 = { transitionDelay: '80ms' } as const;
 
 export default function ArchitectureDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const mounted = useMounted();
   const { wasReached } = useActs(ACTS, phase);
 
@@ -86,7 +86,6 @@ export default function ArchitectureDiagram() {
     <svg
       viewBox="0 0 600 300"
       width="100%"
-      height="auto"
       role="img"
       aria-label="Structured vs autonomous sub-agent architectures: reliability-flexibility tradeoff."
       xmlns="http://www.w3.org/2000/svg"

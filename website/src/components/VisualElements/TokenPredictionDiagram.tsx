@@ -1,16 +1,12 @@
 import React from 'react';
 import clsx from 'clsx';
 import { GearNode } from './GearNode';
-import { TokenUnit, type TokenUnitSignal } from './TokenUnit';
+import { TokenUnit } from './TokenUnit';
+import { ArrowMarker } from './diagramGeometry';
+import { DIAGRAM_STROKE } from './diagramScale';
 import styles from './TokenPredictionDiagram.module.css';
 
-const CONTEXT_TOKENS = [
-  { label: 'The', signal: 'ordinary' },
-  { label: 'cat', signal: 'salient' },
-  { label: 'sat', signal: 'ordinary' },
-  { label: 'on', signal: 'compressed' },
-  { label: 'the', signal: 'ordinary' },
-] as const satisfies readonly { label: string; signal: TokenUnitSignal }[];
+const CONTEXT_TOKENS = ['The', 'cat', 'sat', 'on', 'the'] as const;
 const PREDICTED_TOKEN = '"mat"';
 const PREDICTED_TOKEN_UNIT_SIZE = 24;
 const ARIA_LABEL = `Token prediction: the LLM uses all ${CONTEXT_TOKENS.length} context tokens to predict the next token`;
@@ -38,11 +34,12 @@ const OUT_W = 80;
 const OUT_H = 48;
 const OUT_CX = OUT_X + OUT_W / 2;
 const OUT_CY = OUT_Y + OUT_H / 2;
-const ARROW_HEAD_W = 12;
-const ARROW_HEAD_HALF_H = 6;
 const ARROW_TARGET_GAP = 4;
 const GEAR_ARROW_TIP_X = GEAR_X - ARROW_TARGET_GAP;
 const OUT_ARROW_TIP_X = OUT_X - ARROW_TARGET_GAP;
+const FLOW_ARROW_COLOR = 'var(--visual-violet)';
+const DESKTOP_ARROW_MARKER_ID = 'token-prediction-desktop-arrow';
+const MOBILE_ARROW_MARKER_ID = 'token-prediction-mobile-arrow';
 
 // ── Mobile layout: same story, vertical topology when horizontal text shrinks. ─
 const MVW = 320;
@@ -62,10 +59,19 @@ const MOBILE_OUT_CX = MOBILE_OUT_X + MOBILE_OUT_W / 2;
 const MOBILE_OUT_CY = MOBILE_OUT_Y + MOBILE_OUT_H / 2;
 const MOBILE_MERGE_Y = 162;
 
-const arrowHeadPoints = (tipX: number, cy: number) =>
-  `${tipX} ${cy}, ${tipX - ARROW_HEAD_W} ${cy - ARROW_HEAD_HALF_H}, ${tipX - ARROW_HEAD_W} ${cy + ARROW_HEAD_HALF_H}`;
-const downArrowHeadPoints = (cx: number, tipY: number) =>
-  `${cx} ${tipY}, ${cx - 6} ${tipY - 10}, ${cx + 6} ${tipY - 10}`;
+function FlowPath({ d, markerId }: { d: string; markerId?: string }) {
+  return (
+    <path
+      d={d}
+      fill="none"
+      stroke={FLOW_ARROW_COLOR}
+      strokeWidth={DIAGRAM_STROKE.connector}
+      strokeLinecap="butt"
+      strokeLinejoin="miter"
+      markerEnd={markerId ? `url(#${markerId})` : undefined}
+    />
+  );
+}
 
 function HorizontalArrow({
   startX,
@@ -76,21 +82,11 @@ function HorizontalArrow({
   tipX: number;
   y: number;
 }) {
-  const baseX = tipX - ARROW_HEAD_W;
-
   return (
-    <>
-      <line
-        x1={startX}
-        y1={y}
-        x2={baseX}
-        y2={y}
-        stroke="var(--visual-violet)"
-        strokeWidth="2"
-        strokeLinecap="butt"
-      />
-      <polygon points={arrowHeadPoints(tipX, y)} fill="var(--visual-violet)" />
-    </>
+    <FlowPath
+      d={`M ${startX} ${y} L ${tipX} ${y}`}
+      markerId={DESKTOP_ARROW_MARKER_ID}
+    />
   );
 }
 
@@ -104,24 +100,26 @@ function DownArrow({
   tipY: number;
 }) {
   return (
-    <>
-      <line
-        x1={x}
-        y1={startY}
-        x2={x}
-        y2={tipY - 10}
-        stroke="var(--visual-violet)"
-        strokeWidth="2"
-        strokeLinecap="butt"
-      />
-      <polygon
-        points={downArrowHeadPoints(x, tipY)}
-        fill="var(--visual-violet)"
-      />
-    </>
+    <FlowPath
+      d={`M ${x} ${startY} L ${x} ${tipY}`}
+      markerId={MOBILE_ARROW_MARKER_ID}
+    />
   );
 }
 
+function mobileTokenLayout(index: number) {
+  const row = Math.floor(index / 3);
+  const col = index % 3;
+  const count = row === 0 ? 3 : 2;
+  const rowWidth = MOBILE_CHIP_W * count + MOBILE_CHIP_GAP * (count - 1);
+  return {
+    x: (MVW - rowWidth) / 2 + col * (MOBILE_CHIP_W + MOBILE_CHIP_GAP),
+    y: MOBILE_GRID_Y + row * (MOBILE_CHIP_H + MOBILE_CHIP_GAP),
+  };
+}
+
+// Idle story: context token pulse → LLM process → predicted token pulse.
+// Static labels/connectors remain complete without motion.
 function DesktopDiagram() {
   return (
     <svg
@@ -130,6 +128,9 @@ function DesktopDiagram() {
       aria-hidden="true"
       className={clsx(styles.diagram, styles.desktopDiagram)}
     >
+      <defs>
+        <ArrowMarker id={DESKTOP_ARROW_MARKER_ID} fill={FLOW_ARROW_COLOR} />
+      </defs>
       <text
         x={PILL_X + PILL_W / 2}
         y={PILL_YS[0] - 8}
@@ -162,7 +163,7 @@ function DesktopDiagram() {
         predicted
       </text>
 
-      {CONTEXT_TOKENS.map(({ label, signal }, i) => (
+      {CONTEXT_TOKENS.map((label, i) => (
         <g
           key={label}
           className="inference-token-cycle idle-inference-cycle"
@@ -184,7 +185,7 @@ function DesktopDiagram() {
             width={24}
             height={24}
             modality="text"
-            signal={signal}
+            signal="ordinary"
           />
           <text
             x={TOKEN_TEXT_X}
@@ -201,14 +202,9 @@ function DesktopDiagram() {
       ))}
 
       {PILL_CYS.map((cy, i) => (
-        <path
+        <FlowPath
           key={i}
-          d={`M ${PILL_RIGHT} ${cy} C ${MERGE_X - 16} ${cy}, ${MERGE_X - 16} ${GEAR_CY}, ${MERGE_X} ${GEAR_CY}`}
-          fill="none"
-          stroke="var(--visual-violet)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d={`M ${PILL_RIGHT} ${cy} H ${MERGE_X - 16} L ${MERGE_X} ${GEAR_CY}`}
         />
       ))}
       <HorizontalArrow startX={MERGE_X} tipX={GEAR_ARROW_TIP_X} y={GEAR_CY} />
@@ -216,7 +212,10 @@ function DesktopDiagram() {
         x={GEAR_X}
         y={GEAR_Y}
         size={GEAR_SIZE}
-        className={clsx(styles.gear, 'inference-llm-cycle idle-inference-cycle')}
+        className={clsx(
+          styles.gear,
+          'inference-llm-cycle idle-inference-cycle'
+        )}
       />
       <HorizontalArrow
         startX={GEAR_X + GEAR_SIZE}
@@ -262,13 +261,11 @@ function DesktopDiagram() {
 
 function MobileToken({
   label,
-  signal,
   x,
   y,
   delay,
 }: {
   label: string;
-  signal: TokenUnitSignal;
   x: number;
   y: number;
   delay: string;
@@ -294,7 +291,7 @@ function MobileToken({
         width={24}
         height={24}
         modality="text"
-        signal={signal}
+        signal="ordinary"
       />
       <text
         x={x + 57}
@@ -319,6 +316,9 @@ function MobileDiagram() {
       aria-hidden="true"
       className={clsx(styles.diagram, styles.mobileDiagram)}
     >
+      <defs>
+        <ArrowMarker id={MOBILE_ARROW_MARKER_ID} fill={FLOW_ARROW_COLOR} />
+      </defs>
       <text
         x={MVW / 2}
         y="26"
@@ -330,21 +330,12 @@ function MobileDiagram() {
       >
         context window
       </text>
-      {CONTEXT_TOKENS.map(({ label, signal }, i) => {
-        const row = Math.floor(i / 3);
-        const col = i % 3;
-        const rowWidth =
-          row === 0
-            ? MOBILE_CHIP_W * 3 + MOBILE_CHIP_GAP * 2
-            : MOBILE_CHIP_W * 2 + MOBILE_CHIP_GAP;
-        const x =
-          (MVW - rowWidth) / 2 + col * (MOBILE_CHIP_W + MOBILE_CHIP_GAP);
-        const y = MOBILE_GRID_Y + row * (MOBILE_CHIP_H + MOBILE_CHIP_GAP);
+      {CONTEXT_TOKENS.map((label, i) => {
+        const { x, y } = mobileTokenLayout(i);
         return (
           <MobileToken
             key={label}
             label={label}
-            signal={signal}
             x={x}
             y={y}
             delay={`${i * 350}ms`}
@@ -352,22 +343,22 @@ function MobileDiagram() {
         );
       })}
 
-      {[72, 116, 160, 204, 248].map((x, i) => (
-        <path
-          key={i}
-          d={`M ${x} 130 C ${x} 148, ${MVW / 2} 148, ${MVW / 2} ${MOBILE_MERGE_Y}`}
-          fill="none"
-          stroke="var(--visual-violet)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      ))}
+      {CONTEXT_TOKENS.map((label, i) => {
+        const { x, y } = mobileTokenLayout(i);
+        const cx = x + MOBILE_CHIP_W / 2;
+        return (
+          <FlowPath
+            key={label}
+            d={`M ${cx} ${y + MOBILE_CHIP_H} V ${MOBILE_MERGE_Y - 16} L ${MVW / 2} ${MOBILE_MERGE_Y}`}
+          />
+        );
+      })}
       <DownArrow x={MVW / 2} startY={MOBILE_MERGE_Y} tipY={MOBILE_GEAR_Y - 4} />
       <text
-        x={MVW / 2 + 28}
-        y={MOBILE_GEAR_Y - 14}
+        x={MOBILE_GEAR_X + MOBILE_GEAR_SIZE + 16}
+        y={MOBILE_GEAR_Y + MOBILE_GEAR_SIZE / 2}
         textAnchor="start"
+        dominantBaseline="middle"
         fontFamily="var(--font-mono-spec)"
         fontSize="12"
         fill="var(--visual-violet)"
@@ -378,7 +369,10 @@ function MobileDiagram() {
         x={MOBILE_GEAR_X}
         y={MOBILE_GEAR_Y}
         size={MOBILE_GEAR_SIZE}
-        className={clsx(styles.gear, 'inference-llm-cycle idle-inference-cycle')}
+        className={clsx(
+          styles.gear,
+          'inference-llm-cycle idle-inference-cycle'
+        )}
       />
       <DownArrow
         x={MVW / 2}
@@ -386,9 +380,10 @@ function MobileDiagram() {
         tipY={MOBILE_OUT_Y - 6}
       />
       <text
-        x={MVW / 2 + 28}
-        y={MOBILE_OUT_Y - 18}
+        x={MOBILE_OUT_X + MOBILE_OUT_W + 12}
+        y={MOBILE_OUT_CY}
         textAnchor="start"
+        dominantBaseline="middle"
         fontFamily="var(--font-mono-keyword)"
         fontSize="12"
         fill="var(--visual-violet)"

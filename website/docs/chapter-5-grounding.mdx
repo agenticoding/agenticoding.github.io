@@ -1,0 +1,200 @@
+---
+sidebar_position: 3
+sidebar_label: 'Grounding'
+sidebar_custom_props:
+  sectionNumber: 5
+title: 'Grounding: Anchoring Agents in Reality'
+---
+
+import GroundingDiagram from '@site/src/components/VisualElements/GroundingDiagram';
+import SubAgentDiagram from '@site/src/components/VisualElements/SubAgentDiagram';
+import SequenceDiagram from '@site/src/components/VisualElements/SequenceDiagram';
+import PromptExample from '@site/src/components/PromptExample';
+import { EMOJI } from '@site/src/components/VisualElements/emojiAssets';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+
+export const MS_COLUMNS = [
+  { id: 'code', label: 'Code Research', emoji: EMOJI.agent, color: 'cyan' },
+  { id: 'orch', label: 'Orchestrator',  emoji: EMOJI.agent, color: 'magenta' },
+  { id: 'web',  label: 'Web Research',  emoji: EMOJI.agent, color: 'indigo' },
+];
+
+export const MS_ROWS = [
+  { type: 'note',    on: 'orch', text: 'Task', subtext: '"Implement OAuth2 credentials"' },
+  { type: 'message', from: 'orch', to: 'code', label: 'delegate', sublabel: '"How does existing auth work?"' },
+  { type: 'message', from: 'orch', to: 'web',  label: 'delegate', sublabel: '"OAuth2 best practices & CVEs?"' },
+  { type: 'note',    on: 'code', text: 'Search codebase', subtext: 'Grep auth & middleware files' },
+  { type: 'note',    on: 'web',  text: 'Fetch RFC 6749', subtext: 'Retrieve spec + guides' },
+  { type: 'note',    on: 'code', text: 'Read patterns', subtext: 'Read 12 files, ~38K tokens' },
+  { type: 'note',    on: 'web',  text: 'Scan CVEs', subtext: 'Check known vulnerabilities' },
+  { type: 'note',    on: 'code', text: 'Analyze architecture', subtext: '~50K tokens internally' },
+  { type: 'note',    on: 'web',  text: 'Rank practices', subtext: '~45K tokens internally' },
+  { type: 'message', from: 'code', to: 'orch', label: 'synthesis 3.2K', sublabel: 'Auth arch, middleware patterns', dashed: true },
+  { type: 'message', from: 'web',  to: 'orch', label: 'synthesis 4.8K', sublabel: 'RFC 6749, security notes', dashed: true },
+  { type: 'note',    on: 'orch', text: 'Implement', subtext: '~10K tokens in orchestrator' },
+];
+
+You ask your agent to fix the authentication bug. It confidently generates a solution using JWT verification patterns... that don't exist in your codebase. You use sessions, not JWTs. The agent just hallucinated a plausible implementation based on common patterns from its training data.
+
+Here's the fundamental issue: **The agent doesn't know your codebase exists.** It doesn't know your architecture, your patterns, or your constraints. As covered in [Chapter 2: Agents Demystified](/chapter-2-how-agents-work), the context window is the agent's entire world—everything else doesn't exist. Without explicit grounding in your actual code and current documentation, agents generate statistically plausible solutions that may be completely wrong for your system.
+
+**Grounding is how you inject reality into the context window.** You retrieve relevant external information—your codebase patterns, current docs, best practices—and feed it to the agent before generation. This chapter covers the engineering techniques that anchor agents in your actual system instead of hypothetical ones.
+
+<DiagramFrame kicker="Grounding" title="Grounding changes what the agent can safely answer" size="standard" caption={'Grounded vs. ungrounded agents approaching the same task.'}>
+    <GroundingDiagram />
+</DiagramFrame>
+
+
+:::info Full Disclosure
+[ChunkHound](https://chunkhound.github.io/) is an open source project by the course author. Alternatives are noted inline throughout.
+:::
+
+## Grounding: Anchoring Agents in Reality {#grounding-anchoring-agents-in-reality}
+
+Grounding fails in predictable ways, so use the simplest tool that can retrieve the facts you need. Start with exact repository inspection, add semantic retrieval when keywords fail, and delegate hybrid research when the question spans too many files or sources.
+
+## Grounding Tool 1: Agentic Search
+
+The first grounding move is the same one you would make manually: inspect the repository. List files, search for likely terms, read the small set of files that look relevant, and follow imports or call sites from there.
+
+When you assign "Fix the authentication bug," the agent starts with zero codebase knowledge. It doesn't know where auth code lives, what libraries you use, or how it's structured.
+
+**Agentic search is keyword-and-file based discovery.** The agent calls tools on its own—Glob finds files matching patterns, Grep searches for keywords, Read examines code. The agent decides what to search, interprets results, and determines next steps.
+
+**Example flow:**
+
+<PromptExample>
+Task: <code className="mono-human">"Fix JWT expiration validation"</code><br />
+<br />
+Agent: <code className="mono-ai">I'll search for JWT-related code</code><br />
+→ <code>Grep("JWT", "**/*.ts")</code><br />
+<br />
+Found in:<br />
+- <code>src/auth/jwt.ts:45</code>: export function verifyToken(token: string)<br />
+- <code>src/middleware/auth.ts:12</code>: import {"{"} verifyToken {"}"} from '../auth/jwt'<br />
+- <code>tests/auth.test.ts:8</code>: describe('JWT verification')<br />
+<br />
+Agent: <code className="mono-ai">Let me read the verification logic</code><br />
+→ <code>Read("src/auth/jwt.ts")</code><br />
+<br />
+[verification logic shows expiration check missing]<br />
+<br />
+Agent: <code className="mono-ai">Found it — the verifyToken function doesn't check exp claim</code>
+</PromptExample>
+
+In small codebases (under 10,000 lines), this works beautifully. Two or three searches return 5-10 files totaling 15,000 tokens. The agent reads them, builds a mental model, and solves the problem. Context stays clean.
+
+## Grounding at Scale {#the-scale-problem-context-window-limits}
+
+**At scale, agentic search creates a second problem: volume.** The agent may find the right files, but reading too many of them floods the context window. The issue is no longer missing reality — it is delivering too much reality in a form the model can reliably use.
+
+That distinction matters:
+
+- **Grounding problem:** the agent does not have the right facts.
+- **Context engineering problem:** the agent has too many facts, poorly placed.
+
+This chapter focuses on the grounding problem: getting the agent the right facts from the right sources. Once those facts exist, a different problem starts: deciding how much of that information should enter the context window, where it should land, and when it should be isolated or discarded. That is the context engineering problem, covered in [Chapter 6: Context Engineering](/chapter-6-context-management).
+
+## Grounding Tool 2: Semantic Search / RAG {#solution-1-semantic-search}
+
+Agentic search works when names line up with concepts. It struggles when the code uses different language than your prompt, or when the relevant behavior is spread across files. That is where semantic search helps.
+
+**Semantic search lets you query by meaning, not keywords.** Ask for "authentication middleware that validates user credentials" and you get relevant code even if it never mentions those exact terms.
+
+:::tip How Semantic Search Works
+
+**Vector embeddings:** Your code gets converted to high-dimensional vectors (768-1536 dimensions) that capture semantic meaning. Similar concepts cluster together in vector space.
+
+**Similarity matching:** Cosine similarity finds relevant chunks. "auth middleware", "login verification", and "JWT validation" map to nearby vectors—the model understands they're semantically related even though they use different words.
+
+**Infrastructure:** Vector databases (ChromaDB, pgvector, Qdrant) plus approximate nearest neighbor (ANN) algorithms enable fast search. Rerankers refine results. You call `code_research()`, not low-level APIs.
+
+**Key difference:** Embedding models with vector similarity search by concept, not text. This is fundamentally different from keyword matching.
+:::
+
+**Availability depends on your tool:**
+
+**IDE-based assistants** (Cursor, Windsurf) typically include semantic search out-of-the-box. The editor handles indexing and vector search automatically.
+
+**CLI agents** (Claude Code, Codex, OpenCode, Pi) need MCP servers to add semantic search. The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) lets you extend CLI agents with tools like semantic search, web research, and database access.
+
+**MCP servers for semantic code search:**
+
+- [Claude Context](https://github.com/zilliztech/claude-context) - RAG-based semantic search
+- [Serena](https://github.com/oraios/serena) - LSP-based bridge (lighter weight, limited to LSP symbol scope)
+- [ChunkHound](https://chunkhound.github.io) - Structured pipeline with hybrid search
+
+Once you have semantic search (built-in or via MCP), your agent combines it with Grep for hybrid discovery: conceptual search to find the right area, precise keyword matching to locate exact implementations.
+
+In practice, this is **retrieval-augmented generation (RAG)**: retrieve semantically relevant chunks, then generate with those chunks in context. Semantic search extends your scale to 100,000+ lines of code because you find relevant code faster with fewer false positives.
+
+## Grounding Tool 3: Hybrid Research with Sub-Agents {#solution-2-sub-agents-for-context-isolation}
+
+Real grounding rarely uses one technique. A good researcher mixes file listing, grep, semantic search, targeted reads, and external docs. Sub-agents package that research loop into an isolated worker.
+
+A **sub-agent** is an agent invoked by another agent—like a function call, but for research. The orchestrator writes a prompt describing the grounding task: "Find all JWT authentication code and explain the current implementation." The sub-agent searches, reads, and analyzes in its own context. When complete, it returns a concise synthesis: "JWT implementation found at src/auth/jwt.ts using Passport.js..." The orchestrator receives the grounded facts without manually driving every search.
+
+**How it works in practice:**
+
+<DiagramFrame kicker="Context management" title="Sub-agents isolate context then return synthesis" size="standard" caption={'Sub-agent context isolation: 50,000 tokens processed internally, 2,000 returned to orchestrator.'}>
+    <SubAgentDiagram />
+</DiagramFrame>
+
+**The trade-off is cost and compression.** You pay to process tokens in both contexts, and the synthesis can omit nuance. But for grounding work, the benefit is practical: the parent agent receives the researched facts instead of a long trail of searches, file reads, and partial interpretations.
+
+## Choosing the Grounding Loop {#code-grounding-choosing-tools-by-scale}
+
+Grounding is not a code-versus-web taxonomy to memorize. It is the same judgment you already use during engineering work: if you would inspect the repository, ground in code; if you would open Google, vendor docs, changelogs, CVEs, Stack Overflow, or API references, ground on the web. Most production tasks need both.
+
+### Freeform vs Specialized Research Agents
+
+Research delegation comes in two shapes. **Freeform agents** explore like a developer: they follow leads, read files, search again, and adapt as they go. They are easy to use because they come built into modern coding harnesses. **Dedicated research agents** use purpose-built retrieval infrastructure — embeddings, rerankers, indexes, external search tools, graph traversal, and synthesis pipelines. That extra infrastructure usually beats freeform exploration on scale, accuracy, and speed, but it has to be installed, indexed, configured, and maintained.
+
+**Built-in freeform agents** are generalists: Claude Code Explore/Task agents, Codex workers, Cursor/Windsurf agentic modes. They are best when the path is unclear: “find where this behavior lives,” “explain this failing test,” “compare implementation options.” They adapt well, but the result depends on the path they happened to take.
+
+**Specialized research agents** are purpose-built retrieval systems. ChunkHound’s `code_research` and `websearch` mix exact search, semantic retrieval, traversal, targeted reads, and synthesis behind a fixed research pipeline. They are best when coverage matters: “trace auth end-to-end,” “find every module involved in rate limiting,” or “compare current OAuth2 guidance across sources.”
+
+For small scopes, agentic search or a built-in research agent is usually enough. As the source space grows, the failure mode shifts from “can the agent search?” to “can it cover the relevant graph without drowning the parent context?” That is where specialized research agents become valuable.
+
+## Production Pattern: Multi-Source Grounding
+
+In production, ground the agent the same way you would investigate the problem yourself. If the answer depends on your system, inspect the code. If the answer depends on external behavior, current docs, advisories, or ecosystem practice, inspect the web. If it depends on both, use both.
+
+<DiagramFrame kicker="Grounding" title="Grounding work fans out, then returns compact evidence" size="wide" caption={'Multi-source grounding: orchestrator delegates code and web research to isolated research agents, receives compact syntheses, stays in the high-accuracy context range.'}>
+    <SequenceDiagram columns={MS_COLUMNS} rows={MS_ROWS} ariaLabel="Multi-source grounding sequence: orchestrator delegates to code and web research agents, receives compact syntheses." />
+</DiagramFrame>
+
+
+This multi-source approach prevents two failure modes:
+
+- Code-only grounding prevents hallucinations but risks outdated patterns
+- Web-only grounding gives you current best practices but doesn't fit your architecture
+
+The boundary is practical, not doctrinal. Use code grounding when the answer lives in your repo. Use web grounding when you would normally leave the repo to check docs, advisories, or ecosystem behavior. Combining both gives you solutions that work for your specific system using current standards.
+
+## Key Takeaways
+
+**The agent only knows what's in the context window**
+Without grounding, agents hallucinate plausible solutions based on training data patterns. You ground agents by retrieving reality — your codebase, current docs, security advisories, research — before generation.
+
+**Agentic search is the baseline**
+Start with file listing, grep, targeted reads, and following references. This mirrors the first investigation loop you would run manually.
+
+**Semantic search / RAG finds concepts when keywords fail**
+Vector embeddings let you search by meaning: "authentication middleware" finds relevant code even without exact keyword matches. Retrieve the relevant chunks, then generate with those chunks in context.
+
+**Sub-agents combine techniques and isolate the research loop**
+Built-in harness sub-agents and ChunkHound's specialized research agents mix exact search, semantic search, targeted reads, and web search, then return a compact synthesis the orchestrator can use.
+
+**Code vs web grounding is an engineering judgment**
+If you would inspect the repo, use code grounding. If you would open Google, vendor docs, changelogs, CVEs, or ecosystem references, use web grounding. Most production work needs both.
+
+**Choose the grounding loop by scale and uncertainty**
+Small repositories often need only agentic search. Larger repositories benefit from semantic search and sub-agents. Large or cross-source questions need specialized research agents such as ChunkHound `code_research` and `websearch`.
+
+**Context engineering is the next problem**
+Grounding gets the facts. Context engineering keeps those facts small, timely, and visible enough to use. Chapter 6 covers the attention mechanics and runtime mechanisms behind that second problem.
+
+---
+
+**Next:** [Chapter 6: Context Engineering](/chapter-6-context-management) — how to keep grounded information usable instead of letting it drown the task.

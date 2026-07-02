@@ -190,7 +190,6 @@ export default function CompactClearDiagram() {
     <svg
       viewBox={`0 0 ${VW} ${VH}`}
       width="100%"
-      height="auto"
       role="img"
       aria-label="Three context window states: Before (full conversation history), After /compact (conversation replaced by a summary), After /clear (empty window). Both commands reduce token pressure — /compact maintains continuity, /clear resets completely."
       xmlns="http://www.w3.org/2000/svg"

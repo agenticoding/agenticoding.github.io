@@ -7,9 +7,9 @@ hide_table_of_contents: false
 
 import IntroHookDiagram from '@site/src/components/VisualElements/IntroHookDiagram';
 import ParadigmShiftDiagram from '@site/src/components/VisualElements/ParadigmShiftDiagram';
-import ScrollDrivenFigure from '@site/src/components/animations/ScrollDrivenFigure';
 import OperatorCycleDiagram from '@site/src/components/VisualElements/OperatorCycleDiagram';
 import BulletIcons from '@site/src/components/VisualElements/BulletIcons';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
 AI agents aren't teammates — they're power tools. **Operating them is a skill.**
 
@@ -17,9 +17,9 @@ Practitioners with a systematic model see [55% efficiency gains as a floor](http
 
 Most developers treat agents like junior teammates — waiting for them to infer context, fixing output line-by-line, fighting context limits. The leverage is in directing them differently: one operator, orchestrating parallel agents across independent contexts.
 
-<ScrollDrivenFigure phaseEnd={0.75} caption="Three simultaneous agents. One operator.">
-  <IntroHookDiagram />
-</ScrollDrivenFigure>
+<DiagramFrame kicker="Introduction" title="Agentic coding starts with orchestration" size="wide" caption={'Three simultaneous agents. One operator.'}>
+    <IntroHookDiagram />
+</DiagramFrame>
 
 AI agents act as **amplifiers**. They compound your existing patterns — architectural clarity, test discipline, code structure — at the speed of execution. [Research shows](https://leaddev.com/technical-direction/how-ai-generated-code-accelerates-technical-debt) AI-generated code carries 8× more duplication — not because agents create it, but because they amplify what's already there.
 
@@ -27,9 +27,9 @@ AI agents act as **amplifiers**. They compound your existing patterns — archit
 
 This is the same shift manufacturing went through. Artisans shaped every piece by hand — skill bottlenecked throughput. Factories replaced that with engineers who design products, configure machines, and verify output at scale. Software engineering is making the same move: from writing code line-by-line to designing systems and directing agents that execute them.
 
-<ScrollDrivenFigure phaseEnd={0.75} caption="From artisan to factory owner.">
-  <ParadigmShiftDiagram />
-</ScrollDrivenFigure>
+<DiagramFrame kicker="Introduction" title="From manual coding to agentic delegation" size="wide" caption={'From artisan to factory owner.'}>
+    <ParadigmShiftDiagram />
+</DiagramFrame>
 
 ---
 
@@ -37,9 +37,9 @@ This is the same shift manufacturing went through. Artisans shaped every piece b
 
 This is a **technical reference** for operating AI coding agents — the systematic methodology used in production environments:
 
-<ScrollDrivenFigure phaseEnd={0.5} caption="Research, Plan, Execute, Validate — then iterate.">
-  <OperatorCycleDiagram />
-</ScrollDrivenFigure>
+<DiagramFrame kicker="Methodology" title="The operator loop" size="standard" caption={'Grounding, Plan, Execute, Validate — then iterate.'}>
+    <OperatorCycleDiagram />
+</DiagramFrame>
 
 No hand-holding. No toy examples. This reference assumes you know how to engineer software — it covers how to **orchestrate agents that execute it autonomously**.
 
@@ -61,4 +61,4 @@ Neither section is for beginners. Both require existing domain depth — this me
 
 ---
 
-**Ready to start?** Begin with [Lesson 1: LLMs Demystified](/fundamentals/lesson-1-how-llms-work).
+**Ready to start?** Begin with [Chapter 1: LLMs Demystified](/chapter-1-how-llms-work).

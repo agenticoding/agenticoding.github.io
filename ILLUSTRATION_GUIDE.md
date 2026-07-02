@@ -2,7 +2,9 @@
 
 Production illustration generation using shape grammar formalism, parametric curve mathematics, cross-modal psychophysics, Gestalt composition constraints, and computational aesthetic validation. Designed as agent-executable specification — every formula is code-ready. Domain-agnostic: works for any brand category.
 
-This guide is the illustration counterpart to `COLOR_GUIDE.md` (color science, palette engineering, typography accessibility) and `SPATIAL_GUIDE.md` (spacing, curvature, proportions, target sizes). It takes three inputs — a validated color palette, a spatial token system, and a brand emotional profile (target PAD vector) — and produces a complete, validated illustration system: shape vocabulary, construction rules, composition algorithms, and aesthetic quality metrics.
+**Project authority:** `DESIGN_SYSTEM.md` is authoritative for Agentic Coding visual rules. This guide supplies illustration rationale and generation methods; any generic guidance here is overridden by the design system's hierarchy, shape, color, and static-completeness guardrails.
+
+This guide is the illustration counterpart to `COLOR_GUIDE.md` (color science, palette engineering, typography accessibility) and `SPATIAL_GUIDE.md` (spacing, curvature, proportions, target sizes). It takes three inputs — a validated color palette, spatial token system, and brand PAD emotional profile (target PAD vector) — and produces a complete, validated illustration system: shape vocabulary, construction rules, composition algorithms, and aesthetic quality metrics.
 
 Four phases: **Illustration Strategy** (human-driven shape semantics and conceptual metaphor decisions grounded in perception science), **Shape Engineering** (agent-executable parametric math), **Composition & Layout** (agent-executable arrangement algorithms), and **Aesthetic Validation** (agent verification of complexity, balance, and congruence). The first phase grounds the human operator in shape psychophysics and visual communication research. The remaining phases are fully computable.
 
@@ -702,20 +704,21 @@ Hierarchical circle packing places child circles within parent circles. Recursiv
 
 **Source:** Wang, W. et al. (2006). "Visualization of large hierarchical data by circle packing." *CHI 2006*.
 
-### Narrative Diagram
+### Storytelling Idle Diagram
 
-A narrative diagram has N discrete act-states, each of which is a valid static composition. Acts are ordered sequences that reveal a concept incrementally — typically through scroll phase or time-based progression.
+A storytelling idle diagram is a complete static composition with one or two low-amplitude semantic loops that show an ongoing process. The reader should understand the figure with animation disabled, then gain process intuition from the idle motion while studying it.
 
-**Design rule:** Enumerate all act-states as static layouts first. Verify compositional balance (DCM < 10.0) at each state before adding any animation. The final act-state (phase=1) is the canonical diagram — the authoritative design artifact that must communicate the full concept with no motion.
+**Design rule:** Lay out the complete static diagram first. Verify compositional balance (DCM < 10.0) before adding any animation. Motion must represent a real process state — authoring, inference, retrieval, serialization, tool execution, data flow, validation, or readiness — not decorative liveliness.
 
 **Construction procedure:**
-1. Define the complete set of acts (N states) and the elements present in each.
-2. For each act-state i where 0 ≤ i < N: lay out the composition as a static diagram. Elements that arrive in later acts contribute placeholder mass (ghost geometry, neutral fill at opacity ≤ 0.15) to preserve spatial balance. Verify DCM < 10.0 at each act-state.
-3. Verify the final act-state (i = N−1) is a fully self-sufficient composition readable with no prior acts.
-4. Verify that appearance order across acts matches causal order of the concept: upstream causes appear before downstream effects; labels appear after the elements they describe.
-5. Only after all act-states pass the static composition check, add entrance transitions and idle states.
+1. Define the complete static composition and verify it communicates the concept with no motion.
+2. Identify the process loop the figure should tell while idle: what is active, flowing, transforming, validating, or waiting?
+3. Write the motion spec: story loop, semantic meaning, reader benefit, static fallback, loop budget, rejection test.
+4. Select at most two semantic idle classes from `DESIGN_SYSTEM.md §Semantic Idle Vocabulary`.
+5. Verify the moving elements match causal meaning. Upstream flows must not imply the wrong direction; equal-weight items must not stagger into false hierarchy.
+6. Verify reduced motion leaves a fully self-sufficient static figure.
 
-Narrative diagrams use the `useActs` hook and `ScrollDrivenFigure` wrapper. See `ANIMATION_GUIDE.md §Diagram Animation System` for the act system contract.
+Scroll-driven narrative diagrams are legacy exceptions. Use `ScrollDrivenFigure` only when scroll/viewport behavior is the concept being taught, and document the exception in the component.
 
 ---
 

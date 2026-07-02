@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
+import { ModelCallFrame, modelCallFrameVisualBounds } from './ModelCallFrame';
+import { DIAGRAM_STROKE } from './diagramScale';
 import styles from './ModelEncodingAtlas.module.css';
 
 const MAX_ACTIVE_PULSES = 10;
 const MOBILE_ACTIVE_PULSES = 5;
 const NODE_SIZE = 30;
 const NODE_PORT_OFFSET = NODE_SIZE / 2;
-const MODEL_TAB_ICON_SIZE = 18;
 
 // SVG mirrors DESIGN_SYSTEM.md spacing so geometry changes stay token-bound.
 const SPACE_1 = 8;
@@ -28,6 +29,10 @@ const FIELD_BOUNDARY_RUN_LIMIT = 9;
 const FIELD_PADDING = SPACE_3;
 const FIELD_CONTENT_FIT = 0.98;
 const FIELD_LABEL_CLEARANCE = GRID;
+const CONTENT_OFFSET: Record<Viewport, Point> = {
+  desktop: { x: 20, y: -23 },
+  mobile: { x: 0, y: 0 },
+};
 
 type FieldId = 'knowledge' | 'action';
 type EdgeKind = FieldId | 'cross';
@@ -61,7 +66,7 @@ type Viewport = 'desktop' | 'mobile';
 type Point = { x: number; y: number };
 type LayoutBox = Point & { width: number; height: number };
 type PortSide = 'top' | 'right' | 'bottom' | 'left';
-type Cubic = { start: Point; c1: Point; c2: Point; end: Point };
+type Polyline = { points: Point[] };
 type Field = {
   id: FieldId;
   title: string;
@@ -85,7 +90,7 @@ type Edge = {
   kind: EdgeKind;
   weight: EdgeWeight;
   d: string;
-  curve: Cubic;
+  path: Polyline;
 };
 type DiagramSpec = {
   viewBox: LayoutBox;
@@ -167,7 +172,7 @@ const NODE_INFO: Record<NodeId, Omit<Node, 'x' | 'y'>> = {
   },
 };
 
-const EDGE_INFO: Record<EdgeId, Omit<Edge, 'd' | 'curve'>> = {
+const EDGE_INFO: Record<EdgeId, Omit<Edge, 'd' | 'path'>> = {
   'facts-docs': edge('facts-docs', 'facts', 'docs', 'knowledge', 'secondary'),
   'facts-formats': edge(
     'facts-formats',
@@ -229,12 +234,14 @@ const VIEWPORT_LAYOUTS = {
   desktop: {
     viewBox: { x: 0, y: 0, width: 640, height: 376 },
     surfaceInset: SPACE_2,
+    surfaceTopInset: SPACE_2 + GRID,
     frame: { x: SPACE_4, y: SPACE_10 - GRID, width: 576, height: 244 },
-    eyebrow: { x: SPACE_5, y: SPACE_4 },
+    eyebrow: { x: SPACE_5, y: SPACE_4 + GRID },
   },
   mobile: {
     viewBox: { x: 0, y: 0, width: 360, height: 612 },
     surfaceInset: SPACE_1 + GRID,
+    surfaceTopInset: SPACE_2 + GRID,
     frame: { x: SPACE_3 + GRID, y: SPACE_8, width: 304, height: 488 },
     eyebrow: { x: SPACE_4, y: SPACE_5 },
   },
@@ -243,6 +250,7 @@ const VIEWPORT_LAYOUTS = {
   {
     viewBox: LayoutBox;
     surfaceInset: number;
+    surfaceTopInset: number;
     frame: LayoutBox;
     eyebrow: Point;
   }
@@ -266,6 +274,7 @@ type Route = {
   out: number;
   in: number;
   cross: number;
+  points?: Point[];
 };
 
 const DESKTOP_NODE_SLOTS: Record<NodeId, Point> = {
@@ -293,33 +302,105 @@ const MOBILE_NODE_SLOTS: Record<NodeId, Point> = {
 const ROUTES: Record<Viewport, Record<EdgeId, Route>> = {
   desktop: {
     'facts-docs': route('right', 'left', SPACE_4, SPACE_4, -SPACE_2),
-    'facts-formats': route('bottom', 'top', SPACE_3, SPACE_3, 0),
-    'docs-code': route('bottom', 'top', SPACE_5, SPACE_5, 0),
-    'formats-code': route('right', 'left', SPACE_4, SPACE_4, SPACE_2),
+    'facts-formats': route('right', 'top', SPACE_3, SPACE_3, 0, [
+      { x: 144, y: 176 },
+      { x: 144, y: 204 },
+      { x: 152, y: 204 },
+    ]),
+    'docs-code': route('right', 'top', SPACE_5, SPACE_5, 0, [
+      { x: 248, y: 132 },
+      { x: 248, y: 200 },
+      { x: 272, y: 200 },
+    ]),
+    'formats-code': route('right', 'left', SPACE_4, SPACE_4, SPACE_2, [
+      { x: 256, y: 244 },
+    ]),
     'answer-repair': route('right', 'left', SPACE_6, SPACE_6, -SPACE_4),
-    'answer-ask': route('bottom', 'top', SPACE_4, SPACE_4, 0),
-    'ask-validate': route('right', 'left', SPACE_4, SPACE_4, SPACE_3),
-    'repair-validate': route('bottom', 'top', SPACE_3, SPACE_3, 0),
+    'answer-ask': route('right', 'top', SPACE_4, SPACE_4, 0, [
+      { x: 424, y: 140 },
+      { x: 424, y: 204 },
+      { x: 392, y: 204 },
+    ]),
+    'ask-validate': route('right', 'left', SPACE_4, SPACE_4, SPACE_3, []),
+    'repair-validate': route('bottom', 'top', SPACE_3, SPACE_3, 0, [
+      { x: 508, y: 212 },
+      { x: 488, y: 212 },
+    ]),
     'docs-answer': route('right', 'left', SPACE_4, SPACE_4, -SPACE_2),
-    'formats-ask': route('right', 'left', SPACE_4, SPACE_4, SPACE_5),
-    'code-repair': route('right', 'left', SPACE_7, SPACE_7, -SPACE_4),
-    'code-validate': route('right', 'left', SPACE_4, SPACE_4, SPACE_3),
-    'facts-validate': route('bottom', 'bottom', SPACE_10, SPACE_10, 0),
+    'formats-ask': route('top', 'top', SPACE_4, SPACE_4, SPACE_5, [
+      { x: 408, y: 228 },
+    ]),
+    'code-repair': route('right', 'left', SPACE_7, SPACE_7, -SPACE_4, [
+      { x: 308, y: 240 },
+      { x: 308, y: 164 },
+      { x: 492, y: 164 },
+    ]),
+    'code-validate': route('bottom', 'bottom', SPACE_4, SPACE_4, SPACE_3, [
+      { x: 272, y: 320 },
+      { x: 488, y: 320 },
+    ]),
+    'facts-validate': route('left', 'right', SPACE_10, SPACE_10, 0, [
+      { x: 68, y: 176 },
+      { x: 68, y: 304 },
+      { x: 532, y: 304 },
+      { x: 532, y: 244 },
+    ]),
   },
   mobile: {
-    'facts-docs': route('right', 'left', SPACE_5, SPACE_5, -SPACE_3),
-    'facts-formats': route('left', 'left', SPACE_5, SPACE_5, -SPACE_2),
-    'docs-code': route('bottom', 'top', SPACE_5, SPACE_5, SPACE_1),
-    'formats-code': route('right', 'left', SPACE_3, SPACE_3, -SPACE_1),
-    'answer-repair': route('right', 'left', SPACE_3, SPACE_3, 0),
-    'answer-ask': route('bottom', 'top', SPACE_4, SPACE_4, -SPACE_1),
-    'ask-validate': route('right', 'left', SPACE_4, SPACE_4, -SPACE_1),
-    'repair-validate': route('right', 'right', SPACE_4, SPACE_4, -SPACE_3),
-    'docs-answer': route('right', 'left', SPACE_5, SPACE_5, -SPACE_2),
-    'formats-ask': route('bottom', 'top', SPACE_4, SPACE_4, 0),
-    'code-repair': route('right', 'top', SPACE_5, SPACE_5, -SPACE_2),
-    'code-validate': route('bottom', 'left', SPACE_2, SPACE_4, 0),
-    'facts-validate': route('left', 'bottom', SPACE_8, SPACE_8, -SPACE_6),
+    'facts-docs': route('right', 'left', SPACE_5, SPACE_5, -SPACE_3, [
+      { x: 140, y: 176 },
+      { x: 140, y: 184 },
+      { x: 196, y: 184 },
+    ]),
+    'facts-formats': route('right', 'left', SPACE_5, SPACE_5, -SPACE_2, [
+      { x: 120, y: 176 },
+      { x: 120, y: 260 },
+      { x: 68, y: 260 },
+    ]),
+    'docs-code': route('right', 'top', SPACE_5, SPACE_5, SPACE_1, [
+      { x: 236, y: 196 },
+      { x: 236, y: 256 },
+      { x: 168, y: 256 },
+    ]),
+    'formats-code': route('right', 'left', SPACE_3, SPACE_3, -SPACE_1, [
+      { x: 152, y: 308 },
+    ]),
+    'answer-repair': route('right', 'top', SPACE_3, SPACE_3, 0, [
+      { x: 284, y: 296 },
+    ]),
+    'answer-ask': route('bottom', 'top', SPACE_4, SPACE_4, -SPACE_1, [
+      { x: 228, y: 360 },
+      { x: 180, y: 360 },
+    ]),
+    'ask-validate': route('right', 'left', SPACE_4, SPACE_4, -SPACE_1, [
+      { x: 224, y: 396 },
+      { x: 224, y: 424 },
+    ]),
+    'repair-validate': route('right', 'right', SPACE_4, SPACE_4, -SPACE_3, [
+      { x: 312, y: 320 },
+      { x: 312, y: 424 },
+    ]),
+    'docs-answer': route('right', 'top', SPACE_5, SPACE_5, -SPACE_2, [
+      { x: 256, y: 196 },
+      { x: 256, y: 280 },
+    ]),
+    'formats-ask': route('right', 'top', SPACE_4, SPACE_4, 0, [
+      { x: 128, y: 308 },
+      { x: 128, y: 356 },
+      { x: 180, y: 356 },
+    ]),
+    'code-repair': route('right', 'left', SPACE_5, SPACE_5, -SPACE_2, [
+      { x: 268, y: 316 },
+    ]),
+    'code-validate': route('bottom', 'top', SPACE_8, SPACE_8, 0, [
+      { x: 168, y: 372 },
+      { x: 268, y: 372 },
+    ]),
+    'facts-validate': route('left', 'bottom', SPACE_8, SPACE_8, 0, [
+      { x: 44, y: 176 },
+      { x: 44, y: 444 },
+      { x: 268, y: 444 },
+    ]),
   },
 };
 
@@ -328,9 +409,10 @@ function route(
   to: PortSide,
   out: number,
   inside: number,
-  cross: number
+  cross: number,
+  points?: Point[]
 ): Route {
-  return { from, to, out, in: inside, cross };
+  return { from, to, out, in: inside, cross, points };
 }
 
 function edge(
@@ -347,7 +429,7 @@ function buildSpec(viewport: Viewport): DiagramSpec {
   const layout = VIEWPORT_LAYOUTS[viewport];
   const spec = {
     viewBox: layout.viewBox,
-    surface: insetBox(layout.viewBox, layout.surfaceInset),
+    surface: surfaceBox(layout),
     eyebrow: layout.eyebrow,
     caption: caption(layout),
     modelFrame: layout.frame,
@@ -365,16 +447,17 @@ function caption(layout: (typeof VIEWPORT_LAYOUTS)[Viewport]) {
     layout.viewBox.width > 400
       ? STORY_COPY.desktopCaption
       : STORY_COPY.mobileCaption;
-  const surface = insetBox(layout.viewBox, layout.surfaceInset);
+  const surface = surfaceBox(layout);
   return { x: layout.viewBox.width / 2, y: bottom(surface) - SPACE_3, copy };
 }
 
-function insetBox(box: LayoutBox, inset: number): LayoutBox {
+function surfaceBox(layout: (typeof VIEWPORT_LAYOUTS)[Viewport]) {
   return snapBox({
-    x: inset,
-    y: inset,
-    width: box.width - inset * 2,
-    height: box.height - inset * 2,
+    x: layout.surfaceInset,
+    y: layout.surfaceTopInset,
+    width: layout.viewBox.width - layout.surfaceInset * 2,
+    height:
+      layout.viewBox.height - layout.surfaceTopInset - layout.surfaceInset,
   });
 }
 
@@ -485,28 +568,71 @@ function buildEdges(viewport: Viewport, nodes: Node[]) {
 
 function edgeFromRoute(id: EdgeId, nodes: Record<NodeId, Node>, route: Route) {
   const info = EDGE_INFO[id];
-  const curve = cubicRoute(nodes[info.from], nodes[info.to], route);
-  return { ...info, curve, d: cubicPath(curve) };
+  const path = metroRoute(nodes[info.from], nodes[info.to], route);
+  return { ...info, path, d: metroPath(path) };
 }
 
-function cubicRoute(from: Node, to: Node, route: Route): Cubic {
+function metroRoute(from: Node, to: Node, route: Route): Polyline {
   const start = port(from, route.from);
   const end = port(to, route.to);
+  if (route.points)
+    return { points: simplifyPoints([start, ...route.points, end]) };
+  const outer = offsetPoint(start, route.from, route.out);
+  const inner = offsetPoint(end, route.to, route.in);
   return {
-    start,
-    end,
-    c1: control(start, route.from, route.out, route.cross),
-    c2: control(end, route.to, route.in, -route.cross),
+    points: simplifyPoints([
+      start,
+      outer,
+      ...elbowPoints(outer, inner, route),
+      inner,
+      end,
+    ]),
   };
 }
 
-function control(point: Point, side: PortSide, out: number, cross: number) {
+function elbowPoints(from: Point, to: Point, route: Route) {
+  if (sameAxis(from, to)) return [];
+  return isHorizontal(route.from)
+    ? horizontalLane(from, to, route.cross)
+    : verticalLane(from, to, route.cross);
+}
+
+function horizontalLane(from: Point, to: Point, cross: number) {
+  const y = snap((from.y + to.y) / 2 + cross);
+  return [
+    { x: from.x, y },
+    { x: to.x, y },
+  ];
+}
+
+function verticalLane(from: Point, to: Point, cross: number) {
+  const x = snap((from.x + to.x) / 2 + cross);
+  return [
+    { x, y: from.y },
+    { x, y: to.y },
+  ];
+}
+
+function offsetPoint(point: Point, side: PortSide, distance: number) {
   const vector = sideVector(side);
-  const normal = { x: -vector.y, y: vector.x };
   return snapPoint({
-    x: point.x + vector.x * out + normal.x * cross,
-    y: point.y + vector.y * out + normal.y * cross,
+    x: point.x + vector.x * distance,
+    y: point.y + vector.y * distance,
   });
+}
+
+function sameAxis(a: Point, b: Point) {
+  return a.x === b.x || a.y === b.y;
+}
+
+function isHorizontal(side: PortSide) {
+  return side === 'left' || side === 'right';
+}
+
+function simplifyPoints(points: Point[]) {
+  return points.filter(
+    (point, index) => !index || !samePoint(point, points[index - 1])
+  );
 }
 
 function port(node: Node, side: PortSide) {
@@ -526,12 +652,15 @@ function sideVector(side: PortSide) {
   }[side];
 }
 
-function cubicPath({ start, c1, c2, end }: Cubic) {
-  return `M ${start.x} ${start.y} C ${c1.x} ${c1.y} ${c2.x} ${c2.y} ${end.x} ${end.y}`;
+function metroPath({ points }: Polyline) {
+  return points
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
+    .join(' ');
 }
 
 function validateSpec(viewport: Viewport, spec: DiagramSpec) {
   const failures = [
+    ...validateModelFrameBounds(spec),
     ...validateFieldBounds(spec),
     ...validateFieldLabels(spec),
     ...validateFieldContents(viewport, spec),
@@ -543,6 +672,16 @@ function validateSpec(viewport: Viewport, spec: DiagramSpec) {
     throw new Error(
       `ModelEncodingAtlas ${viewport} geometry invalid: ${failures.join('; ')}`
     );
+}
+
+function validateModelFrameBounds(spec: DiagramSpec) {
+  const bounds = modelCallFrameVisualBounds(
+    spec.surface,
+    STORY_COPY.modelTitle
+  );
+  return containsBox(spec.viewBox, bounds)
+    ? []
+    : ['model call frame visual bounds outside viewBox'];
 }
 
 function validateFieldBounds(spec: DiagramSpec) {
@@ -628,7 +767,7 @@ function validateEdgeFieldBoundaries(viewport: Viewport, spec: DiagramSpec) {
   return spec.edges.flatMap((edge) =>
     spec.fields.flatMap((field) =>
       shouldValidateFieldBoundary(viewport, edge, field) &&
-      hasBoundaryRide(edge.curve, field)
+      hasBoundaryRide(edge.path, field)
         ? [`${edge.id} rides ${field.id} field boundary`]
         : []
     )
@@ -647,13 +786,15 @@ function shouldValidateFieldBoundary(
   );
 }
 
-function hasBoundaryRide(curve: Cubic, field: Field) {
-  return maxConsecutive(
-    sampleCurve(curve).map(
-      (point) =>
-        ellipseBoundaryDistance(point, field) < FIELD_BOUNDARY_CLEARANCE
-    )
-  ) >= FIELD_BOUNDARY_RUN_LIMIT;
+function hasBoundaryRide(path: Polyline, field: Field) {
+  return (
+    maxConsecutive(
+      samplePath(path).map(
+        (point) =>
+          ellipseBoundaryDistance(point, field) < FIELD_BOUNDARY_CLEARANCE
+      )
+    ) >= FIELD_BOUNDARY_RUN_LIMIT
+  );
 }
 
 function ellipseBoundaryDistance(point: Point, field: Field) {
@@ -664,10 +805,7 @@ function ellipseBoundaryDistance(point: Point, field: Field) {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
   const boundaryRadius =
-    1 /
-    Math.sqrt(
-      (cos / field.radius.x) ** 2 + (sin / field.radius.y) ** 2
-    );
+    1 / Math.sqrt((cos / field.radius.x) ** 2 + (sin / field.radius.y) ** 2);
   return Math.abs(Math.hypot(dx, dy) - boundaryRadius);
 }
 
@@ -685,7 +823,7 @@ function validateEdgePairs(viewport: Viewport, spec: DiagramSpec) {
   const nodes = nodeRecord(spec.nodes);
   return pairs(spec.edges).flatMap(([a, b]) =>
     skipEdgePair(viewport, a, b) ||
-    minCurveDistance(a, b, sharedNode(a, b, nodes)) >= MIN_EDGE_SEPARATION
+    minPathDistance(a, b, sharedNode(a, b, nodes)) >= MIN_EDGE_SEPARATION
       ? []
       : [`${a.id}/${b.id} edge separation below token`]
   );
@@ -697,35 +835,29 @@ function skipEdgePair(viewport: Viewport, a: Edge, b: Edge) {
 
 function edgeSamples(edges: Edge[]) {
   return edges.flatMap((edge) =>
-    sampleCurve(edge.curve).map((point) => ({ edge, point }))
+    samplePath(edge.path).map((point) => ({ edge, point }))
   );
 }
 
-function sampleCurve(curve: Cubic) {
-  return Array.from({ length: 65 }, (_, index) =>
-    cubicPoint(curve, index / 64)
+function samplePath(path: Polyline) {
+  return path.points.flatMap((point, index) =>
+    index === 0 ? [point] : segmentSamples(path.points[index - 1], point)
   );
 }
 
-function cubicPoint({ start, c1, c2, end }: Cubic, t: number) {
-  const mt = 1 - t;
-  return {
-    x:
-      mt ** 3 * start.x +
-      3 * mt ** 2 * t * c1.x +
-      3 * mt * t ** 2 * c2.x +
-      t ** 3 * end.x,
-    y:
-      mt ** 3 * start.y +
-      3 * mt ** 2 * t * c1.y +
-      3 * mt * t ** 2 * c2.y +
-      t ** 3 * end.y,
-  };
+function segmentSamples(a: Point, b: Point) {
+  return Array.from({ length: 8 }, (_, index) =>
+    lerpPoint(a, b, (index + 1) / 8)
+  );
 }
 
-function minCurveDistance(a: Edge, b: Edge, shared?: Node) {
-  const distances = sampleCurve(a.curve).flatMap((p) =>
-    sampleCurve(b.curve)
+function lerpPoint(a: Point, b: Point, t: number) {
+  return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+}
+
+function minPathDistance(a: Edge, b: Edge, shared?: Node) {
+  const distances = samplePath(a.path).flatMap((p) =>
+    samplePath(b.path)
       .filter((q) => !shared || outsideSharedPortZone(p, q, shared))
       .map((q) => distance(p, q))
   );
@@ -788,7 +920,12 @@ function textBox(
 function unionBox(a: LayoutBox, b: LayoutBox): LayoutBox {
   const x = Math.min(a.x, b.x);
   const y = Math.min(a.y, b.y);
-  return { x, y, width: Math.max(right(a), right(b)) - x, height: Math.max(bottom(a), bottom(b)) - y };
+  return {
+    x,
+    y,
+    width: Math.max(right(a), right(b)) - x,
+    height: Math.max(bottom(a), bottom(b)) - y,
+  };
 }
 
 function nodeContentsFitField(viewport: Viewport, node: Node, field: Field) {
@@ -821,6 +958,15 @@ function ellipseValue(point: Point, field: Field) {
   return (
     ((point.x - field.center.x) / field.radius.x) ** 2 +
     ((point.y - field.center.y) / field.radius.y) ** 2
+  );
+}
+
+function containsBox(box: LayoutBox, child: LayoutBox) {
+  return (
+    child.x >= box.x &&
+    right(child) <= right(box) &&
+    child.y >= box.y &&
+    bottom(child) <= bottom(box)
   );
 }
 
@@ -867,6 +1013,7 @@ function nodeRecord(nodes: Node[]) {
 const INTENTIONAL_EDGE_CROSSINGS: Record<Viewport, Set<string>> = {
   desktop: new Set(
     [
+      'facts-docs/facts-formats',
       'docs-code/docs-answer',
       'docs-code/formats-ask',
       'docs-code/facts-validate',
@@ -885,10 +1032,13 @@ const INTENTIONAL_EDGE_CROSSINGS: Record<Viewport, Set<string>> = {
       'formats-ask/facts-validate',
       'code-repair/facts-validate',
       'code-validate/facts-validate',
+      'answer-repair/answer-ask',
+      'repair-validate/facts-validate',
     ].map(normalPairKey)
   ),
   mobile: new Set(
     [
+      'facts-docs/facts-formats',
       'docs-code/docs-answer',
       'docs-code/answer-ask',
       'formats-code/answer-ask',
@@ -912,6 +1062,9 @@ const INTENTIONAL_EDGE_CROSSINGS: Record<Viewport, Set<string>> = {
       'ask-validate/facts-validate',
       'formats-ask/facts-validate',
       'code-validate/facts-validate',
+      'answer-repair/facts-validate',
+      'docs-answer/facts-validate',
+      'repair-validate/facts-validate',
     ].map(normalPairKey)
   ),
 };
@@ -959,6 +1112,8 @@ const ENDPOINT_LABEL_PROXIMITIES: Record<Viewport, Set<string>> = {
     'code-validate/validate',
     'facts-validate/facts',
     'facts-validate/validate',
+    'facts-validate/docs',
+    'facts-validate/repair',
   ]),
 };
 
@@ -974,6 +1129,7 @@ const INTENTIONAL_EDGE_NODE_PROXIMITIES = new Set([
   'answer-ask/formats',
   'code-validate/formats',
   'code-repair/answer',
+  'facts-validate/repair',
 ]);
 
 function pairs<T>(items: T[]) {
@@ -1008,6 +1164,9 @@ function snap(value: number) {
 }
 function snapPoint(point: Point) {
   return { x: snap(point.x), y: snap(point.y) };
+}
+function samePoint(a: Point, b: Point) {
+  return a.x === b.x && a.y === b.y;
 }
 function snapBox(box: LayoutBox) {
   return {
@@ -1084,13 +1243,7 @@ function FieldHalo({ field, viewport }: { field: Field; viewport: Viewport }) {
   return <FieldLabel field={field} viewport={viewport} />;
 }
 
-function FieldLabel({
-  field,
-  viewport,
-}: {
-  field: Field;
-  viewport: Viewport;
-}) {
+function FieldLabel({ field, viewport }: { field: Field; viewport: Viewport }) {
   const label = viewport === 'mobile' ? mobileFieldLabelPoint(field) : field;
   const color =
     field.id === 'knowledge' ? 'var(--visual-indigo)' : 'var(--visual-magenta)';
@@ -1122,8 +1275,8 @@ function mobileFieldLabelPoint(field: Field) {
   const x = snap(field.center.x);
   const y =
     field.id === 'knowledge'
-      ? snap(field.center.y - field.radius.y - SPACE_2)
-      : snap(field.center.y + field.radius.y * 0.86);
+      ? snap(field.center.y - field.radius.y + SPACE_1)
+      : snap(field.center.y + field.radius.y * 0.86 + SPACE_3);
   return {
     label: { x, y },
     subtitleY: snap(y + SPACE_1 + GRID),
@@ -1140,8 +1293,30 @@ function textProps(point: Point, textAnchor: Field['textAnchor'] = 'start') {
   };
 }
 
+function contentTransform(viewport: Viewport) {
+  const offset = CONTENT_OFFSET[viewport];
+  return offset.x || offset.y
+    ? `translate(${offset.x} ${offset.y})`
+    : undefined;
+}
+
 function MeshEdge({ edge }: { edge: Edge; viewport: Viewport }) {
-  return <path d={edge.d} className={edgeClassName(edge)} />;
+  return (
+    <path
+      d={edge.d}
+      className={edgeClassName(edge)}
+      strokeWidth={edgeStrokeWidth(edge)}
+      strokeLinecap="butt"
+      strokeLinejoin="miter"
+      vectorEffect="non-scaling-stroke"
+    />
+  );
+}
+
+function edgeStrokeWidth(edge: Edge) {
+  return edge.weight === 'primary'
+    ? DIAGRAM_STROKE.connector
+    : DIAGRAM_STROKE.default;
 }
 
 function PulsePath({
@@ -1166,6 +1341,9 @@ function PulsePath({
       pathLength="100"
       className={className}
       style={pulseStyle(pulse)}
+      strokeLinecap="butt"
+      strokeLinejoin="miter"
+      vectorEffect="non-scaling-stroke"
       onAnimationEnd={() => onDone(pulse.id)}
     />
   );
@@ -1208,19 +1386,26 @@ function nodeLabelPoint(viewport: Viewport, node: Node) {
     : { x: node.x, y: node.y + 39 };
 }
 
-function FieldMeshLayer({
-  spec,
+function FieldLabelLayer({
+  fields,
   viewport,
 }: {
-  spec: DiagramSpec;
+  fields: Field[];
   viewport: Viewport;
 }) {
   return (
     <>
-      {spec.fields.map((field) => (
+      {fields.map((field) => (
         <FieldHalo key={field.id} field={field} viewport={viewport} />
       ))}
-      {spec.edges.map((edge) => (
+    </>
+  );
+}
+
+function EdgeLayer({ edges, viewport }: { edges: Edge[]; viewport: Viewport }) {
+  return (
+    <>
+      {edges.map((edge) => (
         <MeshEdge key={edge.id} edge={edge} viewport={viewport} />
       ))}
     </>
@@ -1260,63 +1445,28 @@ function renderPulse(
   ) : null;
 }
 
-function layoutBox(layout: LayoutBox) {
-  return {
-    x: layout.x,
-    y: layout.y,
-    width: layout.width,
-    height: layout.height,
-  };
-}
-
 function ModelFrameLabel({
   surface,
-  anchor,
+  viewport,
 }: {
   surface: LayoutBox;
-  anchor: Point;
+  viewport: Viewport;
 }) {
-  const tab = modelTab(surface);
   return (
-    <g>
-      <rect {...layoutBox(tab)} className={styles.modelTab} />
-      <EmojiImage
-        asset={EMOJI.gear}
-        x={tab.x + SPACE_1}
-        y={tab.y + GRID}
-        size={MODEL_TAB_ICON_SIZE}
-      />
-      <text
-        x={tab.x + SPACE_1 + MODEL_TAB_ICON_SIZE + SPACE_1}
-        y={tab.y + SPACE_2}
-        fontFamily="var(--font-mono-spec)"
-        fontSize="11"
-        fontWeight="600"
-        fill="var(--text-heading)"
-      >
-        {STORY_COPY.modelTitle}
-      </text>
-      <text
-        x={boxCenter(surface).x}
-        y={anchor.y}
-        textAnchor="middle"
-        fontFamily="var(--font-mono-spec)"
-        fontSize="11"
-        fill="var(--text-muted)"
-      >
-        {STORY_COPY.modelSubtitle}
-      </text>
-    </g>
+    <ModelCallFrame
+      {...surface}
+      tabLabel={STORY_COPY.modelTitle}
+      subtitle={STORY_COPY.modelSubtitle}
+      subtitleX={boxCenter(surface).x}
+      subtitleY={modelSubtitleY(surface, viewport)}
+      stroke="var(--border-default)"
+      rectClassName={styles.modelTab}
+    />
   );
 }
 
-function modelTab(surface: LayoutBox) {
-  return {
-    x: surface.x + SPACE_3,
-    y: surface.y - SPACE_2 + GRID,
-    width: SPACE_10 * 2,
-    height: SPACE_3,
-  };
+function modelSubtitleY(surface: LayoutBox, viewport: Viewport) {
+  return surface.y + (viewport === 'desktop' ? SPACE_2 + GRID : SPACE_5);
 }
 
 function AtlasSvg({
@@ -1336,20 +1486,16 @@ function AtlasSvg({
     <svg
       viewBox={`${spec.viewBox.x} ${spec.viewBox.y} ${spec.viewBox.width} ${spec.viewBox.height}`}
       width="100%"
-      role="img"
-      aria-label={STORY_COPY.label}
+      aria-hidden="true"
       className={`${styles.diagram} ${className}`}
     >
-      <rect
-        {...layoutBox(spec.surface)}
-        fill="var(--surface-raised)"
-        stroke="var(--border-default)"
-        strokeWidth="1.5"
-      />
-      <ModelFrameLabel surface={spec.surface} anchor={spec.eyebrow} />
-      <FieldMeshLayer spec={spec} viewport={viewport} />
-      <PulseLayer spec={spec} pulses={pulses} onDone={onDone} />
-      <NodeLayer nodes={spec.nodes} viewport={viewport} />
+      <ModelFrameLabel surface={spec.surface} viewport={viewport} />
+      <FieldLabelLayer fields={spec.fields} viewport={viewport} />
+      <g transform={contentTransform(viewport)}>
+        <EdgeLayer edges={spec.edges} viewport={viewport} />
+        <PulseLayer spec={spec} pulses={pulses} onDone={onDone} />
+        <NodeLayer nodes={spec.nodes} viewport={viewport} />
+      </g>
       <text
         x={spec.caption.x}
         y={spec.caption.y}
@@ -1374,18 +1520,17 @@ export default function ModelEncodingAtlas() {
   }, []);
 
   useEffect(
-    () =>
-      startPulseLoop(
-        pulseIdRef,
-        phaseIndexRef,
-        setActivePulses
-      ),
+    () => startPulseLoop(pulseIdRef, phaseIndexRef, setActivePulses),
     []
   );
 
   const containerClassName = styles.container;
   return (
-    <div className={containerClassName}>
+    <div
+      className={containerClassName}
+      role="img"
+      aria-label={STORY_COPY.label}
+    >
       <AtlasSvg
         spec={DESKTOP_SPEC}
         className={styles.desktopDiagram}

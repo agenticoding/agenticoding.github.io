@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import styles from './ContextSqueezeDiagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useMounted } from '../../hooks/useMounted';
 import { Ghost } from './Ghost';
@@ -41,7 +41,7 @@ const ZONE_LABEL_OFFSET = 3;
 const BLOCK_LABEL_OFFSET = 4;
 
 export default function ContextSqueezeDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const mounted = useMounted();
   const { wasReached } = useActs(ACTS, phase);
 
@@ -58,7 +58,6 @@ export default function ContextSqueezeDiagram() {
     <svg
       viewBox="0 0 400 320"
       width="100%"
-      height="auto"
       role="img"
       aria-label="The Primacy Squeeze: context files (AGENTS.md) consume primacy-zone space and push the user task downward into the forgotten middle zone."
       xmlns="http://www.w3.org/2000/svg"

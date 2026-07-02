@@ -181,7 +181,7 @@ antirez is pragmatic about local vs. cloud — he uses Gemini 2.5 Pro and Claude
 
 ds4 is his answer: **local inference that's credible enough to matter.** Not a replacement for cloud models, but an insurance policy against lock-in, price gouging, and centralized control.
 
-This aligns with the course author's philosophy — the course is intentionally model-agnostic. The four-phase workflow (Research → Plan → Execute → Validate) works regardless of inference backend. Local models add a fourth dimension: **zero marginal cost, zero data leakage, zero dependency on a single provider.**
+This aligns with the course author's philosophy — the course is intentionally model-agnostic. The four-phase workflow (Grounding → Plan → Execute → Validate) works regardless of inference backend. Local models add a fourth dimension: **zero marginal cost, zero data leakage, zero dependency on a single provider.**
 
 ### Practical Considerations
 

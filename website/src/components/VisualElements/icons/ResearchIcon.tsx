@@ -17,7 +17,7 @@ export default function ResearchIcon({ className, size = 24 }: IconProps) {
       strokeLinejoin="round"
       className={className}
       role="img"
-      aria-label="Research icon"
+      aria-label="Grounding icon"
     >
       {/* Lens circle */}
       <circle cx="10" cy="10" r="6.5" strokeWidth="2" />

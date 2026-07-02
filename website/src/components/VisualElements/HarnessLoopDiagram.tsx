@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useMounted } from '../../hooks/useMounted';
 import { DiagramTile } from './DiagramTile';
@@ -132,7 +132,7 @@ function MobileDiagram({ visible }: { visible: Visibility }) {
 }
 
 export default function HarnessLoopDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const { wasReached } = useActs(ACTS, phase);
   const mounted = useMounted();
   const visible = Object.fromEntries(ACTS.map(({ id }) => [id, mounted && wasReached(id)])) as Visibility;

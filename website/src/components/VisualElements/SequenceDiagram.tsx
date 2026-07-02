@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './SequenceDiagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useMounted } from '../../hooks/useMounted';
 import { Ghost, ghostClass } from './Ghost';
 import { CONNECTOR_STYLE, GHOST_CONNECTOR_STYLE, ARROWHEAD_POINTS, ARROWHEAD_POINTS_REV } from './diagramConstants';
@@ -47,7 +47,7 @@ interface Props {
 
 export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
   const emojiBase = useBaseUrl('/img/emoji');
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const mounted = useMounted();
 
   // Measure container so viewBox width = container CSS width.
@@ -136,7 +136,7 @@ export default function SequenceDiagram({ columns, rows, ariaLabel }: Props) {
       <svg
         viewBox={`0 0 ${viewW} ${bodyH}`}
         width="100%"
-        height="auto"
+
         style={{ display: 'block' }}
         role="img"
         aria-label={ariaLabel ?? 'Sequence diagram'}

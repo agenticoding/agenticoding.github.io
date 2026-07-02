@@ -1,7 +1,7 @@
 import { useId, type CSSProperties } from 'react';
 import clsx from 'clsx';
 import styles from './SkillsInvocationDiagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 
 const GRID = 8;
@@ -126,7 +126,7 @@ function Connector({
 }
 
 export default function SkillsInvocationDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const { wasReached } = useActs(ACTS, phase);
   const markerId = useId().replace(/:/g, '');
 
@@ -143,7 +143,7 @@ export default function SkillsInvocationDiagram() {
         role="img"
         aria-label="Two skill invocation paths: operator-triggered (you type /commit) versus model-invoked (agent auto-triggers based on task match)"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ display: 'block', height: 'auto', maxWidth: `${VW}px`, margin: '0 auto' }}
+        style={{ display: 'block', maxWidth: `${VW}px`, margin: '0 auto' }}
       >
       <defs>
         <marker

@@ -7,7 +7,6 @@ export default function AdoptionGapDiagram() {
     <svg
       viewBox={viewBox}
       width="100%"
-      height="auto"
       role="img"
       aria-label="Bar chart showing the adoption gap: 77% AI tool adoption versus only 3% high trust in AI output"
       xmlns="http://www.w3.org/2000/svg"

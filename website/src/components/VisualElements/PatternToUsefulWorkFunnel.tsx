@@ -4,9 +4,11 @@ import clsx from 'clsx';
 import { EmojiImage } from './ActorNodes';
 import { centeredEmojiOffset, EMOJI, type EmojiAsset } from './emojiAssets';
 import { GearNode } from './GearNode';
-import { AnimatedTokenFlow, tokenFlowSpecs } from './AnimatedTokenFlow';
+import { AnimatedTokenFlow } from './AnimatedTokenFlow';
+import { TokenArrowTrain } from './TokenArrowTrain';
 import { DiagramTile } from './DiagramTile';
 import { MIXED_CONTEXT_TOKENS, OUTPUT_TOKENS } from './TokenStream';
+import { DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import styles from './PatternToUsefulWorkFunnel.module.css';
 
 type Tone = 'indigo' | 'violet' | 'cyan';
@@ -40,6 +42,14 @@ const LEFT_X = 32;
 const MID_X = 280;
 const RIGHT_X = 528;
 const CENTER_Y = CARD_Y + CARD_H / 2;
+const CONNECTOR_TRAIN_TIMING = {
+  cycleMs: 8800,
+  travelMs: 900,
+  fadeMs: 180,
+  repeat: 'loop',
+} as const;
+const DESKTOP_CONNECTOR_STAGGER = { mode: 'fixedStep', stepMs: 95 } as const;
+const MOBILE_CONNECTOR_STAGGER = { mode: 'fixedStep', stepMs: 90 } as const;
 
 // SVG coordinate math needs numbers; these mirror DESIGN_SYSTEM spacing tokens.
 const SPACE_0H = 4;
@@ -70,7 +80,7 @@ const MOBILE_STAGE_YS = [
 ] as const;
 const MH = MOBILE_STAGE_YS[2] + MOBILE_STAGE_H + SPACE_4;
 const MOBILE_CENTER_X = MW / 2;
-const MOBILE_STREAM_SIZE = 18;
+const MOBILE_STREAM_SIZE = DIAGRAM_TOKEN_SIZE.flow;
 const MOBILE_GEAR_SIZE = SPACE_5;
 const MOBILE_GEAR_X = MOBILE_CENTER_X - MOBILE_GEAR_SIZE / 2;
 const MOBILE_GEAR_Y = MOBILE_STAGE_YS[1] + SPACE_5 + SPACE_3;
@@ -78,9 +88,11 @@ const MOBILE_GEAR_TOP_Y = MOBILE_GEAR_Y;
 const MOBILE_GEAR_BOTTOM_Y = MOBILE_GEAR_Y + MOBILE_GEAR_SIZE;
 const MOBILE_INPUT_GEAR_BOUNDARY_Y = MOBILE_GEAR_TOP_Y - SPACE_0H;
 const MOBILE_OUTPUT_GEAR_BOUNDARY_Y = MOBILE_GEAR_BOTTOM_Y - SPACE_1;
-const MOBILE_INPUT_CONNECTOR_START_Y = MOBILE_STAGE_YS[0] + MOBILE_STAGE_H + SPACE_1;
+const MOBILE_INPUT_CONNECTOR_START_Y =
+  MOBILE_STAGE_YS[0] + MOBILE_STAGE_H + SPACE_1;
 const MOBILE_INPUT_CONNECTOR_END_Y = MOBILE_STAGE_YS[1] - SPACE_1;
-const MOBILE_OUTPUT_CONNECTOR_START_Y = MOBILE_STAGE_YS[1] + MOBILE_STAGE_H + SPACE_1;
+const MOBILE_OUTPUT_CONNECTOR_START_Y =
+  MOBILE_STAGE_YS[1] + MOBILE_STAGE_H + SPACE_1;
 const MOBILE_OUTPUT_CONNECTOR_END_Y = MOBILE_STAGE_YS[2] - SPACE_1;
 
 const INPUT_CHIPS: Chip[] = [
@@ -143,9 +155,9 @@ const OUTPUT_CHIPS: Chip[] = [
     delay: '5200ms',
   },
 ];
-const INPUT_FLOW_TOKENS = tokenFlowSpecs(MIXED_CONTEXT_TOKENS, 1320, 160);
-const GEAR_FLOW_TOKENS = [{ delay: '2460ms', modality: 'generic', signal: 'compressed' }] as const;
-const OUTPUT_FLOW_TOKENS = tokenFlowSpecs(OUTPUT_TOKENS, 3520, 220);
+const GEAR_FLOW_TOKENS = [
+  { delay: '2460ms', modality: 'generic', signal: 'compressed' },
+] as const;
 const CARDS: Card[] = [
   {
     title: 'artifacts as tokens',
@@ -201,7 +213,19 @@ function chipContentLayout({
   return { iconX, textX: iconX + iconSize + CHIP_ICON_LABEL_GAP };
 }
 function CardBox({ title, detail, x, y, tone }: Card) {
-  return <DiagramTile x={x} y={y} width={CARD_W} height={CARD_H} tone={tone} title={title} detail={detail} variant="centered" className={styles.card} />;
+  return (
+    <DiagramTile
+      x={x}
+      y={y}
+      width={CARD_W}
+      height={CARD_H}
+      tone={tone}
+      title={title}
+      detail={detail}
+      variant="centered"
+      className={styles.card}
+    />
+  );
 }
 function ChipPill({
   label,
@@ -294,75 +318,58 @@ function MobileChip({
     </g>
   );
 }
-function arrowHeadPoints(x: number, y: number) {
-  return `${x} ${y}, ${x - 8} ${y - 4}, ${x - 8} ${y + 4}`;
-}
-function downArrowHeadPoints(x: number, y: number) {
-  return `${x} ${y}, ${x - 6} ${y - 10}, ${x + 6} ${y - 10}`;
-}
 function Connector({
   d,
-  delay,
-  tipX,
-  tipY,
+  startDelayMs,
+  tone,
+  tokens,
 }: {
   d: string;
-  delay: string;
-  tipX: number;
-  tipY: number;
+  startDelayMs: number;
+  tone: Tone;
+  tokens: typeof MIXED_CONTEXT_TOKENS | typeof OUTPUT_TOKENS;
 }) {
   return (
-    <g>
-      <path className={`${styles.connector} ${styles.connectorBase}`} d={d} />
-      <polygon
-        className={`${styles.connectorHead} ${styles.connectorBase}`}
-        points={arrowHeadPoints(tipX, tipY)}
-      />
-      <path
-        className={`${styles.connector} ${styles.flowStory}`}
-        style={motionStyle(delay)}
-        d={d}
-        pathLength={1}
-      />
-      <polygon
-        className={`${styles.connectorHead} ${styles.flowHead}`}
-        style={motionStyle(delay)}
-        points={arrowHeadPoints(tipX, tipY)}
-      />
-    </g>
+    <TokenArrowTrain
+      d={d}
+      tokens={tokens}
+      timing={{ ...CONNECTOR_TRAIN_TIMING, startDelayMs }}
+      stagger={DESKTOP_CONNECTOR_STAGGER}
+      tone={tone}
+      stroke={toneVars(tone).stroke}
+      pathClassName={styles.connector}
+    />
   );
 }
+
 function MobileConnector({
   startY,
   tipY,
-  delay,
+  startDelayMs,
+  tone,
+  tokens,
 }: {
   startY: number;
   tipY: number;
-  delay: string;
+  startDelayMs: number;
+  tone: Tone;
+  tokens: typeof MIXED_CONTEXT_TOKENS | typeof OUTPUT_TOKENS;
 }) {
   const d = `M ${MOBILE_CENTER_X} ${startY} C ${MOBILE_CENTER_X} ${startY + 34}, ${MOBILE_CENTER_X} ${tipY - 34}, ${MOBILE_CENTER_X} ${tipY}`;
   return (
-    <g>
-      <path className={`${styles.connector} ${styles.connectorBase}`} d={d} />
-      <polygon
-        className={`${styles.connectorHead} ${styles.connectorBase}`}
-        points={downArrowHeadPoints(MOBILE_CENTER_X, tipY)}
-      />
-      <path
-        className={`${styles.connector} ${styles.flowStory}`}
-        style={motionStyle(delay)}
-        d={d}
-        pathLength={1}
-      />
-      <polygon
-        className={`${styles.connectorHead} ${styles.flowHead}`}
-        style={motionStyle(delay)}
-        points={downArrowHeadPoints(MOBILE_CENTER_X, tipY)}
-      />
-    </g>
+    <TokenArrowTrain
+      d={d}
+      tokens={tokens}
+      timing={{ ...CONNECTOR_TRAIN_TIMING, startDelayMs }}
+      stagger={MOBILE_CONNECTOR_STAGGER}
+      tone={tone}
+      stroke={toneVars(tone).stroke}
+      size={MOBILE_STREAM_SIZE}
+      pathClassName={styles.connector}
+    />
   );
 }
+
 function MobileStage({
   stage,
   y,
@@ -375,7 +382,17 @@ function MobileStage({
   const colors = toneVars(stage.tone);
   return (
     <g className={styles.mobileStage}>
-      <DiagramTile x={MOBILE_STAGE_X} y={y} width={MOBILE_STAGE_W} height={MOBILE_STAGE_H} tone={stage.tone} title={stage.title} detail={stage.detail} variant="centered" density="mobile" />
+      <DiagramTile
+        x={MOBILE_STAGE_X}
+        y={y}
+        width={MOBILE_STAGE_W}
+        height={MOBILE_STAGE_H}
+        tone={stage.tone}
+        title={stage.title}
+        detail={stage.detail}
+        variant="centered"
+        density="mobile"
+      />
       <circle
         cx={MOBILE_STAGE_X + 28}
         cy={y + 30}
@@ -440,66 +457,52 @@ function DesktopDiagram() {
       className={clsx(styles.diagram, styles.desktopDiagram)}
     >
       <g transform="translate(-8, -8)">
-      {CARDS.map((card) => (
-        <CardBox key={card.title} {...card} />
-      ))}
-      {INPUT_CHIPS.map((chip) => (
-        <ChipPill
-          key={chip.label}
-          {...chip}
-          storyClassName={styles.inputStory}
+        {CARDS.map((card) => (
+          <CardBox key={card.title} {...card} />
+        ))}
+        {INPUT_CHIPS.map((chip) => (
+          <ChipPill
+            key={chip.label}
+            {...chip}
+            storyClassName={styles.inputStory}
+          />
+        ))}
+        <Connector
+          d={`M ${LEFT_X + CARD_W} ${CENTER_Y} C 250 ${CENTER_Y}, 260 ${CENTER_Y}, ${MID_X} ${CENTER_Y}`}
+          tokens={MIXED_CONTEXT_TOKENS}
+          startDelayMs={1320}
+          tone="violet"
         />
-      ))}
-      <Connector
-        delay="1300ms"
-        tipX={MID_X}
-        tipY={CENTER_Y}
-        d={`M ${LEFT_X + CARD_W} ${CENTER_Y} C 250 ${CENTER_Y}, 260 ${CENTER_Y}, ${MID_X} ${CENTER_Y}`}
-      />
-      <AnimatedTokenFlow
-        x={LEFT_X + CARD_W - 8}
-        y={CENTER_Y - 10}
-        tokens={INPUT_FLOW_TOKENS}
-        variant="input"
-        travelX={126}
-      />
-      <AnimatedTokenFlow
-        x={MID_X + 76}
-        y={CENTER_Y - 10}
-        tokens={GEAR_FLOW_TOKENS}
-        variant="gear"
-        travelX={28}
-      />
-      <GearNode
-        x={MID_X + 72}
-        y={158}
-        size={56}
-        className={styles.gearStory}
-        style={motionStyle('2380ms')}
-      />
-      <text x={MID_X + CARD_W / 2} y="252" className={styles.nodeText}>
-        LLM
-      </text>
-      <Connector
-        delay="3500ms"
-        tipX={RIGHT_X}
-        tipY={CENTER_Y}
-        d={`M ${MID_X + CARD_W} ${CENTER_Y} C 500 ${CENTER_Y}, 510 ${CENTER_Y}, ${RIGHT_X} ${CENTER_Y}`}
-      />
-      <AnimatedTokenFlow
-        x={MID_X + 120}
-        y={CENTER_Y - 10}
-        tokens={OUTPUT_FLOW_TOKENS}
-        variant="output"
-        travelX={128}
-      />
-      {OUTPUT_CHIPS.map((chip) => (
-        <ChipPill
-          key={chip.label}
-          {...chip}
-          storyClassName={styles.outputStory}
+        <AnimatedTokenFlow
+          x={MID_X + 76}
+          y={CENTER_Y - 10}
+          tokens={GEAR_FLOW_TOKENS}
+          variant="gear"
+          travelX={28}
         />
-      ))}
+        <GearNode
+          x={MID_X + 72}
+          y={158}
+          size={56}
+          className={styles.gearStory}
+          style={motionStyle('2380ms')}
+        />
+        <text x={MID_X + CARD_W / 2} y="252" className={styles.nodeText}>
+          LLM
+        </text>
+        <Connector
+          d={`M ${MID_X + CARD_W} ${CENTER_Y} C 500 ${CENTER_Y}, 510 ${CENTER_Y}, ${RIGHT_X} ${CENTER_Y}`}
+          tokens={OUTPUT_TOKENS}
+          startDelayMs={3520}
+          tone="cyan"
+        />
+        {OUTPUT_CHIPS.map((chip) => (
+          <ChipPill
+            key={chip.label}
+            {...chip}
+            storyClassName={styles.outputStory}
+          />
+        ))}
       </g>
     </svg>
   );
@@ -524,28 +527,16 @@ function MobileDiagram() {
       <MobileConnector
         startY={MOBILE_INPUT_CONNECTOR_START_Y}
         tipY={MOBILE_INPUT_CONNECTOR_END_Y}
-        delay="1300ms"
-      />
-      <AnimatedTokenFlow
-        x={MOBILE_CENTER_X - MOBILE_STREAM_SIZE / 2}
-        y={MOBILE_INPUT_CONNECTOR_START_Y - MOBILE_STREAM_SIZE / 2}
-        travelY={MOBILE_INPUT_GEAR_BOUNDARY_Y - MOBILE_INPUT_CONNECTOR_START_Y}
-        tokens={INPUT_FLOW_TOKENS}
-        variant="verticalInput"
-        size={MOBILE_STREAM_SIZE}
+        tokens={MIXED_CONTEXT_TOKENS}
+        startDelayMs={1320}
+        tone="violet"
       />
       <MobileConnector
         startY={MOBILE_OUTPUT_CONNECTOR_START_Y}
         tipY={MOBILE_OUTPUT_CONNECTOR_END_Y}
-        delay="3500ms"
-      />
-      <AnimatedTokenFlow
-        x={MOBILE_CENTER_X - MOBILE_STREAM_SIZE / 2}
-        y={MOBILE_OUTPUT_GEAR_BOUNDARY_Y - MOBILE_STREAM_SIZE / 2}
-        travelY={MOBILE_OUTPUT_CONNECTOR_END_Y - MOBILE_OUTPUT_GEAR_BOUNDARY_Y}
-        tokens={OUTPUT_FLOW_TOKENS}
-        variant="verticalOutput"
-        size={MOBILE_STREAM_SIZE}
+        tokens={OUTPUT_TOKENS}
+        startDelayMs={3520}
+        tone="cyan"
       />
     </svg>
   );

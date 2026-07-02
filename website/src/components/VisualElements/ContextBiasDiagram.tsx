@@ -5,7 +5,7 @@ import shared from './diagram.module.css';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { useMounted } from '../../hooks/useMounted';
 import {
@@ -209,7 +209,7 @@ const PHASE = {
 } as const;
 
 export default function ContextBiasDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const mounted = useMounted();
 
   const headersVisible = mounted && phase >= PHASE.headers;
@@ -277,7 +277,6 @@ export default function ContextBiasDiagram() {
     <svg
       viewBox="0 0 640 484"
       width="100%"
-      height="auto"
       role="img"
       aria-label="Two context windows: accumulated (9 entries, code buried at 8%) vs fresh (3 entries, code prominent at 55%). Same code, different context, different verdict."
       xmlns="http://www.w3.org/2000/svg"

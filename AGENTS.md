@@ -86,7 +86,9 @@ npm run deploy                       # Deploy to GitHub Pages
 
 ## Design System
 
-Read DESIGN_SYSTEM.md whenever visual work is involved
+Read DESIGN_SYSTEM.md whenever visual work is involved.
+
+Animation guardrail: prefer meaningful storytelling idle animations over scroll-driven reveals. Scroll position must not carry a figure's explanation except for documented legacy/exception cases. Every animated figure must remain complete and readable with all motion disabled.
 
 ## OpenMoji
 

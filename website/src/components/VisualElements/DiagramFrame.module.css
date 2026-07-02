@@ -1,0 +1,168 @@
+.frame {
+  container-type: inline-size;
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+  margin: var(--space-5) auto;
+  padding: var(--space-3);
+  background: var(--surface-page);
+  border: 1px solid var(--border-default);
+  border-radius: 0;
+}
+
+.narrow {
+  max-width: 36rem;
+}
+
+.standard {
+  max-width: 48rem;
+}
+
+.wide {
+  max-width: 64rem;
+}
+
+.full {
+  max-width: 100%;
+}
+
+.header {
+  display: grid;
+  gap: var(--space-0h);
+  max-width: 68ch;
+}
+
+.kicker,
+.title,
+.caption,
+.legend {
+  margin: 0;
+}
+
+.kicker {
+  color: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: var(--lh-sm);
+  text-transform: uppercase;
+}
+
+.title {
+  color: var(--text-heading);
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-lg), 2.4cqi, var(--text-xl));
+  font-weight: 700;
+  line-height: var(--lh-md);
+}
+
+.body {
+  min-width: 0;
+}
+
+.body > :global(*) {
+  margin-block: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: 0;
+  list-style: none;
+}
+
+.legendItem {
+  display: inline-grid;
+  grid-template-columns: var(--space-1) minmax(0, auto);
+  gap: var(--space-1);
+  align-items: start;
+  min-height: var(--target-sm);
+  padding: var(--space-0h) var(--space-1);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--text-body);
+}
+
+.legendKey {
+  width: var(--space-1);
+  height: var(--space-1);
+  margin-top: 0.35em;
+  border: 1px solid currentColor;
+  background: currentColor;
+}
+
+.legendText {
+  display: grid;
+  gap: 0.125rem;
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+  font-weight: 600;
+  line-height: var(--lh-sm);
+}
+
+.legendText small {
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: var(--lh-sm);
+}
+
+.caption {
+  max-width: 76ch;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+}
+
+.context,
+.indigo {
+  color: var(--visual-indigo);
+}
+
+.model,
+.decision,
+.violet {
+  color: var(--visual-violet);
+}
+
+.system,
+.cyan {
+  color: var(--visual-cyan);
+}
+
+.warning {
+  color: var(--visual-warning);
+}
+
+.success {
+  color: var(--visual-success);
+}
+
+.magenta {
+  color: var(--visual-magenta);
+}
+
+.neutral {
+  color: var(--visual-neutral);
+}
+
+@container (max-width: 36rem) {
+  .frame {
+    gap: var(--space-2);
+    padding: var(--space-2);
+    margin-block: var(--space-4);
+  }
+
+  .legend {
+    display: grid;
+  }
+
+  .legendItem {
+    width: 100%;
+  }
+}

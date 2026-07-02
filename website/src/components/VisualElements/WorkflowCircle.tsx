@@ -23,7 +23,7 @@ export default function WorkflowCircle() {
 
   // Calculate positions for each phase (clockwise starting from top)
   const phases: Phase[] = [
-    { name: 'RESEARCH', x: centerX, y: centerY - radius, angle: -90 }, // Top
+    { name: 'GROUNDING', x: centerX, y: centerY - radius, angle: -90 }, // Top
     { name: 'PLAN', x: centerX + radius, y: centerY, angle: 0 }, // Right
     { name: 'EXECUTE', x: centerX, y: centerY + radius, angle: 90 }, // Bottom
     { name: 'VALIDATE', x: centerX - radius, y: centerY, angle: 180 }, // Left
@@ -31,7 +31,7 @@ export default function WorkflowCircle() {
 
   // Define edge connection points for each arrow
   const connections: Connection[] = [
-    // Research → Plan: right edge of Research to top edge of Plan
+    // Grounding → Plan: right edge of Grounding to top edge of Plan
     {
       startX: phases[0].x + nodeRadius,
       startY: phases[0].y,
@@ -52,7 +52,7 @@ export default function WorkflowCircle() {
       endX: phases[3].x,
       endY: phases[3].y + nodeRadius + 5,
     },
-    // Validate → Research: top edge of Validate to left edge of Research
+    // Validate → Grounding: top edge of Validate to left edge of Grounding
     {
       startX: phases[3].x,
       startY: phases[3].y - nodeRadius,
@@ -96,7 +96,7 @@ export default function WorkflowCircle() {
     <div
       className={styles.container}
       role="img"
-      aria-label="Four-phase iterative workflow diagram showing Research, Plan, Execute, and Validate phases in a continuous cycle"
+      aria-label="Four-phase iterative workflow diagram showing Grounding, Plan, Execute, and Validate phases in a continuous cycle"
     >
       <svg
         viewBox="0 0 500 500"

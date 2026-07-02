@@ -1,0 +1,108 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  margin: var(--space-4) auto;
+  max-width: 760px;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.desktopDiagram {
+  max-width: 760px;
+}
+
+.mobileDiagram {
+  display: none !important;
+  max-width: 340px;
+}
+
+.vectorStroke {
+  vector-effect: non-scaling-stroke;
+}
+
+.frameLabel,
+.sourceLabel,
+.nodeEyebrow,
+.factText,
+.noteText {
+  font-family: var(--font-mono-spec);
+}
+
+.frameLabel,
+.nodeEyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.sourceLabel,
+.factText {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.nodeTitle,
+.agentTitleCompact {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.nodeTitle {
+  font-size: 16px;
+}
+
+.agentTitleCompact {
+  font-size: 13px;
+}
+
+.noteText {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.connector {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+.sourceRect,
+.agentRect,
+.contextRect,
+.factRect,
+.groundingBoundary {
+  vector-effect: non-scaling-stroke;
+}
+
+.groundingBoundary {
+  stroke-dasharray: 6 4;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 340px;
+  }
+
+  .desktopDiagram {
+    display: none !important;
+  }
+
+  .mobileDiagram {
+    display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diagram * {
+    scroll-behavior: auto;
+  }
+}

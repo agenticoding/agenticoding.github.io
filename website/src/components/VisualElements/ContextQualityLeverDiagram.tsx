@@ -28,7 +28,7 @@ export default function ContextQualityLeverDiagram() {
   const uid = useId().replace(/:/g, '');
   const markerId = `context-quality-${uid}`;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" role="img" aria-label="Context quality lever diagram: a compact bundle of relevant facts feeds the rate-limiting task chain while irrelevant noisy context stays outside, raising the baseline reliability R for each step." xmlns="http://www.w3.org/2000/svg" style={svgStyle(W)}>
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Context quality lever diagram: a compact bundle of relevant facts feeds the rate-limiting task chain while irrelevant noisy context stays outside, raising the baseline reliability R for each step." xmlns="http://www.w3.org/2000/svg" style={svgStyle(W)}>
       <defs><Marker id={markerId} tone="var(--visual-indigo)" /></defs>
       <rect x={G} y={G} width={W - G * 2} height={H - G * 2} rx={0} fill="var(--surface-page)" stroke="var(--border-subtle)" />
       <TextLine x={56} y={48} tone="var(--text-heading)" size="var(--text-lg)" weight={700} family="var(--font-display)">Context quality raises baseline R</TextLine>

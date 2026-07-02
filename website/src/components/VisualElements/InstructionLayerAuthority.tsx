@@ -173,7 +173,7 @@ function DesktopCase({ item, index }: { item: RoleCase; index: number }) {
 
 function DesktopDiagram() {
   return (
-    <svg viewBox="0 0 940 360" width="100%" height="auto" role="img" aria-label="The same instruction text enters different source roles before the LLM predicts different behavior." className={clsx(styles.diagram, styles.desktop)} style={diagramTimingStyle} xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 940 360" width="100%" role="img" aria-label="The same instruction text enters different source roles before the LLM predicts different behavior." className={clsx(styles.diagram, styles.desktop)} style={diagramTimingStyle} xmlns="http://www.w3.org/2000/svg">
       <text x={470} y={30} textAnchor="middle" className={styles.title}>same words, different source role</text>
       <text x={470} y={52} textAnchor="middle" className={styles.note}>role boundary conditions prediction</text>
       <text x={145} y={82} textAnchor="middle" className={styles.columnLabel}>same words</text>
@@ -198,7 +198,7 @@ function MobileCase({ item, index }: { item: RoleCase; index: number }) {
 
 function MobileDiagram() {
   return (
-    <svg viewBox="0 0 360 690" width="100%" height="auto" role="img" aria-label="Mobile view: same instruction text, source role, model prediction, different behavior." className={clsx(styles.diagram, styles.mobile)} style={diagramTimingStyle} xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 360 690" width="100%" role="img" aria-label="Mobile view: same instruction text, source role, model prediction, different behavior." className={clsx(styles.diagram, styles.mobile)} style={diagramTimingStyle} xmlns="http://www.w3.org/2000/svg">
       <text x={180} y={30} textAnchor="middle" className={styles.title}>same words, different source role</text>
       <text x={180} y={52} textAnchor="middle" className={styles.note}>source role changes prediction</text>
       <PromptSlide x={75} y={76} />

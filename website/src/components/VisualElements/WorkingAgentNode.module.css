@@ -1,0 +1,37 @@
+.satellite {
+  animation-duration: 3600ms;
+  animation-iteration-count: infinite;
+  animation-name: workingAgentSatelliteSpin;
+  animation-timing-function: linear;
+}
+
+.satellitePrimary {
+  animation-delay: 0ms;
+}
+
+.satelliteSecondary {
+  animation-delay: -900ms;
+  animation-direction: reverse;
+  animation-duration: 4200ms;
+}
+
+.satelliteTertiary {
+  animation-delay: -1800ms;
+  animation-duration: 3000ms;
+}
+
+@keyframes workingAgentSatelliteSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .satellite {
+    animation: none !important;
+  }
+}

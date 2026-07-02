@@ -102,4 +102,4 @@ Use ArguSeek to research best practices for your chosen terminal—session manag
 **Related:**
 
 - [Developer Tools: Modern CLI Tools](/developer-tools/cli-tools) - The ecosystem that completes your terminal-based development environment
-- [Lesson 7: Reliability Levers](/practical-techniques/lesson-7-reliability-levers) - Multi-worktree workflows leveraging modern terminals
+- [Chapter 7: Reliability Levers](/chapter-7-reliability-levers) - Multi-worktree workflows leveraging modern terminals

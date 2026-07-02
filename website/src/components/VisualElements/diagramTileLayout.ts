@@ -12,6 +12,17 @@ export const TILE_LAYOUT = {
   iconSize: { desktop: 40, mobile: 32, compact: 24 },
 } as const;
 
+export const MODEL_CALL_FRAME_LAYOUT = {
+  tabIconSize: TILE_GRID * 3,
+  tabHeight: TILE_GRID * 4,
+  tabGap: TILE_GRID,
+  tabLabelCharWidth: TILE_GRID,
+  tabPaddingX: TILE_GRID,
+  framePaddingX: TILE_GRID * 2,
+  titleFontSize: 13,
+  detailFontSize: 11,
+} as const;
+
 const TONE_ALIASES: Record<DiagramTone, string> = {
   context: 'indigo',
   model: 'violet',

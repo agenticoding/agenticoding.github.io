@@ -305,7 +305,7 @@ function RawLineText({ line, x, y, mobile }: { line: RawLine; x: number; y: numb
 
 function DesktopDiagram() {
   return (
-    <svg viewBox="0 0 900 830" width="100%" height="auto" role="img" aria-label="A context window cutaway where ordered layers are exposed as raw serialized request text." className={clsx(styles.diagram, styles.desktopDiagram)} xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 900 830" width="100%" role="img" aria-label="A context window cutaway where ordered layers are exposed as raw serialized request text." className={clsx(styles.diagram, styles.desktopDiagram)} xmlns="http://www.w3.org/2000/svg">
       <text x={450} y={28} textAnchor="middle" className={styles.title}>context regions become raw request</text>
       <text x={450} y={48} textAnchor="middle" className={styles.note}>the harness selects context; the model receives serialized text and payloads</text>
       <rect x={54} y={76} width={792} height={701} className={styles.window} />
@@ -319,7 +319,7 @@ function DesktopDiagram() {
 
 function MobileDiagram() {
   return (
-    <svg viewBox="0 0 360 892" width="100%" height="auto" role="img" aria-label="A mobile context window cutaway where context regions serialize into raw request text." className={clsx(styles.diagram, styles.mobileDiagram)} xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 360 892" width="100%" role="img" aria-label="A mobile context window cutaway where context regions serialize into raw request text." className={clsx(styles.diagram, styles.mobileDiagram)} xmlns="http://www.w3.org/2000/svg">
       <text x={180} y={24} textAnchor="middle" className={styles.title}>context regions become</text>
       <text x={180} y={46} textAnchor="middle" className={styles.title}>raw request</text>
       <text x={180} y={64} textAnchor="middle" className={styles.note}>harness walks regions into requests</text>

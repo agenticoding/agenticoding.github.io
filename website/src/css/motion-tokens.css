@@ -120,22 +120,13 @@
   opacity: 0;
 }
 
-/* Scroll-triggered reveal (IntersectionObserver adds .reveal-is-visible) */
-.reveal-scroll {
-  opacity: 0;
-}
-
-.reveal-scroll.reveal-is-visible {
-  animation: reveal-from-bottom var(--duration-deliberate) var(--ease-enter) both;
-}
-
 /* Page-load reveal (applied immediately on mount, no observer needed) */
 .reveal-page-load {
   opacity: 0;
   animation: reveal-from-top var(--duration-moderate) var(--ease-enter) both;
 }
 
-/* Triggered state — added by useScrollReveal when element enters viewport */
+/* Triggered state for reveal utilities */
 .reveal-is-visible {
   opacity: 1;
 }
@@ -176,7 +167,6 @@
   }
 
   .reveal,
-  .reveal-scroll,
   .reveal-page-load,
   .diagram-node {
     opacity: 1;

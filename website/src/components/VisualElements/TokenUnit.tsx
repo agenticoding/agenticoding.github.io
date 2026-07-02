@@ -1,4 +1,15 @@
 import React from 'react';
+import {
+  codeGlyphStrokeWidth,
+  compressedOverlayInset,
+  insetBox,
+  minDimension,
+  salientStrokeWidth,
+  scaledInset,
+  supportsDashedOverlay,
+  tokenStrokeWidth,
+  type TokenBox,
+} from './TokenUnitGeometry';
 
 export type TokenUnitTone =
   | 'neutral'
@@ -18,95 +29,120 @@ export type TokenUnitModality =
 
 export type TokenUnitSignal = 'ordinary' | 'salient' | 'compressed';
 
-type TokenUnitProps = {
-  x: number;
-  y: number;
-  width?: number;
-  height?: number;
-  tone?: TokenUnitTone;
-  modality?: TokenUnitModality;
-  signal?: TokenUnitSignal;
-  className?: string;
-};
+type TokenUnitProps = Required<Pick<TokenBox, 'x' | 'y'>> &
+  Partial<Pick<TokenBox, 'width' | 'height'>> & {
+    tone?: TokenUnitTone;
+    modality?: TokenUnitModality;
+    signal?: TokenUnitSignal;
+    className?: string;
+  };
 
-type ShapeProps = Required<Pick<TokenUnitProps, 'x' | 'y' | 'width' | 'height'>> & {
-  fg: string;
-  bg: string;
+type ShapeProps = TokenBox;
+
+type SignalStyle = {
   strokeWidth: number;
 };
 
 const unitVar = (tone: TokenUnitTone, kind: 'fg' | 'bg') =>
   `var(--visual${kind === 'bg' ? '-bg' : ''}-${tone})`;
 
-const SIGNAL_STROKE: Record<TokenUnitSignal, number> = {
-  ordinary: 1.6,
-  salient: 3,
-  compressed: 1.4,
-};
+const pointList = (points: Array<[number, number]>) =>
+  points.map(([px, py]) => `${px},${py}`).join(' ');
 
-const SIGNAL_SHRINK: Record<TokenUnitSignal, number> = {
-  ordinary: 0,
-  salient: 0,
-  compressed: 3,
-};
+const visibleBox = (box: TokenBox) => insetBox(box, scaledInset(box));
 
-const inset = ({ x, y, width, height }: ShapeProps) => ({
-  x: x + 1,
-  y: y + 1,
-  width: width - 2,
-  height: height - 2,
-});
-
-const signalBox = (
-  { x, y, width, height }: Required<Pick<TokenUnitProps, 'x' | 'y' | 'width' | 'height'>>,
-  signal: TokenUnitSignal,
-) => {
-  const shrink = SIGNAL_SHRINK[signal];
-  return { x: x + shrink, y: y + shrink, width: width - shrink * 2, height: height - shrink * 2 };
-};
+function tokenSignalStyle(box: TokenBox, signal: TokenUnitSignal): SignalStyle {
+  if (signal === 'salient') return { strokeWidth: salientStrokeWidth(box) };
+  if (signal === 'compressed')
+    return { strokeWidth: tokenStrokeWidth(box, 1.35) };
+  return { strokeWidth: tokenStrokeWidth(box, 1.6) };
+}
 
 function TextUnit(props: ShapeProps) {
-  const box = inset(props);
-  return <rect {...box} rx={0} />;
+  return <rect {...visibleBox(props)} rx={0} />;
 }
 
 function ImageUnit(props: ShapeProps) {
-  const box = inset(props);
-  const midX = box.x + box.width / 2;
-  const midY = box.y + box.height / 2;
+  const box = visibleBox(props);
+  const radius = minDimension(box) / 2;
   return (
-    <>
-      <rect {...box} rx={0} />
-      <path
-        d={`M ${midX} ${box.y + 2} V ${box.y + box.height - 2} M ${box.x + 2} ${midY} H ${box.x + box.width - 2}`}
-        fill="none"
-      />
-    </>
+    <circle
+      cx={box.x + box.width / 2}
+      cy={box.y + box.height / 2}
+      r={radius}
+    />
   );
 }
 
-function AudioUnit({ x, y, width, height }: ShapeProps) {
-  const w = Math.max(7, width * 0.46);
-  return <rect x={x + (width - w) / 2} y={y + 1} width={w} height={height - 2} rx={0} />;
+function AudioUnit(props: ShapeProps) {
+  const box = visibleBox(props);
+  const width = Math.min(box.width, Math.max(4, box.width * 0.44));
+  return (
+    <rect
+      x={box.x + (box.width - width) / 2}
+      y={box.y}
+      width={width}
+      height={box.height}
+      rx={width / 2}
+    />
+  );
 }
 
-function VideoUnit({ x, y, width, height }: ShapeProps) {
-  const h = Math.max(10, height * 0.58);
-  return <rect x={x + 1} y={y + (height - h) / 2} width={width - 2} height={h} rx={0} />;
+function VideoUnit(props: ShapeProps) {
+  const box = visibleBox(props);
+  return (
+    <polygon
+      points={pointList([
+        [box.x, box.y],
+        [box.x + box.width, box.y + box.height / 2],
+        [box.x, box.y + box.height],
+      ])}
+    />
+  );
 }
 
-function CodeUnit({ x, y, width, height }: ShapeProps) {
-  const cut = Math.min(width, height) * 0.24;
-  return <path d={`M ${x + 1} ${y + 1} H ${x + width - cut} L ${x + width - 1} ${y + cut} V ${y + height - 1} H ${x + 1} Z`} />;
+function CodeUnit(props: ShapeProps) {
+  const box = visibleBox(props);
+  const left = box.x + box.width * 0.16;
+  const midX = box.x + box.width * 0.44;
+  const cursorStart = box.x + box.width * 0.52;
+  const cursorEnd = box.x + box.width * 0.84;
+  const top = box.y + box.height * 0.3;
+  const midY = box.y + box.height * 0.5;
+  const bottom = box.y + box.height * 0.7;
+  return (
+    <g
+      fill="none"
+      strokeLinecap="round"
+      strokeWidth={codeGlyphStrokeWidth()}
+    >
+      <path d={`M ${left} ${top} L ${midX} ${midY} L ${left} ${bottom}`} />
+      <path d={`M ${cursorStart} ${bottom} H ${cursorEnd}`} />
+    </g>
+  );
 }
 
 function GenericUnit(props: ShapeProps) {
-  const box = inset(props);
-  return <rect {...box} rx={0} />;
+  const box = visibleBox(props);
+  const cut = Math.min(box.width, box.height) * 0.2;
+  return (
+    <polygon
+      points={pointList([
+        [box.x + cut, box.y],
+        [box.x + box.width - cut, box.y],
+        [box.x + box.width, box.y + cut],
+        [box.x + box.width, box.y + box.height - cut],
+        [box.x + box.width - cut, box.y + box.height],
+        [box.x + cut, box.y + box.height],
+        [box.x, box.y + box.height - cut],
+        [box.x, box.y + cut],
+      ])}
+    />
+  );
 }
 
-function SalientCore({ x, y, width, height, fg }: ShapeProps) {
-  const coreSize = Math.min(width, height) * 0.42;
+function SalientCore({ x, y, width, height, fg }: ShapeProps & { fg: string }) {
+  const coreSize = Math.max(1.6, minDimension({ x, y, width, height }) * 0.34);
   return (
     <rect
       x={x + (width - coreSize) / 2}
@@ -121,6 +157,26 @@ function SalientCore({ x, y, width, height, fg }: ShapeProps) {
   );
 }
 
+function CompressedOverlay(props: ShapeProps) {
+  const box = insetBox(props, compressedOverlayInset(props));
+  const strokeDasharray = supportsDashedOverlay(props) ? '3 2' : undefined;
+  return (
+    <path
+      d={`M ${box.x} ${box.y + box.height} L ${box.x + box.width} ${box.y}`}
+      fill="none"
+      strokeDasharray={strokeDasharray}
+      opacity="0.72"
+    />
+  );
+}
+
+function showsCompressedOverlay(
+  signal: TokenUnitSignal,
+  modality: TokenUnitModality
+) {
+  return signal === 'compressed' && !['audio', 'video', 'code'].includes(modality);
+}
+
 const SHAPES = {
   text: TextUnit,
   image: ImageUnit,
@@ -128,7 +184,10 @@ const SHAPES = {
   video: VideoUnit,
   code: CodeUnit,
   generic: GenericUnit,
-} as const satisfies Record<TokenUnitModality, (props: ShapeProps) => React.ReactNode>;
+} as const satisfies Record<
+  TokenUnitModality,
+  (props: ShapeProps) => React.ReactNode
+>;
 
 export function TokenUnit({
   x,
@@ -143,8 +202,8 @@ export function TokenUnit({
   const fg = unitVar(tone, 'fg');
   const bg = unitVar(tone, 'bg');
   const Shape = SHAPES[modality];
-  const box = signalBox({ x, y, width, height }, signal);
-  const shapeProps = { ...box, fg, bg, strokeWidth: SIGNAL_STROKE[signal] };
+  const box = { x, y, width, height };
+  const { strokeWidth } = tokenSignalStyle(box, signal);
 
   return (
     <g
@@ -152,12 +211,16 @@ export function TokenUnit({
       aria-hidden="true"
       fill={bg}
       stroke={fg}
-      strokeWidth={shapeProps.strokeWidth}
-      strokeDasharray={signal === 'compressed' ? '3 2' : undefined}
+      strokeWidth={strokeWidth}
       strokeLinejoin="round"
     >
-      <Shape {...shapeProps} />
-      {signal === 'salient' ? <SalientCore {...shapeProps} /> : null}
+      <Shape {...box} />
+      {showsCompressedOverlay(signal, modality) ? (
+        <CompressedOverlay {...box} />
+      ) : null}
+      {signal === 'salient' && modality !== 'code' ? (
+        <SalientCore {...box} fg={fg} />
+      ) : null}
     </g>
   );
 }

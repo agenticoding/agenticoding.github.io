@@ -17,7 +17,7 @@ The CLI coding agent landscape has matured rapidly. By early 2026, the conversat
 
 **Key differentiators:**
 
-- **Hierarchical CLAUDE.md:** Multi-level context files (global → project → subdirectory) that [merge automatically based on working directory](/practical-techniques/lesson-6-context-management)—define coding standards at project root, override per-module, and set personal preferences globally
+- **Hierarchical CLAUDE.md:** Multi-level context files (global → project → subdirectory) that [merge automatically based on working directory](/chapter-6-context-management)—define coding standards at project root, override per-module, and set personal preferences globally
 - **Sub-agents via Task(...):** Spawn isolated agent instances for parallel research, code exploration, or specialized tasks without polluting main context
 - **Planning mode:** Explicit plan-before-execute workflow for complex changes—align on approach before any files are modified
 - **Hooks system:** Deterministic pre/post-execution rules for validation, formatting, or custom workflows triggered at specific points

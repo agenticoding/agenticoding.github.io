@@ -412,6 +412,6 @@ agent-browser's ref-based approach (`@e1`, `@e2`) produces deterministic element
 
 **Related Course Content:**
 
-- [Lesson 7: Reliability Levers](/practical-techniques/lesson-7-reliability-levers) - Multi-worktree workflows leveraging these CLI tools
+- [Chapter 7: Reliability Levers](/chapter-7-reliability-levers) - Multi-worktree workflows leveraging these CLI tools
 - [Developer Tools: Terminals](/developer-tools/terminals) - Terminal recommendations for running these CLI tools efficiently
 - [Developer Tools: MCP Servers](/developer-tools/mcp-servers) - Extend CLI agents with code research and web grounding

@@ -4,7 +4,7 @@ import styles from './PlanExecuteDiagram.module.css';
 import shared from './diagram.module.css';
 import { AgentNode, PromptIcon } from './ActorNodes';
 import { Ghost } from './Ghost';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { useMounted } from '../../hooks/useMounted';
@@ -89,7 +89,7 @@ const BRANCHES: BranchSpec[] = [
 ];
 
 export default function PlanExecuteDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const { wasReached, isCurrentAct } = useActs(ACTS, phase);
   const mounted = useMounted();
 
@@ -160,7 +160,6 @@ export default function PlanExecuteDiagram() {
     <svg
       viewBox="0 0 560 264"
       width="100%"
-      height="auto"
       role="img"
       aria-label="A plan card is handed off to an orchestrator, which forks into three parallel agent branches that execute independently and converge at a merge point."
       xmlns="http://www.w3.org/2000/svg"

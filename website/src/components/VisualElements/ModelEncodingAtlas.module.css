@@ -47,9 +47,8 @@
 
 .meshEdge {
   fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.2;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
   opacity: 0.38;
 }
 
@@ -67,17 +66,16 @@
 
 .primaryEdge {
   opacity: 0.62;
-  stroke-width: 1.8;
 }
 
 .secondaryEdge {
   opacity: 0.3;
-  stroke-width: 1.1;
 }
 
 .edgePulse {
   fill: none;
-  stroke-linecap: round;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
   stroke-width: var(--pulse-width, 2.6);
   stroke-dasharray: var(--pulse-size, 8) var(--pulse-gap, 92);
   opacity: 0;
@@ -150,7 +148,6 @@
 @media (prefers-reduced-motion: reduce) {
   .meshEdge {
     opacity: 0.5;
-    stroke-width: 1.4;
   }
 
   .edgePulse {
@@ -161,5 +158,4 @@
   .primaryEdge {
     opacity: 0.72;
   }
-
 }

@@ -45,6 +45,22 @@
   animation-name: burstVerticalOutputTokenTravel;
 }
 
+.sequenceInputTokenFlow {
+  animation-name: sequenceInputTokenTravel;
+}
+
+.sequenceOutputTokenFlow {
+  animation-name: sequenceOutputTokenTravel;
+}
+
+.sequenceVerticalInputTokenFlow {
+  animation-name: sequenceVerticalInputTokenTravel;
+}
+
+.sequenceVerticalOutputTokenFlow {
+  animation-name: sequenceVerticalOutputTokenTravel;
+}
+
 @keyframes inputTokenTravel {
   0%,
   100% {
@@ -216,8 +232,101 @@
   }
 }
 
+@keyframes sequenceInputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  1% {
+    opacity: 1;
+  }
+  4% {
+    opacity: 1;
+    transform: translate(var(--travel-x), 0) scale(1);
+  }
+  5.5% {
+    opacity: 0;
+    transform: translate(var(--fade-x), 0) scale(0.7);
+  }
+}
+
+@keyframes sequenceOutputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  1% {
+    opacity: 1;
+  }
+  4% {
+    opacity: 1;
+    transform: translate(var(--travel-x), 0) scale(1);
+  }
+  5.5% {
+    opacity: 0;
+    transform: translate(var(--fade-x), 0) scale(0.7);
+  }
+}
+
+@keyframes sequenceVerticalInputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  1% {
+    opacity: 1;
+  }
+  4% {
+    opacity: 1;
+    transform: translate(0, var(--travel-y)) scale(1);
+  }
+  5.5% {
+    opacity: 0;
+    transform: translate(0, var(--fade-y)) scale(0.7);
+  }
+}
+
+@keyframes sequenceVerticalOutputTokenTravel {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.82);
+  }
+  1% {
+    opacity: 1;
+  }
+  4% {
+    opacity: 1;
+    transform: translate(0, var(--travel-y)) scale(1);
+  }
+  5.5% {
+    opacity: 0;
+    transform: translate(0, var(--fade-y)) scale(0.7);
+  }
+}
+
+.tokenTrainStatic {
+  display: none;
+}
+
+.tokenTrainItem {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tokenFlow {
     animation: none;
+  }
+
+  .tokenTrainAnimated {
+    display: none;
+  }
+
+  .tokenTrainStatic {
+    display: initial;
   }
 }

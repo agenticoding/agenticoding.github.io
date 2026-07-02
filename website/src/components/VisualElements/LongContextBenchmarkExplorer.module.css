@@ -14,7 +14,7 @@
 .header h3,
 .header p,
 .chartFigure,
-.chartFigure figcaption,
+.chartCaption,
 .selectedCallout h3,
 .selectedCallout p,
 .detailBlock h4,
@@ -31,7 +31,7 @@
 }
 
 .header p:not(.eyebrow),
-.chartFigure figcaption,
+.chartCaption,
 .selectedCallout p,
 .textFallback,
 .evidenceDetails,
@@ -207,7 +207,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.chartFigure figcaption {
+.chartCaption {
   margin-top: var(--space-1);
 }
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import styles from './MCPToolSchemaDiagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useMounted } from '../../hooks/useMounted';
 
@@ -298,7 +298,7 @@ function LoadingCard({ card, reached }: { card: CardSpec; reached: boolean }) {
 }
 
 export default function MCPToolSchemaDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const mounted = useMounted();
   const { wasReached } = useActs(ACTS, phase);
 
@@ -310,7 +310,6 @@ export default function MCPToolSchemaDiagram() {
     <svg
       viewBox={`0 0 ${VW} ${VH}`}
       width="100%"
-      height="auto"
       role="img"
       aria-label="MCP schema loading comparison. Eager loading places full MCP schemas in the primacy zone before the user task, so the agent can plan and call directly but pays high fixed context cost. Deferred loading places only ToolSearch up front, keeps the user task nearer the top, then searches, loads a schema at runtime, and calls the tool."
       className={styles.diagram}

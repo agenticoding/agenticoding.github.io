@@ -58,7 +58,7 @@ BS Computer Science, Bar-Ilan University. 2 patents. [LinkedIn](https://www.link
 
 ## Why This Reference
 
-I built this course on 20+ years of production experience across compiled languages, embedded systems, cloud infrastructure, and LLM/RAG applications — not in theory. ChunkHound and ArguSeek were built specifically to solve the grounding problems this course teaches: code context collapse, knowledge cutoff hallucination, and context window management at scale. See [Lesson 5](./methodology/lesson-5-grounding) for architecture deep-dives on both tools.
+I built this course on 20+ years of production experience across compiled languages, embedded systems, cloud infrastructure, and LLM/RAG applications — not in theory. ChunkHound and ArguSeek were built specifically to solve the grounding problems this course teaches: code context collapse, knowledge cutoff hallucination, and context window management at scale. See [Chapter 5](./chapter-5-grounding) for architecture deep-dives on both tools.
 
 I taught iOS, Android, and web development courses at John Bryce (2013–2016), including corporate training programs for client companies.
 

@@ -4,7 +4,7 @@ import shared from './diagram.module.css';
 import { DiagramNode } from './DiagramNode';
 import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { useMounted } from '../../hooks/useMounted';
@@ -30,7 +30,7 @@ const ACTS = [
 ] as const;
 
 export default function ExecutionLoopDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const { wasReached } = useActs(ACTS, phase);
   const mounted = useMounted();
 
@@ -50,7 +50,6 @@ export default function ExecutionLoopDiagram() {
     <svg
       viewBox="0 0 480 264"
       width="100%"
-      height="auto"
       role="img"
       aria-label="Execution loop: LLM predicts, agent executes, result observed, loop repeats."
       xmlns="http://www.w3.org/2000/svg"

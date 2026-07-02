@@ -1,234 +1,341 @@
-import React, { useRef } from 'react';
-import clsx from 'clsx';
+import React from 'react';
 import styles from './OperatorCycleDiagram.module.css';
-import shared from './diagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
-import { useActs } from '../../hooks/useActs';
-import { useStrokeDraw } from '../../hooks/useStrokeDraw';
-import { EmojiImage } from './ActorNodes';
-import { EMOJI, type EmojiAsset } from './emojiAssets';
-import { ARROWHEAD_POINTS, arrowOpacity, CONNECTOR_STYLE } from './diagramConstants';
-import { useMounted } from '../../hooks/useMounted';
+import { OperatorNode } from './ActorNodes';
+import { EMOJI, emojiDisplaySize } from './emojiAssets';
+import { TokenArrowTrain } from './TokenArrowTrain';
+import { seededTokenTrain } from './TokenTrainSequence';
+import { DiagramTile } from './DiagramTile';
+import { TILE_GRID, tileToneVars, type DiagramTone } from './diagramTileLayout';
+import { DIAGRAM_TOKEN_SIZE, RICH_TILE_SCALE } from './diagramScale';
+import type { TokenUnitTone } from './TokenUnit';
 
-// Layout — ViewBox 560×280
-//
-// Research: center (160,  64)   Plan:     center (400,  64)
-// Validate: center (160, 216)   Execute:  center (400, 216)
-//
-// Cycle direction (clockwise): Research → Plan → Execute → Validate → Research
-// Node radius: R = 22px  |  Horizontal gap: 240px  |  Vertical gap: 152px  (~1.58:1)
-//
-// Connector endpoints (at circle edges, R from center):
-//   Research right (182,64)   Plan left     (378,64)
-//   Plan bottom   (400,86)    Execute top   (400,194)
-//   Execute left  (378,216)   Validate right(182,216)
-//   Validate top  (160,194)   Research bottom(160,86)
-//
-// Nodes render without background circles — icons are 36×36 (ICON_HALF = 18)
-// All four phases use viewBox="0 0 128 128"
+type FlowStep = 'grounding' | 'plan' | 'execute' | 'validate';
 
-const R = 22;
-
-const ICON_HALF = 18;
-
-const NODE_EMOJI: Record<string, EmojiAsset> = {
-  research: EMOJI.microscope,
-  plan:     EMOJI.documentTabs,
-  execute:  EMOJI.agent,
-  validate: EMOJI.ruler,
+type TileSpec = {
+  id: FlowStep;
+  title: string;
+  question: string;
+  instruction: string;
+  tone: DiagramTone;
+  tokenTone: TokenUnitTone;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 };
 
-const NODES = [
+type ArrowSpec = {
+  id: string;
+  from: FlowStep;
+  d: string;
+  startMs: number;
+};
+
+const G = TILE_GRID;
+const TILE_W = 23 * G;
+const TILE_H = RICH_TILE_SCALE.comfortableHeight;
+const LEFT_X = 3 * G;
+const CENTER_X = 36 * G;
+const RIGHT_X = 69 * G;
+const TOP_Y = 6 * G;
+const MID_Y = 22 * G;
+const BOTTOM_Y = 38 * G;
+
+const TILES: TileSpec[] = [
   {
-    id: 'research',
-    label: 'Research',
-    cx: 160, cy: 64,
-    labelAbove: true,
-    color: 'var(--visual-indigo)',
-    bgColor: 'var(--visual-bg-indigo)',
-    description: 'Ground agents in codebase patterns and domain knowledge before acting',
+    id: 'grounding',
+    title: 'GROUNDING',
+    question: 'What reality does the agent need?',
+    instruction:
+      'Load repo facts, constraints, current state, and relevant prior decisions.',
+    tone: 'indigo',
+    tokenTone: 'indigo',
+    x: CENTER_X,
+    y: TOP_Y,
+    width: TILE_W,
+    height: TILE_H,
   },
   {
     id: 'plan',
-    label: 'Plan',
-    cx: 400, cy: 64,
-    labelAbove: true,
-    color: 'var(--visual-cyan)',
-    bgColor: 'var(--visual-bg-cyan)',
-    description: 'Design changes strategically — explore when uncertain, be directive when clear',
+    title: 'PLAN',
+    question: 'What shape should the work take?',
+    instruction: 'Define add/remove/change/protect before execution begins.',
+    tone: 'cyan',
+    tokenTone: 'cyan',
+    x: RIGHT_X,
+    y: MID_Y,
+    width: TILE_W,
+    height: TILE_H,
   },
   {
     id: 'execute',
-    label: 'Execute',
-    cx: 400, cy: 216,
-    labelAbove: false,
-    color: 'var(--visual-magenta)',
-    bgColor: 'var(--visual-bg-magenta)',
-    description: 'Run agents supervised or autonomous based on trust and task criticality',
+    title: 'EXECUTE',
+    question: 'How much autonomy is safe?',
+    instruction: 'Delegate bounded work units with explicit checkpoints.',
+    tone: 'magenta',
+    tokenTone: 'magenta',
+    x: CENTER_X,
+    y: BOTTOM_Y,
+    width: TILE_W,
+    height: TILE_H,
   },
   {
     id: 'validate',
-    label: 'Validate',
-    cx: 160, cy: 216,
-    labelAbove: false,
-    color: 'var(--visual-warning)',
-    bgColor: 'var(--visual-bg-warning)',
-    description: 'Verify against your mental model, then iterate or regenerate',
+    title: 'VALIDATION GATE',
+    question: 'Did it meet the goal?',
+    instruction:
+      'Check evidence, not confidence. Iterate when reality disagrees.',
+    tone: 'warning',
+    tokenTone: 'warning',
+    x: LEFT_X,
+    y: MID_Y,
+    width: TILE_W,
+    height: TILE_H,
   },
-] as const;
+];
 
-// Connector paths — straight lines for clear directed segments
-const FWD_CONNECTORS = [
-  { d: `M 182,64 L 378,64` },    // top:    R → P
-  { d: `M 400,86 L 400,194` },   // right:  P → E
-  { d: `M 378,216 L 182,216` },  // bottom: E → V
-] as const;
+const TILE_BY_ID = Object.fromEntries(
+  TILES.map((tile) => [tile.id, tile])
+) as Record<FlowStep, TileSpec>;
 
-const RETURN_D = `M 160,194 L 160,86`; // left: V → R
+// 80×80 diagonals keep every connector at exactly 45° while leaving tile interiors open.
+const ARROWS: ArrowSpec[] = [
+  {
+    id: 'grounding-to-plan',
+    from: 'grounding',
+    d: 'M 472 120 L 552 200',
+    startMs: 0,
+  },
+  {
+    id: 'plan-to-execute',
+    from: 'plan',
+    d: 'M 552 264 L 472 344',
+    startMs: 2400,
+  },
+  {
+    id: 'execute-to-validate',
+    from: 'execute',
+    d: 'M 288 344 L 208 264',
+    startMs: 4800,
+  },
+  {
+    id: 'validate-to-grounding',
+    from: 'validate',
+    d: 'M 208 200 L 288 120',
+    startMs: 7200,
+  },
+];
 
-const ACTS = [
-  { id: 'nodes',   threshold: 0.00 },
-  { id: 'forward', threshold: 0.15 },
-  { id: 'return',  threshold: 0.45 },
-  { id: 'settle',  threshold: 0.65 },
-] as const;
+const TOKEN_SEQUENCE = seededTokenTrain('operator-cycle', 5);
 
-const FWD_STAGGER = 0.04;
+const FLOW_DURATION_MS = 9600;
+const TOKEN_TRAIN_TIMING = {
+  cycleMs: FLOW_DURATION_MS,
+  travelMs: 900,
+  fadeMs: 180,
+  repeat: 'loop',
+} as const;
+const TOKEN_TRAIN_STAGGER = {
+  mode: 'pathSpacing',
+  spacingPx: DIAGRAM_TOKEN_SIZE.flow * 1.35,
+} as const;
+const TOKEN_FLOW_SIZE = DIAGRAM_TOKEN_SIZE.flow;
+const OPERATOR_SIZE = 40;
+const OPERATOR_TILE_GAP = 2 * G;
+const OPERATOR_VISUAL_RADIUS = emojiDisplaySize(OPERATOR_SIZE) / 2;
 
-// ── Component ──────────────────────────────────────────────────────────────
+const CENTER_SPACE = {
+  left: TILE_BY_ID.validate.x + TILE_BY_ID.validate.width,
+  right: TILE_BY_ID.plan.x,
+  top: TILE_BY_ID.grounding.y + TILE_BY_ID.grounding.height,
+  bottom: TILE_BY_ID.execute.y,
+};
+
+function gridFitRadius(candidate: number, max: number) {
+  const radius = Math.floor(Math.min(candidate, max) / G) * G;
+  if (radius <= 0)
+    throw new Error('Operator diamond cannot fit in center space.');
+  return radius;
+}
+
+const OPERATOR_DIAMOND = (() => {
+  const width = CENTER_SPACE.right - CENTER_SPACE.left;
+  const height = CENTER_SPACE.bottom - CENTER_SPACE.top;
+  const clearance = OPERATOR_VISUAL_RADIUS + OPERATOR_TILE_GAP;
+  const center = {
+    x: CENTER_SPACE.left + width / 2,
+    y: CENTER_SPACE.top + height / 2,
+  };
+  return {
+    center,
+    radiusX: gridFitRadius(width / 4, width / 2 - clearance),
+    radiusY: gridFitRadius(height / 4, height / 2 - clearance),
+  };
+})();
+
+function operatorOrigin(x: number, y: number) {
+  return { x: x - OPERATOR_SIZE / 2, y: y - OPERATOR_SIZE / 2 };
+}
+
+// A scaled-down copy of the tile diamond, constrained to the central negative space.
+const OPERATOR_STATIONS: Record<FlowStep, { x: number; y: number }> = {
+  grounding: operatorOrigin(
+    OPERATOR_DIAMOND.center.x,
+    OPERATOR_DIAMOND.center.y - OPERATOR_DIAMOND.radiusY
+  ),
+  plan: operatorOrigin(
+    OPERATOR_DIAMOND.center.x + OPERATOR_DIAMOND.radiusX,
+    OPERATOR_DIAMOND.center.y
+  ),
+  execute: operatorOrigin(
+    OPERATOR_DIAMOND.center.x,
+    OPERATOR_DIAMOND.center.y + OPERATOR_DIAMOND.radiusY
+  ),
+  validate: operatorOrigin(
+    OPERATOR_DIAMOND.center.x - OPERATOR_DIAMOND.radiusX,
+    OPERATOR_DIAMOND.center.y
+  ),
+};
+
+function WorkflowTile({ tile }: { tile: TileSpec }) {
+  if (tile.id === 'validate') return <ValidationGate tile={tile} />;
+
+  const icon =
+    tile.id === 'grounding'
+      ? EMOJI.microscope
+      : tile.id === 'plan'
+        ? EMOJI.documentTabs
+        : EMOJI.agent;
+  const title =
+    tile.id === 'grounding'
+      ? 'reality?'
+      : tile.id === 'plan'
+        ? 'shape?'
+        : 'autonomy?';
+  const detail =
+    tile.id === 'grounding'
+      ? 'facts · constraints'
+      : tile.id === 'plan'
+        ? 'scope · checkpoints'
+        : 'bounded agent work';
+  return (
+    <DiagramTile
+      x={tile.x}
+      y={tile.y}
+      width={tile.width}
+      height={tile.height}
+      tone={tile.tone}
+      icon={icon}
+      eyebrow={tile.title}
+      title={title}
+      detail={detail}
+      titleVoice={tile.id === 'execute' ? 'ai' : 'spec'}
+      variant="rich"
+      fill="var(--surface-raised)"
+      rectClassName={styles.vectorStroke}
+      density="desktop"
+    />
+  );
+}
+
+function ValidationGate({ tile }: { tile: TileSpec }) {
+  return (
+    <DiagramTile
+      x={tile.x}
+      y={tile.y}
+      width={tile.width}
+      height={tile.height}
+      tone="warning"
+      icon={EMOJI.question}
+      eyebrow="VALIDATION GATE"
+      title="accept?"
+      detail="accept · iterate"
+      titleVoice="spec"
+      variant="rich"
+      fill="var(--surface-raised)"
+      rectClassName={styles.vectorStroke}
+      density="desktop"
+      weight={2}
+    />
+  );
+}
+
+function TokenStreams() {
+  return (
+    <g>
+      {ARROWS.map((arrow) => {
+        const tile = TILE_BY_ID[arrow.from];
+        return (
+          <TokenArrowTrain
+            key={arrow.id}
+            d={arrow.d}
+            tokens={TOKEN_SEQUENCE}
+            stroke={tileToneVars(tile.tone).stroke}
+            timing={{ ...TOKEN_TRAIN_TIMING, startDelayMs: arrow.startMs }}
+            stagger={TOKEN_TRAIN_STAGGER}
+            size={TOKEN_FLOW_SIZE}
+            tone={tile.tokenTone}
+            pathClassName={styles.vectorStroke}
+          />
+        );
+      })}
+    </g>
+  );
+}
+
+function OperatorWatcher() {
+  const start = OPERATOR_STATIONS.grounding;
+  const motionStyle = {
+    '--operator-plan-x': `${OPERATOR_STATIONS.plan.x - start.x}px`,
+    '--operator-plan-y': `${OPERATOR_STATIONS.plan.y - start.y}px`,
+    '--operator-execute-x': `${OPERATOR_STATIONS.execute.x - start.x}px`,
+    '--operator-execute-y': `${OPERATOR_STATIONS.execute.y - start.y}px`,
+    '--operator-validate-x': `${OPERATOR_STATIONS.validate.x - start.x}px`,
+    '--operator-validate-y': `${OPERATOR_STATIONS.validate.y - start.y}px`,
+  } as React.CSSProperties;
+  return (
+    <g className={styles.operatorWatcher} style={motionStyle}>
+      <OperatorNode x={start.x} y={start.y} size={OPERATOR_SIZE} />
+    </g>
+  );
+}
+
+function renderCard(tile: TileSpec) {
+  const color = tileToneVars(tile.tone).stroke;
+  return (
+    <div
+      key={tile.id}
+      className={styles.descCell}
+      style={{ borderColor: color }}
+    >
+      <span className={styles.descLabel} style={{ color }}>
+        {tile.id === 'validate' ? 'VALIDATE' : tile.title}
+      </span>
+      <span className={styles.descQuestion}>{tile.question}</span>
+      <span className={styles.descText}>{tile.instruction}</span>
+    </div>
+  );
+}
 
 export default function OperatorCycleDiagram() {
-  const phase = useAnimationPhase();
-  const mounted = useMounted();
-  const { wasReached } = useActs(ACTS, phase);
-
-  // Refs for connector paths
-  const fwdRef0   = useRef<SVGPathElement>(null);
-  const fwdRef1   = useRef<SVGPathElement>(null);
-  const fwdRef2   = useRef<SVGPathElement>(null);
-  const fwdRefs   = [fwdRef0, fwdRef1, fwdRef2];
-  const returnRef = useRef<SVGPathElement>(null);
-
-  // useStrokeDraw handles both init (dasharray/offset) and phase-driven drawing
-  // Each fwd connector starts FWD_STAGGER later but ends at the same phase (0.40)
-  const t0  = useStrokeDraw(fwdRef0,   phase, 0.15,                 0.40);
-  const t1  = useStrokeDraw(fwdRef1,   phase, 0.15 + FWD_STAGGER,   0.40);
-  const t2  = useStrokeDraw(fwdRef2,   phase, 0.15 + 2*FWD_STAGGER, 0.40);
-  const tRet = useStrokeDraw(returnRef, phase, 0.45,                 0.62);
-
-  const nodesReached   = mounted && wasReached('nodes');
-  const forwardReached = mounted && wasReached('forward');
-  const returnReached  = mounted && wasReached('return');
-  const settleReached  = mounted && wasReached('settle');
-
   return (
     <div>
-      {/* SVG Diagram */}
       <svg
-        viewBox="0 0 560 280"
+        viewBox="0 0 760 464"
         width="100%"
-        height="auto"
         role="img"
-        aria-label="The operator cycle: Research → Plan → Execute → Validate, then iterate."
+        aria-label="An operator moves between Grounding, Plan, Execute, and a Validation Gate while token streams move between each step."
         xmlns="http://www.w3.org/2000/svg"
-        style={{ display: 'block', maxWidth: '560px', margin: '0 auto' }}
+        style={{ display: 'block', maxWidth: '760px', margin: '0 auto' }}
       >
-        {/* Forward connectors — top, right, bottom — staggered draw on `forward` act */}
-        {FWD_CONNECTORS.map((conn, i) => (
-          <path
-            key={i}
-            ref={fwdRefs[i]}
-            className={clsx(shared.connector, forwardReached && shared.connectorDrawing)}
-            d={conn.d}
-            {...CONNECTOR_STYLE}
-          />
+        <TokenStreams />
+        {TILES.map((tile) => (
+          <WorkflowTile key={tile.id} tile={tile} />
         ))}
-
-        {/* Return connector — Validate → Research — draws on `return` act */}
-        <path
-          ref={returnRef}
-          className={clsx(shared.connector, returnReached && shared.connectorDrawing)}
-          d={RETURN_D}
-          {...CONNECTOR_STYLE}
-        />
-
-        {/* Standalone arrowheads — opacity driven by useStrokeDraw t values */}
-        {/* R→P: tip at (378,64), pointing right (rotate 0°) */}
-        <g transform="translate(378,64) rotate(0)" style={{ opacity: arrowOpacity(t0) }}>
-          <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
-        </g>
-        {/* P→E: tip at (400,194), pointing down (rotate 90°) */}
-        <g transform="translate(400,194) rotate(90)" style={{ opacity: arrowOpacity(t1) }}>
-          <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
-        </g>
-        {/* E→V: tip at (182,216), pointing left (rotate 180°) */}
-        <g transform="translate(182,216) rotate(180)" style={{ opacity: arrowOpacity(t2) }}>
-          <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
-        </g>
-        {/* V→R: tip at (160,86), pointing up (rotate 270°) */}
-        <g transform="translate(160,86) rotate(270)" style={{ opacity: arrowOpacity(tRet) }}>
-          <polygon points={ARROWHEAD_POINTS} fill="var(--text-muted)" />
-        </g>
-
-        {/* Phase nodes — staggered entrance on `nodes` act */}
-        {NODES.map((node, i) => (
-          <g
-            key={node.id}
-            className={clsx(styles.phaseNode, nodesReached && shared.actEntered)}
-            style={nodesReached ? { animationDelay: `${i * 80}ms` } : undefined}
-          >
-            <EmojiImage asset={NODE_EMOJI[node.id]} x={node.cx - ICON_HALF} y={node.cy - ICON_HALF} size={ICON_HALF * 2} />
-            {/* Phase label — above top-row nodes, below bottom-row nodes */}
-            <text
-              x={node.cx} y={node.labelAbove ? node.cy - R - 8 : node.cy + R + 14}
-              fill={node.color}
-              textAnchor="middle"
-              fontSize={11}
-              fontWeight={500}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontFeatureSettings: 'var(--font-mono-features)',
-              }}
-            >
-              {node.label}
-            </text>
-          </g>
-        ))}
-
-        {/* Center "iterate" label — appears on `settle` act */}
-        <text
-          x={280} y={140}
-          className={clsx(styles.cycleLabel, settleReached && shared.actEntered)}
-          fill="var(--text-muted)"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize={11}
-          fontWeight={400}
-          style={{
-            fontFamily: 'var(--font-mono-keyword)',
-            fontFeatureSettings: 'var(--font-mono-features)',
-          }}
-        >
-          iterate
-        </text>
-
-
+        <OperatorWatcher />
       </svg>
 
-      {/* Description grid — fades in with nodes */}
-      <div className={clsx(styles.descGrid, nodesReached && styles.descVisible)}>
-        {NODES.map((node) => (
-          <div key={node.id} className={styles.descCell}>
-            <span
-              className={styles.descLabel}
-              style={{ color: node.color }}
-            >
-              {node.label}
-            </span>
-            <span className={styles.descText}>{node.description}</span>
-          </div>
-        ))}
-      </div>
+      <div className={styles.descGrid}>{TILES.map(renderCard)}</div>
     </div>
   );
 }

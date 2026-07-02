@@ -249,7 +249,6 @@ export default function AgentReliabilityDecayCurve() {
     <svg
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       width="100%"
-      height="auto"
       role="img"
       aria-label="Exact exponential reliability diagram: task reliability equals 0.95 to the power of dependent steps, falling from 95 percent at one step to 35.8 percent at twenty steps. The chart emphasizes the decay curve, with external guidance thresholds: automate directly above 90 percent, verify before continuing between 70 and 90 percent, and add a judge or restructure below 70 percent. Engineering responses are to shrink and checkpoint dependent chains or sample independent candidates and select with tests, an LLM judge, or a human judge."
       xmlns="http://www.w3.org/2000/svg"

@@ -1114,7 +1114,7 @@ article h1 {
 /* Figure — reset UA margins, apply design-system spacing consistently */
 figure {
   margin-inline: 0;
-  margin-block: var(--space-4); /* 32px — matches ScrollDrivenFigure */
+  margin-block: var(--space-4); /* 32px — standard figure spacing */
 }
 
 figure figcaption {

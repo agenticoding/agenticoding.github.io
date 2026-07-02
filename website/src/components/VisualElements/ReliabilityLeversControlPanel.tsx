@@ -31,7 +31,7 @@ export default function ReliabilityLeversControlPanel() {
   const uid = useId().replace(/:/g, '');
   const markerId = `levers-panel-${uid}`;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="auto" role="img" aria-label="Reliability levers control panel: context quality raises R, orchestration changes step hardness and dependencies, sampling raises effective reliability R eff, and human checkpoints reduce failure stickiness S." xmlns="http://www.w3.org/2000/svg" style={svgStyle(W)}>
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Reliability levers control panel: context quality raises R, orchestration changes step hardness and dependencies, sampling raises effective reliability R eff, and human checkpoints reduce failure stickiness S." xmlns="http://www.w3.org/2000/svg" style={svgStyle(W)}>
       <defs><Marker id={markerId} tone="var(--visual-neutral)" /></defs>
       <rect x={G} y={G} width={W - G * 2} height={H - G * 2} rx={0} fill="var(--surface-page)" stroke="var(--border-subtle)" />
       <TextLine x={W / 2} y={48} tone="var(--text-heading)" size="var(--text-lg)" weight={700} family="var(--font-display)" anchor="middle">Four independent reliability controls</TextLine>

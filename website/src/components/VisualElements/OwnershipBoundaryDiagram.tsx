@@ -1,6 +1,7 @@
 import React, { type ReactNode, useId } from 'react';
 
 import { AgentNode, OperatorNode } from './ActorNodes';
+import { ArrowMarker } from './diagramGeometry';
 import styles from './OwnershipBoundaryDiagram.module.css';
 
 const DESKTOP = { w: 720, h: 384, cardW: 144, cardH: 104 } as const;
@@ -8,7 +9,6 @@ const DESKTOP_X = { intent: 40, agent: 40, candidate: 248, gate: 328, result: 50
 const DESKTOP_Y = { top: 96, bottom: 244, result: 112 } as const;
 const MOBILE = { w: 360, h: 812, cardX: 36, cardW: 288, cardH: 104 } as const;
 const MOBILE_Y = { intent: 92, agent: 244, candidate: 380, gate: 536, result: 688 } as const;
-const MARKER_SIZE = 6;
 
 const MARKER_TONES = ['neutral', 'violet', 'success'] as const;
 
@@ -154,7 +154,7 @@ function Markers({ markerId }: { markerId: string }) {
 function DesktopDiagram({ markerId }: { markerId: string }) {
   const { w, h, cardW, cardH } = DESKTOP;
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="auto" role="img" aria-label="An operator-owned workflow contains a human responsibility lane and an LLM execution lane. The agent generates candidate work, but the work returns to human judgment before it becomes an accepted result." className={styles.desktopDiagram} xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" role="img" aria-label="An operator-owned workflow contains a human responsibility lane and an LLM execution lane. The agent generates candidate work, but the work returns to human judgment before it becomes an accepted result." className={styles.desktopDiagram} xmlns="http://www.w3.org/2000/svg">
       <Markers markerId={markerId} />
       <text x="360" y="34" className={styles.label} textAnchor="middle">candidate work becomes owned only in the operator lane</text>
       <LaneLabel x={40} y={80}>human/operator responsibility</LaneLabel>
@@ -177,7 +177,7 @@ function MobileDiagram({ markerId }: { markerId: string }) {
   const { w, h, cardX, cardW, cardH } = MOBILE;
   const cx = w / 2;
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="auto" role="img" aria-label="An operator-owned workflow contains human responsibility zones and an LLM execution zone. The agent generates candidate work, but the work returns to human judgment before it becomes an accepted result." className={styles.mobileDiagram} xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" role="img" aria-label="An operator-owned workflow contains human responsibility zones and an LLM execution zone. The agent generates candidate work, but the work returns to human judgment before it becomes an accepted result." className={styles.mobileDiagram} xmlns="http://www.w3.org/2000/svg">
       <Markers markerId={`${markerId}-m`} />
       <text x={cx} y="26" className={styles.label} textAnchor="middle">owned work returns to the operator lane</text>
       <LaneLabel x={40} y={80}>human/operator responsibility</LaneLabel>
@@ -209,9 +209,5 @@ export default function OwnershipBoundaryDiagram() {
 }
 
 function Marker({ id, tone }: { id: string; tone: string }) {
-  return (
-    <marker id={id} markerWidth={MARKER_SIZE} markerHeight={MARKER_SIZE} refX="5" refY="3" orient="auto">
-      <polygon points="0 0, 6 3, 0 6" fill={`var(--visual-${tone})`} />
-    </marker>
-  );
+  return <ArrowMarker id={id} fill={`var(--visual-${tone})`} />;
 }

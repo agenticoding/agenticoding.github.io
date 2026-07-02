@@ -76,7 +76,6 @@ export default function MCPLoadingDecisionTree() {
     <svg
       viewBox={`0 0 ${W} ${H}`}
       width="100%"
-      height="auto"
       role="img"
       aria-label="Decision tree for choosing MCP loading mode. Few tools and hot-path actions favor eager loading. Large or multi-server catalogs favor deferred loading. If only a few actions are hot inside a large catalog, expose a thin wrapper eagerly and defer the rest."
       className={styles.diagram}

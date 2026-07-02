@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import clsx from 'clsx';
 import styles from './GroundingDiagram.module.css';
 import shared from './diagram.module.css';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { EmojiImage } from './ActorNodes';
@@ -49,7 +49,7 @@ function ghostRect(cx: number, cy: number) {
 }
 
 export default function GroundingDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const mounted = useMounted();
   const { wasReached } = useActs(ACTS, phase);
 
@@ -68,7 +68,6 @@ export default function GroundingDiagram() {
     <svg
       viewBox="0 0 560 240"
       width="100%"
-      height="auto"
       role="img"
       aria-label="Ungrounded agent (balloon) hallucinates; grounded agent (plug) responds accurately."
       xmlns="http://www.w3.org/2000/svg"

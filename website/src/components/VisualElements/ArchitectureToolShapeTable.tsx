@@ -8,8 +8,8 @@ import {
   emojiDisplaySize,
   centeredEmojiOffset,
 } from './emojiAssets';
+import { DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import styles from './ArchitectureToolShapeTable.module.css';
-
 
 type Tone = 'neutral' | 'violet' | 'indigo' | 'warning' | 'magenta' | 'cyan';
 
@@ -295,9 +295,11 @@ function ContextIcon() {
           stroke="#fff"
           strokeWidth="2"
           strokeLinecap="round"
-          style={{
-            '--line-delay': `${i * 300}ms`,
-          } as React.CSSProperties}
+          style={
+            {
+              '--line-delay': `${i * 300}ms`,
+            } as React.CSSProperties
+          }
           aria-hidden="true"
         />
       ))}
@@ -312,8 +314,8 @@ function ModalityIcon({ clipId }: { clipId: string }) {
         x={-93}
         y={16}
         tokens={MODALITY_STREAM_TOKENS}
-        size={16}
-        gap={4}
+        size={DIAGRAM_TOKEN_SIZE.flow}
+        gap={5}
         tone="magenta"
         className={styles.modalityStream}
       />
@@ -336,12 +338,7 @@ function RowIcon({ row }: { row: Row }) {
   const clipId = `${React.useId()}-window`.replace(/:/g, '');
   const content =
     row.icon === 'dense' ? (
-      <GearNode
-        x={30}
-        y={10}
-        size={28}
-        className={styles.architectureGear}
-      />
+      <GearNode x={30} y={10} size={28} className={styles.architectureGear} />
     ) : row.icon === 'moe' ? (
       <MoeIcon />
     ) : row.icon === 'attention' ? (
@@ -426,7 +423,9 @@ export default function ArchitectureToolShapeTable() {
       aria-label="Architecture choices and operator implications"
     >
       <div className={styles.header}>
-        <p className={styles.kicker}>Architecture defines the operating envelope</p>
+        <p className={styles.kicker}>
+          Architecture defines the operating envelope
+        </p>
         <p>
           Architecture choices show up as production behavior: speed, cost,
           context reliability, modality support, and deployment constraints.

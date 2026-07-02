@@ -120,41 +120,45 @@
   font-weight: 600;
 }
 
-.flowPulse {
-  animation-duration: 6400ms;
+.loopGearSpin {
+  animation-duration: 11200ms;
+  animation-fill-mode: both;
   animation-iteration-count: infinite;
-  animation-name: flowPulse;
-  animation-timing-function: var(--ease-standard);
-  transform-box: fill-box;
+  animation-name: loopGearSpin;
+  animation-timing-function: var(--ease-linear);
 }
 
-.step1 {
-  animation-delay: 0ms;
-}
-
-.step2 {
-  animation-delay: 800ms;
-}
-
-.step3 {
-  animation-delay: 1600ms;
-}
-
-.step4 {
-  animation-delay: 2400ms;
-}
-
-.step5 {
-  animation-delay: 1200ms;
-}
-
-@keyframes flowPulse {
-  0%, 28%, 100% {
-    opacity: 1;
+@keyframes loopGearSpin {
+  0%, 10% {
+    transform: rotate(0deg);
   }
 
-  10%, 18% {
-    opacity: 0.72;
+  28% {
+    transform: rotate(360deg);
+  }
+
+  33% {
+    transform: rotate(360deg);
+  }
+
+  53% {
+    transform: rotate(720deg);
+  }
+
+  58% {
+    transform: rotate(720deg);
+  }
+
+  78% {
+    transform: rotate(1080deg);
+  }
+
+  83% {
+    transform: rotate(1080deg);
+  }
+
+  100% {
+    transform: rotate(1440deg);
   }
 }
 
@@ -179,7 +183,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flowPulse {
+  .loopGearSpin {
     animation: none;
   }
 }

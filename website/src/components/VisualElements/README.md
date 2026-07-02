@@ -147,7 +147,7 @@ For each new component, verify:
 cd website && npm start
 ```
 
-Navigate to lesson pages and toggle light/dark mode.
+Navigate to chapter pages and toggle light/dark mode.
 
 ### Visual Regression Testing
 

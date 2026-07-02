@@ -149,7 +149,25 @@
 }
 
 .flowPulse {
+  opacity: 1;
+}
+
+.pipelineChip {
+  animation-duration: 13940ms;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  animation-name: pipelineStepActive;
+  animation-timing-function: ease-in-out;
   transform-box: fill-box;
+  transform-origin: center;
+}
+
+.llmGearSpin {
+  animation-duration: 13940ms;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  animation-name: llmCallGearSpin;
+  animation-timing-function: linear;
 }
 
 .step1 {
@@ -157,28 +175,42 @@
 }
 
 .step2 {
-  animation-delay: 700ms;
+  animation-delay: 820ms;
 }
 
 .step3 {
-  animation-delay: 1400ms;
+  animation-delay: 4920ms;
 }
 
 .step4 {
-  animation-delay: 2100ms;
+  animation-delay: 7380ms;
 }
 
 .step5 {
-  animation-delay: 2800ms;
+  animation-delay: 12300ms;
 }
 
-@keyframes flowPulse {
-  0%, 30%, 100% {
-    opacity: 1;
+@keyframes pipelineStepActive {
+  0%, 5.9%, 100% {
+    transform: scale(1);
   }
 
-  10%, 20% {
-    opacity: 0.72;
+  2.95% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes llmCallGearSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  11.8% {
+    transform: rotate(360deg);
+  }
+
+  13%, 100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -203,7 +235,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flowPulse {
+  .pipelineChip,
+  .llmGearSpin {
     animation: none;
   }
 }

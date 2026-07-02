@@ -5,7 +5,7 @@ import shared from './diagram.module.css';
 import { OperatorNode, AgentNode, EmojiImage } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
 import { Ghost } from './Ghost';
-import { useAnimationPhase } from '../animations/ScrollDrivenFigure';
+import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useStrokeDraw } from '../../hooks/useStrokeDraw';
 import { useMounted } from '../../hooks/useMounted';
@@ -75,7 +75,7 @@ const FAN_ARCS: FanSpec[] = [
 ];
 
 export default function IntroHookDiagram() {
-  const phase = useAnimationPhase();
+  const phase = useStaticAnimationPhase();
   const { wasReached, isCurrentAct } = useActs(ACTS, phase);
   const mounted = useMounted();
 
@@ -135,7 +135,6 @@ export default function IntroHookDiagram() {
     <svg
       viewBox="0 0 560 264"
       width="100%"
-      height="auto"
       role="img"
       aria-label="A prompt travels from the operator to an orchestrator, which dispatches parallel workers to explore, build, and verify independently."
       xmlns="http://www.w3.org/2000/svg"

@@ -12,7 +12,6 @@ export default function MentalModelComparison({ compact: _compact = false }: Pro
     <svg
       viewBox="0 0 600 280"
       width="100%"
-      height="auto"
       role="img"
       aria-label="Side-by-side comparison: left panel shows AI as Teammate model with bidirectional relationship, right panel shows AI as Power Tool model with operator directing tool"
       xmlns="http://www.w3.org/2000/svg"
