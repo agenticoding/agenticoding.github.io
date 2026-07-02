@@ -4,9 +4,8 @@ import {
   AnimatedTokenTrain,
   type TokenSequence,
   type TokenTrainOrientation,
-  type TokenTrainStagger,
-  type TokenTrainTiming,
 } from './AnimatedTokenFlow';
+import type { TokenTrainStagger, TokenTrainTiming } from './TokenTrainTiming';
 import { ArrowMarker } from './diagramGeometry';
 import { DIAGRAM_STROKE, DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import type { TokenUnitTone } from './TokenUnit';

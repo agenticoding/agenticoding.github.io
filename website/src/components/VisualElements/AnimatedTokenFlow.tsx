@@ -9,6 +9,12 @@ import {
 } from './TokenUnit';
 import { DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import { tokenFlowFade } from './diagramMotion';
+import {
+  tokenTrainBeginOffsetMs,
+  tokenTrainStaticDistance,
+  type TokenTrainStagger,
+  type TokenTrainTiming,
+} from './TokenTrainTiming';
 import styles from './AnimatedTokenFlow.module.css';
 
 export type AnimatedTokenFlowSpec = {
@@ -64,18 +70,6 @@ type AnimatedTokenFlowProps = {
 };
 
 export type TokenTrainOrientation = 'above' | 'below';
-
-export type TokenTrainTiming = {
-  startDelayMs?: number;
-  cycleMs: number;
-  travelMs: number;
-  fadeMs: number;
-  repeat?: 'loop' | 'once';
-};
-
-export type TokenTrainStagger =
-  | { mode: 'pathSpacing'; spacingPx: number }
-  | { mode: 'fixedStep'; stepMs: number };
 
 type AnimatedTokenTrainProps = {
   pathD: string;
@@ -546,26 +540,6 @@ function tokenTrainEntries(tokens: TokenSequence) {
     signal,
     index,
   }));
-}
-
-export function tokenTrainBeginOffsetMs(
-  index: number,
-  length: number,
-  stagger: TokenTrainStagger,
-  travelMs: number
-) {
-  if (stagger.mode === 'fixedStep') return index * stagger.stepMs;
-  return Math.round((index * stagger.spacingPx * travelMs) / length);
-}
-
-function tokenTrainStaticDistance(
-  index: number,
-  length: number,
-  stagger: TokenTrainStagger,
-  travelMs: number
-) {
-  if (stagger.mode === 'fixedStep') return (index * stagger.stepMs * length) / travelMs;
-  return index * stagger.spacingPx;
 }
 
 function seconds(ms: number) {
