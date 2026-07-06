@@ -33,6 +33,20 @@ function getSeverity(contextFill: number): { tier: string; desc: string; color: 
   return { tier: 'SEVERE', desc: 'middle invisible — only recency remains reliable', color: 'var(--visual-error)' };
 }
 
+function usePrefersReducedMotion(): boolean {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setPrefersReducedMotion(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  return prefersReducedMotion;
+}
+
 export default function UShapeAttentionCurve({
   initialContextFill = 30,
 }: UShapeAttentionCurveProps) {
@@ -79,8 +93,9 @@ export default function UShapeAttentionCurve({
     .join(' ');
 
   const severity = getSeverity(contextFill);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  // Crossfade state: keep outgoing tier alive for 250ms during transition
+  // Crossfade state: keep outgoing tier alive for the design-system moderate duration.
   type Severity = ReturnType<typeof getSeverity>;
   const [displayed, setDisplayed] = useState<Severity>(severity);
   const [outgoing, setOutgoing] = useState<Severity | null>(null);
@@ -89,12 +104,17 @@ export default function UShapeAttentionCurve({
 
   useEffect(() => {
     if (severity.tier === displayedRef.current.tier) return;
+    if (prefersReducedMotion) {
+      setOutgoing(null);
+      setDisplayed(severity);
+      return;
+    }
     const prev = displayedRef.current;
     setOutgoing(prev);
     setDisplayed(severity);
-    const t = setTimeout(() => setOutgoing(null), 250);
+    const t = setTimeout(() => setOutgoing(null), 240);
     return () => clearTimeout(t);
-  }, [severity.tier]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [severity.tier, prefersReducedMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Zone visibility fade: animate entrance and leave when zone crosses the 60px threshold
   const zoneWidth = deadEnd - deadStart;
@@ -106,17 +126,21 @@ export default function UShapeAttentionCurve({
   useEffect(() => {
     if (isWide === prevIsWideRef.current) return;
     prevIsWideRef.current = isWide;
+    if (prefersReducedMotion) {
+      setZoneShown(isWide);
+      setZoneFade(null);
+      return;
+    }
     if (isWide) {
       setZoneShown(true);
       setZoneFade('in');
-      const t = setTimeout(() => setZoneFade(null), 250);
-      return () => clearTimeout(t);
-    } else {
-      setZoneFade('out');
-      const t = setTimeout(() => { setZoneShown(false); setZoneFade(null); }, 250);
+      const t = setTimeout(() => setZoneFade(null), 240);
       return () => clearTimeout(t);
     }
-  }, [isWide]); // eslint-disable-line react-hooks/exhaustive-deps
+    setZoneFade('out');
+    const t = setTimeout(() => { setZoneShown(false); setZoneFade(null); }, 240);
+    return () => clearTimeout(t);
+  }, [isWide, prefersReducedMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Desc visibility fade: animate entrance and leave when zone crosses the 120px threshold
   const isDescWide = zoneWidth >= 120;
@@ -127,17 +151,21 @@ export default function UShapeAttentionCurve({
   useEffect(() => {
     if (isDescWide === prevIsDescWideRef.current) return;
     prevIsDescWideRef.current = isDescWide;
+    if (prefersReducedMotion) {
+      setDescShown(isDescWide);
+      setDescFade(null);
+      return;
+    }
     if (isDescWide) {
       setDescShown(true);
       setDescFade('in');
-      const t = setTimeout(() => setDescFade(null), 250);
-      return () => clearTimeout(t);
-    } else {
-      setDescFade('out');
-      const t = setTimeout(() => { setDescShown(false); setDescFade(null); }, 250);
+      const t = setTimeout(() => setDescFade(null), 240);
       return () => clearTimeout(t);
     }
-  }, [isDescWide]); // eslint-disable-line react-hooks/exhaustive-deps
+    setDescFade('out');
+    const t = setTimeout(() => { setDescShown(false); setDescFade(null); }, 240);
+    return () => clearTimeout(t);
+  }, [isDescWide, prefersReducedMotion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.container}>
@@ -237,8 +265,8 @@ export default function UShapeAttentionCurve({
         {/* Inline zone annotation — fades in/out as zone crosses 60px threshold */}
         {zoneShown && (() => {
           const cx = (deadStart + deadEnd) / 2;
-          const zoneCls = zoneFade === 'in' ? styles.zoneAnnotationIn : zoneFade === 'out' ? styles.zoneAnnotationOut : '';
-          const descCls = `${styles.zoneAnnotationDesc} ${descFade === 'in' ? styles.zoneAnnotationIn : descFade === 'out' ? styles.zoneAnnotationOut : ''}`;
+          const zoneCls = !prefersReducedMotion && zoneFade === 'in' ? styles.zoneAnnotationIn : !prefersReducedMotion && zoneFade === 'out' ? styles.zoneAnnotationOut : '';
+          const descCls = `${styles.zoneAnnotationDesc} ${!prefersReducedMotion && descFade === 'in' ? styles.zoneAnnotationIn : !prefersReducedMotion && descFade === 'out' ? styles.zoneAnnotationOut : ''}`;
           const renderText = (s: ReturnType<typeof getSeverity>, cls: string, key: string) => (
             <text key={key} x={cx} y={PLOT_TOP + 16} textAnchor="middle" className={cls}>
               <tspan fill={s.color} className={styles.zoneAnnotationTier}>{s.tier}</tspan>
@@ -272,45 +300,6 @@ export default function UShapeAttentionCurve({
         <span className={styles.sliderValue}>{contextFill}%</span>
       </div>
 
-      {/* Explanation cards */}
-      <div className={styles.cards}>
-          <div className={`${styles.card} ${styles.cardPrimacy}`}>
-            <div className={styles.cardTitle}>PRIMACY EFFECT</div>
-            <div className={styles.cardBody}>
-              Content at the beginning receives strong attention at low-to-moderate fill.
-              At high fill, primacy also degrades — put system instructions at the top,
-              but reinforce critical constraints near the end too.
-            </div>
-          </div>
-          <div className={`${styles.card} ${styles.cardLost}`}>
-            <div className={`${styles.cardTitle} ${styles.cardTitleError}`}>LOST IN MIDDLE</div>
-            <div className={styles.cardBody}>
-              Content in the middle is frequently skipped. Simple retrieval may still
-              work, but inferential tasks — following multi-step constraints, connecting
-              facts — fail catastrophically. As fill increases, this dead zone expands.
-            </div>
-          </div>
-          <div className={`${styles.card} ${styles.cardRecency}`}>
-            <div className={styles.cardTitle}>RECENCY EFFECT</div>
-            <div className={styles.cardBody}>
-              Content at the end receives the strongest and most stable attention at any
-              fill level. Place your final task instructions, output format requirements,
-              and critical constraints here — recency is the most reliable position.
-            </div>
-          </div>
-          <div className={`${styles.card} ${styles.cardTrap}`}>
-            <div className={`${styles.cardTitle} ${styles.cardTitleWarning}`}>
-              WHY A BIGGER WINDOW WON&apos;T HELP
-            </div>
-            <div className={styles.cardBody}>
-              At 128K tokens, all frontier models score ~84% on MRCR v2 — regardless of
-              advertised window size. The divergence only appears past 60–70% fill:
-              Sonnet (200K window) at 128K scores 84.9%, while Gemini (10M window)
-              stuffed to 1M scores 26.3%. For agentic coding, context management that
-              keeps you in the effective zone beats a bigger window every time.
-            </div>
-          </div>
-        </div>
     </div>
   );
 }

@@ -32,8 +32,6 @@ type ChartLayout = {
   bottomPadding: number;
 };
 
-const sourceUrl = 'https://www.tbench.ai/leaderboard';
-const sourceLabel = 'Terminal-Bench leaderboard ↗';
 const benchmark = 'Terminal-Bench';
 const desktopChart: ChartLayout = {
   width: 820,
@@ -164,10 +162,6 @@ function HarnessChartFigure({ activeSeries }: { activeSeries: ModelSeries }) {
         chart={mobileChart}
         variant="mobile"
       />
-      <p className={styles.chartCaption}>
-        Each bar is a Terminal-Bench harness row for the selected model group.
-        Error bars show reported confidence intervals where available.
-      </p>
     </div>
   );
 }
@@ -350,12 +344,7 @@ function ErrorBar({
 
 function SourceDataTable({ activeSeries }: { activeSeries: ModelSeries }) {
   return (
-    <table className={styles.sourceTable}>
-      <caption>
-        Plotted rows: harness, submitted model, organization, date, score, and
-        reported CI. Source:{' '}
-        <a href={sourceUrl}>{sourceLabel}</a>
-      </caption>
+    <table className={styles.sourceTable} aria-label="Plotted Terminal-Bench harness rows">
       <thead>
         <tr>
           <th scope="col">Model</th>

@@ -4,7 +4,7 @@ import styles from './LongContextBenchmarkTable.module.css';
 
 export type ConceptLink = { label: string; href: string };
 export type BenchmarkPoint = { tokens: number; label: string; score: number };
-export type BenchmarkFamily = 'MRCR v2 8-needle' | 'GraphWalks BFS';
+export type BenchmarkFamily = 'MRCR v2 8-needle';
 export type CurveDensity = 'full' | 'sparse';
 
 export type BenchmarkRow = {
@@ -79,14 +79,14 @@ export const benchmarkRows: BenchmarkRow[] = [
     caveat: <>Sparse two-point MRCR evidence; intermediate degradation shape is not published.</>, links: [conceptLinks.longContext, conceptLinks.benchmarks],
   },
   {
-    id: 'deepseek-v4-pro', model: 'DeepSeek V4 Pro Max', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'Think Max, Figure 9 curve', source: 'https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro', curveDensity: 'full',
-    points: [{ tokens: 8192, label: '8K', score: 90 }, { tokens: 16384, label: '16K', score: 85 }, { tokens: 32768, label: '32K', score: 94 }, { tokens: 65536, label: '64K', score: 90 }, { tokens: 131072, label: '128K', score: 92 }, { tokens: 262144, label: '256K', score: 82 }, { tokens: 524288, label: '512K', score: 66 }, { tokens: 1048576, label: '1M', score: 59 }],
-    moderateContext: '92% @128K', longContext: '59% @1M', pointDrop: pointDrop(92, 59), moderateScore: 92, longScore: 59, dropScore: 33,
-    signal: 'Open model, mode-sensitive decay', signalTone: 'warning',
-    numbers: <>The Figure 9 Max-mode curve stays near 90% through 128K, then falls to 82% at 256K, 66% at 512K, and 59% at 1M.</>,
-    concept: <>This is a product envelope, not just a model name. DeepSeek also reports different 1M aggregate-by-mode values, so serving mode and methodology matter.</>,
-    takeaway: <>Use when open-weight economics and configurable reasoning matter; benchmark the exact serving mode before relying on native 1M retrieval.</>,
-    caveat: <>Do not merge Figure 9 curve values with DeepSeek&apos;s separate 1M mode table as if they are the same measurement.</>, links: [conceptLinks.inference, conceptLinks.cost, conceptLinks.benchmarks],
+    id: 'deepseek-v4-pro', model: 'DeepSeek V4 Pro Max', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'Max', source: 'https://huggingface.co/blog/deepseekv4', curveDensity: 'full',
+    points: [{ tokens: 8192, label: '8K', score: 90.0 }, { tokens: 16384, label: '16K', score: 85.0 }, { tokens: 32768, label: '32K', score: 94.0 }, { tokens: 65536, label: '64K', score: 90.0 }, { tokens: 131072, label: '128K', score: 92.0 }, { tokens: 262144, label: '256K', score: 82.0 }, { tokens: 524288, label: '512K', score: 66.0 }, { tokens: 1048576, label: '1M', score: 59.0 }],
+    moderateContext: '82.0% @256K', longContext: '59.0% @1M', pointDrop: pointDrop(82.0, 59.0), moderateScore: 82.0, longScore: 59.0, dropScore: 23.0,
+    signal: 'DeepSeek Figure 9 drops below 60% at 1M', signalTone: 'warning',
+    numbers: <>DeepSeek Figure 9 reports a full MRCR 8-needle curve for Pro Max: 82.0% at 256K, 66.0% at 512K, and 59.0% at 1M.</>,
+    concept: <>Use the official Figure 9 MRCR curve here, not the separate model-card 1M table. The full curve shows strong retention through 256K before a visible 512K–1M decline.</>,
+    takeaway: <>Treat Pro Max as strong through 256K, then validate saturated-window retrieval instead of assuming the 1M headline stays native.</>,
+    caveat: <>DeepSeek publishes conflicting 1M MRCR-style numbers between Figure 9 and the model card. This chart now follows Figure 9 consistently for the full 8-needle curve.</>, links: [conceptLinks.inference, conceptLinks.longContext, conceptLinks.benchmarks],
   },
   {
     id: 'gpt-54', model: 'GPT-5.4', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'xhigh reasoning effort', source: 'https://openai.com/index/introducing-gpt-5-4/', curveDensity: 'full',
@@ -99,14 +99,14 @@ export const benchmarkRows: BenchmarkRow[] = [
     caveat: <>This identifies retrieval decay on MRCR; it does not rank the model&apos;s overall coding or agent behavior.</>, links: [conceptLinks.longContext, conceptLinks.benchmarks],
   },
   {
-    id: 'deepseek-v4-flash', model: 'DeepSeek V4 Flash Max', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'Think Max, Figure 9 curve', source: 'https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash', curveDensity: 'full',
-    points: [{ tokens: 8192, label: '8K', score: 91 }, { tokens: 16384, label: '16K', score: 84 }, { tokens: 32768, label: '32K', score: 87 }, { tokens: 65536, label: '64K', score: 85 }, { tokens: 131072, label: '128K', score: 87 }, { tokens: 262144, label: '256K', score: 76 }, { tokens: 524288, label: '512K', score: 60 }, { tokens: 1048576, label: '1M', score: 49 }],
-    moderateContext: '87% @128K', longContext: '49% @1M', pointDrop: pointDrop(87, 49), moderateScore: 87, longScore: 49, dropScore: 38,
-    signal: 'Cost-tier curve drops after 256K', signalTone: 'warning',
-    numbers: <>The Max-mode curve is strong through 128K, then falls to 76% at 256K, 60% at 512K, and 49% at 1M.</>,
-    concept: <>Fast or lower-cost tiers can keep the window while reducing effective retrieval at the far end.</>,
-    takeaway: <>Prefer for cost-sensitive moderate-context work; validate before depending on saturated-window recall.</>,
-    caveat: <>DeepSeek publishes separate 1M aggregate mode scores; this row uses the sourceable multi-point Figure 9 curve.</>, links: [conceptLinks.speed, conceptLinks.cost, conceptLinks.recall],
+    id: 'deepseek-v4-flash', model: 'DeepSeek V4 Flash Max', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'Max', source: 'https://huggingface.co/blog/deepseekv4', curveDensity: 'full',
+    points: [{ tokens: 8192, label: '8K', score: 91.0 }, { tokens: 16384, label: '16K', score: 84.0 }, { tokens: 32768, label: '32K', score: 87.0 }, { tokens: 65536, label: '64K', score: 85.0 }, { tokens: 131072, label: '128K', score: 87.0 }, { tokens: 262144, label: '256K', score: 76.0 }, { tokens: 524288, label: '512K', score: 60.0 }, { tokens: 1048576, label: '1M', score: 49.0 }],
+    moderateContext: '76.0% @256K', longContext: '49.0% @1M', pointDrop: pointDrop(76.0, 49.0), moderateScore: 76.0, longScore: 49.0, dropScore: 27.0,
+    signal: 'Flash curve falls into chunk/validate range at 1M', signalTone: 'warning',
+    numbers: <>DeepSeek Figure 9 reports a full MRCR 8-needle curve for Flash Max: 76.0% at 256K, 60.0% at 512K, and 49.0% at 1M.</>,
+    concept: <>Use the official Figure 9 MRCR curve here, not the separate model-card 1M table. Flash tracks well through 128K, then decays steadily after 256K.</>,
+    takeaway: <>Use Flash for cost-sensitive moderate context, but chunk or validate once workloads approach the far end of the 1M window.</>,
+    caveat: <>DeepSeek publishes conflicting 1M MRCR-style numbers between Figure 9 and the model card. This chart now follows Figure 9 consistently for the full 8-needle curve.</>, links: [conceptLinks.speed, conceptLinks.cost, conceptLinks.benchmarks],
   },
   {
     id: 'opus-47', model: 'Claude Opus 4.7', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'max effort', source: 'https://www.anthropic.com/claude-opus-4-7-system-card', curveDensity: 'sparse',
@@ -136,17 +136,7 @@ export const benchmarkRows: BenchmarkRow[] = [
     numbers: <>77.3% at 128K cumulative average becomes 26.6% at 1M pointwise.</>,
     concept: <>The fast/cost product envelope is attractive, but the 1M window should not be treated as reliable native retrieval.</>,
     takeaway: <>Use for speed/cost-sensitive moderate-context workloads; chunk before saturated retrieval tasks.</>,
-    caveat: <>Only two official MRCR points were found, and no official GraphWalks curve was found.</>, links: [conceptLinks.speed, conceptLinks.cost, conceptLinks.recall],
-  },
-  {
-    id: 'opus-48', model: 'Claude Opus 4.8', window: '1M', benchmark: 'GraphWalks BFS', mode: 'max effort', source: 'https://www.anthropic.com/claude-opus-4-8-system-card', curveDensity: 'sparse',
-    points: [{ tokens: 262144, label: '256K subset', score: 85.9 }, { tokens: 1048576, label: '1M subset', score: 68.1 }],
-    moderateContext: '85.9% @256K BFS', longContext: '68.1% @1M BFS', pointDrop: pointDrop(85.9, 68.1), moderateScore: 85.9, longScore: 68.1, dropScore: 17.8,
-    signal: 'Structured-context recovery signal', signalTone: 'data',
-    numbers: <>GraphWalks BFS drops from 85.9% at the 256K subset to 68.1% at the 1M subset.</>,
-    concept: <>This is not MRCR retrieval. It is structured graph traversal evidence, useful for evaluating reasoning over long context.</>,
-    takeaway: <>Treat as promising for structured long-context work, then test your own graph/code navigation workload.</>,
-    caveat: <>This row uses GraphWalks BFS because official Opus 4.8 MRCR curve data was not found. Do not rank it directly against MRCR rows.</>, links: [conceptLinks.benchmarks, conceptLinks.recall],
+    caveat: <>Only two official MRCR points were found; intermediate degradation shape is not published.</>, links: [conceptLinks.speed, conceptLinks.cost, conceptLinks.recall],
   },
 ];
 

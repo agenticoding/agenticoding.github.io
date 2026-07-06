@@ -1,190 +1,150 @@
 import clsx from 'clsx';
 import styles from './ContextSqueezeDiagram.module.css';
-import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
-import { useActs } from '../../hooks/useActs';
-import { useMounted } from '../../hooks/useMounted';
-import { Ghost } from './Ghost';
+import lensStyles from './ContextLensWindow.module.css';
+import { ContextLensZoneBackdrop } from './ContextLensWindow';
 
-// ViewBox 400×320 — The Primacy Squeeze.
-// Context files (AGENTS.md) expand in the primacy zone and push the user
-// task downward into the forgotten middle zone.
+// ViewBox 560×320 — The Fixed Prefix Stack.
+// Context files are part of the always-loaded prefix. A larger prefix means the
+// user task enters lower before the agent has done any work.
 
-// ── Act thresholds ──────────────────────────────────────────────────────────
-const ACTS = [
-  { id: 'zones',    threshold: 0.05 },
-  { id: 'baseline', threshold: 0.25 },
-  { id: 'grow',     threshold: 0.50 },
-  { id: 'danger',   threshold: 0.75 },
+const WINDOW = { x: 34, y: 24, width: 292, height: 272 } as const;
+const BLOCK_X = WINDOW.x + 18;
+const BLOCK_W = WINDOW.width - 36;
+const BLOCK_H = 24;
+const TASK_LEAN_Y = 132;
+const LABEL_OFFSET = 16;
+
+const PREFIX_BLOCKS = [
+  { label: 'System', y: 42, tone: 'neutral' },
+  { label: 'Tools', y: 72, tone: 'neutral' },
+  { label: 'AGENTS.md', y: 102, tone: 'cyan' },
+  { label: 'Repo rules', y: 132, tone: 'cyan', className: styles.ruleOne },
+  { label: 'Local rules', y: 162, tone: 'cyan', className: styles.ruleTwo },
 ] as const;
 
-// ── Geometry ────────────────────────────────────────────────────────────────
-const ZONE_X = 20;
-const ZONE_W = 360;
+const STEPS = [
+  { n: '1', label: 'Prefix loads first' },
+  { n: '2', label: 'Rules insert above prompt' },
+  { n: '3', label: 'Prompt starts lower' },
+] as const;
 
-const BLOCK_X = 40;
-const BLOCK_W = 320;
+type Tone = 'cyan' | 'neutral' | 'success' | 'warning';
 
-const CF_Y = 8;
-const CF_H_INITIAL = 48;
+type PrefixBlockProps = {
+  label: string;
+  y: number;
+  tone: Tone;
+  className?: string;
+};
 
-const TASK_Y = 64;
-const TASK_H = 32;
+function toneColor(tone: Tone) {
+  return `var(--visual-${tone})`;
+}
 
-// Zone labels — empirically offset +3 for fontSize=9 all-caps Monaspace Xenon
-const PILL_H = 16;
-const PRIMACY_PILL_Y = 32;   // centered in primacy zone (0–80)
-const MIDDLE_PILL_Y = 152;   // centered in middle zone (80–240)
-const RECENCY_PILL_Y = 272;  // centered in recency zone (240–320)
-const ZONE_LABEL_OFFSET = 3;
+function toneBg(tone: Tone) {
+  return `var(--visual-bg-${tone})`;
+}
 
-// Block labels — empirically offset +4 for fontSize=11 Monaspace Neon
-const BLOCK_LABEL_OFFSET = 4;
+function PrefixBlock({ label, y, tone, className }: PrefixBlockProps) {
+  return (
+    <g className={clsx(styles.prefixBlock, className)}>
+      <rect x={BLOCK_X} y={y} width={BLOCK_W} height={BLOCK_H} rx={0} fill={toneBg(tone)} stroke={toneColor(tone)} strokeWidth={1.5} />
+      <text x={BLOCK_X + 12} y={y + LABEL_OFFSET} className={lensStyles.blockLabel} fill={toneColor(tone)}>
+        {label}
+      </text>
+    </g>
+  );
+}
 
-export default function ContextSqueezeDiagram() {
-  const phase = useStaticAnimationPhase();
-  const mounted = useMounted();
-  const { wasReached } = useActs(ACTS, phase);
+function TaskBlock() {
+  return (
+    <g>
+      <rect className={styles.taskBaseline} x={BLOCK_X} y={TASK_LEAN_Y} width={BLOCK_W} height={BLOCK_H} rx={0} fill="none" stroke="var(--visual-success)" strokeWidth={1.5} strokeDasharray="5 4" />
+      <g className={styles.taskShift}>
+        <rect className={styles.taskRect} x={BLOCK_X} y={TASK_LEAN_Y} width={BLOCK_W} height={BLOCK_H} rx={0} strokeWidth={2} />
+        <text x={BLOCK_X + 12} y={TASK_LEAN_Y + LABEL_OFFSET} className={lensStyles.blockLabel} fill="var(--text-body)">
+          User Prompt
+        </text>
+      </g>
+    </g>
+  );
+}
 
-  const zones    = mounted && wasReached('zones');
-  const baseline = mounted && wasReached('baseline');
-  const grow     = mounted && wasReached('grow');
-  const danger   = mounted && wasReached('danger');
-
-  if (!mounted) {
-    return <div style={{ minHeight: 320 }} />;
-  }
+function StackBracket() {
+  const x = BLOCK_X + BLOCK_W + 10;
+  const y1 = PREFIX_BLOCKS[0].y;
+  const y2 = PREFIX_BLOCKS[PREFIX_BLOCKS.length - 1].y + BLOCK_H;
 
   return (
+    <g className={styles.bracket} aria-hidden="true">
+      <path d={`M ${x + 8} ${y1} H ${x} V ${y2} H ${x + 8}`} fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeLinecap="butt" />
+      <text x={x + 16} y={(y1 + y2) / 2 + 4} className={styles.sideLabel} fill="var(--text-muted)">
+        fixed prefix
+      </text>
+    </g>
+  );
+}
+
+function LensFrame() {
+  return (
+    <g>
+      <rect x={WINDOW.x} y={WINDOW.y} width={WINDOW.width} height={WINDOW.height} rx={0} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
+      <ContextLensZoneBackdrop {...WINDOW} />
+      <text x={WINDOW.x} y={18} className={styles.windowLabel} fill="var(--text-muted)">
+        REQUEST CONTEXT
+      </text>
+    </g>
+  );
+}
+
+function PushIndicators() {
+  return (
+    <g aria-hidden="true">
+      <path className={styles.pushOne} d="M 188 132 v 18 m -6 -6 l 6 6 6 -6" />
+      <path className={styles.pushTwo} d="M 188 162 v 18 m -6 -6 l 6 6 6 -6" />
+    </g>
+  );
+}
+
+function StepRow({ n, label, y }: { n: string; label: string; y: number }) {
+  return (
+    <g>
+      <rect x={374} y={y - 13} width={18} height={18} rx={0} fill="var(--surface-muted)" stroke="var(--border-subtle)" />
+      <text x={383} y={y} textAnchor="middle" className={styles.stepNumber} fill="var(--text-muted)">{n}</text>
+      <text x={402} y={y} className={styles.stepText} fill="var(--text-body)">{label}</text>
+    </g>
+  );
+}
+
+function RightColumn() {
+  return (
+    <g className={styles.rightColumn}>
+      <rect x={354} y={58} width={178} height={204} rx={0} fill="var(--surface-page)" stroke="var(--border-subtle)" />
+      <text x={374} y={86} className={styles.panelTitle} fill="var(--text-muted)">STARTUP ORDER</text>
+      {STEPS.map((step, index) => <StepRow key={step.n} {...step} y={116 + index * 32} />)}
+      <path d="M 374 198 H 512" stroke="var(--border-subtle)" />
+      <text x={374} y={222} className={styles.panelTitle} fill="var(--text-muted)">RESULT</text>
+      <text x={374} y={246} className={styles.warningText} fill="var(--visual-warning)">prompt pays prefix cost</text>
+    </g>
+  );
+}
+
+export default function ContextSqueezeDiagram() {
+  return (
     <svg
-      viewBox="0 0 400 320"
+      viewBox="0 0 560 320"
       width="100%"
       role="img"
-      aria-label="The Primacy Squeeze: context files (AGENTS.md) consume primacy-zone space and push the user task downward into the forgotten middle zone."
+      aria-label="Context files load before the user prompt as part of the fixed prefix. New rules first push the user prompt down to make room, then the new context tile appears above it. The prompt starts lower and receives weaker attention."
       xmlns="http://www.w3.org/2000/svg"
-      style={{ display: 'block', maxWidth: '400px', margin: '0 auto' }}
+      style={{ display: 'block', maxWidth: '560px', margin: '0 auto' }}
     >
-      {/* ── Zone background rects (labels render later for top z-order) ──── */}
-      <g className={clsx(styles.zone, zones && styles.zoneIn)}>
-        <rect
-          x={ZONE_X} y={0} width={ZONE_W} height={80}
-          fill="var(--visual-bg-cyan)"
-        />
-        <rect
-          x={ZONE_X} y={80} width={ZONE_W} height={160}
-          fill="var(--surface-muted)"
-        />
-        <rect
-          x={ZONE_X} y={240} width={ZONE_W} height={80}
-          fill="none"
-          stroke="var(--border-subtle)"
-          strokeWidth={1}
-        />
-      </g>
-
-      {/* ── Context File block ─────────────────────────────────────────────── */}
-      <Ghost
-        x={BLOCK_X} y={CF_Y} width={BLOCK_W} height={CF_H_INITIAL} rx={0}
-        fill="var(--visual-bg-cyan)" stroke="var(--visual-cyan)"
-        mounted={mounted} reached={baseline}
-      />
-
-      <g className={clsx(styles.contextFile, baseline && styles.contextFileIn)}>
-        <rect
-          className={clsx(styles.cfRect, grow && styles.cfRectGrown)}
-          x={BLOCK_X} y={CF_Y} width={BLOCK_W} rx={0}
-          fill="var(--visual-bg-cyan)"
-          stroke="var(--visual-cyan)"
-          strokeWidth={1.5}
-        />
-        <text
-          className={clsx(styles.cfText, grow && styles.cfTextGrown)}
-          x={BLOCK_X + 13}
-          y={CF_Y + CF_H_INITIAL / 2 + BLOCK_LABEL_OFFSET}
-          fontSize={11}
-          fontFamily="var(--font-mono)"
-          fontWeight={600}
-          fill="var(--visual-cyan)"
-        >
-          AGENTS.md
-        </text>
-      </g>
-
-      {/* ── Directional arrow ──────────────────────────────────────────────── */}
-      <g className={clsx(styles.arrow, baseline && styles.arrowIn, grow && styles.arrowGrown)}>
-        <polygon
-          points="-4,0 0,6 4,0"
-          fill="var(--text-muted)"
-          transform={`translate(200, ${CF_Y + CF_H_INITIAL})`}
-        />
-      </g>
-
-      {/* ── User Task block ────────────────────────────────────────────────── */}
-      <Ghost
-        x={BLOCK_X} y={TASK_Y} width={BLOCK_W} height={TASK_H} rx={0}
-        fill="var(--visual-bg-success)" stroke="var(--visual-success)"
-        mounted={mounted} reached={baseline}
-      />
-
-      <g className={clsx(styles.taskBlock, baseline && styles.taskBlockIn)}>
-        <g className={clsx(styles.taskInner, grow && styles.taskInnerGrown)}>
-          <rect
-            className={clsx(styles.taskBlockSafe, danger && styles.taskBlockDanger)}
-            x={BLOCK_X} y={TASK_Y} width={BLOCK_W} height={TASK_H} rx={0}
-            strokeWidth={2}
-          />
-          <text
-            x={BLOCK_X + 13}
-            y={TASK_Y + TASK_H / 2 + BLOCK_LABEL_OFFSET}
-            fontSize={11}
-            fontFamily="var(--font-mono)"
-            fill="var(--text-body)"
-          >
-            User Task
-          </text>
-        </g>
-      </g>
-
-      {/* ── Zone labels — rendered last so they float above all blocks ─────── */}
-      <g className={clsx(styles.zoneLabel, zones && styles.zoneLabelIn)}>
-        {/* Primacy */}
-        <rect x={161} y={PRIMACY_PILL_Y} width={78} height={PILL_H} rx={0} fill="var(--surface-page)" />
-        <text
-          x={200} y={PRIMACY_PILL_Y + PILL_H / 2 + ZONE_LABEL_OFFSET}
-          textAnchor="middle"
-          fontSize={9}
-          fontFamily="var(--font-mono-spec)"
-          fill="var(--text-muted)"
-          style={{ fontFeatureSettings: 'var(--font-mono-features)', letterSpacing: '0.06em' }}
-        >
-          PRIMACY ZONE
-        </text>
-
-        {/* Middle */}
-        <rect x={164} y={MIDDLE_PILL_Y} width={72} height={PILL_H} rx={0} fill="var(--surface-page)" />
-        <text
-          x={200} y={MIDDLE_PILL_Y + PILL_H / 2 + ZONE_LABEL_OFFSET}
-          textAnchor="middle"
-          fontSize={9}
-          fontFamily="var(--font-mono-spec)"
-          fill="var(--text-muted)"
-          style={{ fontFeatureSettings: 'var(--font-mono-features)', letterSpacing: '0.06em' }}
-        >
-          MIDDLE ZONE
-        </text>
-
-        {/* Recency */}
-        <rect x={161} y={RECENCY_PILL_Y} width={78} height={PILL_H} rx={0} fill="var(--surface-page)" />
-        <text
-          x={200} y={RECENCY_PILL_Y + PILL_H / 2 + ZONE_LABEL_OFFSET}
-          textAnchor="middle"
-          fontSize={9}
-          fontFamily="var(--font-mono-spec)"
-          fill="var(--text-muted)"
-          style={{ fontFeatureSettings: 'var(--font-mono-features)', letterSpacing: '0.06em' }}
-        >
-          RECENCY ZONE
-        </text>
-      </g>
+      <LensFrame />
+      {PREFIX_BLOCKS.map((block) => <PrefixBlock key={block.label} {...block} />)}
+      <TaskBlock />
+      <PushIndicators />
+      <StackBracket />
+      <RightColumn />
     </svg>
   );
 }

@@ -80,11 +80,11 @@
 }
 
 .zoneAnnotationIn {
-  animation: zoneAnnotFadeIn 250ms ease forwards;
+  animation: zoneAnnotFadeIn var(--duration-moderate) var(--ease-standard) forwards;
 }
 
 .zoneAnnotationOut {
-  animation: zoneAnnotFadeOut 250ms ease forwards;
+  animation: zoneAnnotFadeOut var(--duration-moderate) var(--ease-standard) forwards;
 }
 
 /* --- Slider row ----------------------------------------------------------- */
@@ -126,8 +126,8 @@
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   border-radius: 0;
   background: var(--surface-page);
   border: 2px solid var(--border-emphasis);
@@ -135,8 +135,8 @@
 }
 
 .slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   border-radius: 0;
   background: var(--surface-page);
   border: 2px solid var(--border-emphasis);
@@ -149,68 +149,11 @@
 }
 
 
-/* --- Explanation cards ---------------------------------------------------- */
+/* --- Reduced motion ------------------------------------------------------- */
 
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2);
-}
-
-.card {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-default);
-  border-left: 3px solid var(--border-default);
-  border-radius: 0;
-  padding: var(--space-2);
-}
-
-.cardPrimacy {
-  border-left-color: var(--visual-cyan);
-}
-
-.cardLost {
-  border-left-color: var(--visual-error);
-}
-
-.cardRecency {
-  border-left-color: var(--visual-cyan);
-}
-
-.cardTrap {
-  border-left-color: var(--visual-warning);
-  grid-column: 1 / -1;
-}
-
-.cardTitleWarning {
-  color: var(--visual-warning);
-}
-
-.cardTitle {
-  font-family: var(--font-mono-spec);
-  font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-heading);
-  margin-bottom: var(--space-1);
-  font-feature-settings: var(--font-mono-features);
-}
-
-.cardTitleError {
-  color: var(--visual-error);
-}
-
-.cardBody {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  color: var(--text-body);
-  line-height: var(--lh-sm);
-}
-
-/* --- Responsive ----------------------------------------------------------- */
-
-@media (max-width: 768px) {
-  .cards {
-    grid-template-columns: 1fr;
+@media (prefers-reduced-motion: reduce) {
+  .zoneAnnotationIn,
+  .zoneAnnotationOut {
+    animation: none;
   }
 }

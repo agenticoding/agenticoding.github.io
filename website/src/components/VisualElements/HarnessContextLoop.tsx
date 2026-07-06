@@ -60,13 +60,13 @@ function DesktopDiagram() {
     <svg viewBox={`0 0 ${DESKTOP_VIEW.width} ${DESKTOP_VIEW.height}`} width="100%" aria-hidden="true" className={clsx(styles.diagram, styles.desktopDiagram)}>
       <DiagramArrowMarkers prefix={markerIdPrefix} tones={ARROW_TONES} />
       <text x="360" y="32" textAnchor="middle" className={styles.loopLabel} fill="var(--text-muted)">context → model output → validated action → observation → context</text>
-      <Arrow d="M 224 104 H 252" markerIdPrefix={markerIdPrefix} tone="model" />
-      <Arrow d="M 456 104 H 484" markerIdPrefix={markerIdPrefix} tone="warning" />
-      <Arrow d="M 592 144 V 188" markerIdPrefix={markerIdPrefix} tone="system" />
-      <Arrow d="M 496 240 H 468" markerIdPrefix={markerIdPrefix} tone="context" />
-      <Arrow d="M 264 240 H 236" markerIdPrefix={markerIdPrefix} />
-      <Arrow d="M 128 200 V 156" markerIdPrefix={markerIdPrefix} label="iterate" labelX={144} labelY={176} />
-      <Arrow d="M 128 280 V 308" markerIdPrefix={markerIdPrefix} tone="success" />
+      <Arrow d="M 224 104 H 264" markerIdPrefix={markerIdPrefix} tone="model" />
+      <Arrow d="M 456 104 H 496" markerIdPrefix={markerIdPrefix} tone="warning" />
+      <Arrow d="M 592 144 V 200" markerIdPrefix={markerIdPrefix} tone="system" />
+      <Arrow d="M 496 240 H 456" markerIdPrefix={markerIdPrefix} tone="context" />
+      <Arrow d="M 264 240 H 224" markerIdPrefix={markerIdPrefix} />
+      <Arrow d="M 128 200 V 144" markerIdPrefix={markerIdPrefix} label="iterate" labelX={144} labelY={176} />
+      <Arrow d="M 128 280 V 320" markerIdPrefix={markerIdPrefix} tone="success" />
       {DESKTOP_STEPS.map((step) => <Card key={step.n} {...step} />)}
       <ExitTile x={32} y={320} />
     </svg>
@@ -79,13 +79,13 @@ function MobileDiagram() {
     <svg viewBox={`0 0 ${MOBILE_VIEW.width} ${MOBILE_VIEW.height}`} width="100%" aria-hidden="true" className={clsx(styles.diagram, styles.mobileDiagram)}>
       <DiagramArrowMarkers prefix={markerIdPrefix} tones={ARROW_TONES} />
       {MOBILE_STEPS.map((step) => <Card key={step.n} {...step} {...MOBILE_CARD} />)}
-      <Arrow d="M 160 112 V 116" markerIdPrefix={markerIdPrefix} tone="model" />
-      <Arrow d="M 160 208 V 212" markerIdPrefix={markerIdPrefix} tone="warning" />
-      <Arrow d="M 160 304 V 308" markerIdPrefix={markerIdPrefix} tone="system" />
-      <Arrow d="M 160 400 V 404" markerIdPrefix={markerIdPrefix} tone="context" />
-      <Arrow d="M 160 496 V 500" markerIdPrefix={markerIdPrefix} />
-      <Arrow d="M 48 552 H 24 V 72 H 36" markerIdPrefix={markerIdPrefix} />
-      <Arrow d="M 160 592 V 596" markerIdPrefix={markerIdPrefix} tone="success" />
+      <Arrow d="M 160 112 V 128" markerIdPrefix={markerIdPrefix} tone="model" />
+      <Arrow d="M 160 208 V 224" markerIdPrefix={markerIdPrefix} tone="warning" />
+      <Arrow d="M 160 304 V 320" markerIdPrefix={markerIdPrefix} tone="system" />
+      <Arrow d="M 160 400 V 416" markerIdPrefix={markerIdPrefix} tone="context" />
+      <Arrow d="M 160 496 V 512" markerIdPrefix={markerIdPrefix} />
+      <Arrow d="M 48 552 H 24 V 72 H 48" markerIdPrefix={markerIdPrefix} />
+      <Arrow d="M 160 592 V 608" markerIdPrefix={markerIdPrefix} tone="success" />
       <ExitTile x={48} y={608} {...MOBILE_EXIT_TILE} />
     </svg>
   );

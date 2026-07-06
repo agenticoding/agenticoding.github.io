@@ -29,7 +29,7 @@ function ChartStage({ selectedRows, selectedIds, onToggle }: { selectedRows: Ben
 function EvidenceChart({ selectedRows, selectedIds, onToggle }: { selectedRows: BenchmarkRow[]; selectedIds: string[]; onToggle: (id: string) => void }) {
   const labelLayout = useMemo(() => layoutCurveLabels(selectedRows, desktopChart), [selectedRows]);
   const labels = useRenderedCurveLabels(labelLayout);
-  return <div className={styles.chartFigure}><ChartSvg chart={desktopChart} ticks={desktopXTicks} selectedIds={selectedIds} labels={labels} onToggle={onToggle} variant="desktop" /><ChartSvg chart={mobileChart} ticks={mobileXTicks} selectedIds={selectedIds} onToggle={onToggle} variant="mobile" /><MobileCurveSummary rows={selectedRows} /><p className={styles.chartCaption}>Reported benchmark points from 8K to 1M context, plotted on a log-scale x-axis.</p></div>;
+  return <div className={styles.chartFigure}><ChartSvg chart={desktopChart} ticks={desktopXTicks} selectedIds={selectedIds} labels={labels} onToggle={onToggle} variant="desktop" /><ChartSvg chart={mobileChart} ticks={mobileXTicks} selectedIds={selectedIds} onToggle={onToggle} variant="mobile" /><MobileCurveSummary rows={selectedRows} /></div>;
 }
 
 function ChartSvg({ chart, ticks, selectedIds, labels = [], onToggle, variant }: { chart: ChartLayout; ticks: number[]; selectedIds: string[]; labels?: RenderedCurveLabel[]; onToggle: (id: string) => void; variant: 'desktop' | 'mobile' }) {
@@ -55,7 +55,7 @@ function Tick({ chart, tokens }: { chart: ChartLayout; tokens: number }) {
 function Curve({ chart, row, selected, onToggle }: { chart: ChartLayout; row: BenchmarkRow; selected: boolean; onToggle: (id: string) => void }) {
   const handleKeyDown = (event: KeyboardEvent<SVGGElement>) => selectOnEnter(event, row.id, onToggle);
   const relation = selected ? styles.selectedCurve : styles.contextCurve;
-  const className = `${styles.curve} ${familyClassName(row)} ${styles[row.signalTone]} ${styles[row.curveDensity]} ${row.benchmark === 'GraphWalks BFS' ? styles.graphWalks : ''} ${relation}`;
+  const className = `${styles.curve} ${familyClassName(row)} ${styles[row.signalTone]} ${styles[row.curveDensity]} ${relation}`;
   return <g className={className} role="button" tabIndex={0} aria-label={`${selected ? 'Remove' : 'Compare'} ${row.model}`} aria-pressed={selected} onClick={() => onToggle(row.id)} onKeyDown={handleKeyDown}><path className={styles.hitLine} d={pathD(row.points, chart)} /><path d={pathD(row.points, chart)} />{selected ? row.points.map((point) => <Marker key={`${row.id}-${point.label}`} chart={chart} point={point} row={row} />) : null}</g>;
 }
 
@@ -104,7 +104,7 @@ function SourceDataPanel({ selectedRows, selectedIds, onToggle }: { selectedRows
 }
 
 function SourceDataTable({ rows }: { rows: BenchmarkRow[] }) {
-  return <table className={styles.sourceTable}><caption>Exact plotted values, modes, and source links for selected products.</caption><thead><tr><th scope="col">Model</th><th scope="col">Benchmark</th><th scope="col">Mode</th><th scope="col">Evidence</th><th scope="col">Plotted points</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id}><th scope="row" data-label="Model"><span>{row.model}</span><a href={row.source} aria-label={`Open source for ${row.model}: ${row.source}`}>Source ↗</a></th><td data-label="Benchmark">{row.benchmark}</td><td data-label="Mode">{row.mode}</td><td data-label="Evidence"><EvidenceBadge row={row} /></td><td data-label="Plotted points">{formatPoints(row.points)}</td></tr>)}</tbody></table>;
+  return <table className={styles.sourceTable} aria-label="Exact plotted long-context benchmark values"><thead><tr><th scope="col">Model</th><th scope="col">Benchmark</th><th scope="col">Mode</th><th scope="col">Evidence</th><th scope="col">Plotted points</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id}><th scope="row" data-label="Model"><span>{row.model}</span><a href={row.source} aria-label={`Open source for ${row.model}: ${row.source}`}>Source ↗</a></th><td data-label="Benchmark">{row.benchmark}</td><td data-label="Mode">{row.mode}</td><td data-label="Evidence"><EvidenceBadge row={row} /></td><td data-label="Plotted points">{formatPoints(row.points)}</td></tr>)}</tbody></table>;
 }
 
 function EvidenceBadge({ row }: { row: BenchmarkRow }) {
@@ -215,5 +215,5 @@ export default function LongContextBenchmarkExplorer() {
   const selectedRows = getSelectedRows(selectedIds);
   const containerClassName = styles.container;
 
-  return <section className={containerClassName} aria-label="Long-context benchmark explorer"><p className={styles.screenSummary}>The chart plots reported benchmark points from 8K to 1M where available. GPT-5.5 and some DeepSeek rows have full MRCR curves; Claude and Gemini rows use sparse measured points.</p><ChartStage selectedRows={selectedRows} selectedIds={selectedIds} onToggle={(id) => setSelectedIds((current) => toggleSelectedId(current, id))} /></section>;
+  return <section className={containerClassName} aria-label="Long-context benchmark explorer"><p className={styles.screenSummary}>The chart plots reported benchmark points from 8K to 1M where available. GPT-5.5 and both DeepSeek Max rows have full MRCR curves; Claude and Gemini rows use sparse measured points.</p><ChartStage selectedRows={selectedRows} selectedIds={selectedIds} onToggle={(id) => setSelectedIds((current) => toggleSelectedId(current, id))} /></section>;
 }

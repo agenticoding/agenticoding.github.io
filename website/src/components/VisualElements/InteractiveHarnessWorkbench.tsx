@@ -2,8 +2,9 @@ import React from 'react';
 import clsx from 'clsx';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
-import type { TokenSequence } from './AnimatedTokenFlow';
+import type { TokenSequence, TokenTrainOrientation } from './AnimatedTokenFlow';
 import { TokenArrowTrain } from './TokenArrowTrain';
+import type { TokenUnitTone } from './TokenUnit';
 import { seededTokenTrain } from './TokenTrainSequence';
 import { DiagramTile } from './DiagramTile';
 import { GearNode } from './GearNode';
@@ -81,14 +82,28 @@ const TOOLS = [
 ] as const;
 
 const CONTEXT_TOKEN_SEQUENCE = seededTokenTrain('harness-context', 3);
-const MOBILE_CONTEXT_TOKEN_SEQUENCE = seededTokenTrain('harness-context-mobile', 2);
-const OBSERVATION_TOKEN_SEQUENCE = seededTokenTrain('harness-observation', 3);
-const MOBILE_OBSERVATION_TOKEN_SEQUENCE = seededTokenTrain(
-  'harness-observation-mobile',
+const MOBILE_CONTEXT_TOKEN_SEQUENCE = seededTokenTrain(
+  'harness-context-mobile',
   2
 );
-const ACTION_TOKEN_SEQUENCE = seededTokenTrain('harness-action', 3);
-const MOBILE_ACTION_TOKEN_SEQUENCE = seededTokenTrain('harness-action-mobile', 2);
+const ACTION_TOKEN_SEQUENCE = [
+  { modality: 'text' },
+  { modality: 'code', signal: 'salient' },
+  { modality: 'generic' },
+] as const satisfies TokenSequence;
+const MOBILE_ACTION_TOKEN_SEQUENCE = [
+  { modality: 'code', signal: 'salient' },
+  { modality: 'generic' },
+] as const satisfies TokenSequence;
+const OBSERVATION_TOKEN_SEQUENCE = [
+  { modality: 'code', signal: 'salient' },
+  { modality: 'text' },
+  { modality: 'generic' },
+] as const satisfies TokenSequence;
+const MOBILE_OBSERVATION_TOKEN_SEQUENCE = [
+  { modality: 'code', signal: 'salient' },
+  { modality: 'text' },
+] as const satisfies TokenSequence;
 const FINAL_GATE_TOKEN_SEQUENCE = seededTokenTrain('harness-final-gate', 2);
 const MOBILE_FINAL_GATE_TOKEN_SEQUENCE = seededTokenTrain(
   'harness-final-gate-mobile',
@@ -102,7 +117,6 @@ const HARNESS_TOKEN_TIMING = {
   fadeMs: 180,
   repeat: 'loop',
 } as const;
-const HARNESS_TOKEN_STAGGER = { mode: 'fixedStep', stepMs: 120 } as const;
 const FINAL_GATE_START_MS = 9400;
 const TOKEN_FLOW_SIZE = DIAGRAM_TOKEN_SIZE.flow;
 const DESKTOP_NODE_Y = 104;
@@ -135,7 +149,7 @@ function color(tone: Tone) {
   return COLORS[tone];
 }
 
-function tokenTone(tone: Tone) {
+function tokenTone(tone: Tone): TokenUnitTone {
   if (tone === 'system') return 'cyan';
   if (tone === 'model') return 'violet';
   return tone;
@@ -253,6 +267,9 @@ function Arrow({
   step,
   tokens,
   startDelayMs,
+  spacingPx,
+  laneOrientation,
+  tokenToneOverride,
   label,
   labelX,
   labelY,
@@ -262,6 +279,9 @@ function Arrow({
   step: FlowStep;
   tokens: TokenSequence;
   startDelayMs?: number;
+  spacingPx: number;
+  laneOrientation?: TokenTrainOrientation;
+  tokenToneOverride?: TokenUnitTone;
   label?: string;
   labelX?: number;
   labelY?: number;
@@ -273,10 +293,11 @@ function Arrow({
         d={d}
         tokens={tokens}
         timing={{ ...HARNESS_TOKEN_TIMING, startDelayMs }}
-        stagger={HARNESS_TOKEN_STAGGER}
+        stagger={{ mode: 'pathSpacing', spacingPx }}
         size={TOKEN_FLOW_SIZE}
-        tone={tokenTone(tone)}
+        tone={tokenToneOverride ?? tokenTone(tone)}
         stroke={c.accent}
+        laneOrientation={laneOrientation}
         pathClassName={styles.vectorStroke}
         label={label}
         labelX={labelX}
@@ -554,6 +575,7 @@ function DesktopConnectors() {
         step={2}
         tokens={CONTEXT_TOKEN_SEQUENCE}
         startDelayMs={200}
+        spacingPx={24}
       />
       {LOOP_STARTS.map((startDelayMs) => (
         <Arrow
@@ -563,6 +585,8 @@ function DesktopConnectors() {
           step={3}
           tokens={ACTION_TOKEN_SEQUENCE}
           startDelayMs={startDelayMs}
+          spacingPx={20}
+          laneOrientation="above"
         />
       ))}
       {RETURN_STARTS.map((startDelayMs) => (
@@ -573,6 +597,9 @@ function DesktopConnectors() {
           step={5}
           tokens={OBSERVATION_TOKEN_SEQUENCE}
           startDelayMs={startDelayMs}
+          spacingPx={20}
+          laneOrientation="below"
+          tokenToneOverride="indigo"
           label={
             startDelayMs === RETURN_STARTS[0]
               ? 'LLM selects most next steps'
@@ -588,6 +615,7 @@ function DesktopConnectors() {
         step={4}
         tokens={FINAL_GATE_TOKEN_SEQUENCE}
         startDelayMs={FINAL_GATE_START_MS}
+        spacingPx={24}
         label="human approves or redirects"
         labelX={536}
         labelY={300}
@@ -695,6 +723,7 @@ function MobileConnectors() {
         step={2}
         tokens={MOBILE_CONTEXT_TOKEN_SEQUENCE}
         startDelayMs={200}
+        spacingPx={20}
       />
       {LOOP_STARTS.map((startDelayMs) => (
         <Arrow
@@ -704,6 +733,8 @@ function MobileConnectors() {
           step={3}
           tokens={MOBILE_ACTION_TOKEN_SEQUENCE}
           startDelayMs={startDelayMs}
+          spacingPx={18}
+          laneOrientation="above"
         />
       ))}
       {RETURN_STARTS.map((startDelayMs) => (
@@ -714,6 +745,9 @@ function MobileConnectors() {
           step={5}
           tokens={MOBILE_OBSERVATION_TOKEN_SEQUENCE}
           startDelayMs={startDelayMs}
+          spacingPx={18}
+          laneOrientation="below"
+          tokenToneOverride="indigo"
         />
       ))}
       <Arrow
@@ -722,6 +756,7 @@ function MobileConnectors() {
         step={4}
         tokens={MOBILE_FINAL_GATE_TOKEN_SEQUENCE}
         startDelayMs={FINAL_GATE_START_MS}
+        spacingPx={24}
         label="human approves or redirects"
         labelX={94}
         labelY={506}

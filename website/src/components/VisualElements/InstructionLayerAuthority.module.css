@@ -15,14 +15,6 @@
   max-width: 360px;
 }
 
-.title {
-  fill: var(--ifm-font-color-base);
-  font-family: var(--font-mono-ai);
-  font-size: 16px;
-  font-weight: 720;
-}
-
-.note,
 .columnLabel,
 .slideLabel,
 .filterLabel {
@@ -176,11 +168,6 @@
     display: block;
   }
 
-  .title {
-    font-size: 15px;
-  }
-
-  .note,
   .columnLabel,
   .slideLabel,
   .filterLabel {

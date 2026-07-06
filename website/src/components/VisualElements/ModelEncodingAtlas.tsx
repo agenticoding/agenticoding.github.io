@@ -33,6 +33,10 @@ const CONTENT_OFFSET: Record<Viewport, Point> = {
   desktop: { x: 20, y: -23 },
   mobile: { x: 0, y: 0 },
 };
+const BODY_RECENTER_OFFSET: Record<Viewport, Point> = {
+  desktop: { x: 0, y: SPACE_3 - GRID },
+  mobile: { x: 0, y: SPACE_3 - GRID },
+};
 
 type FieldId = 'knowledge' | 'action';
 type EdgeKind = FieldId | 'cross';
@@ -96,7 +100,6 @@ type DiagramSpec = {
   viewBox: LayoutBox;
   surface: LayoutBox;
   eyebrow: Point;
-  caption: Point & { copy: string };
   modelFrame: LayoutBox;
   fields: Field[];
   nodes: Node[];
@@ -126,9 +129,6 @@ const STORY_COPY = {
     'Map of knowledge and action patterns interwoven inside one LLM model parameter mesh',
   modelTitle: 'inside the model',
   modelSubtitle: 'one encoded parameter mesh',
-  desktopCaption:
-    'knowledge and actions are intertwined across one parameter mesh',
-  mobileCaption: 'one interconnected model mesh',
 };
 
 const NODE_INFO: Record<NodeId, Omit<Node, 'x' | 'y'>> = {
@@ -431,7 +431,6 @@ function buildSpec(viewport: Viewport): DiagramSpec {
     viewBox: layout.viewBox,
     surface: surfaceBox(layout),
     eyebrow: layout.eyebrow,
-    caption: caption(layout),
     modelFrame: layout.frame,
     fields: buildFields(viewport, layout.frame),
     nodes: buildNodes(viewport, layout.frame),
@@ -440,15 +439,6 @@ function buildSpec(viewport: Viewport): DiagramSpec {
   spec.edges = buildEdges(viewport, spec.nodes);
   validateSpec(viewport, spec);
   return spec;
-}
-
-function caption(layout: (typeof VIEWPORT_LAYOUTS)[Viewport]) {
-  const copy =
-    layout.viewBox.width > 400
-      ? STORY_COPY.desktopCaption
-      : STORY_COPY.mobileCaption;
-  const surface = surfaceBox(layout);
-  return { x: layout.viewBox.width / 2, y: bottom(surface) - SPACE_3, copy };
 }
 
 function surfaceBox(layout: (typeof VIEWPORT_LAYOUTS)[Viewport]) {
@@ -1293,11 +1283,18 @@ function textProps(point: Point, textAnchor: Field['textAnchor'] = 'start') {
   };
 }
 
-function contentTransform(viewport: Viewport) {
-  const offset = CONTENT_OFFSET[viewport];
+function translateOffset(offset: Point) {
   return offset.x || offset.y
     ? `translate(${offset.x} ${offset.y})`
     : undefined;
+}
+
+function bodyTransform(viewport: Viewport) {
+  return translateOffset(BODY_RECENTER_OFFSET[viewport]);
+}
+
+function contentTransform(viewport: Viewport) {
+  return translateOffset(CONTENT_OFFSET[viewport]);
 }
 
 function MeshEdge({ edge }: { edge: Edge; viewport: Viewport }) {
@@ -1490,22 +1487,14 @@ function AtlasSvg({
       className={`${styles.diagram} ${className}`}
     >
       <ModelFrameLabel surface={spec.surface} viewport={viewport} />
-      <FieldLabelLayer fields={spec.fields} viewport={viewport} />
-      <g transform={contentTransform(viewport)}>
-        <EdgeLayer edges={spec.edges} viewport={viewport} />
-        <PulseLayer spec={spec} pulses={pulses} onDone={onDone} />
-        <NodeLayer nodes={spec.nodes} viewport={viewport} />
+      <g transform={bodyTransform(viewport)}>
+        <FieldLabelLayer fields={spec.fields} viewport={viewport} />
+        <g transform={contentTransform(viewport)}>
+          <EdgeLayer edges={spec.edges} viewport={viewport} />
+          <PulseLayer spec={spec} pulses={pulses} onDone={onDone} />
+          <NodeLayer nodes={spec.nodes} viewport={viewport} />
+        </g>
       </g>
-      <text
-        x={spec.caption.x}
-        y={spec.caption.y}
-        textAnchor="middle"
-        fontFamily="var(--font-mono-ai)"
-        fontSize="11"
-        fill="var(--visual-violet)"
-      >
-        {spec.caption.copy}
-      </text>
     </svg>
   );
 }

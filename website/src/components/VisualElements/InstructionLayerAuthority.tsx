@@ -24,9 +24,9 @@ type RoleCase = {
 
 const PROMPT_LINES = ['Always return JSON', 'summary · risks', 'next_action'];
 const CASES: RoleCase[] = [
-  { role: 'SYSTEM', behavior: 'standing rule', detail: 'enforce JSON shape', tone: 'cyan', emoji: 'compass', y: 92, mobileY: 208 },
-  { role: 'USER', behavior: 'task preference', detail: 'follow unless overridden', tone: 'neutral', emoji: 'operator', y: 166, mobileY: 262 },
-  { role: 'OBSERVATION', behavior: 'observed text', detail: 'data, not command', tone: 'indigo', emoji: 'receipt', y: 240, mobileY: 316 },
+  { role: 'SYSTEM', behavior: 'standing rule', detail: 'enforce JSON shape', tone: 'cyan', emoji: 'compass', y: 44, mobileY: 156 },
+  { role: 'USER', behavior: 'task preference', detail: 'follow unless overridden', tone: 'neutral', emoji: 'operator', y: 118, mobileY: 210 },
+  { role: 'OBSERVATION', behavior: 'observed text', detail: 'data, not command', tone: 'indigo', emoji: 'receipt', y: 192, mobileY: 264 },
 ];
 
 const ROLE_CYCLE_MS = getRoleCycleMs(CASES.length);
@@ -128,7 +128,7 @@ function rightTipPoints(x: number, y: number) {
   return `${x} ${y}, ${x - ARROW_HEAD_W} ${y - ARROW_HEAD_HALF_H}, ${x - ARROW_HEAD_W} ${y + ARROW_HEAD_HALF_H}`;
 }
 
-const FLOW_CY = 189;
+const FLOW_CY = 141;
 const PROMPT_RIGHT_X = 250;
 const PROMPT_BUS_X = 288;
 const FILTER_LEFT_X = 326;
@@ -173,16 +173,14 @@ function DesktopCase({ item, index }: { item: RoleCase; index: number }) {
 
 function DesktopDiagram() {
   return (
-    <svg viewBox="0 0 940 360" width="100%" role="img" aria-label="The same instruction text enters different source roles before the LLM predicts different behavior." className={clsx(styles.diagram, styles.desktop)} style={diagramTimingStyle} xmlns="http://www.w3.org/2000/svg">
-      <text x={470} y={30} textAnchor="middle" className={styles.title}>same words, different source role</text>
-      <text x={470} y={52} textAnchor="middle" className={styles.note}>role boundary conditions prediction</text>
-      <text x={145} y={82} textAnchor="middle" className={styles.columnLabel}>same words</text>
-      <text x={397} y={82} textAnchor="middle" className={styles.columnLabel}>source role</text>
-      <text x={651} y={82} textAnchor="middle" className={styles.columnLabel}>model prediction</text>
-      <text x={833} y={82} textAnchor="middle" className={styles.columnLabel}>behavior</text>
-      <PromptSlide x={40} y={138} />
+    <svg viewBox="0 0 940 270" width="100%" role="img" aria-label="The same instruction text enters different source roles before the LLM predicts different behavior." className={clsx(styles.diagram, styles.desktop)} style={diagramTimingStyle} xmlns="http://www.w3.org/2000/svg">
+      <text x={145} y={34} textAnchor="middle" className={styles.columnLabel}>same words</text>
+      <text x={397} y={34} textAnchor="middle" className={styles.columnLabel}>source role</text>
+      <text x={651} y={34} textAnchor="middle" className={styles.columnLabel}>model prediction</text>
+      <text x={833} y={34} textAnchor="middle" className={styles.columnLabel}>behavior</text>
+      <PromptSlide x={40} y={90} />
       {CASES.map((item, index) => <DesktopCase key={item.role} item={item} index={index} />)}
-      <GearNode x={620} y={158} size={62} className={clsx(styles.projectorGear, 'inference-llm-cycle idle-inference-cycle')} style={gearCycleStyle} />
+      <GearNode x={620} y={110} size={62} className={clsx(styles.projectorGear, 'inference-llm-cycle idle-inference-cycle')} style={gearCycleStyle} />
     </svg>
   );
 }
@@ -191,24 +189,22 @@ function MobileCase({ item, index }: { item: RoleCase; index: number }) {
   return (
     <g>
       <LayerFilter item={item} x={109} y={item.mobileY} index={index} />
-      <ProjectionPanel item={item} x={42} y={506 + index * 56} index={index} width={276} />
+      <ProjectionPanel item={item} x={42} y={454 + index * 56} index={index} width={276} />
     </g>
   );
 }
 
 function MobileDiagram() {
   return (
-    <svg viewBox="0 0 360 690" width="100%" role="img" aria-label="Mobile view: same instruction text, source role, model prediction, different behavior." className={clsx(styles.diagram, styles.mobile)} style={diagramTimingStyle} xmlns="http://www.w3.org/2000/svg">
-      <text x={180} y={30} textAnchor="middle" className={styles.title}>same words, different source role</text>
-      <text x={180} y={52} textAnchor="middle" className={styles.note}>source role changes prediction</text>
-      <PromptSlide x={75} y={76} />
-      <path d="M 180 178 V 204" className={styles.mobileGuide} />
-      <text x={180} y={197} textAnchor="middle" className={styles.columnLabel}>assign source role</text>
+    <svg viewBox="0 0 360 650" width="100%" role="img" aria-label="Mobile view: same instruction text, source role, model prediction, different behavior." className={clsx(styles.diagram, styles.mobile)} style={diagramTimingStyle} xmlns="http://www.w3.org/2000/svg">
+      <PromptSlide x={75} y={24} />
+      <path d="M 180 126 V 152" className={styles.mobileGuide} />
+      <text x={180} y={145} textAnchor="middle" className={styles.columnLabel}>source role</text>
       {CASES.map((item, index) => <MobileCase key={item.role} item={item} index={index} />)}
-      <path d="M 180 362 V 390" className={styles.mobileGuide} />
-      <GearNode x={149} y={390} size={62} className={clsx(styles.projectorGear, 'inference-llm-cycle idle-inference-cycle')} style={gearCycleStyle} />
-      <path d="M 180 452 V 496" className={styles.mobileGuide} />
-      <text x={180} y={489} textAnchor="middle" className={styles.columnLabel}>behavior changes</text>
+      <path d="M 180 310 V 338" className={styles.mobileGuide} />
+      <GearNode x={149} y={338} size={62} className={clsx(styles.projectorGear, 'inference-llm-cycle idle-inference-cycle')} style={gearCycleStyle} />
+      <path d="M 180 400 V 444" className={styles.mobileGuide} />
+      <text x={180} y={437} textAnchor="middle" className={styles.columnLabel}>behavior</text>
     </svg>
   );
 }

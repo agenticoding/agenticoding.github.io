@@ -1,13 +1,13 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './LivingContextWindowStream.module.css';
-import { EmojiImage } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
+import { DiagramTile } from './DiagramTile';
 
 type Tone = 'cyan' | 'indigo' | 'neutral' | 'violet';
 type AssemblyStyle = React.CSSProperties & { '--step': number };
 type Variant = 'desktop' | 'mobile';
-type LayerSlice = { label: string; tone: Tone; emoji: keyof typeof EMOJI; x: number; y: number; w: number; h: number; emojiX: number; textX: number; threadStartX: number; rawY: number; step: number };
+type LayerSlice = { label: string; tone: Tone; emoji: keyof typeof EMOJI; x: number; y: number; w: number; h: number; threadStartX: number; rawY: number; step: number };
 type RawLine = { text: string; tone?: Tone; indent?: number; small?: boolean };
 type RawBlock = { y: number; tone: Tone; lines: RawLine[]; step: number };
 type Region = {
@@ -19,12 +19,12 @@ type Region = {
 };
 
 const TILE_LAYOUTS = {
-  desktop: { x: 104, y: 142, width: 170, height: 32, stride: 38, emojiX: 112, textX: 138, threadStartX: 276 },
-  mobile: { x: 70, y: 96, width: 220, height: 24, stride: 32, emojiX: 80, textX: 106, threadStartX: 0 },
+  desktop: { x: 104, y: 90, width: 170, height: 32, stride: 38, threadStartX: 276 },
+  mobile: { x: 70, y: 54, width: 220, height: 24, stride: 32, threadStartX: 0 },
 } as const;
 
 const DESKTOP_LAYOUT = {
-  rawY: 142,
+  rawY: 90,
   rawGap: 16,
   lineHeight: 18,
   threadJointX: 290,
@@ -32,7 +32,7 @@ const DESKTOP_LAYOUT = {
 } as const;
 
 const MOBILE_LAYOUT = {
-  rawY: 376,
+  rawY: 334,
   rawGap: 10,
   lineHeight: 16,
 } as const;
@@ -191,8 +191,6 @@ function layerSlice(region: Region, index: number, variant: Variant = 'desktop')
     y: tile.y,
     w: tile.width,
     h: tile.height,
-    emojiX: tile.emojiX,
-    textX: tile.textX,
     threadStartX: tile.threadStartX,
     rawY: variant === 'mobile' ? mobileRawY(index) : desktopRawY(index),
     step: index,
@@ -208,8 +206,10 @@ function rawBlock(region: Region, index: number, variant: Variant = 'desktop'): 
   };
 }
 
-function toneClass(tone: Tone) {
-  return styles[tone];
+function rawRailBounds(blockY: number, lineCount: number, lineHeight: number) {
+  const top = blockY - RAW_TEXT_METRICS.topOffset;
+  const bottom = blockY + (lineCount - 1) * lineHeight + RAW_TEXT_METRICS.bottomOffset;
+  return { top, bottom, center: (top + bottom) / 2 };
 }
 
 function strokeClass(tone: Tone) {
@@ -225,26 +225,43 @@ function stepStyle(step: number): AssemblyStyle {
   return { '--step': step };
 }
 
+function ContextRegionTile({ layer }: { layer: LayerSlice }) {
+  return (
+    <DiagramTile
+      variant="label"
+      x={layer.x}
+      y={layer.y}
+      width={layer.w}
+      height={layer.h}
+      tone={layer.tone}
+      title={layer.label}
+      icon={EMOJI[layer.emoji]}
+      labelAlign="center"
+      labelIconSize={18}
+      rectClassName={styles.slice}
+    />
+  );
+}
+
 function LayerSurface() {
   return (
     <g aria-hidden="true">
-      <text x={189} y={120} textAnchor="middle" className={styles.depthLabel}>context regions</text>
+      <text x={189} y={68} textAnchor="middle" className={styles.depthLabel}>context regions</text>
       <g className={styles.assemblerCursor}>
         <g className={styles.assemblerCursorMotion}>
           <g className={styles.assemblerCursorSize}>
-            <path d="M 96 140 V 176" />
-            <path d="M 96 140 H 102 M 96 176 H 102" />
+            <path d="M 96 88 V 124" />
+            <path d="M 96 88 H 102 M 96 124 H 102" />
           </g>
         </g>
       </g>
       {REGIONS.map((region, index) => {
         const layer = layerSlice(region, index);
+        const threadEndY = rawRailBounds(layer.rawY, region.desktopLines.length, DESKTOP_LAYOUT.lineHeight).center;
         return (
           <g key={layer.label} className={styles.assemblyLayer} style={stepStyle(layer.step)}>
-            <rect x={layer.x} y={layer.y} width={layer.w} height={layer.h} className={clsx(styles.slice, toneClass(layer.tone))} />
-            <EmojiImage asset={EMOJI[layer.emoji]} x={layer.emojiX} y={layer.y + (layer.h - 18) / 2} size={18} />
-            <text x={layer.textX} y={layer.y + layer.h / 2} className={styles.sliceText}>{layer.label}</text>
-            <path d={`M ${layer.threadStartX} ${layer.y + layer.h / 2} H ${DESKTOP_LAYOUT.threadJointX} V ${layer.rawY - RAW_TEXT_METRICS.topOffset} H ${DESKTOP_LAYOUT.threadEndX}`} className={clsx(styles.thread, styles.assemblyThread, strokeClass(layer.tone))} />
+            <ContextRegionTile layer={layer} />
+            <path d={`M ${layer.threadStartX} ${layer.y + layer.h / 2} H ${DESKTOP_LAYOUT.threadJointX} V ${threadEndY} H ${DESKTOP_LAYOUT.threadEndX}`} className={clsx(styles.thread, styles.assemblyThread, strokeClass(layer.tone))} />
           </g>
         );
       })}
@@ -255,11 +272,11 @@ function LayerSurface() {
 function MobileLayerRail() {
   return (
     <g aria-hidden="true">
-      <text x={70} y={82} className={styles.depthLabel}>context regions</text>
+      <text x={70} y={40} className={styles.depthLabel}>context regions</text>
       <g className={clsx(styles.assemblerCursor, styles.mobileAssemblerCursor)}>
         <g className={styles.mobileAssemblerCursorMotion}>
-          <path d="M 58 94 V 122" />
-          <path d="M 58 94 H 64 M 58 122 H 64" />
+          <path d="M 62 52 V 80" />
+          <path d="M 62 52 H 68 M 62 80 H 68" />
         </g>
       </g>
       {REGIONS.map((region, index) => <MobileLayerRow key={region.label} layer={layerSlice(region, index, 'mobile')} />)}
@@ -270,9 +287,7 @@ function MobileLayerRail() {
 function MobileLayerRow({ layer }: { layer: LayerSlice }) {
   return (
     <g className={styles.assemblyLayer} style={stepStyle(layer.step)}>
-      <rect x={layer.x} y={layer.y} width={layer.w} height={layer.h} className={clsx(styles.slice, toneClass(layer.tone))} />
-      <EmojiImage asset={EMOJI[layer.emoji]} x={layer.emojiX} y={layer.y + (layer.h - 18) / 2} size={18} />
-      <text x={layer.textX} y={layer.y + layer.h / 2} className={styles.sliceText}>{layer.label}</text>
+      <ContextRegionTile layer={layer} />
     </g>
   );
 }
@@ -286,11 +301,10 @@ function MobileRawBlockView({ block }: { block: RawBlock }) {
 }
 
 function RawTextBlock({ block, x, railX, lineHeight, mobile = false }: { block: RawBlock; x: number; railX: number; lineHeight: number; mobile?: boolean }) {
-  const railTop = block.y - RAW_TEXT_METRICS.topOffset;
-  const railBottom = block.y + (block.lines.length - 1) * lineHeight + RAW_TEXT_METRICS.bottomOffset;
+  const rail = rawRailBounds(block.y, block.lines.length, lineHeight);
   return (
     <g className={styles.rawBlock} style={stepStyle(block.step)}>
-      <path d={`M ${railX} ${railTop} V ${railBottom}`} className={clsx(styles.rawRail, strokeClass(block.tone))} />
+      <path d={`M ${railX} ${rail.top} V ${rail.bottom}`} className={clsx(styles.rawRail, strokeClass(block.tone))} />
       {block.lines.map((line, index) => <RawLineText key={`${block.y}-${line.text}`} line={line} x={x} y={block.y + index * lineHeight} mobile={mobile} />)}
     </g>
   );
@@ -305,33 +319,30 @@ function RawLineText({ line, x, y, mobile }: { line: RawLine; x: number; y: numb
 
 function DesktopDiagram() {
   return (
-    <svg viewBox="0 0 900 830" width="100%" role="img" aria-label="A context window cutaway where ordered layers are exposed as raw serialized request text." className={clsx(styles.diagram, styles.desktopDiagram)} xmlns="http://www.w3.org/2000/svg">
-      <text x={450} y={28} textAnchor="middle" className={styles.title}>context regions become raw request</text>
-      <text x={450} y={48} textAnchor="middle" className={styles.note}>the harness selects context; the model receives serialized text and payloads</text>
-      <rect x={54} y={76} width={792} height={701} className={styles.window} />
+    <svg viewBox="0 0 900 740" width="100%" role="img" aria-label="A context window cutaway where ordered layers are exposed as raw serialized request text." className={clsx(styles.diagram, styles.desktopDiagram)} xmlns="http://www.w3.org/2000/svg">
+      <rect x={54} y={24} width={792} height={701} className={styles.window} />
       <LayerSurface />
-      <text x={576} y={120} textAnchor="middle" className={styles.depthLabel}>serialized request</text>
+      <text x={576} y={68} textAnchor="middle" className={styles.depthLabel}>serialized request</text>
       {REGIONS.map((region, index) => <RawBlockView key={region.label} block={rawBlock(region, index)} />)}
-      <text x={450} y={810} textAnchor="middle" className={styles.note}>each turn: the harness walks regions and serializes the next model request</text>
     </svg>
   );
 }
 
 function MobileDiagram() {
   return (
-    <svg viewBox="0 0 360 892" width="100%" role="img" aria-label="A mobile context window cutaway where context regions serialize into raw request text." className={clsx(styles.diagram, styles.mobileDiagram)} xmlns="http://www.w3.org/2000/svg">
-      <text x={180} y={24} textAnchor="middle" className={styles.title}>context regions become</text>
-      <text x={180} y={46} textAnchor="middle" className={styles.title}>raw request</text>
-      <text x={180} y={64} textAnchor="middle" className={styles.note}>harness walks regions into requests</text>
-      <rect x={24} y={66} width={312} height={760} className={styles.window} />
+    <svg viewBox="0 0 360 804" width="100%" role="img" aria-label="A mobile context window cutaway where context regions serialize into raw request text." className={clsx(styles.diagram, styles.mobileDiagram)} xmlns="http://www.w3.org/2000/svg">
+      <rect x={24} y={24} width={312} height={760} className={styles.window} />
       <MobileLayerRail />
-      <text x={48} y={348} className={styles.depthLabel}>serialized request</text>
+      <text x={48} y={306} className={styles.depthLabel}>serialized request</text>
       <g className={clsx(styles.assemblerCursor, styles.mobileRawCursor)} aria-hidden="true">
-        <path d="M 30 366 V 414" />
-        <path d="M 30 366 H 36 M 30 414 H 36" />
+        <g className={styles.mobileRawCursorMotion}>
+          <g className={styles.mobileRawCursorSize}>
+            <path d="M 34 320 V 371" />
+            <path d="M 34 320 H 40 M 34 371 H 40" />
+          </g>
+        </g>
       </g>
       {REGIONS.map((region, index) => <MobileRawBlockView key={region.label} block={rawBlock(region, index, 'mobile')} />)}
-      <text x={180} y={864} textAnchor="middle" className={styles.note}>active row and raw block advance together</text>
     </svg>
   );
 }

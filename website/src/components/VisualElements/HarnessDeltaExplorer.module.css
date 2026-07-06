@@ -14,9 +14,7 @@
 .header h3,
 .header p,
 .chartFigure,
-.chartCaption,
-.chipGroup p,
-.sourceTable caption {
+.chipGroup p {
   margin: 0;
 }
 
@@ -27,7 +25,6 @@
 }
 
 .header p:not(.eyebrow),
-.chartCaption,
 .screenSummary {
   color: var(--text-muted);
   font-size: var(--text-sm);
@@ -72,11 +69,6 @@
   height: auto;
   margin-inline: auto;
   overflow: hidden;
-}
-
-.chartCaption {
-  margin-top: var(--space-1);
-  text-align: center;
 }
 
 .desktopChart,
@@ -220,13 +212,6 @@
   line-height: var(--lh-sm);
 }
 
-.sourceTable caption {
-  color: var(--text-muted);
-  font-size: var(--text-xs);
-  line-height: var(--lh-sm);
-  text-align: left;
-}
-
 .sourceTable th,
 .sourceTable td {
   padding: var(--space-1);
@@ -312,8 +297,7 @@
     display: block;
   }
 
-  .sourceTable thead,
-  .sourceTable caption {
+  .sourceTable thead {
     position: absolute;
     width: 1px;
     height: 1px;

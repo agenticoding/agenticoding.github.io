@@ -1,14 +1,43 @@
 import React from 'react';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
-import { ArrowMarker as SharedArrowMarker } from './diagramGeometry';
-import { DIAGRAM_STROKE } from './diagramScale';
+import { DiagramArrow, DiagramArrowMarkers } from './DiagramArrow';
+import { DiagramTileSurface } from './DiagramTile';
+import { tileToneVars, voiceStyle, type DiagramTone } from './diagramTileLayout';
 import styles from './PostTrainingTuningBoard.module.css';
 
 const VW = 640;
 const VH = 384;
 const MOBILE_VW = 360;
 const MOBILE_VH = 660;
+const CONNECTOR_TARGET_GAP = 8;
+
+type Box = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+function coord(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
+function horizontalConnector(from: Box, to: Box) {
+  const startX = from.x + from.width;
+  const endX = to.x - CONNECTOR_TARGET_GAP;
+  const y = from.y + from.height / 2;
+  const controlOffset = Math.max(8, (endX - startX) / 3);
+  return `M ${coord(startX)} ${coord(y)} C ${coord(startX + controlOffset)} ${coord(y)}, ${coord(endX - controlOffset)} ${coord(y)}, ${coord(endX)} ${coord(y)}`;
+}
+
+function verticalConnector(from: Box, to: Box) {
+  const startY = from.y + from.height;
+  const endY = to.y - CONNECTOR_TARGET_GAP;
+  const x = from.x + from.width / 2;
+  const controlOffset = Math.max(6, (endY - startY) / 3);
+  return `M ${coord(x)} ${coord(startY)} C ${coord(x)} ${coord(startY + controlOffset)}, ${coord(x)} ${coord(endY - controlOffset)}, ${coord(x)} ${coord(endY)}`;
+}
 
 const SLIDERS = [
   {
@@ -62,6 +91,50 @@ const BADGES = [
   { label: 'fits domain', color: 'indigo' },
 ] as const;
 
+const CARD_COPY = {
+  base: {
+    title: 'base model',
+    desktopSubtitle: 'broad patterns',
+    mobileSubtitle: 'broad patterns, raw continuation',
+    detail: 'raw continuation',
+  },
+  tuning: {
+    title: 'post-training',
+    subtitle: 'behavior tuning board',
+  },
+  profile: {
+    title: 'product profile',
+    subtitle: 'shaped behavior',
+  },
+} as const;
+
+const FLOW_LABELS = {
+  desktop: `${CARD_COPY.base.title} → ${CARD_COPY.tuning.title} → product behavior`,
+  mobile: `${CARD_COPY.base.title} → ${CARD_COPY.tuning.title} → behavior`,
+} as const;
+
+const DESKTOP_BOXES = {
+  base: { x: 16, y: 112, width: 160, height: 160 },
+  tuning: { x: 216, y: 40, width: 208, height: 320 },
+  profile: { x: 456, y: 72, width: 160, height: 240 },
+} as const;
+
+const MOBILE_BOXES = {
+  base: { x: 32, y: 52, width: 296, height: 88 },
+  tuning: { x: 20, y: 164, width: 320, height: 316 },
+  profile: { x: 32, y: 500, width: 296, height: 146 },
+} as const;
+
+const DESKTOP_CONNECTORS = [
+  horizontalConnector(DESKTOP_BOXES.base, DESKTOP_BOXES.tuning),
+  horizontalConnector(DESKTOP_BOXES.tuning, DESKTOP_BOXES.profile),
+] as const;
+
+const MOBILE_CONNECTORS = [
+  verticalConnector(MOBILE_BOXES.base, MOBILE_BOXES.tuning),
+  verticalConnector(MOBILE_BOXES.tuning, MOBILE_BOXES.profile),
+] as const;
+
 const SLIDER_STORIES = {
   'instruction following': {
     boost: 8,
@@ -107,8 +180,9 @@ type Badge = (typeof BADGES)[number];
 type SliderLabel = Slider['label'];
 type BadgeLabel = Badge['label'];
 
-function semanticVar(color: string, kind: 'fg' | 'bg' = 'fg') {
-  return `var(--visual${kind === 'bg' ? '-bg' : ''}-${color})`;
+function semanticVar(color: DiagramTone, kind: 'fg' | 'bg' = 'fg') {
+  const tone = tileToneVars(color);
+  return kind === 'bg' ? tone.fill : tone.accent;
 }
 
 function CardTitle({
@@ -116,30 +190,33 @@ function CardTitle({
   y,
   title,
   subtitle,
+  textAnchor,
 }: {
   x: number;
   y: number;
   title: string;
   subtitle: string;
+  textAnchor?: 'start' | 'middle' | 'end';
 }) {
+  const anchorProps = textAnchor ? { textAnchor } : {};
+
   return (
     <>
       <text
         x={x}
         y={y}
-        fontFamily="var(--font-mono-ai)"
-        fontSize="12"
-        fontWeight="700"
+        style={voiceStyle('ai', 12, 700)}
         fill="var(--text-heading)"
+        {...anchorProps}
       >
         {title}
       </text>
       <text
         x={x}
         y={y + 16}
-        fontFamily="var(--font-mono-spec)"
-        fontSize="10"
+        style={voiceStyle('spec', 10, 400)}
         fill="var(--text-muted)"
+        {...anchorProps}
       >
         {subtitle}
       </text>
@@ -147,49 +224,40 @@ function CardTitle({
   );
 }
 
+function FlowLabel({ x, y, label }: { x: number; y: number; label: string }) {
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="middle"
+      style={voiceStyle('ai', 12, 700)}
+      fill="var(--visual-violet)"
+    >
+      {label}
+    </text>
+  );
+}
+
 function BaseModelCard() {
   return (
     <g>
-      <rect
-        x="16"
-        y="112"
-        width="160"
-        height="160"
-        rx={0}
-        fill="var(--surface-raised)"
-        stroke="var(--border-default)"
+      <DiagramTileSurface {...DESKTOP_BOXES.base} tone="neutral" />
+      <CardTitle
+        x={96}
+        y={144}
+        title={CARD_COPY.base.title}
+        subtitle={CARD_COPY.base.desktopSubtitle}
+        textAnchor="middle"
       />
-      <text
-        x="96"
-        y="144"
-        textAnchor="middle"
-        fontFamily="var(--font-mono-ai)"
-        fontSize="12"
-        fontWeight="700"
-        fill="var(--text-heading)"
-      >
-        base model
-      </text>
-      <text
-        x="96"
-        y="160"
-        textAnchor="middle"
-        fontFamily="var(--font-mono-spec)"
-        fontSize="10"
-        fill="var(--text-muted)"
-      >
-        broad patterns
-      </text>
       <EmojiImage asset={EMOJI.gear} x={72} y={176} size={48} />
       <text
         x="96"
         y="248"
         textAnchor="middle"
-        fontFamily="var(--font-mono-spec)"
-        fontSize="10"
+        style={voiceStyle('spec', 10, 400)}
         fill="var(--visual-indigo)"
       >
-        raw continuation
+        {CARD_COPY.base.detail}
       </text>
     </g>
   );
@@ -217,7 +285,7 @@ function SliderTrack({
   y: number;
   width: number;
   value: number;
-  color: string;
+  color: DiagramTone;
   boost: number;
   knobRadius: number;
   story: (typeof SLIDER_STORIES)[SliderLabel];
@@ -278,8 +346,7 @@ function SliderRow({ label, stage, color, value, y }: Slider & { y: number }) {
       <text
         x="240"
         y={y}
-        fontFamily="var(--font-mono-keyword)"
-        fontSize="9"
+        style={voiceStyle('keyword', 9, 400)}
         fill="var(--text-body)"
       >
         {label}
@@ -288,8 +355,7 @@ function SliderRow({ label, stage, color, value, y }: Slider & { y: number }) {
         x="400"
         y={y}
         textAnchor="end"
-        fontFamily="var(--font-mono-spec)"
-        fontSize="9"
+        style={voiceStyle('spec', 9, 400)}
         fill={semanticVar(color)}
       >
         {stage}
@@ -311,20 +377,12 @@ function SliderRow({ label, stage, color, value, y }: Slider & { y: number }) {
 function TuningBoard() {
   return (
     <g>
-      <rect
-        x="216"
-        y="40"
-        width="208"
-        height="320"
-        rx={0}
-        fill="var(--surface-raised)"
-        stroke="var(--border-default)"
-      />
+      <DiagramTileSurface {...DESKTOP_BOXES.tuning} tone="model" />
       <CardTitle
         x={240}
         y={72}
-        title="post-training"
-        subtitle="behavior tuning board"
+        title={CARD_COPY.tuning.title}
+        subtitle={CARD_COPY.tuning.subtitle}
       />
       {SLIDERS.map((slider, i) => (
         <SliderRow key={slider.label} {...slider} y={112 + i * 40} />
@@ -350,35 +408,15 @@ function BadgePill({
 }) {
   return (
     <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={0}
-        fill={semanticVar(color, 'bg')}
-        stroke={semanticVar(color)}
-        className={styles.storyBadge}
-      />
+      <DiagramTileSurface x={x} y={y} width={width} height={height} tone={color} className={styles.storyBadge} />
       {BADGE_EFFECTS[label as BadgeLabel].map((effectClass) => (
-        <rect
-          key={effectClass}
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          rx={0}
-          fill={semanticVar(color, 'bg')}
-          stroke={semanticVar(color)}
-          className={`${styles.storyEffect} ${effectClass}`}
-        />
+        <DiagramTileSurface key={effectClass} x={x} y={y} width={width} height={height} tone={color} className={`${styles.storyEffect} ${effectClass}`} />
       ))}
       <text
         x={x + width / 2}
         y={y + height / 2 + fontSize / 2}
         textAnchor="middle"
-        fontFamily="var(--font-mono-spec)"
-        fontSize={fontSize}
+        style={voiceStyle('spec', fontSize, 400)}
         fill={semanticVar(color)}
       >
         {label}
@@ -390,36 +428,14 @@ function BadgePill({
 function ProductProfileCard() {
   return (
     <g>
-      <rect
-        x="456"
-        y="72"
-        width="160"
-        height="240"
-        rx={0}
-        fill="var(--surface-raised)"
-        stroke="var(--border-subtle)"
+      <DiagramTileSurface {...DESKTOP_BOXES.profile} tone="neutral" />
+      <CardTitle
+        x={536}
+        y={104}
+        title={CARD_COPY.profile.title}
+        subtitle={CARD_COPY.profile.subtitle}
+        textAnchor="middle"
       />
-      <text
-        x="536"
-        y="104"
-        textAnchor="middle"
-        fontFamily="var(--font-mono-ai)"
-        fontSize="12"
-        fontWeight="700"
-        fill="var(--text-heading)"
-      >
-        product profile
-      </text>
-      <text
-        x="536"
-        y="120"
-        textAnchor="middle"
-        fontFamily="var(--font-mono-spec)"
-        fontSize="10"
-        fill="var(--text-muted)"
-      >
-        shaped behavior
-      </text>
       <EmojiImage asset={EMOJI.agent} x={516} y={136} size={40} />
       {BADGES.map((badge, i) => (
         <BadgePill key={badge.label} {...badge} x={480} y={184 + i * 32} />
@@ -428,55 +444,37 @@ function ProductProfileCard() {
   );
 }
 
-function Connector({ d, markerId }: { d: string; markerId: string }) {
-  return (
-    <path
-      d={d}
-      fill="none"
-      stroke="var(--visual-violet)"
-      strokeWidth={DIAGRAM_STROKE.connector}
-      strokeLinecap="butt"
-      markerEnd={`url(#${markerId})`}
-    />
-  );
+function Connector({ d, markerIdPrefix }: { d: string; markerIdPrefix: string }) {
+  return <DiagramArrow d={d} markerIdPrefix={markerIdPrefix} tone="model" />;
 }
 
-function ArrowMarker({ id }: { id: string }) {
-  return <SharedArrowMarker id={id} fill="var(--visual-violet)" />;
+function Connectors({
+  paths,
+  markerIdPrefix,
+}: {
+  paths: readonly string[];
+  markerIdPrefix: string;
+}) {
+  return (
+    <>
+      {paths.map((d) => (
+        <Connector key={d} markerIdPrefix={markerIdPrefix} d={d} />
+      ))}
+    </>
+  );
 }
 
 function MobileBaseCard() {
   return (
     <g>
-      <rect
-        x="32"
-        y="52"
-        width="296"
-        height="88"
-        rx={0}
-        fill="var(--surface-raised)"
-        stroke="var(--border-default)"
-      />
+      <DiagramTileSurface {...MOBILE_BOXES.base} tone="neutral" />
       <EmojiImage asset={EMOJI.gear} x={58} y={76} size={36} />
-      <text
-        x="112"
-        y="90"
-        fontFamily="var(--font-mono-ai)"
-        fontSize="12"
-        fontWeight="700"
-        fill="var(--text-heading)"
-      >
-        base model
-      </text>
-      <text
-        x="112"
-        y="108"
-        fontFamily="var(--font-mono-spec)"
-        fontSize="10"
-        fill="var(--text-muted)"
-      >
-        broad patterns, raw continuation
-      </text>
+      <CardTitle
+        x={112}
+        y={90}
+        title={CARD_COPY.base.title}
+        subtitle={CARD_COPY.base.mobileSubtitle}
+      />
     </g>
   );
 }
@@ -486,20 +484,11 @@ function MobileLeverRow({ slider, y }: { slider: Slider; y: number }) {
 
   return (
     <g>
-      <rect
-        x="32"
-        y={y}
-        width="296"
-        height="36"
-        rx={0}
-        fill="var(--surface-raised)"
-        stroke="var(--border-subtle)"
-      />
+      <DiagramTileSurface x={32} y={y} width={296} height={36} tone="neutral" stroke="var(--border-subtle)" />
       <text
         x="48"
         y={y + 13}
-        fontFamily="var(--font-mono-keyword)"
-        fontSize="9"
+        style={voiceStyle('keyword', 9, 400)}
         fill="var(--text-body)"
       >
         {slider.label}
@@ -508,8 +497,7 @@ function MobileLeverRow({ slider, y }: { slider: Slider; y: number }) {
         x="308"
         y={y + 13}
         textAnchor="end"
-        fontFamily="var(--font-mono-spec)"
-        fontSize="9"
+        style={voiceStyle('spec', 9, 400)}
         fill={semanticVar(slider.color)}
       >
         {slider.stage}
@@ -531,20 +519,12 @@ function MobileLeverRow({ slider, y }: { slider: Slider; y: number }) {
 function MobileTuningStack() {
   return (
     <g>
-      <rect
-        x="20"
-        y="164"
-        width="320"
-        height="316"
-        rx={0}
-        fill="var(--surface-raised)"
-        stroke="var(--border-default)"
-      />
+      <DiagramTileSurface {...MOBILE_BOXES.tuning} tone="model" />
       <CardTitle
         x={44}
         y={192}
-        title="post-training"
-        subtitle="behavior tuning board"
+        title={CARD_COPY.tuning.title}
+        subtitle={CARD_COPY.tuning.subtitle}
       />
       {SLIDERS.map((slider, i) => (
         <MobileLeverRow key={slider.label} slider={slider} y={216 + i * 42} />
@@ -556,35 +536,14 @@ function MobileTuningStack() {
 function MobileProfileCard() {
   return (
     <g>
-      <rect
-        x="32"
-        y="500"
-        width="296"
-        height="146"
-        rx={0}
-        fill="var(--surface-raised)"
-        stroke="var(--border-subtle)"
-      />
+      <DiagramTileSurface {...MOBILE_BOXES.profile} tone="neutral" />
       <EmojiImage asset={EMOJI.agent} x={52} y={520} size={30} />
-      <text
-        x="96"
-        y="530"
-        fontFamily="var(--font-mono-ai)"
-        fontSize="12"
-        fontWeight="700"
-        fill="var(--text-heading)"
-      >
-        product profile
-      </text>
-      <text
-        x="96"
-        y="548"
-        fontFamily="var(--font-mono-spec)"
-        fontSize="10"
-        fill="var(--text-muted)"
-      >
-        shaped behavior
-      </text>
+      <CardTitle
+        x={96}
+        y={530}
+        title={CARD_COPY.profile.title}
+        subtitle={CARD_COPY.profile.subtitle}
+      />
       {BADGES.map((badge, i) => (
         <BadgePill
           key={badge.label}
@@ -600,7 +559,7 @@ function MobileProfileCard() {
 }
 
 function DesktopBoard() {
-  const markerId = 'post-training-arrow-desktop';
+  const markerIdPrefix = 'post-training-desktop';
   return (
     <svg
       viewBox={`0 0 ${VW} ${VH}`}
@@ -609,28 +568,9 @@ function DesktopBoard() {
       aria-label="Post-training tunes a base model into shaped product behavior"
       className={`${styles.diagram} ${styles.desktopDiagram}`}
     >
-      <defs>
-        <ArrowMarker id={markerId} />
-      </defs>
-      <text
-        x="320"
-        y="24"
-        textAnchor="middle"
-        fontFamily="var(--font-mono-ai)"
-        fontSize="12"
-        fontWeight="700"
-        fill="var(--visual-violet)"
-      >
-        base model → post-training → product behavior
-      </text>
-      <Connector
-        markerId={markerId}
-        d="M 176 192 C 184 192, 200 192, 216 192"
-      />
-      <Connector
-        markerId={markerId}
-        d="M 424 192 C 432 192, 448 192, 456 192"
-      />
+      <DiagramArrowMarkers prefix={markerIdPrefix} tones={['model']} />
+      <FlowLabel x={320} y={24} label={FLOW_LABELS.desktop} />
+      <Connectors paths={DESKTOP_CONNECTORS} markerIdPrefix={markerIdPrefix} />
       <BaseModelCard />
       <TuningBoard />
       <ProductProfileCard />
@@ -639,7 +579,7 @@ function DesktopBoard() {
 }
 
 function MobileBoard() {
-  const markerId = 'post-training-arrow-mobile';
+  const markerIdPrefix = 'post-training-mobile';
   return (
     <svg
       viewBox={`0 0 ${MOBILE_VW} ${MOBILE_VH}`}
@@ -648,28 +588,9 @@ function MobileBoard() {
       aria-label="Vertical post-training story: base model, tuning levers, and resulting product profile"
       className={`${styles.diagram} ${styles.mobileDiagram}`}
     >
-      <defs>
-        <ArrowMarker id={markerId} />
-      </defs>
-      <text
-        x="180"
-        y="32"
-        textAnchor="middle"
-        fontFamily="var(--font-mono-ai)"
-        fontSize="12"
-        fontWeight="700"
-        fill="var(--visual-violet)"
-      >
-        base model → post-training → behavior
-      </text>
-      <Connector
-        markerId={markerId}
-        d="M 180 140 C 180 150, 180 154, 180 164"
-      />
-      <Connector
-        markerId={markerId}
-        d="M 180 480 C 180 490, 180 492, 180 500"
-      />
+      <DiagramArrowMarkers prefix={markerIdPrefix} tones={['model']} />
+      <FlowLabel x={180} y={32} label={FLOW_LABELS.mobile} />
+      <Connectors paths={MOBILE_CONNECTORS} markerIdPrefix={markerIdPrefix} />
       <MobileBaseCard />
       <MobileTuningStack />
       <MobileProfileCard />

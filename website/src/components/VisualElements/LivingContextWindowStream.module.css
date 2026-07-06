@@ -1,6 +1,4 @@
 .container {
-  --stream-title-size: var(--text-base);
-  --stream-note-size: var(--text-xs);
   --stream-label-size: var(--text-sm);
   --stream-body-size: var(--text-sm);
 
@@ -31,50 +29,12 @@
   stroke-width: 1.5;
 }
 
-.title {
-  fill: var(--ifm-font-color-base);
-  font-family: var(--font-mono-ai);
-  font-size: var(--stream-title-size);
-  font-weight: 650;
-}
-
-.note,
-.depthLabel,
-.depthHint {
+.depthLabel {
   fill: var(--text-muted);
   font-family: var(--font-mono-spec);
-}
-
-.note {
-  font-size: var(--stream-note-size);
-}
-
-.depthLabel,
-.depthHint {
-  font-size: var(--stream-label-size);
-}
-
-.depthLabel {
-  letter-spacing: 0.06em;
-}
-
-.depthHint {
   font-size: var(--stream-label-size);
   letter-spacing: 0.06em;
 }
-
-.sliceText,
-.rawText {
-  font-weight: 650;
-}
-
-.sliceText {
-  dominant-baseline: middle;
-  fill: var(--ifm-font-color-base);
-  font-family: var(--font-mono-spec);
-  font-size: var(--stream-label-size);
-}
-
 .rawText {
   fill: var(--ifm-font-color-base);
   font-family: var(--font-mono);
@@ -98,26 +58,6 @@
 
 .slice {
   stroke-width: 1.2;
-}
-
-.cyan {
-  fill: var(--visual-bg-cyan);
-  stroke: var(--visual-cyan);
-}
-
-.indigo {
-  fill: var(--visual-bg-indigo);
-  stroke: var(--visual-indigo);
-}
-
-.neutral {
-  fill: var(--ifm-color-emphasis-100);
-  stroke: var(--ifm-color-emphasis-500);
-}
-
-.violet {
-  fill: var(--visual-bg-violet);
-  stroke: var(--visual-violet);
 }
 
 .cyanStroke { stroke: var(--visual-cyan); }
@@ -159,7 +99,7 @@
 .assemblerCursorMotion,
 .assemblerCursorSize {
   transform-box: view-box;
-  transform-origin: 96px 140px;
+  transform-origin: 96px 88px;
   animation: 11200ms ease-in-out infinite both;
 }
 
@@ -177,14 +117,23 @@
 
 .mobileAssemblerCursorMotion {
   transform-box: view-box;
-  transform-origin: 58px 94px;
+  transform-origin: 62px 52px;
   animation: mobileAssemblerCursorSweep 11200ms ease-in-out infinite both;
 }
 
-.mobileRawCursor {
+.mobileRawCursorMotion,
+.mobileRawCursorSize {
   transform-box: view-box;
-  transform-origin: 30px 366px;
-  animation: mobileRawCursorSweep 11200ms ease-in-out infinite both;
+  transform-origin: 34px 320px;
+  animation: 11200ms ease-in-out infinite both;
+}
+
+.mobileRawCursorMotion {
+  animation-name: mobileRawCursorSweep;
+}
+
+.mobileRawCursorSize {
+  animation-name: mobileRawCursorResize;
 }
 
 .cutLine {
@@ -254,6 +203,17 @@
   65.571%, 72.571% { transform: translateY(306px); }
   76.286%, 83.286% { transform: translateY(364px); }
   94%, 100% { transform: translateY(0); }
+}
+
+@keyframes mobileRawCursorResize {
+  0%, 12%, 19%,
+  22.714%, 29.714%,
+  44.143%, 51.143%,
+  54.857%, 61.857%,
+  65.571%, 72.571%,
+  94%, 100% { transform: scaleY(1); }
+  33.429%, 40.429%,
+  76.286%, 83.286% { transform: scaleY(1.3137); }
 }
 
 @keyframes assembleSlice {
@@ -331,7 +291,8 @@
   .assemblerCursorMotion,
   .assemblerCursorSize,
   .mobileAssemblerCursorMotion,
-  .mobileRawCursor,
+  .mobileRawCursorMotion,
+  .mobileRawCursorSize,
   .mobileSerializePulse,
   .assemblyLayer .slice,
   .assemblyThread,

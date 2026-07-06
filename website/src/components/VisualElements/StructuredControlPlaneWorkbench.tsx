@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import type { TokenSequence } from './AnimatedTokenFlow';
+import type { TokenSequence, TokenTrainOrientation } from './AnimatedTokenFlow';
 import { TokenArrowTrain } from './TokenArrowTrain';
 import { seededTokenTrain } from './TokenTrainSequence';
 import { DiagramTile } from './DiagramTile';
@@ -70,6 +70,10 @@ const LLM_CALLS = [
   { stepIndex: 3, label: 'draft', context: 'answer', callSlot: 9 },
   { stepIndex: 4, label: 'verify', context: 'citations', callSlot: 12 },
 ] as const;
+const CONTROL_PLANE_NOTE_LINES = [
+  'code owns the pipeline',
+  'LLM calls stay bounded inside it',
+] as const;
 const TOKEN_PAIR = seededTokenTrain('control-plane-token', 2);
 const CODE_PAIR = seededTokenTrain('control-plane-code', 2);
 const SEQUENCE_BEAT_MS = 820;
@@ -81,9 +85,10 @@ const TOKEN_TRAIN_TIMING = {
   fadeMs: 120,
   repeat: 'loop',
 } as const;
-const TOKEN_TRAIN_STAGGER = { mode: 'fixedStep', stepMs: 96 } as const;
 const TOKEN_FLOW_SIZE = DIAGRAM_TOKEN_SIZE.flow;
 const MOBILE_TOKEN_FLOW_SIZE = TOKEN_FLOW_SIZE * 0.6;
+const DESKTOP_LLM_ARROW_PAIR_OFFSET_X = 8;
+const MOBILE_LLM_ARROW_PAIR_OFFSET_Y = 6;
 const PIPELINE_START_SLOT = 3;
 const FINAL_GATE_SLOT = 15;
 const WORKFLOW_CHIP_DELAYS_MS = [PIPELINE_START_SLOT, 4, 5, 8, 11].map(
@@ -156,7 +161,9 @@ function Arrow({
   step,
   tokens,
   startDelayMs,
+  spacingPx,
   size,
+  laneOrientation,
   label,
   labelX,
   labelY,
@@ -166,7 +173,9 @@ function Arrow({
   step: FlowStep;
   tokens: TokenSequence;
   startDelayMs?: number;
+  spacingPx: number;
   size: number;
+  laneOrientation?: TokenTrainOrientation;
   label?: string;
   labelX?: number;
   labelY?: number;
@@ -177,10 +186,11 @@ function Arrow({
         d={d}
         tokens={tokens}
         timing={{ ...TOKEN_TRAIN_TIMING, startDelayMs }}
-        stagger={TOKEN_TRAIN_STAGGER}
+        stagger={{ mode: 'pathSpacing', spacingPx }}
         size={size}
         tone={tokenTone(tone)}
         stroke={color(tone).accent}
+        laneOrientation={laneOrientation}
         pathClassName={styles.vectorStroke}
         label={label}
         labelX={labelX}
@@ -217,6 +227,32 @@ function StageLabel({
         {label}
       </text>
     </g>
+  );
+}
+
+function ContextNote({
+  x,
+  y,
+  textAnchor = 'start',
+}: {
+  x: number;
+  y: number;
+  textAnchor?: 'start' | 'middle';
+}) {
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor={textAnchor}
+      className={styles.contextNote}
+      fill="var(--text-muted)"
+    >
+      {CONTROL_PLANE_NOTE_LINES.map((line, index) => (
+        <tspan key={line} x={x} dy={index === 0 ? 0 : 12}>
+          {line}
+        </tspan>
+      ))}
+    </text>
   );
 }
 
@@ -257,14 +293,7 @@ function DesktopLabels() {
       >
         ROOT ORCHESTRATION CONTEXT
       </text>
-      <text
-        x="44"
-        y="474"
-        className={styles.contextNote}
-        fill="var(--text-muted)"
-      >
-        code owns the pipeline; LLM calls are small junctions inside it
-      </text>
+      <ContextNote x={44} y={462} />
       <StageLabel x={52} y={84} id="01" label="trigger" />
       <StageLabel x={236} y={84} id="02" label="orchestrate" />
       <StageLabel x={536} y={84} id="03" label="gate" />
@@ -503,6 +532,7 @@ function DesktopConnectors() {
         tone="system"
         step={2}
         tokens={CODE_PAIR}
+        spacingPx={22}
         size={TOKEN_FLOW_SIZE}
       />
       <Arrow
@@ -511,6 +541,7 @@ function DesktopConnectors() {
         step={2}
         tokens={CODE_PAIR}
         startDelayMs={STEP_GAP_MS}
+        spacingPx={22}
         size={TOKEN_FLOW_SIZE}
         label="most work happens here"
         labelX={500}
@@ -522,6 +553,7 @@ function DesktopConnectors() {
         step={5}
         tokens={CODE_PAIR}
         startDelayMs={FINAL_GATE_SLOT * SEQUENCE_BEAT_MS}
+        spacingPx={22}
         size={TOKEN_FLOW_SIZE}
       />
       {LLM_CALLS.map((call, i) => (
@@ -541,20 +573,24 @@ function LlmCallArrows({ x, step }: { x: number; step: FlowStep }) {
   return (
     <g>
       <Arrow
-        d={`M ${x - 8} 338 V 378`}
+        d={`M ${x - DESKTOP_LLM_ARROW_PAIR_OFFSET_X} 338 V 378`}
         tone="model"
         step={step}
         tokens={TOKEN_PAIR}
         startDelayMs={inputDelay}
+        spacingPx={22}
         size={TOKEN_FLOW_SIZE}
+        laneOrientation="above"
       />
       <Arrow
-        d={`M ${x + 8} 378 V 338`}
+        d={`M ${x + DESKTOP_LLM_ARROW_PAIR_OFFSET_X} 378 V 338`}
         tone="model"
         step={step}
         tokens={TOKEN_PAIR}
         startDelayMs={inputDelay + SEQUENCE_BEAT_MS}
+        spacingPx={22}
         size={TOKEN_FLOW_SIZE}
+        laneOrientation="below"
       />
     </g>
   );
@@ -598,15 +634,7 @@ function MobileLabels() {
       >
         ROOT ORCHESTRATION CONTEXT
       </text>
-      <text
-        x="170"
-        y="920"
-        textAnchor="middle"
-        className={styles.contextNote}
-        fill="var(--text-muted)"
-      >
-        code owns the pipeline; LLM calls are small junctions
-      </text>
+      <ContextNote x={170} y={908} textAnchor="middle" />
       <StageLabel x={52} y={72} id="01" label="trigger" />
       <StageLabel x={52} y={212} id="02" label="orchestrate" />
       <StageLabel x={52} y={776} id="03" label="gate" />
@@ -703,6 +731,7 @@ function MobileConnectors() {
         tone="system"
         step={2}
         tokens={CODE_PAIR}
+        spacingPx={16}
         size={MOBILE_TOKEN_FLOW_SIZE}
       />
       <Arrow
@@ -711,6 +740,7 @@ function MobileConnectors() {
         step={2}
         tokens={CODE_PAIR}
         startDelayMs={STEP_GAP_MS}
+        spacingPx={16}
         size={MOBILE_TOKEN_FLOW_SIZE}
       />
       {LLM_CALLS.map((call, i) => (
@@ -726,6 +756,7 @@ function MobileConnectors() {
         step={5}
         tokens={CODE_PAIR}
         startDelayMs={FINAL_GATE_SLOT * SEQUENCE_BEAT_MS}
+        spacingPx={16}
         size={MOBILE_TOKEN_FLOW_SIZE}
       />
     </g>
@@ -738,20 +769,24 @@ function MobileLlmCallArrows({ y, step }: { y: number; step: FlowStep }) {
   return (
     <g>
       <Arrow
-        d={`M 138 ${y - 6} H 184`}
+        d={`M 138 ${y - MOBILE_LLM_ARROW_PAIR_OFFSET_Y} H 184`}
         tone="model"
         step={step}
         tokens={TOKEN_PAIR}
         startDelayMs={inputDelay}
+        spacingPx={16}
         size={MOBILE_TOKEN_FLOW_SIZE}
+        laneOrientation="above"
       />
       <Arrow
-        d={`M 184 ${y + 6} H 138`}
+        d={`M 184 ${y + MOBILE_LLM_ARROW_PAIR_OFFSET_Y} H 138`}
         tone="model"
         step={step}
         tokens={TOKEN_PAIR}
         startDelayMs={inputDelay + SEQUENCE_BEAT_MS}
+        spacingPx={16}
         size={MOBILE_TOKEN_FLOW_SIZE}
+        laneOrientation="below"
       />
     </g>
   );

@@ -1,42 +1,25 @@
 import type { ReactNode } from 'react';
-import clsx from 'clsx';
 import styles from './MCPToolSchemaDiagram.module.css';
-import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
-import { useActs } from '../../hooks/useActs';
-import { useMounted } from '../../hooks/useMounted';
+import { ContextLensMetrics, ContextLensWindow, type ContextLensMetric } from './ContextLensWindow';
 
 const VW = 816;
-const VH = 568;
+const VH = 500;
 
-const CARD_Y = 80;
+const CARD_Y = 32;
 const CARD_W = 352;
 const CARD_H = 432;
 const LEFT_X = 48;
 const RIGHT_X = 416;
 const PAD = 24;
 
-// SVG equivalents of design-system radius tokens.
-
-const ACTS = [
-  { id: 'frame', threshold: 0.0 },
-  // The diagram must be complete even when anchor navigation lands directly here.
-  { id: 'cards', threshold: 0.0 },
-  { id: 'rule', threshold: 0.0 },
-] as const;
-
 type LoadingMode = 'eager' | 'deferred';
-
-type LensRow = {
-  label: string;
-  value: string;
-};
 
 type CardSpec = {
   mode: LoadingMode;
   x: number;
   title: string;
   subtitle: string;
-  rows: LensRow[];
+  rows: ContextLensMetric[];
 };
 
 const CARDS: CardSpec[] = [
@@ -84,67 +67,19 @@ function SvgText({ x, y, children, className, fill = 'var(--text-body)', anchor 
   );
 }
 
-function ContextBlock({
-  x,
-  y,
-  w,
-  h,
-  label,
-  semantic = false,
-  dashed = false,
-  className,
-}: {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  label: string;
-  semantic?: boolean;
-  dashed?: boolean;
-  className?: string;
-}) {
-  return (
-    <g aria-hidden="true" className={className}>
-      <rect
-        x={x}
-        y={y}
-        width={w}
-        height={h}
-        rx={0}
-        fill={semantic ? 'var(--visual-bg-cyan)' : 'var(--surface-raised)'}
-        stroke={semantic ? 'var(--visual-cyan)' : 'var(--border-default)'}
-        strokeWidth={semantic ? 1.5 : 1}
-        strokeDasharray={dashed ? '4 3' : undefined}
-      />
-      <SvgText x={x + w / 2} y={y + h / 2} anchor="middle" baseline="middle" className={styles.windowLabel} fill={semantic ? 'var(--visual-cyan)' : 'var(--text-body)'}>
-        {label}
-      </SvgText>
-    </g>
-  );
-}
-
 function ContextWindow({ mode, x, y }: { mode: LoadingMode; x: number; y: number }) {
-  const windowW = 136;
-  const windowH = 104;
+  const blocks = mode === 'eager'
+    ? [
+        { zone: 'primacy' as const, label: 'schemas', tone: 'indigo' as const },
+        { zone: 'middle' as const, label: 'user task', tone: 'neutral' as const },
+      ]
+    : [
+        { zone: 'primacy' as const, label: 'ToolSearch', tone: 'indigo' as const },
+        { zone: 'middle' as const, label: 'user task', tone: 'neutral' as const },
+        { zone: 'recency' as const, label: 'schema', tone: 'indigo' as const, dashed: true },
+      ];
 
-  return (
-    <g aria-hidden="true">
-      <rect x={x} y={y} width={windowW} height={windowH} rx={0} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
-
-      {mode === 'eager' ? (
-        <>
-          <ContextBlock x={x + 16} y={y + 16} w={104} h={40} label="MCP schemas" semantic className={clsx(styles.schemaPulse, 'idle-alternating-emphasis')} />
-          <ContextBlock x={x + 16} y={y + 72} w={104} h={24} label="user task" className={clsx(styles.taskPulse, 'idle-alternating-emphasis')} />
-        </>
-      ) : (
-        <>
-          <ContextBlock x={x + 16} y={y + 8} w={104} h={24} label="ToolSearch" semantic />
-          <ContextBlock x={x + 16} y={y + 40} w={104} h={24} label="user task" className={clsx(styles.taskPulse, 'idle-alternating-emphasis')} />
-          <ContextBlock x={x + 16} y={y + 72} w={104} h={24} label="schema later" semantic dashed className={clsx(styles.schemaPulse, 'idle-alternating-emphasis')} />
-        </>
-      )}
-    </g>
-  );
+  return <ContextLensWindow x={x} y={y} width={136} height={104} tone="indigo" blocks={blocks} />;
 }
 
 function AnnotationStack({ mode, x, y }: { mode: LoadingMode; x: number; y: number }) {
@@ -156,7 +91,7 @@ function AnnotationStack({ mode, x, y }: { mode: LoadingMode; x: number; y: numb
     <g aria-hidden="true">
       {lines.map((line, index) => (
         <g key={line}>
-          <circle cx={x} cy={y + index * 24} r={4} fill={index === 2 ? 'var(--visual-cyan)' : 'var(--text-muted)'} />
+          <circle cx={x} cy={y + index * 24} r={4} fill={index === 2 ? 'var(--visual-indigo)' : 'var(--text-muted)'} />
           <SvgText x={x + 16} y={y + index * 24} baseline="middle" className={styles.annotation} fill="var(--text-body)">
             {line}
           </SvgText>
@@ -169,17 +104,8 @@ function AnnotationStack({ mode, x, y }: { mode: LoadingMode; x: number; y: numb
 function BehaviorNode({ x, y, w, label, semantic = false }: { x: number; y: number; w: number; label: string; semantic?: boolean }) {
   return (
     <g aria-hidden="true">
-      <rect
-        x={x}
-        y={y}
-        width={w}
-        height={32}
-        rx={0}
-        fill={semantic ? 'var(--visual-bg-cyan)' : 'var(--surface-page)'}
-        stroke={semantic ? 'var(--visual-cyan)' : 'var(--border-default)'}
-        strokeWidth={1.5}
-      />
-      <SvgText x={x + w / 2} y={y + 16} anchor="middle" baseline="middle" className={styles.behaviorLabel} fill={semantic ? 'var(--visual-cyan)' : 'var(--text-body)'}>
+      <rect x={x} y={y} width={w} height={32} rx={0} fill={semantic ? 'var(--visual-bg-indigo)' : 'var(--surface-page)'} stroke={semantic ? 'var(--visual-indigo)' : 'var(--border-default)'} strokeWidth={1.5} />
+      <SvgText x={x + w / 2} y={y + 16} anchor="middle" baseline="middle" className={styles.behaviorLabel} fill={semantic ? 'var(--visual-indigo)' : 'var(--text-body)'}>
         {label}
       </SvgText>
     </g>
@@ -188,15 +114,7 @@ function BehaviorNode({ x, y, w, label, semantic = false }: { x: number; y: numb
 
 function BehaviorArrow({ x1, x2, y, semantic = false }: { x1: number; x2: number; y: number; semantic?: boolean }) {
   return (
-    <path
-      d={`M ${x1} ${y} C ${x1 + 8} ${y}, ${x2 - 8} ${y}, ${x2} ${y}`}
-      fill="none"
-      stroke={semantic ? 'var(--visual-cyan)' : 'var(--text-muted)'}
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      markerEnd={semantic ? 'url(#arrowCyan)' : 'url(#arrowNeutral)'}
-      aria-hidden="true"
-    />
+    <path d={`M ${x1} ${y} C ${x1 + 8} ${y}, ${x2 - 8} ${y}, ${x2} ${y}`} fill="none" stroke={semantic ? 'var(--visual-indigo)' : 'var(--text-muted)'} strokeWidth={1.5} strokeLinecap="butt" markerEnd={semantic ? 'url(#arrowIndigo)' : 'url(#arrowNeutral)'} aria-hidden="true" />
   );
 }
 
@@ -224,51 +142,14 @@ function BehaviorPath({ mode, x, y }: { mode: LoadingMode; x: number; y: number 
   );
 }
 
-function LensRows({ rows, x, y }: { rows: LensRow[]; x: number; y: number }) {
-  const positions = [
-    [0, 0],
-    [160, 0],
-    [0, 40],
-    [160, 40],
-    [0, 80],
-  ] as const;
-
-  return (
-    <g>
-      {rows.map((row, index) => {
-        const [dx, dy] = positions[index];
-        return (
-          <g key={row.label}>
-            <SvgText x={x + dx} y={y + dy} className={styles.rowLabel} fill="var(--text-muted)">
-              {row.label}
-            </SvgText>
-            <SvgText x={x + dx} y={y + dy + 16} className={styles.rowValue} fill="var(--text-body)">
-              {row.value}
-            </SvgText>
-          </g>
-        );
-      })}
-    </g>
-  );
-}
-
-function LoadingCard({ card, reached }: { card: CardSpec; reached: boolean }) {
+function LoadingCard({ card }: { card: CardSpec }) {
   const { x, mode } = card;
   const contentX = x + PAD;
 
   return (
-    <g className={clsx(styles.card, reached && styles.cardIn)}>
-      <rect
-        x={x}
-        y={CARD_Y}
-        width={CARD_W}
-        height={CARD_H}
-        rx={0}
-        fill="var(--surface-raised)"
-        stroke="var(--border-default)"
-        strokeWidth={1}
-      />
-      <rect x={x} y={CARD_Y} width={3} height={CARD_H} rx={0} fill="var(--visual-cyan)" />
+    <g>
+      <rect x={x} y={CARD_Y} width={CARD_W} height={CARD_H} rx={0} fill="var(--surface-raised)" stroke="var(--border-default)" strokeWidth={1} />
+      <rect x={x} y={CARD_Y} width={3} height={CARD_H} rx={0} fill="var(--visual-indigo)" />
 
       <SvgText x={contentX} y={CARD_Y + 32} className={styles.cardTitle} fill="var(--text-heading)">
         {card.title}
@@ -292,20 +173,12 @@ function LoadingCard({ card, reached }: { card: CardSpec; reached: boolean }) {
       </SvgText>
       <BehaviorPath mode={mode} x={contentX} y={CARD_Y + 264} />
 
-      <LensRows rows={card.rows} x={contentX} y={CARD_Y + 328} />
+      <ContextLensMetrics rows={card.rows} x={contentX} y={CARD_Y + 328} columns={2} columnGap={160} rowGap={40} />
     </g>
   );
 }
 
 export default function MCPToolSchemaDiagram() {
-  const phase = useStaticAnimationPhase();
-  const mounted = useMounted();
-  const { wasReached } = useActs(ACTS, phase);
-
-  const frame = !mounted || wasReached('frame');
-  const cards = !mounted || wasReached('cards');
-  const rule = !mounted || wasReached('rule');
-
   return (
     <svg
       viewBox={`0 0 ${VW} ${VH}`}
@@ -317,26 +190,19 @@ export default function MCPToolSchemaDiagram() {
       style={{ display: 'block', maxWidth: `${VW}px`, margin: '0 auto' }}
     >
       <defs>
-        <marker id="arrowNeutral" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+        <marker id="arrowNeutral" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
           <polygon points="0 0, 6 3, 0 6" fill="var(--text-muted)" />
         </marker>
-        <marker id="arrowCyan" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-          <polygon points="0 0, 6 3, 0 6" fill="var(--visual-cyan)" />
+        <marker id="arrowIndigo" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
+          <polygon points="0 0, 6 3, 0 6" fill="var(--visual-indigo)" />
         </marker>
       </defs>
 
-      <SvgText x={VW / 2} y={32} anchor="middle" className={clsx(styles.title, frame && styles.titleIn)} fill="var(--text-heading)">
-        MCP schemas change context shape before they change behavior
-      </SvgText>
-      <SvgText x={VW / 2} y={56} anchor="middle" className={clsx(styles.kicker, frame && styles.kickerIn)} fill="var(--text-body)">
-        Where tool definitions land determines whether the agent calls directly or searches first.
-      </SvgText>
-
       {CARDS.map((card) => (
-        <LoadingCard key={card.mode} card={card} reached={cards} />
+        <LoadingCard key={card.mode} card={card} />
       ))}
 
-      <SvgText x={VW / 2} y={544} anchor="middle" className={clsx(styles.rule, rule && styles.ruleIn)} fill="var(--text-body)">
+      <SvgText x={VW / 2} y={488} anchor="middle" className={styles.rule} fill="var(--text-body)">
         Small + frequent → eager. Large + occasional → deferred.
       </SvgText>
     </svg>
