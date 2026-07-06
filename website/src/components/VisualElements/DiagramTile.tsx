@@ -1,12 +1,30 @@
 /* eslint-disable react/prop-types -- TypeScript owns prop validation for SVG primitive props. */
 import React, { type CSSProperties } from 'react';
 import { EmojiImage } from './ActorNodes';
-import type { EmojiAsset } from './emojiAssets';
+import { centeredEmojiOffset, emojiDisplaySize, OPENMOJI_VIEWBOX_SIZE, type EmojiAsset } from './emojiAssets';
 import { TILE_LAYOUT, tileToneVars, voiceStyle, wrapSvgText, type DiagramTone, type DiagramVoice } from './diagramTileLayout';
 import { DIAGRAM_STROKE, PROCESS_TILE_SCALE } from './diagramScale';
 
-type Variant = 'rich' | 'compact' | 'centered' | 'accent' | 'process';
+type Variant = 'rich' | 'compact' | 'centered' | 'accent' | 'process' | 'label';
 type Density = 'desktop' | 'mobile';
+
+const LABEL_TILE_ICON_SIZE = TILE_LAYOUT.iconSize.compact;
+const LABEL_TILE_ICON_X = 28;
+const LABEL_TILE_TEXT_X = 56;
+const LABEL_TILE_ICON_GAP = 12;
+const LABEL_TILE_CHAR_WIDTH = 6.8;
+
+export type DiagramTileSurfaceProps = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  tone?: DiagramTone;
+  fill?: string;
+  stroke?: string;
+  className?: string;
+  weight?: number;
+};
 
 type DiagramTileProps = {
   x: number;
@@ -21,6 +39,11 @@ type DiagramTileProps = {
   density?: Density;
   eyebrow?: string;
   icon?: EmojiAsset;
+  labelAlign?: 'start' | 'center';
+  labelClassName?: string;
+  labelIconSize?: number;
+  labelIconX?: number;
+  labelTextX?: number;
   rectClassName?: string;
   stepLabel?: string;
   style?: CSSProperties;
@@ -36,14 +59,19 @@ export function DiagramTile(props: DiagramTileProps) {
   if (props.variant === 'compact') return <CompactTile {...props} />;
   if (props.variant === 'accent') return <AccentTile {...props} />;
   if (props.variant === 'process') return <ProcessTile {...props} />;
+  if (props.variant === 'label') return <LabelTile {...props} />;
   return <RichTile {...props} />;
 }
 
+export function DiagramTileSurface({ x, y, width, height, tone = 'neutral', fill, stroke, className, weight }: DiagramTileSurfaceProps) {
+  const color = tileToneVars(tone);
+  return <rect x={x} y={y} width={width} height={height} rx={0} ry={0} fill={fill ?? color.fill} stroke={stroke ?? color.stroke} strokeWidth={weight ?? DIAGRAM_STROKE.thin} className={className} vectorEffect="non-scaling-stroke" />;
+}
+
 function BaseTile({ props, children }: { props: DiagramTileProps; children: React.ReactNode }) {
-  const color = tileToneVars(props.tone);
   return (
     <g className={props.className} style={props.style}>
-      <rect x={props.x} y={props.y} width={props.width} height={props.height} rx={0} ry={0} fill={props.fill ?? color.fill} stroke={color.stroke} strokeWidth={props.weight ?? DIAGRAM_STROKE.thin} className={props.rectClassName} vectorEffect="non-scaling-stroke" />
+      <DiagramTileSurface x={props.x} y={props.y} width={props.width} height={props.height} tone={props.tone} fill={props.fill} weight={props.weight} className={props.rectClassName} />
       {children}
     </g>
   );
@@ -85,10 +113,50 @@ function CompactTile(props: DiagramTileProps) {
   const color = tileToneVars(props.tone);
   return (
     <BaseTile props={props}>
-      <text x={props.x + props.width / 2} y={props.y + props.height / 2 - 4} textAnchor="middle" dominantBaseline="middle" fill={color.text} style={voiceStyle(props.titleVoice ?? 'ai', 11, 500)}>{props.title}</text>
-      {props.detail && <text x={props.x + props.width / 2} y={props.y + props.height / 2 + 12} textAnchor="middle" dominantBaseline="middle" fill="var(--text-muted)" style={voiceStyle('spec', 9, 400)}>{String(props.detail)}</text>}
+      <text x={props.x + props.width / 2} y={props.y + props.height / 2 - 4} textAnchor="middle" dominantBaseline="middle" fill={color.title} style={voiceStyle(props.titleVoice ?? 'ai', 11, 500)}>{props.title}</text>
+      {props.detail && <text x={props.x + props.width / 2} y={props.y + props.height / 2 + 12} textAnchor="middle" dominantBaseline="middle" fill={color.muted} style={voiceStyle('spec', 9, 400)}>{String(props.detail)}</text>}
     </BaseTile>
   );
+}
+
+function LabelTile(props: DiagramTileProps) {
+  const color = tileToneVars(props.tone);
+  const iconSize = props.labelIconSize ?? LABEL_TILE_ICON_SIZE;
+  const { iconX, textX } = labelLayout(props, iconSize);
+  return (
+    <BaseTile props={props}>
+      {props.icon && <EmojiImage asset={props.icon} x={props.x + iconX} y={props.y + (props.height - iconSize) / 2} size={iconSize} />}
+      <text x={props.x + textX} y={props.y + props.height / 2} dominantBaseline="middle" fill={color.title} className={props.labelClassName} style={props.labelClassName ? undefined : voiceStyle(props.titleVoice ?? 'spec', 11, 600)}>{props.title}</text>
+    </BaseTile>
+  );
+}
+
+function labelLayout(props: DiagramTileProps, iconSize: number) {
+  if (props.labelIconX !== undefined || props.labelTextX !== undefined || props.labelAlign !== 'center') {
+    return { iconX: props.labelIconX ?? LABEL_TILE_ICON_X, textX: props.labelTextX ?? LABEL_TILE_TEXT_X };
+  }
+  const textWidth = props.title.length * LABEL_TILE_CHAR_WIDTH;
+  if (!props.icon) {
+    return { iconX: 0, textX: (props.width - textWidth) / 2 };
+  }
+  const icon = labelIconVisualMetrics(props.icon, iconSize);
+  const contentWidth = icon.width + LABEL_TILE_ICON_GAP + textWidth;
+  const visualIconX = (props.width - contentWidth) / 2;
+  return {
+    iconX: visualIconX + icon.offset - icon.x,
+    textX: visualIconX + icon.width + LABEL_TILE_ICON_GAP,
+  };
+}
+
+function labelIconVisualMetrics(icon: EmojiAsset, iconSize: number) {
+  const displaySize = emojiDisplaySize(iconSize);
+  const scale = displaySize / OPENMOJI_VIEWBOX_SIZE;
+  const bounds = icon.visualBounds ?? { x: 0, width: OPENMOJI_VIEWBOX_SIZE };
+  return {
+    offset: centeredEmojiOffset(iconSize),
+    x: bounds.x * scale,
+    width: bounds.width * scale,
+  };
 }
 
 function AccentTile(props: DiagramTileProps) {

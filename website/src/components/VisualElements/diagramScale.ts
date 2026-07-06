@@ -8,7 +8,7 @@ export const DIAGRAM_STROKE = {
 
 export const DIAGRAM_MARKER = {
   size: 6,
-  refX: 5,
+  refX: 6,
   refY: 3,
   points: '0 0, 6 3, 0 6',
 } as const;

@@ -11,6 +11,7 @@ import { DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import { tokenFlowFade } from './diagramMotion';
 import {
   tokenTrainBeginOffsetMs,
+  tokenTrainOpacityKeyTimes,
   tokenTrainStaticDistance,
   type TokenTrainStagger,
   type TokenTrainTiming,
@@ -691,8 +692,10 @@ function TokenTrainMotion({
   modality: TokenUnitModality;
   signal: TokenUnitSignal;
 }) {
-  const travelEnd = timing.travelMs / timing.cycleMs;
-  const fadeEnd = Math.min(1, (timing.travelMs + timing.fadeMs) / timing.cycleMs);
+  const keyTimes = tokenTrainOpacityKeyTimes(timing);
+  const fadeInEnd = keyTimes[1];
+  const travelEnd = keyTimes[2];
+  const fadeEnd = keyTimes[3];
   const repeatCount = timing.repeat === 'once' ? undefined : 'indefinite';
   return (
     <g className={styles.tokenTrainItem} opacity="0">
@@ -721,7 +724,7 @@ function TokenTrainMotion({
         dur={seconds(timing.cycleMs)}
         begin={seconds(beginMs)}
         repeatCount={repeatCount}
-        keyTimes={`0;0.04;${travelEnd};${fadeEnd};1`}
+        keyTimes={`0;${fadeInEnd};${travelEnd};${fadeEnd};1`}
       />
     </g>
   );

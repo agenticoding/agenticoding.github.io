@@ -20,6 +20,10 @@
   animation-duration: 3000ms;
 }
 
+.satelliteWindowed {
+  animation: none;
+}
+
 @keyframes workingAgentSatelliteSpin {
   from {
     transform: rotate(0deg);
@@ -33,5 +37,13 @@
 @media (prefers-reduced-motion: reduce) {
   .satellite {
     animation: none !important;
+  }
+
+  .satelliteWindowed {
+    animation: none !important;
+  }
+
+  .satelliteWindowed animateTransform {
+    display: none;
   }
 }

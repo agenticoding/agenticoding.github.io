@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowMarker } from './diagramGeometry';
+import { ArrowMarker, trimPathEnd } from './diagramGeometry';
 import { DIAGRAM_STROKE } from './diagramScale';
 import { tileToneVars, type DiagramTone } from './diagramTileLayout';
 
@@ -33,7 +33,7 @@ export function DiagramArrow({ d, markerIdPrefix, tone = 'neutral', className, l
   const stroke = arrowColor(tone);
   return (
     <g className={className}>
-      <path d={d} fill="none" stroke={stroke} strokeWidth={DIAGRAM_STROKE.connector} strokeLinecap="butt" strokeLinejoin="miter" markerEnd={`url(#${markerId(markerIdPrefix, tone)})`} vectorEffect="non-scaling-stroke" />
+      <path d={trimPathEnd(d)} fill="none" stroke={stroke} strokeWidth={DIAGRAM_STROKE.connector} strokeLinecap="butt" strokeLinejoin="miter" markerEnd={`url(#${markerId(markerIdPrefix, tone)})`} vectorEffect="non-scaling-stroke" />
       {label && <text x={labelX} y={labelY} className={labelClassName} fill={stroke}>{label}</text>}
     </g>
   );

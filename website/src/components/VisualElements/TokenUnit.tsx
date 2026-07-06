@@ -17,7 +17,8 @@ export type TokenUnitTone =
   | 'violet'
   | 'cyan'
   | 'magenta'
-  | 'warning';
+  | 'warning'
+  | 'success';
 
 export type TokenUnitModality =
   | 'text'
@@ -174,7 +175,9 @@ function showsCompressedOverlay(
   signal: TokenUnitSignal,
   modality: TokenUnitModality
 ) {
-  return signal === 'compressed' && !['audio', 'video', 'code'].includes(modality);
+  return (
+    signal === 'compressed' && !['audio', 'video', 'code', 'image'].includes(modality)
+  );
 }
 
 const SHAPES = {

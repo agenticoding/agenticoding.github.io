@@ -69,6 +69,7 @@
 .legend {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-1);
   padding: 0;
   list-style: none;
@@ -114,9 +115,11 @@
 
 .caption {
   max-width: 76ch;
+  margin-inline: auto;
   color: var(--text-muted);
   font-size: var(--text-sm);
   line-height: var(--lh-sm);
+  text-align: center;
 }
 
 .context,
