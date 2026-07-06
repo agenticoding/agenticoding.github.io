@@ -53,7 +53,7 @@ function VerticalLayout() {
           id="arrowhead-vertical"
           markerWidth="5"
           markerHeight="5"
-          refX="4"
+          refX="5"
           refY="1.5"
           orient="auto"
           className={styles.arrowMarker}
@@ -145,7 +145,7 @@ function HorizontalLayout() {
           id="arrowhead-three-context"
           markerWidth="10"
           markerHeight="10"
-          refX="8"
+          refX="10"
           refY="3"
           orient="auto"
           className={styles.arrowMarker}

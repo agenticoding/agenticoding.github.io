@@ -9,6 +9,7 @@ import { useMounted } from '../../hooks/useMounted';
 import { AgentNode } from './ActorNodes';
 import { ARROWHEAD_POINTS_STD, arrowOpacity, CONNECTOR_STYLE } from './diagramConstants';
 import { Ghost } from './Ghost';
+import { ContextLensZoneBackdrop } from './ContextLensWindow';
 
 // ViewBox 600x300 — two sharp containers side by side.
 //
@@ -83,7 +84,13 @@ export default function SubAgentDiagram() {
       xmlns="http://www.w3.org/2000/svg"
       style={{ display: 'block', maxWidth: '600px', margin: '0 auto' }}
     >
-      {/* Container outlines — rx=0, stroke-medium 2.5px */}
+      {/* Context windows render before outlines so the container border remains crisp. */}
+      <g className={clsx(styles.container, containers && styles.containerIn)}>
+        <ContextLensZoneBackdrop x={32} y={40} width={200} height={224} />
+      </g>
+      <g className={clsx(styles.container, containers && styles.containerIn)} style={containers ? DELAY_80 : undefined}>
+        <ContextLensZoneBackdrop x={360} y={40} width={200} height={224} />
+      </g>
       <rect
         x={32} y={40} width={200} height={224} rx={0}
         fill="none" stroke="var(--visual-neutral)" strokeWidth={2.5}

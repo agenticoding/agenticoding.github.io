@@ -161,7 +161,7 @@ export default function CompoundQualityVisualization({
               id="arrowPositive"
               markerWidth="10"
               markerHeight="10"
-              refX="8"
+              refX="10"
               refY="3"
               orient="auto"
             >
@@ -174,7 +174,7 @@ export default function CompoundQualityVisualization({
               id="arrowNegative"
               markerWidth="10"
               markerHeight="10"
-              refX="8"
+              refX="10"
               refY="3"
               orient="auto"
             >

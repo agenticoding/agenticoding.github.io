@@ -14,7 +14,7 @@ export function svgStyle(width: number) {
 
 export function Marker({ id, tone }: { id: string; tone: string }) {
   return (
-    <marker id={id} viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+    <marker id={id} viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
       <polygon points="0 0, 6 3, 0 6" fill={tone} />
     </marker>
   );
@@ -57,7 +57,7 @@ export function Arrow({ x1, y1, x2, y2, tone, markerId, angular = false }: {
   const markerEnd = `url(#${markerId})`;
   if (angular) return <polyline points={`${x1},${y1} ${(x1 + x2) / 2},${y1} ${(x1 + x2) / 2},${y2} ${x2},${y2}`} fill="none" stroke={tone} strokeWidth="var(--stroke-heavy)" strokeLinejoin="miter" markerEnd={markerEnd} />;
   const dx = Math.min(G * 6, Math.abs(x2 - x1) / 3);
-  return <path d={`M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`} fill="none" stroke={tone} strokeWidth="var(--stroke-default)" strokeLinecap="round" markerEnd={markerEnd} />;
+  return <path d={`M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`} fill="none" stroke={tone} strokeWidth="var(--stroke-default)" strokeLinecap="butt" markerEnd={markerEnd} />;
 }
 
 export function Noise({ x, y, label }: { x: number; y: number; label: string }) {

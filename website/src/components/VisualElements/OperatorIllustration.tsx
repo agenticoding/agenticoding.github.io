@@ -80,7 +80,7 @@ export default function OperatorIllustration() {
           id="opArrow"
           markerWidth="6"
           markerHeight="6"
-          refX="5"
+          refX="6"
           refY="3"
           orient="auto"
         >

@@ -83,7 +83,7 @@ export default function MCPLoadingDecisionTree() {
       style={{ maxWidth: `${W}px` }}
     >
       <defs>
-        <marker id="mcp-tree-arrow" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+        <marker id="mcp-tree-arrow" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
           <polygon points="0 0, 6 3, 0 6" fill="var(--text-muted)" />
         </marker>
       </defs>
@@ -92,8 +92,8 @@ export default function MCPLoadingDecisionTree() {
 
       <Node x={240} y={56} w={240} h={48} lines={["How big is the", "tool catalog?"]} />
 
-      <path d="M 360 104 C 360 128, 216 128, 216 152" fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeLinecap="round" markerEnd="url(#mcp-tree-arrow)" />
-      <path d="M 360 104 C 360 128, 504 128, 504 152" fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeLinecap="round" markerEnd="url(#mcp-tree-arrow)" />
+      <path d="M 360 104 C 360 128, 216 128, 216 152" fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeLinecap="butt" markerEnd="url(#mcp-tree-arrow)" />
+      <path d="M 360 104 C 360 128, 504 128, 504 152" fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeLinecap="butt" markerEnd="url(#mcp-tree-arrow)" />
       <Label x={248} y={128} text="few tools" className={styles.edgeLabel} />
       <Label x={472} y={128} text="many tools / many servers" className={styles.edgeLabel} />
 

@@ -52,7 +52,7 @@ function Marker({ id, fill }: { id: string; fill: string }) {
       viewBox="0 0 6 6"
       markerWidth="6"
       markerHeight="6"
-      refX="5"
+      refX="6"
       refY="3"
       orient="auto"
     >
@@ -195,7 +195,7 @@ function Arrow({ x1, x2, tone, markerId, angular = false }: {
       fill="none"
       stroke={tone}
       strokeWidth="var(--stroke-default)"
-      strokeLinecap="round"
+      strokeLinecap="butt"
       markerEnd={markerEnd}
     />
   );

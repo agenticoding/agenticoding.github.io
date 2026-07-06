@@ -28,7 +28,7 @@ const BOX_LABEL_X = GRID * 2;
 
 const MARKER_W = 6;
 const MARKER_H = 6;
-const MARKER_REF_X = 5;
+const MARKER_REF_X = 6;
 const MARKER_REF_Y = 3;
 const CONNECTOR_STROKE_W = 1.5;
 const CONNECTOR_START_PAD_Y = GRID / 2;
