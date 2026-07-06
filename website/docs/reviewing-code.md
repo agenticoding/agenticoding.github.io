@@ -1,32 +1,28 @@
 ---
-sidebar_position: 5
-sidebar_label: 'Reviewing Code'
-sidebar_custom_props:
-  sectionNumber: 10
 title: 'Reviewing Code'
 ---
 
 You've completed the implementation. Tests pass. The agent executed your plan successfully. Now comes the critical question: is it actually correct?
 
-This is the **Validate** phase from [Chapter 4's four-phase workflow](./chapter-4-high-level-methodology.md)—the systematic quality gate before shipping. Code review catches the probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, edge cases handled incorrectly, patterns that don't quite fit your codebase.
+This is the **Validate** phase from [Chapter 4's four-phase workflow](./high-level-methodology.md)—the systematic quality gate before shipping. Code review catches the probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, edge cases handled incorrectly, patterns that don't quite fit your codebase.
 
-The key insight: **review in a fresh context, separate from where the code was written.** This prevents confirmation bias and leverages the stateless nature of agents from [Chapter 1: LLMs Demystified](./chapter-1-how-llms-work.mdx) and [Chapter 2: Agents Demystified](./chapter-2-how-agents-work.mdx). An agent reviewing its own work in the same conversation will defend its decisions. An agent in a fresh context analyzes objectively, without attachment to prior choices.
+The key insight: **review in a fresh context, separate from where the code was written.** This prevents confirmation bias and leverages the stateless nature of agents from [Chapter 1: LLMs Demystified](./how-llms-work.mdx) and [Chapter 2: Agents Demystified](./how-agents-work.mdx). An agent reviewing its own work in the same conversation will defend its decisions. An agent in a fresh context analyzes objectively, without attachment to prior choices.
 
 :::info Agent-Only vs Mixed Codebases: A Critical Distinction
 
 The same engineering standards—DRY, YAGNI, architecture, maintainability, readability—apply to all codebases. What differs is coding style optimization and the review process:
 
-**Agent-only codebases** are maintained exclusively by AI with minimal human intervention at the code level. Optimize coding style slightly toward AI clarity: more explicit type annotations, slightly more verbose documentation, detailed architectural context files ([Chapter 6](./chapter-6-context-management.mdx)). Review question: "Will an agent understand this 6 months from now?"
+**Agent-only codebases** are maintained exclusively by AI with minimal human intervention at the code level. Optimize coding style slightly toward AI clarity: more explicit type annotations, slightly more verbose documentation, detailed architectural context files ([Chapter 6](./context-engineering.mdx)). Review question: "Will an agent understand this 6 months from now?"
 
 **Mixed codebases** balance human and AI collaboration where both work directly with code. Optimize coding style for human brevity while maintaining AI navigability. **Most production codebases fall into this category.**
 
-**Critical difference in mixed codebases:** Add a manual review step where you fully read and audit AI-generated code before committing to ensure human readability. This is non-negotiable—without explicit project rules guiding style, agents generate code following patterns from their training data that may not match your team's readability standards. Tune your project rules ([Chapter 6](./chapter-6-context-management.mdx)) to guide agents toward the writing style humans expect, then verify the output meets those expectations.
+**Critical difference in mixed codebases:** Add a manual review step where you fully read and audit AI-generated code before committing to ensure human readability. This is non-negotiable—without explicit project rules guiding style, agents generate code following patterns from their training data that may not match your team's readability standards. Tune your project rules ([Chapter 6](./context-engineering.mdx)) to guide agents toward the writing style humans expect, then verify the output meets those expectations.
 
 :::
 
 ## The Review Prompt Template
 
-This template integrates techniques from [Chapter 3: Prompting 101](./chapter-3-prompting-101.mdx). Understanding **why** each element exists lets you adapt this pattern for other review tasks (security audits, performance analysis, architectural review).
+This template integrates techniques from [Chapter 3: Prompting 101](./prompting-101.mdx). Understanding **why** each element exists lets you adapt this pattern for other review tasks (security audits, performance analysis, architectural review).
 
 ```markdown
 You are an expert code reviewer. Analyze the current changeset and provide a critical review.
@@ -60,11 +56,11 @@ Use ChunkHound's code research.
 DO NOT EDIT ANYTHING - only review.
 ```
 
-After implementing code ([Chapter 8](./chapter-8-spec-driven-development.md)), writing tests ([Chapter 9](./chapter-9-tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
+After implementing code ([Chapter 8](./spec-driven-development.md)), writing tests ([Chapter 9](./tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
 
 ### Iterative Review: Repeat Until Green or Diminishing Returns
 
-Code review is rarely one-pass—first review finds issues, you fix them, re-run tests ([Chapter 9](./chapter-9-tests-as-guardrails.md)) to catch regressions, then review again in a fresh context (not the same conversation where the agent will defend its prior decisions). Continue this cycle: review in fresh context, fix issues, validate with tests, repeat.
+Code review is rarely one-pass—first review finds issues, you fix them, re-run tests ([Chapter 9](./tests-as-guardrails.md)) to catch regressions, then review again in a fresh context (not the same conversation where the agent will defend its prior decisions). Continue this cycle: review in fresh context, fix issues, validate with tests, repeat.
 
 **Review itself is probabilistic**—it's also an LLM making statistical predictions. The agent can be wrong. It might suggest "fixes" that break working code or introduce regressions that your test suite catches.
 
@@ -89,27 +85,27 @@ Pull requests serve two audiences: human maintainers and their AI review assista
 
 - **Human reviewers** scan quickly, infer meaning from context, and value concise summaries (1-3 paragraphs max). They want to understand the "why" and business value at a glance.
 
-- **AI review assistants** parse content chunk-by-chunk, struggle with vague pronouns and semantic drift, and need explicit structure ([Chapter 5](./chapter-5-grounding.mdx)). They require detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
+- **AI review assistants** parse content chunk-by-chunk, struggle with vague pronouns and semantic drift, and need explicit structure ([Chapter 4](./high-level-methodology.md#phase-1-grounding)). They require detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
 
 Traditional PR descriptions optimize for one audience or the other—too verbose for humans, too vague for AI agents. The solution: generate both in a coordinated workflow using sub-agents.
 
 ### The Advanced Prompt Pattern
 
-This prompt demonstrates multiple techniques from [Chapter 3 (Prompting 101)](./chapter-3-prompting-101.mdx), [Chapter 5 (Grounding)](./chapter-5-grounding.mdx), and [Chapter 8 (Spec-Driven Development)](./chapter-8-spec-driven-development.md):
+This prompt demonstrates multiple techniques from [Chapter 3 (Prompting 101)](./prompting-101.mdx) and [Chapter 7 (Spec-Driven Development)](./spec-driven-development.md):
 
 ### Mechanisms at Work
 
-**Sub-agents for context conservation ([Chapter 5](./chapter-5-grounding.mdx#solution-2-sub-agents-for-context-isolation)):**
+**Sub-agents for context conservation ([Chapter 5](./context-engineering.mdx#sub-agents--isolate)):**
 
 The instruction "Using the sub task tool to conserve context" spawns a separate agent for git history exploration, preventing the main orchestrator's context from filling with commit diffs. The sub-agent returns only synthesized findings. Without this, exploring 20-30 changed files consumes 40K+ tokens, pushing critical constraints into the U-shaped attention curve's ignored middle.
 
 This sub-agent capability is unique to [Claude Code CLI](/developer-tools/cli-coding-agents#claude-code). Other tools (Codex, GitHub Copilot) require splitting this into multiple sequential prompts: explore first, then draft based on findings.
 
-**Multi-source grounding ([Chapter 5](./chapter-5-grounding.mdx#production-pattern-multi-source-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
+**Multi-source grounding ([Chapter 4](./high-level-methodology.md#phase-1-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
 
-**Structured prompting ([Chapter 3](./chapter-3-prompting-101.mdx)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
+**Structured prompting ([Chapter 3](./prompting-101.mdx)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
 
-**Evidence requirements ([Chapter 3](./chapter-3-prompting-101.mdx#require-evidence-to-force-retrieval)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
+**Evidence requirements ([Chapter 3](./prompting-101.mdx#require-evidence-to-force-retrieval)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
 
 ### Reviewing PRs with AI Assistants
 
@@ -162,7 +158,7 @@ This is **Chain of Draft (CoD)**—an optimization of Chain of Thought (CoT) pro
 
 - **Iterate until green light or diminishing returns** - Fix issues, then re-review in fresh context. Stop when findings become trivial nitpicks or the agent hallucinates problems that don't exist.
 
-- **Evidence requirements force grounding** - "Provide file paths and line numbers" from [Chapter 3](./chapter-3-prompting-101.mdx#require-evidence-to-force-retrieval) ensures review findings are based on actual code, not statistical guesses.
+- **Evidence requirements force grounding** - "Provide file paths and line numbers" from [Chapter 3](./prompting-101.mdx#require-evidence-to-force-retrieval) ensures review findings are based on actual code, not statistical guesses.
 
 - **Generate dual-optimized PR descriptions for human and AI reviewers** - Humans need concise, scannable summaries (1-3 paragraphs). AI assistants need comprehensive, unambiguous technical context. Generate both in a coordinated workflow to serve both audiences effectively.
 
@@ -170,4 +166,4 @@ This is **Chain of Draft (CoD)**—an optimization of Chain of Thought (CoT) pro
 
 ---
 
-**Next:** [Chapter 11: Debugging with AI](./chapter-11-debugging.md)
+**Next:** [Chapter 11: Debugging with AI](./debugging.md)

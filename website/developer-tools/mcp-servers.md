@@ -37,7 +37,7 @@ uv tool install chunkhound
 
 Requires Python 3.10+ and the uv package manager. See [ChunkHound on GitHub](https://github.com/chunkhound/chunkhound) for API key configuration and setup details.
 
-**Learn more:** [Chapter 5: Grounding](/chapter-5-grounding#code-grounding-choosing-tools-by-scale) covers ChunkHound's architecture, pipeline design, and scale guidance in detail.
+
 
 ## Web Research
 
@@ -69,7 +69,7 @@ brew install arguseek
 
 Requires Go 1.23+ and Google API credentials. See [ArguSeek on GitHub](https://github.com/ArguSeek/arguseek) for detailed setup instructions and configuration options.
 
-**Learn more:** [Chapter 5: Grounding](/chapter-5-grounding#production-pattern-multi-source-grounding) explains multi-source grounding with ChunkHound code research and web search.
+Multi-source grounding is described in [Chapter 4](/high-level-methodology#phase-1-grounding).
 
 ## Browser Automation
 
@@ -91,5 +91,4 @@ Previous recommendations included Playwright MCP and Chrome DevTools MCP. These 
 
 **Related Course Content:**
 
-- [Chapter 5: Grounding](/chapter-5-grounding) - Detailed architecture and use cases for ChunkHound and ArguSeek
-- [Chapter 7: Reliability Levers](/chapter-7-reliability-levers) - Multi-agent workflows that leverage MCP capabilities
+- [Chapter 6: Reliability Levers](/reliability-levers) - Multi-agent workflows that leverage MCP capabilities

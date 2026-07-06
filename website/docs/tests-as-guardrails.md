@@ -1,8 +1,4 @@
 ---
-sidebar_position: 4
-sidebar_label: 'Tests as Guardrails'
-sidebar_custom_props:
-  sectionNumber: 9
 title: 'Tests as Guardrails'
 ---
 
@@ -21,7 +17,7 @@ Good tests provide grounding. They show OAuth users skip email verification, dat
 
 ### Research First: Discover Edge Cases Through Questions
 
-Before writing tests, use the planning techniques from [Chapter 8](./chapter-8-spec-driven-development.md) to discover what needs testing. Questions load implementation details and existing edge cases into context.
+Before writing tests, use the planning techniques from [Chapter 8](./spec-driven-development.md) to discover what needs testing. Questions load implementation details and existing edge cases into context.
 
 **Prompt pattern for edge case discovery:** The agent searches for the function, reads implementation, finds existing tests, and synthesizes findings from Step 1. This loads concrete constraints into context: OAuth users skip email verification, admin users bypass rate limits, deleted users are rejected. Step 2 analyzes the implementation against your questions and identifies untested paths. You now have a grounded list of edge cases derived from actual code, not generic testing advice.
 
@@ -35,7 +31,7 @@ When tests become the optimization target, agents optimize for passing tests rat
 
 :::
 
-Apply the same planning and execution methodology from [Chapter 8](./chapter-8-spec-driven-development.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Chapter 1: LLMs Demystified](./chapter-1-how-llms-work.mdx) and [Chapter 2: Agents Demystified](./chapter-2-how-agents-work.mdx)—the agent doesn't carry assumptions or defend prior decisions between contexts.
+Apply the same planning and execution methodology from [Chapter 8](./spec-driven-development.md) to each step—writing code, writing tests, and triaging failures. Each follows the same pattern: research requirements, plan approach, execute, verify. The critical difference: use **fresh contexts** for each step. This leverages the stateless nature from [Chapter 1: LLMs Demystified](./how-llms-work.mdx) and [Chapter 2: Agents Demystified](./how-agents-work.mdx)—the agent doesn't carry assumptions or defend prior decisions between contexts.
 
 ## The three-context workflow:
 
@@ -44,7 +40,7 @@ Apply the same planning and execution methodology from [Chapter 8](./chapter-8-s
   <ThreeContextWorkflow />
 
 </DiagramFrame>
-1. **Write code** in Context A—research existing patterns using [grounding from Chapter 5](./chapter-5-grounding.mdx), plan implementation, execute, verify correctness
+1. **Write code** in Context A—research existing patterns using [grounding from Chapter 4](./high-level-methodology.md#phase-1-grounding), plan implementation, execute, verify correctness
 2. **Write tests** in fresh Context B—research requirements and edge cases, plan test coverage, execute (agent doesn't remember writing implementation, so tests derive independently from requirements), verify tests fail initially
 3. **Triage failures** in fresh Context C—research the failure output, analyze test intent versus implementation behavior, determine root cause with evidence (file paths, line numbers, semantic analysis), propose fixes (agent doesn't know who wrote code or tests, providing objective analysis)
 
@@ -80,7 +76,7 @@ Tests with heavy mocking give false confidence. They verify implementation detai
 
 ### Fast Feedback with Smoke Tests
 
-Build a **sub-30-second smoke test suite** covering critical junctions only—core user journey, authentication boundaries, and database connectivity—not exhaustive coverage. A 10-minute comprehensive suite is useless for iterative agent development; you'll skip running it until the end when debugging becomes expensive. Run smoke tests after each task to catch failures immediately while context is fresh, rather than making 20 changes before discovering which one broke the system. As [Jeremy Miller notes](https://jeremydmiller.com/2024/09/29/my-recommendations-for-a-test-automation-strategy), use "the finest grained mechanism that tells you something important." Reserve edge cases, detailed validation, and UI rendering details for the full test suite—smoke tests exist solely to prevent compounding errors during rapid iteration. Codify this practice in your project's `AGENTS.md` or `CLAUDE.md` file ([Chapter 6](./chapter-6-context-management.mdx)) so agents automatically run smoke tests after completing each task without requiring explicit reminders.
+Build a **sub-30-second smoke test suite** covering critical junctions only—core user journey, authentication boundaries, and database connectivity—not exhaustive coverage. A 10-minute comprehensive suite is useless for iterative agent development; you'll skip running it until the end when debugging becomes expensive. Run smoke tests after each task to catch failures immediately while context is fresh, rather than making 20 changes before discovering which one broke the system. As [Jeremy Miller notes](https://jeremydmiller.com/2024/09/29/my-recommendations-for-a-test-automation-strategy), use "the finest grained mechanism that tells you something important." Reserve edge cases, detailed validation, and UI rendering details for the full test suite—smoke tests exist solely to prevent compounding errors during rapid iteration. Codify this practice in your project's `AGENTS.md` or `CLAUDE.md` file ([Chapter 6](./context-engineering.mdx)) so agents automatically run smoke tests after completing each task without requiring explicit reminders.
 
 ---
 
@@ -116,7 +112,7 @@ AI agents can simulate actual user behavior by giving them a task and the tools 
 
 **The workflow:** Use agents for discovery, then solidify findings into deterministic tests. Agents explore the unknown; deterministic tests prevent backsliding on the known.
 
-When prompting agents for simulation testing, apply the techniques from [Chapter 3](./chapter-3-prompting-101.mdx)—clear instructions, specific constraints, expected outputs—to craft effective exploration prompts that guide agents toward high-value edge case discovery.
+When prompting agents for simulation testing, apply the techniques from [Chapter 3](./prompting-101.mdx)—clear instructions, specific constraints, expected outputs—to craft effective exploration prompts that guide agents toward high-value edge case discovery.
 
 :::tip Connecting Agents to Your Product
 
@@ -161,20 +157,20 @@ These MCP servers give agents "eyes and hands" across platforms, enabling autono
 
 ## Test Failure Diagnosis: Agent-Driven Debug Cycle
 
-When tests fail, apply the same four-phase workflow from [Chapter 4](./chapter-4-high-level-methodology.md): Research > Plan > Execute > Validate. This is the same systematic approach you use for all agent interactions, now specialized for debugging test failures.
+When tests fail, apply the same four-phase workflow from [Chapter 4](./high-level-methodology.md): Research > Plan > Execute > Validate. This is the same systematic approach you use for all agent interactions, now specialized for debugging test failures.
 
 ### The Diagnostic Prompt Pattern
 
-This diagnostic prompt applies techniques from [Chapter 3](./chapter-3-prompting-101.mdx): [Chain-of-Thought](./chapter-3-prompting-101.mdx#chain-of-thought-paving-a-clear-path) sequential steps, [constraints](./chapter-3-prompting-101.mdx#constraints-as-guardrails) requiring evidence, and [structured format](./chapter-3-prompting-101.mdx#applying-structure-to-prompts). Understanding why each element exists lets you adapt this pattern for other diagnostic tasks.
+This diagnostic prompt applies techniques from [Chapter 3](./prompting-101.mdx): [Chain-of-Thought](./prompting-101.mdx#chain-of-thought-paving-a-clear-path) sequential steps, [constraints](./prompting-101.mdx#constraints-as-guardrails) requiring evidence, and [structured format](./prompting-101.mdx#applying-structure-to-prompts). Understanding why each element exists lets you adapt this pattern for other diagnostic tasks.
 
 **Why this works:**
 
-- **Fenced code block** (``````) preserves error formatting and prevents the LLM from interpreting failure messages as instructions ([structured format](./chapter-3-prompting-101.mdx#applying-structure-to-prompts))
-- **"Use the code research"** is an explicit grounding directive—forces codebase search instead of hallucination from training patterns ([constraints](./chapter-3-prompting-101.mdx#constraints-as-guardrails))
-- **DIAGNOSE numbered steps** implement [Chain-of-Thought](./chapter-3-prompting-101.mdx#chain-of-thought-paving-a-clear-path), forcing sequential analysis (can't jump to "root cause" without examining test intent first)
-- **"Understand the intention"** (step 2) ensures the agent articulates WHY the test exists, not just WHAT it does—critical for [CoT reasoning](./chapter-3-prompting-101.mdx#chain-of-thought-paving-a-clear-path)
-- **DETERMINE binary decision** [constrains output](./chapter-3-prompting-101.mdx#constraints-as-guardrails) to "bug vs outdated test" instead of open-ended conclusions
-- **"Provide evidence"** requires file paths and line numbers—concrete proof via [require evidence](./chapter-3-prompting-101.mdx#require-evidence-to-force-retrieval), not vague assertions
+- **Fenced code block** (``````) preserves error formatting and prevents the LLM from interpreting failure messages as instructions ([structured format](./prompting-101.mdx#applying-structure-to-prompts))
+- **"Use the code research"** is an explicit grounding directive—forces codebase search instead of hallucination from training patterns ([constraints](./prompting-101.mdx#constraints-as-guardrails))
+- **DIAGNOSE numbered steps** implement [Chain-of-Thought](./prompting-101.mdx#chain-of-thought-paving-a-clear-path), forcing sequential analysis (can't jump to "root cause" without examining test intent first)
+- **"Understand the intention"** (step 2) ensures the agent articulates WHY the test exists, not just WHAT it does—critical for [CoT reasoning](./prompting-101.mdx#chain-of-thought-paving-a-clear-path)
+- **DETERMINE binary decision** [constrains output](./prompting-101.mdx#constraints-as-guardrails) to "bug vs outdated test" instead of open-ended conclusions
+- **"Provide evidence"** requires file paths and line numbers—concrete proof via [require evidence](./prompting-101.mdx#require-evidence-to-force-retrieval), not vague assertions
 
 You can adapt this for performance issues, security vulnerabilities, or deployment failures by changing the diagnostic steps while preserving the structure: sequential CoT → constrained decision → evidence requirement.
 
@@ -194,4 +190,4 @@ You can adapt this for performance issues, security vulnerabilities, or deployme
 
 ---
 
-**Next:** [Chapter 10: Reviewing Code](./chapter-10-reviewing-code.md)
+**Next:** [Chapter 10: Reviewing Code](./reviewing-code.md)

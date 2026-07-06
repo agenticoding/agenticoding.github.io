@@ -79,7 +79,7 @@ export default function CurriculumSection() {
       chapterCount: 2,
       hue: 'indigo',
       topics: ['LLM internals', 'How agents work'],
-      link: '/chapter-1-how-llms-work',
+      link: '/how-llms-work',
     },
     {
       number: 2,
@@ -87,7 +87,7 @@ export default function CurriculumSection() {
       chapterCount: 3,
       hue: 'violet',
       topics: ['Prompt structure', 'Workflow', 'Grounding'],
-      link: '/chapter-3-prompting-101',
+      link: '/prompting-101',
     },
     {
       number: 3,
@@ -95,7 +95,7 @@ export default function CurriculumSection() {
       chapterCount: 8,
       hue: 'magenta',
       topics: ['CI integration', 'Test generation', 'Spec-driven development'],
-      link: '/chapter-6-context-management',
+      link: '/context-engineering',
     },
   ];
 

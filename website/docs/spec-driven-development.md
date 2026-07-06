@@ -1,12 +1,8 @@
 ---
-sidebar_position: 3
-sidebar_label: 'Spec-Driven Development'
-sidebar_custom_props:
-  sectionNumber: 8
 title: 'Spec-Driven Development'
 ---
 
-[Chapter 7: Reliability Levers](./chapter-7-reliability-levers.md) established the broader model: reliable agent work depends on orchestration, sampling, HITL checkpoints, and context quality. This chapter zooms into one concrete pattern that combines two of those levers: **Spec-Driven Development (SDD)**.
+[Chapter 7: Reliability Levers](./reliability-levers.md) established the broader model: reliable agent work depends on orchestration, sampling, HITL checkpoints, and context quality. This chapter zooms into one concrete pattern that combines two of those levers: **Spec-Driven Development (SDD)**.
 
 The core move is simple: before the agent writes code, compress intent into a short artifact a human can read and approve. That artifact is the spec.
 
@@ -61,7 +57,7 @@ Grounding → Plan → Spec → Human read/approve → Execute → Gap analysis
 
 The key move is the one in the middle: a human gate between planning and execution that resets the chain before code begins.
 
-After grounding and planning — using the exploration workflow from [Chapter 4](./chapter-4-high-level-methodology.md) — you stop and write down the intended change in a form a human can evaluate quickly.
+After grounding and planning — using the exploration workflow from [Chapter 4](./high-level-methodology.md) — you stop and write down the intended change in a form a human can evaluate quickly.
 
 ### Require Evidence to Force Grounding {#require-evidence-to-force-grounding}
 
@@ -120,7 +116,7 @@ Every spec creates a second source of truth alongside the codebase. That tension
 
 The standard fix: **specs are temporary scaffolding**.
 
-Once implementation is correct and verified, the spec is deleted. The code becomes the sole source of truth. Constraints that are too important to lose are migrated into code as typed comments or domain annotations — the technique covered in [Chapter 12: Agent-Friendly Code](./chapter-12-agent-friendly-code.md).
+Once implementation is correct and verified, the spec is deleted. The code becomes the sole source of truth. Constraints that are too important to lose are migrated into code as typed comments or domain annotations — the technique covered in [Chapter 12: Agent-Friendly Code](./agent-friendly-code.md).
 
 Not everything disappears when the file goes away:
 - **Constraints migrate into code** — critical rules become machine-readable comments or type annotations near the relevant code
@@ -186,7 +182,7 @@ Since the checkpoint only works if humans read it, readability criteria bear rep
 
 **Concrete.** Name real things: modules, routes, tables, contracts, constraints, failure behavior. "Improve performance" does not constrain implementation. "Return `429` with `Retry-After` header" does.
 
-Later, in [Chapter 13: Thinking in Systems](./chapter-13-systems-thinking-specs.md), you will make this much more precise with modules, interfaces, state, constraints, and invariants. For now, the important idea is simpler: **if a human cannot read the spec and form a judgment quickly, it is not ready to drive implementation.**
+Later, in [Chapter 13: Thinking in Systems](./systems-thinking-specs.md), you will make this much more precise with modules, interfaces, state, constraints, and invariants. For now, the important idea is simpler: **if a human cannot read the spec and form a judgment quickly, it is not ready to drive implementation.**
 
 ## Gap Analysis: The Convergence Loop
 
@@ -276,7 +272,7 @@ For a single-session task, the spec can be ephemeral. It may live only in the co
 
 Up to this point, every step is still probabilistic: research, planning, spec writing, execution, gap analysis, and even human review. Useful, but probabilistic.
 
-[Chapter 9: Tests as Guardrails](./chapter-9-tests-as-guardrails.md) is where determinism enters the loop. Tests either pass or they don't.
+[Chapter 9: Tests as Guardrails](./tests-as-guardrails.md) is where determinism enters the loop. Tests either pass or they don't.
 :::
 
 ## Key Takeaways
@@ -301,4 +297,4 @@ Up to this point, every step is still probabilistic: research, planning, spec wr
 
 ---
 
-**Next:** [Chapter 9: Tests as Guardrails](./chapter-9-tests-as-guardrails.md)
+**Next:** [Chapter 9: Tests as Guardrails](./tests-as-guardrails.md)

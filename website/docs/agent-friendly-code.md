@@ -1,8 +1,5 @@
 ---
-sidebar_position: 7
 sidebar_label: 'Agent-Friendly Code'
-sidebar_custom_props:
-  sectionNumber: 12
 title: 'Writing Agent-Friendly Code'
 ---
 
@@ -17,7 +14,7 @@ Every piece of code you accept today becomes pattern context for tomorrow's agen
 
 ## The Compounding Mechanism
 
-During code research ([Chapter 5](/chapter-5-grounding)), agents grep for patterns, read implementations, and load examples into context. The code they find becomes the pattern context for generation.
+During code research ([Chapter 4](/high-level-methodology#phase-1-grounding)), agents grep for patterns, read implementations, and load examples into context. The code they find becomes the pattern context for generation.
 
 <DiagramFrame kicker="Agent-friendly code" title="Quality compounds through the codebase" size="wide">
 
@@ -48,11 +45,11 @@ You can't eliminate these random errors with better prompts or cleaner patterns�
 
 Both problems feed the same exponential curve. When you accept a random AI error during code review, it becomes a pattern that gets copied. One hallucinated API call in iteration 1 becomes the template for 5 similar hallucinations by iteration 3.
 
-**Your Critical Role:** Code review ([Chapter 10](/chapter-10-reviewing-code)) is where you break the cycle. Reject bad patterns before they multiply. Reject random errors before they become patterns. Every acceptance decision affects every future generation.
+**Your Critical Role:** Code review ([Chapter 10](/reviewing-code)) is where you break the cycle. Reject bad patterns before they multiply. Reject random errors before they become patterns. Every acceptance decision affects every future generation.
 
 ## Co-locate Related Constraints
 
-From [Chapter 5](/chapter-5-grounding), agents discover your codebase through **agentic search**—Grep, Read, Glob. **Agents only see code they explicitly find.** When constraints scatter across files, search determines what the agent sees and what it misses.
+From [Chapter 4](/high-level-methodology#phase-1-grounding), agents discover your codebase through **agentic search**—Grep, Read, Glob. **Agents only see code they explicitly find.** When constraints scatter across files, search determines what the agent sees and what it misses.
 
 **Anti-pattern (scattered constraints):**
 
@@ -86,7 +83,7 @@ function createUser(email: string, password: string) {
 
 ### Semantic Bridges When DRY Requires Separation
 
-When constraints must be shared across modules, create **semantic bridges**—comments with related semantic keywords enabling semantic search and code research tools ([Chapter 5](/chapter-5-grounding#solution-1-semantic-search)) to discover relationships:
+When constraints must be shared across modules, create **semantic bridges**—comments with related semantic keywords enabling semantic search and code research tools to discover relationships:
 
 ```typescript
 // File: shared/constants.ts
@@ -111,15 +108,15 @@ The comments use different words with overlapping meaning—semantic breadcrumbs
 
 ### Automate Through Prompting
 
-Rather than manually managing discoverability strategies, configure your agent to handle this automatically. Add instructions like `"Document inline when necessary"` and `"Match surrounding patterns and style"` to your `CLAUDE.md` or `AGENTS.md` ([Chapter 6](/chapter-6-context-management)). These phrases make agents automatically add semantic bridge comments during generation, follow existing code conventions, and maintain consistency without explicit oversight. The agent reads your co-located constraints and semantic bridges during code research, then generates new code that follows the same patterns—turning discoverability into a self-reinforcing system rather than manual organizational work.
+Rather than manually managing discoverability strategies, configure your agent to handle this automatically. Add instructions like `"Document inline when necessary"` and `"Match surrounding patterns and style"` to your `CLAUDE.md` or `AGENTS.md` ([Chapter 6](/context-engineering)). These phrases make agents automatically add semantic bridge comments during generation, follow existing code conventions, and maintain consistency without explicit oversight. The agent reads your co-located constraints and semantic bridges during code research, then generates new code that follows the same patterns—turning discoverability into a self-reinforcing system rather than manual organizational work.
 
-**Caveat:** You'll need to occasionally remind the agent about these instructions in your task-specific prompts. Due to the [U-shaped attention curve](/chapter-5-grounding#the-scale-problem-context-window-limits), instructions buried in configuration files can fall into the ignored middle of the context window during long interactions. A quick reminder like "document inline where necessary and match surrounding style" at the end of your prompt ensures these constraints stay in the high-attention zone.
+**Caveat:** You'll need to occasionally remind the agent about these instructions in your task-specific prompts. Due to the [U-shaped attention curve](/context-engineering#why-size-doesnt-help), instructions buried in configuration files can fall into the ignored middle of the context window during long interactions. A quick reminder like "document inline where necessary and match surrounding style" at the end of your prompt ensures these constraints stay in the high-attention zone.
 
 ## Comments as Context Engineering: Critical Sections for Agents
 
 **Advanced technique—use sparingly.** In concurrent programming, critical sections protect shared resources through mutual exclusion. Comments can serve a similar role for AI agents, creating "agent-critical sections" that guard sensitive code from accidental modification. Apply this **only** to genuinely high-risk code: authentication/authorization, cryptographic operations, payment processing, database migrations, audit logging, PII handling. Do NOT use for general business logic, CRUD operations, or frequently-changing code. The trade-off: protection creates friction. If every function has "CRITICAL" warnings, the signal becomes noise and legitimate agent work slows down.
 
-When agents research your codebase ([Chapter 5](/chapter-5-grounding)), they read files and load every comment into their context window. This means comments become prompts. Write them like prompts using techniques from [Chapter 3](/chapter-3-prompting-101): imperative directives (NEVER, MUST, ALWAYS), explicit negation patterns ("Do NOT X. Instead, always Y"), numbered steps for complex operations (Step 1, Step 2), and concrete consequences. When the agent generates password handling code and reads "NEVER store passwords in plain text" with implementation alternatives, that violation becomes far less likely. You're exploiting prompt injection—the good kind.
+When agents research your codebase ([Chapter 4](/high-level-methodology#phase-1-grounding)), they read files and load every comment into their context window. This means comments become prompts. Write them like prompts using techniques from [Chapter 3](/prompting-101): imperative directives (NEVER, MUST, ALWAYS), explicit negation patterns ("Do NOT X. Instead, always Y"), numbered steps for complex operations (Step 1, Step 2), and concrete consequences. When the agent generates password handling code and reads "NEVER store passwords in plain text" with implementation alternatives, that violation becomes far less likely. You're exploiting prompt injection—the good kind.
 
 ```typescript
 // Standard comment
@@ -145,11 +142,11 @@ function createUser(password: string) {
 
 This creates deliberate friction. An agent tasked with "add OAuth login" will work slower around password hashing code with heavy constraints—it must navigate all those NEVER/MUST directives carefully. That's the protection mechanism: forced caution for critical paths. But overuse is counterproductive. Mark too many functions as CRITICAL and agents struggle with routine work, slowing down legitimate changes as much as dangerous ones. Reserve this technique for code where accidental modification genuinely costs more than the development slowdown.
 
-These constraint IDs (C-001, I-001) originate in [spec tables](/chapter-13-systems-thinking-specs#constraints-and-invariants-defining-correctness) and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the *rule* it enforces. This is what makes it safe to [delete the spec](/chapter-8-spec-driven-development) after implementation: the WHY has migrated into the codebase.
+These constraint IDs (C-001, I-001) originate in [spec tables](/systems-thinking-specs#constraints-and-invariants-defining-correctness) and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the *rule* it enforces. This is what makes it safe to [delete the spec](/spec-driven-development) after implementation: the WHY has migrated into the codebase.
 
 ## The Knowledge Cache Anti-Pattern
 
-You've extracted architectural knowledge from your codebase with an agent—clean diagrams, comprehensive API documentation, detailed component relationships. You save it as `ARCHITECTURE.md` and commit it. Now you have a cache invalidation problem: code changes (always), documentation doesn't (usually), and future agents find both during code research ([Chapter 5](/chapter-5-grounding)). The diagram below shows the divergence.
+You've extracted architectural knowledge from your codebase with an agent—clean diagrams, comprehensive API documentation, detailed component relationships. You save it as `ARCHITECTURE.md` and commit it. Now you have a cache invalidation problem: code changes (always), documentation doesn't (usually), and future agents find both during code research ([Chapter 4](/high-level-methodology#phase-1-grounding)). The diagram below shows the divergence.
 
 ```mermaid
 sequenceDiagram
@@ -199,11 +196,11 @@ The moment you commit extracted knowledge, every code change requires documentat
 
 - **Comments as agent-critical sections (use sparingly)** - For genuinely high-risk code (authentication, cryptography, payments, PII), write comments as prompts using imperative directives (NEVER, MUST, ALWAYS) to create deliberate friction. This protection mechanism guards sensitive code from accidental modification. **Overuse is counterproductive**—if everything is marked CRITICAL, the signal becomes noise and legitimate work slows down.
 
-- **Constraint IDs migrate from spec to code** — When specs use IDs like C-001 or I-001 ([Chapter 13](/chapter-13-systems-thinking-specs#constraints-and-invariants-defining-correctness)), agents inline them into code comments during implementation. The code then carries the constraint rule, making it safe to delete the spec ([Chapter 8](/chapter-8-spec-driven-development)).
+- **Constraint IDs migrate from spec to code** — When specs use IDs like C-001 or I-001 ([Chapter 13](/systems-thinking-specs#constraints-and-invariants-defining-correctness)), agents inline them into code comments during implementation. The code then carries the constraint rule, making it safe to delete the spec ([Chapter 8](/spec-driven-development)).
 
-- **You are the quality circuit breaker** - Code review ([Chapter 10](/chapter-10-reviewing-code)) prevents negative compounding. Accepting bad patterns lets them enter pattern context for future agents. Rejecting them breaks the negative feedback loop.
+- **You are the quality circuit breaker** - Code review ([Chapter 10](/reviewing-code)) prevents negative compounding. Accepting bad patterns lets them enter pattern context for future agents. Rejecting them breaks the negative feedback loop.
 
-- **Avoid knowledge cache anti-patterns** - Code research tools (Explore, ChunkHound, semantic search) extract architectural knowledge dynamically from source code every time you need it. Saving extracted knowledge to .md files creates unnecessary caches that become stale, pollute future grounding with duplicated information, and create impossible cache invalidation problems. Trust the grounding process ([Chapter 5](/chapter-5-grounding)) to re-extract knowledge on-demand from the single source of truth.
+- **Avoid knowledge cache anti-patterns** - Code research tools (Explore, ChunkHound, semantic search) extract architectural knowledge dynamically from source code every time you need it. Saving extracted knowledge to .md files creates unnecessary caches that become stale, pollute future grounding with duplicated information, and create impossible cache invalidation problems. Trust the grounding process ([Chapter 4](/high-level-methodology#phase-1-grounding)) to re-extract knowledge on-demand from the single source of truth.
 
 ---
 

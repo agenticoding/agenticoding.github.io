@@ -89,6 +89,7 @@
 
 .comparisonWithNotes :global(.prompt-example),
 .anatomySequenced :global(.prompt-example) {
+  position: relative;
   line-height: var(--lh-lg);
 }
 
@@ -129,20 +130,30 @@
 
 .comparisonWithNotes,
 .anatomySequenced {
-  --prompt-seq-marker-gap: 2px;
+  --prompt-seq-marker-size: 1.2em;
+  --prompt-seq-marker-lane-gap: 0.4em;
+  --prompt-seq-marker-lane-width: calc(var(--prompt-seq-marker-size) + var(--prompt-seq-marker-lane-gap));
+  --prompt-seq-marker-inline-offset: 0;
+  --prompt-seq-marker-rest-block-offset: 1.08em;
+  --prompt-seq-marker-active-block-offset: 0.98em;
 }
 
-.comparisonWithNotes :global(.prompt-example .prompt-seq-token)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-token)::before {
+.comparisonWithNotes :global(.prompt-example .prompt-seq-anchor),
+.anatomySequenced :global(.prompt-example .prompt-seq-anchor) {
+  position: static;
+}
+
+.comparisonWithNotes :global(.prompt-example .prompt-seq-anchor)::before,
+.anatomySequenced :global(.prompt-example .prompt-seq-anchor)::before {
   content: var(--prompt-seq-marker);
   position: absolute;
-  inset-inline-start: 0;
-  inset-block-start: 0;
+  inset-inline-start: calc(var(--prompt-seq-marker-lane-width) * -1);
+  inset-block-start: auto;
   z-index: 1;
   display: inline-grid;
   place-items: center;
-  inline-size: 1.2em;
-  block-size: 1.2em;
+  inline-size: var(--prompt-seq-marker-size);
+  block-size: var(--prompt-seq-marker-size);
   border: 1px solid var(--comparison-note-signal);
   font-family: var(--font-mono-keyword);
   font-size: 0.72em;
@@ -151,30 +162,14 @@
   color: var(--comparison-note-signal);
   background: var(--comparison-note-bg);
   opacity: 0;
-  transform: translate(-38%, calc(-70% - var(--prompt-seq-marker-gap))) scale(0.96);
+  transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-rest-block-offset)) scale(0.96);
   pointer-events: none;
   animation: comparisonTokenMarkerSequence var(--comparison-sequence-duration) linear infinite;
   animation-delay: inherit;
 }
 
-.comparisonWithNotes :global(.prompt-example .prompt-seq-1 + .prompt-seq-1)::before,
-.comparisonWithNotes :global(.prompt-example .prompt-seq-1 + br + .prompt-seq-1)::before,
-.comparisonWithNotes :global(.prompt-example .prompt-seq-2 + .prompt-seq-2)::before,
-.comparisonWithNotes :global(.prompt-example .prompt-seq-2 + br + .prompt-seq-2)::before,
-.comparisonWithNotes :global(.prompt-example .prompt-seq-3 + .prompt-seq-3)::before,
-.comparisonWithNotes :global(.prompt-example .prompt-seq-3 + br + .prompt-seq-3)::before,
-.comparisonWithNotes :global(.prompt-example .prompt-seq-4 + .prompt-seq-4)::before,
-.comparisonWithNotes :global(.prompt-example .prompt-seq-4 + br + .prompt-seq-4)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-1 + .prompt-seq-1)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-1 + br + .prompt-seq-1)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-2 + .prompt-seq-2)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-2 + br + .prompt-seq-2)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-3 + .prompt-seq-3)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-3 + br + .prompt-seq-3)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-4 + .prompt-seq-4)::before,
-.anatomySequenced :global(.prompt-example .prompt-seq-4 + br + .prompt-seq-4)::before {
-  content: none;
-  animation: none;
+.anatomySequenced :global(.prompt-example .prompt-seq-anchor)::before {
+  inset-inline-start: calc(var(--space-4) - var(--prompt-seq-marker-lane-width) - 0.45em);
 }
 
 .explanationLens .annotation:nth-child(2),
@@ -378,16 +373,16 @@
   0%,
   100% {
     opacity: 0;
-    transform: translate(-38%, calc(-70% - var(--prompt-seq-marker-gap))) scale(0.96);
+    transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-rest-block-offset)) scale(0.96);
   }
   4%,
   24% {
     opacity: 1;
-    transform: translate(-38%, calc(-100% - var(--prompt-seq-marker-gap))) scale(1);
+    transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-active-block-offset)) scale(1);
   }
   28% {
     opacity: 0;
-    transform: translate(-38%, calc(-70% - var(--prompt-seq-marker-gap))) scale(0.96);
+    transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-rest-block-offset)) scale(0.96);
   }
 }
 
@@ -410,10 +405,10 @@
     border-bottom-color: transparent;
   }
 
-  .comparisonWithNotes :global(.prompt-example .prompt-seq-token)::before,
-  .anatomySequenced :global(.prompt-example .prompt-seq-token)::before {
+  .comparisonWithNotes :global(.prompt-example .prompt-seq-anchor)::before,
+  .anatomySequenced :global(.prompt-example .prompt-seq-anchor)::before {
     opacity: 0.72;
-    transform: translate(-38%, calc(-100% - var(--prompt-seq-marker-gap))) scale(1);
+    transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-active-block-offset)) scale(1);
     animation: none !important;
   }
 }

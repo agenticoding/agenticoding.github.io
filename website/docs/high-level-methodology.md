@@ -1,8 +1,4 @@
 ---
-sidebar_position: 2
-sidebar_label: 'Four-Phase Workflow'
-sidebar_custom_props:
-  sectionNumber: 4
 title: 'Four-Phase Workflow'
 ---
 
@@ -18,11 +14,12 @@ import CompassEmoji from '@site/src/components/VisualElements/CompassEmoji';
 import BullseyeEmoji from '@site/src/components/VisualElements/BullseyeEmoji';
 import PromptExample from '@site/src/components/PromptExample';
 import GroundingDistillationDiagram from '@site/src/components/VisualElements/GroundingDistillationDiagram';
+import PlanningContractCheckpointDiagram from '@site/src/components/VisualElements/PlanningContractCheckpointDiagram';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
 The first three chapters explained the machinery.
 
-[Chapter 1](./chapter-1-how-llms-work.mdx) established the core constraint: the model predicts tokens from the context it receives. [Chapter 2](./chapter-2-how-agents-work.mdx) showed how an agent harness turns that prediction engine into an action loop: prepare context, call the model, execute tools, observe results, and continue. [Chapter 3](./chapter-3-prompting-101.mdx) covered prompt-level control: how to shape one interaction so the model has a clear target, constraints, evidence, and output format.
+[Chapter 1](./how-llms-work.mdx) established the core constraint: the model predicts tokens from the context it receives. [Chapter 2](./how-agents-work.mdx) showed how an agent harness turns that prediction engine into an action loop: prepare context, call the model, execute tools, observe results, and continue. [Chapter 3](./prompting-101.mdx) covered prompt-level control: how to shape one interaction so the model has a clear target, constraints, evidence, and output format.
 
 That is enough to understand how agents work. It is not enough to operate them on production work.
 
@@ -47,11 +44,11 @@ The goal is not to make the first pass perfect. The goal is to know which phase 
 
 This matters more than it sounds. Even with perfect grounding, perfect planning, and disciplined execution, you are operating a stochastic system. The agent is governed by probabilities, not logic. It will make random mistakes — at the wrong time, in unexpected places, and usually where you are least looking. This is not a bug in your process. It is the nature of the beast. Embrace it, expect it, and build your workflow to catch and correct those failures rather than trying to eliminate them.
 
-## <MicroscopeEmoji size={28} /> Phase 1: Grounding {#phase-1-grounding}
+## Phase 1: Grounding {#phase-1-grounding}
 
 When you code by hand, you don't work from a blank slate. You have a prior understanding of the codebase — its architecture, its patterns, its conventions. You have Google open in a background tab for framework docs, API references, and migration guides. There's a reason for that: these two sources of knowledge are what you need to code effectively in a given codebase. The same applies to agents. You must deliberately engineer these sources of information into the context to maximize the effectiveness of the agent.
 
-<DiagramFrame kicker="Methodology" title="Grounding distills research into usable context" size="wide">
+<DiagramFrame kicker="Methodology" title="Grounding distills research into usable context" size="wide" caption="The grounding agent absorbs noisy sources, distills usable working context, and leaves the root orchestrator to ask targeted follow-ups only when pieces are missing.">
 
   <GroundingDistillationDiagram />
 
@@ -75,64 +72,34 @@ Grounding is always happening. If you don't explicitly provide the context, the 
 
 But the agent doesn't know what it doesn't know. It will assume it has everything at hand while missing critical knowledge — the naming convention that isn't documented, the constraint from a reverted PR, the integration point in a different service. Worse, the big picture often isn't fully encoded anywhere: why this product choice was made, what alternatives were considered and ruled out, which business constraints shape the solution space, what the team already tried and abandoned. When you ground explicitly, you're filling both kinds of gaps — the ones scattered across the codebase and the ones buried in Slack threads, emails, presentations, and support tickets.
 
-## <BookmarkTabsEmoji size={28} /> Phase 2: Plan / Orchestrate {#phase-2-plan-orchestrate}
+## Phase 2: Plan / Orchestrate {#phase-2-plan-orchestrate}
 
-Planning turns grounded context into an execution shape. It answers three questions: what exactly should change, how should the work be split, and where must a human approve before the agent continues?
+Grounding gives the agent facts. It does not decide the shape of the change.
 
-A weak plan says: "implement rate limiting." A useful plan defines the intended diff, splits it into subtasks the agent is likely to complete, and places checkpoints before wrong assumptions can propagate.
+After grounding, the agent may know the middleware pattern, the product constraint, and the existing tests. It still does not know which trade-off you want, which cleanup is out of scope, or which boundary must not move. If execution starts there, those choices get made inside the diff.
 
-<CompassEmoji size={22} /> **Plan the scope as a diff.** The agent needs more than a goal. It needs the boundary of the change: what to add, what to remove, what to modify, and what must stay untouched.
+Planning is the pause between knowing and doing. The plan itself is a checkpoint: a small execution contract that a human can approve, reject, or correct before the agent turns ambiguity into code.
 
-<BullseyeEmoji size={22} /> **Plan for reliable execution.** The goal is not to make subtasks as small as possible. The goal is to shape each subtask so the agent can finish it without re-deciding architecture mid-run.
+<DiagramFrame kicker="Methodology" title="A plan is an approved execution contract" size="wide" caption="The operator reviews scope, unit, and verification before the agent turns intent into code.">
 
-### Define the task as add / remove / change
+  <PlanningContractCheckpointDiagram />
 
-Scope should be concrete enough that drift is visible. Before execution, make the expected shape of the change explicit:
+</DiagramFrame>
 
-- **Add** — new behavior, files, tests, docs, routes, UI states, or integration points.
-- **Remove** — obsolete code, dead paths, replaced behavior, unused dependencies, or outdated docs.
-- **Change** — existing contracts, data flow, module responsibilities, error handling, copy, or user behavior.
-- **Do not change** — non-goals, compatibility boundaries, untouched modules, and behavior that must remain stable.
+The useful planning question is not "what is every step?" It is "what decision would be expensive to discover only after code exists?" Answer that before execution.
 
-This framing keeps planning tied to the artifact the agent will produce. If the plan cannot say what is being added, removed, changed, and protected, the task is still too vague to execute safely.
+A good plan makes two things visible:
 
-### Split into bounded subtasks
+- **Scope:** what to add, remove, change, and protect.
+- **Unit:** the next bounded piece of work, with its input, output, dependency, and verification signal.
 
-Task decomposition is a reliability tool. Each subtask should have clear inputs, clear output, and a verification signal. It should be large enough to produce useful progress, but small enough that the agent does not need to invent the architecture while acting.
+For rate limiting, that might be enough: add limiter behavior in the existing middleware location, use the established cache abstraction, preserve current auth behavior, and test authenticated users, anonymous users, and exceeded limits. That is not a full implementation plan. It is a reviewed handoff from planning to execution.
 
-Good orchestration units are:
+Older prompt advice treated plans as todo lists so the model would remember what to do. That still helps, but it is not the main value. A plan works because it makes intent inspectable before the agent turns ambiguity into code.
 
-- grounded by specific files, APIs, product constraints, or external facts
-- independent when possible, so they can run in parallel or isolated contexts
-- sequenced only when one unit genuinely depends on another
-- narrow enough to avoid context pollution and scope drift
-- complete enough to avoid long chains of tiny dependent steps
-- verifiable through tests, build output, review, screenshots, or another explicit signal
+Planning is complete when execution can begin from a reviewed contract instead of an unresolved conversation. The reliability mechanics behind task sizing and why phase-boundary review works belong in [Reliability Levers: Orchestration](./reliability-levers.md#2-orchestration-change-the-shape-of-the-work) and [Reliability Levers: HITL Checkpoints](./reliability-levers.md#4-human-in-the-loop-hitl-checkpoints-break-error-propagation).
 
-For rate limiting, a better decomposition is not twenty micro-steps. It might be: inspect existing middleware and cache patterns; propose the API and behavior boundary; implement the limiter in the established location; add tests for authenticated, anonymous, and exceeded-limit cases; run the relevant checks. Each unit has a purpose, an input, and a stopping point.
-
-### Put HITL checkpoints at propagation boundaries
-
-Human-in-the-loop checkpoints are part of orchestration, not a fallback after the agent has already changed too much. A checkpoint is valuable when it reviews a compact artifact before the next phase depends on it.
-
-Use HITL checkpoints when the next step would make a decision expensive to undo:
-
-| Checkpoint | Use when |
-|---|---|
-| Approve grounded approach | Solution space is unclear or multiple local patterns compete |
-| Approve scope | The task could expand into adjacent cleanup, refactors, or product changes |
-| Approve architecture boundary | Module ownership, layering, or data flow may change |
-| Approve schema/API contract | External callers, persisted data, or public behavior are affected |
-| Approve security-sensitive edits | Auth, permissions, payments, secrets, or personal data are involved |
-| Review final diff | Result will ship or be handed to another engineer |
-
-Planning is complete when the next bounded unit is obvious enough that the agent can execute it without re-deciding scope, architecture, or approval boundaries.
-
-<PromptExample>
-Create an orchestration plan for adding API rate limiting. Define what to add, remove, change, and leave untouched. Split the work into bounded subtasks with inputs, outputs, dependencies, execution mode, HITL checkpoints, and verification gates. Do not edit files until I approve the plan.
-</PromptExample>
-
-## <RobotEmoji size={28} /> Phase 3: Execute {#phase-3-execute}
+## Phase 3: Execute {#phase-3-execute}
 
 Execution is about maximizing the time the agent works reliably without you watching.
 
@@ -157,7 +124,7 @@ Supervised execution is appropriate for:
 - unfamiliar codebases where you need to build your own mental model while the agent explores
 - any task where intermediate choices matter more than final syntax
 
-### <AirplaneEmoji size={22} /> Autonomous execution
+### Autonomous execution
 
 In autonomous mode, you give the agent a bounded unit, let it run, and review the result later. This is where agentic coding creates real leverage: parallel work, longer productive stretches, and less human attention spent on implementation mechanics.
 
@@ -186,7 +153,7 @@ The trade-off is delayed discovery. If the agent goes wrong, you find out later.
 
 The advanced pattern is not choosing one mode forever. It is assigning the right level of autonomy per orchestration unit — and knowing that the level you can assign is a function of how well you grounded and planned.
 
-## <StraightRulerEmoji size={28} /> Phase 4: Verification {#phase-4-verification}
+## Phase 4: Verification {#phase-4-verification}
 
 Verification exists because the model is probabilistic. Even with perfect grounding and planning, the agent will make mistakes — missed constraints, hallucinated APIs, locally correct but globally wrong implementations. That is not a failure of the technology; it is the nature of a token prediction system. The model generates the next likely continuation from context. It does not verify its own output against context. You do.
 
@@ -300,15 +267,15 @@ Code generation is cheap. Do not preserve a bad foundation because the diff look
 
 The four phases are a control system, and each phase addresses a specific limitation the reader learned in the previous chapters:
 
-- **Grounding** addresses the context problem. The model generates from context, not checking against it ([Chapter 1](./chapter-1-how-llms-work.mdx)). Grounding ensures the context contains the right facts before the agent acts.
-- **Planning** addresses the orchestration problem. Complex work is a sequence of prompts, not one perfect prompt ([Chapter 3](./chapter-3-prompting-101.mdx)). Planning decomposes the task into bounded units the harness loop can execute ([Chapter 2](./chapter-2-how-agents-work.mdx)).
+- **Grounding** addresses the context problem. The model generates from context, not checking against it ([Chapter 1](./how-llms-work.mdx)). Grounding ensures the context contains the right facts before the agent acts.
+- **Planning** addresses the orchestration problem. Complex work is a sequence of prompts, not one perfect prompt ([Chapter 3](./prompting-101.mdx)). Planning decomposes the task into bounded units the harness loop can execute ([Chapter 2](./how-agents-work.mdx)).
 - **Execution** addresses the autonomy problem. The harness gives the agent autonomy; the operator's job is to push the reliable-autonomy frontier outward through better grounding and planning.
-- **Verification** addresses the probabilistic problem. Ownership never moves ([Chapter 1](./chapter-1-how-llms-work.mdx)). The model will make mistakes. Verification is how you catch them before they ship.
+- **Verification** addresses the probabilistic problem. Ownership never moves ([Chapter 1](./how-llms-work.mdx)). The model will make mistakes. Verification is how you catch them before they ship.
 
 This is the operator loop. You are not trying to personally type every line or review every token. You are designing the conditions under which useful artifacts are likely — grounding the right context, planning the right units, maximizing reliable autonomous execution — then verifying the result from enough angles to own it.
 
-[Chapter 3](./chapter-3-prompting-101.mdx) gave you prompt-level controls. This chapter shows where those controls fit in the operator loop: grounding queries, orchestration plans, execution instructions, and verification reviews.
+[Chapter 3](./prompting-101.mdx) gave you prompt-level controls. This chapter shows where those controls fit in the operator loop: grounding queries, orchestration plans, execution instructions, and verification reviews.
 
 ---
 
-**Next:** [Chapter 5: Grounding](./chapter-5-grounding.mdx) — the deep dive into Phase 1: tools, techniques, and how to choose the right grounding loop for the scale of your problem.
+**Next:** [Chapter 5: Context Engineering](./context-engineering.mdx) — how to keep grounded facts small, timely, and visible enough to use.

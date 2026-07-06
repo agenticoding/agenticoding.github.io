@@ -1,8 +1,4 @@
 ---
-sidebar_position: 2
-sidebar_label: 'Reliability Levers'
-sidebar_custom_props:
-  sectionNumber: 7
 title: 'Reliability Levers'
 ---
 
@@ -15,7 +11,7 @@ import ReliabilityLeversControlPanel from '@site/src/components/VisualElements/R
 import SamplingLeverDiagram from '@site/src/components/VisualElements/SamplingLeverDiagram';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
-[Chapter 5: Grounding](/chapter-5-grounding) covered getting the right facts into the agent's world. [Chapter 6: Context Engineering](./chapter-6-context-management.mdx) covered why long-context capacity does not equal reliable inference, then showed how to keep facts usable by controlling placement, loading, isolation, and handoffs. But context quality is only one part of the reliability problem. Even with good context, agents still operate as probabilistic systems executing multi-step plans.
+[Chapter 4](./high-level-methodology.md#phase-1-grounding) covered getting the right facts into the agent's world. [Chapter 5: Context Engineering](./context-engineering.mdx) covered why long-context capacity does not equal reliable inference, then showed how to keep facts usable by controlling placement, loading, isolation, and handoffs. But context quality is only one part of the reliability problem. Even with good context, agents still operate as probabilistic systems executing multi-step plans.
 
 This chapter zooms out to the full reliability model. Before you choose a workflow such as specs, tests, retries, or human checkpoints, you need to know which failure mode you are attacking.
 
@@ -135,7 +131,7 @@ The goal is not maximum granularity. The goal is the decomposition that keeps ea
 
 A second implication follows from the same logic: prefer **concurrent execution with minimal dependencies**. If two subtasks can run independently, do them in parallel instead of forcing one long serial chain. Parallel work shortens wall-clock time and, more importantly, avoids creating unnecessary points where one mistake contaminates the next step.
 
-This is exactly why [Chapter 6's sub-agents](./chapter-6-context-management.mdx#sub-agents--context-isolation) matter so much for orchestration. They let you split independent research or analysis into parallel branches without dragging all of that intermediate work back into one bloated thread.
+This is exactly why [Chapter 6's sub-agents](./context-engineering.mdx#sub-agents--isolate) matter so much for orchestration. They let you split independent research or analysis into parallel branches without dragging all of that intermediate work back into one bloated thread.
 
 Mathematically, orchestration is about the balance between per-step reliability `R`, total steps `N`, and the number of hard dependencies between steps. Fewer, more self-contained steps usually improve the chain — but only until a step becomes too hard for the model.
 
@@ -183,7 +179,7 @@ In practice the judge is usually one of:
 - **LLM judge** — faster, but still probabilistic
 - **Human judge** — slowest, but usually most reliable
 
-This is where [Chapter 6's sub-agents](./chapter-6-context-management.mdx#sub-agents--context-isolation) are especially powerful. They let you generate parallel candidates in separate contexts instead of producing three near-identical answers from the same degraded thread.
+This is where [Chapter 6's sub-agents](./context-engineering.mdx#sub-agents--isolate) are especially powerful. They let you generate parallel candidates in separate contexts instead of producing three near-identical answers from the same degraded thread.
 
 The tradeoff is that latency and cost scale with `k`, and gains depend on how independent the retries really are and how trustworthy the judge is. Sampling is a poor substitute for bad decomposition or weak grounding.
 
@@ -215,7 +211,7 @@ The highest-leverage checkpoint is usually at a phase boundary:
 - after implementation, before merge
 - after agent review, before external action
 
-This is where [Chapter 6's manual handoff pattern](./chapter-6-context-management.mdx#runtime-management) becomes critical. A checkpoint works best when it is followed by a fresh phase, not by continuing in the same messy thread. The reviewed artifact should become the new starting point.
+This is where [Chapter 6's manual handoff pattern](./context-engineering.mdx#runtime-management) becomes critical. A checkpoint works best when it is followed by a fresh phase, not by continuing in the same messy thread. The reviewed artifact should become the new starting point.
 
 The math here is different from sampling. Checkpoints primarily reduce failure stickiness `S`, not just raw per-step error rate. They lower the chance that one failure is followed by another[^2].
 
@@ -248,4 +244,4 @@ Many teams overuse one lever because it is familiar. They retry when they really
 
 ---
 
-**Next:** [Chapter 8: Spec-Driven Development](./chapter-8-spec-driven-development.md)
+**Next:** [Chapter 8: Spec-Driven Development](./spec-driven-development.md)

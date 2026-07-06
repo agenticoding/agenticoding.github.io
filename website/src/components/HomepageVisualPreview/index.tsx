@@ -50,7 +50,7 @@ export default function CourseVisualsShowcase() {
           <PreviewTile
             title="Iterative AI Workflows"
             caption="Grounding, Plan, Execute, Validate - systematic AI-assisted development"
-            chapterLink="/chapter-4-high-level-methodology"
+            chapterLink="/high-level-methodology"
             chapterNumber={4}
           >
             <WorkflowCircle />
@@ -59,7 +59,7 @@ export default function CourseVisualsShowcase() {
           <PreviewTile
             title="Context Isolation"
             caption="Separate contexts prevent bias between code, tests, and triage"
-            chapterLink="/chapter-9-tests-as-guardrails"
+            chapterLink="/tests-as-guardrails"
             chapterNumber={9}
           >
             <ThreeContextWorkflow vertical />
@@ -68,7 +68,7 @@ export default function CourseVisualsShowcase() {
           <PreviewTile
             title="Code Pattern Compounding"
             caption="Good patterns amplify quality, bad patterns compound technical debt"
-            chapterLink="/chapter-12-agent-friendly-code"
+            chapterLink="/agent-friendly-code"
             chapterNumber={12}
           >
             <CompoundQualityVisualization homepageMode />
