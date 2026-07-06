@@ -1,0 +1,133 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  max-width: 760px;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 320px;
+}
+
+.panelTitle {
+  font-family: var(--font-mono-spec);
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.arrowLabel {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  letter-spacing: 0.2px;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.logicPremisePulse,
+.logicConclusionPulse,
+.probabilityOutputPulse {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.logicPremisePulse {
+  animation: logicPremiseBeat 5600ms ease-in-out infinite;
+}
+
+.logicConclusionPulse {
+  animation: logicConclusionBeat 5600ms ease-in-out infinite;
+}
+
+.probabilityOutputPulse {
+  animation: probabilityOutputBeat 6400ms ease-in-out infinite;
+}
+
+.logicRuleStatic {
+  display: none;
+}
+
+.probabilityZigzagPath {
+  opacity: 0.88;
+}
+
+@keyframes logicPremiseBeat {
+  0%,
+  8%,
+  24%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  14% {
+    transform: scale(1.035);
+    opacity: 0.94;
+  }
+}
+
+@keyframes logicConclusionBeat {
+  0%,
+  42%,
+  66%,
+  100% {
+    transform: scale(1);
+  }
+  54% {
+    transform: scale(1.055);
+  }
+}
+
+@keyframes probabilityOutputBeat {
+  0%,
+  76%,
+  94%,
+  100% {
+    transform: scale(1);
+  }
+  86% {
+    transform: scale(1.045);
+  }
+}
+
+@container (max-width: 520px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 560px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logicPremisePulse,
+  .logicConclusionPulse,
+  .probabilityOutputPulse {
+    animation: none;
+  }
+
+  .logicRuleMotion {
+    display: none;
+  }
+
+  .logicRuleStatic {
+    display: initial;
+  }
+}

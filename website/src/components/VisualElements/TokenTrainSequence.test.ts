@@ -34,6 +34,16 @@ test('seeded token trains cover the full modality palette at palette length', ()
   assert.deepEqual(modalities, new Set(TOKEN_TRAIN_PALETTE.map((t) => t.modality)));
 });
 
+test('token train palette uses only canonical modalities', () => {
+  assert.deepEqual(TOKEN_TRAIN_PALETTE, [
+    { modality: 'text' },
+    { modality: 'code' },
+    { modality: 'image' },
+    { modality: 'audio' },
+    { modality: 'video' },
+  ]);
+});
+
 test('seeded token trains only emit valid signals', () => {
   for (const token of seededTokenTrain('valid-signals', 24)) {
     assert.equal(VALID_SIGNALS.has(token.signal ?? 'ordinary'), true);

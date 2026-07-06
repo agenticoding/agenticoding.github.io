@@ -1,0 +1,183 @@
+.diagram {
+  --local-cycle: 7800ms;
+
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.diagram text {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.title,
+.rowLabel,
+.note,
+.footer,
+.modelText,
+.artifactLabel {
+  font-family: var(--font-mono-spec);
+  letter-spacing: 0.03em;
+}
+
+.title {
+  fill: var(--text-body);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.rowLabel,
+.note,
+.footer {
+  fill: var(--text-muted);
+}
+
+.rowLabel {
+  font-size: 9.5px;
+  font-weight: 600;
+}
+
+.note,
+.footer {
+  font-size: 8.5px;
+}
+
+.modelText {
+  fill: var(--visual-violet);
+  font-family: var(--font-mono-ai);
+  font-size: 9px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.modelBox {
+  fill: var(--surface-raised);
+  stroke: var(--visual-violet);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.gear {
+  opacity: 0.9;
+  animation: gearWork 1300ms linear infinite;
+}
+
+.iterationRow {
+  animation: rowFocus var(--local-cycle) var(--ease-standard) infinite;
+  animation-delay: var(--row-delay);
+}
+
+.rowFrame {
+  fill: transparent;
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.chip rect,
+.artifact rect {
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.chip text,
+.artifact text,
+.iterationRow text {
+  font-family: var(--font-mono-keyword);
+  font-size: 8.5px;
+}
+
+.artifactLabel {
+  font-family: var(--font-mono-spec) !important;
+  font-size: 8px !important;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.selectedText {
+  font-family: var(--font-mono-ai) !important;
+  font-weight: 700;
+}
+
+.resetMarker line {
+  stroke: var(--border-default);
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.resetMarker text {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: 8px;
+  letter-spacing: 0.03em;
+}
+
+.toneNeutral rect {
+  fill: var(--surface-raised);
+  stroke: var(--border-subtle);
+}
+
+.toneNeutral text {
+  fill: var(--text-body);
+}
+
+.toneWarning rect {
+  fill: var(--visual-bg-warning);
+  stroke: var(--visual-warning);
+}
+
+.toneWarning text {
+  fill: var(--visual-warning);
+}
+
+.toneCyan rect {
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
+}
+
+.toneCyan text {
+  fill: var(--visual-cyan);
+}
+
+.toneSuccess rect {
+  fill: var(--visual-bg-success);
+  stroke: var(--visual-success);
+}
+
+.toneSuccess text {
+  fill: var(--visual-success);
+}
+
+@keyframes rowFocus {
+  0%, 24% {
+    opacity: 1;
+  }
+
+  28%, 100% {
+    opacity: 0.42;
+  }
+}
+
+@keyframes gearWork {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gear,
+  .iterationRow {
+    animation: none;
+  }
+
+  .iterationRow {
+    opacity: 1;
+  }
+}

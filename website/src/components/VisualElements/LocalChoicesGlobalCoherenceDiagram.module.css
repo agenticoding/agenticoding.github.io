@@ -1,0 +1,529 @@
+.container {
+  --step-cycle: 2200ms;
+  --compound-cycle: 6600ms;
+
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  max-width: 640px;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.desktopDiagram {
+  max-width: 640px;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 320px;
+}
+
+.diagram text {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.label {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.panel,
+.tokenChip rect,
+.outcomeTile rect,
+.candidateTile,
+.probBar {
+  vector-effect: non-scaling-stroke;
+}
+
+.panel {
+  fill: var(--surface-raised);
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+}
+
+.tokenChip rect {
+  fill: var(--surface-raised);
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+}
+
+.tokenChip text,
+.candidateText,
+.pct,
+.ellipsis,
+.resultArrow,
+.samplerKicker,
+.choiceArrow {
+  font-family: var(--font-mono-keyword);
+}
+
+.tokenChip text,
+.candidateText {
+  fill: var(--text-body);
+  font-size: 11px;
+}
+
+.compactChip text {
+  font-size: 8px;
+}
+
+.pct,
+.ellipsis,
+.samplerKicker {
+  fill: var(--text-muted);
+  font-size: 10px;
+}
+
+.choiceArrow,
+.resultArrow {
+  fill: var(--visual-violet);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.resultArrow {
+  animation: resultArrowLead 360ms ease-out both;
+  font-family: var(--font-mono-ai);
+  font-size: 15px;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.typingCursor {
+  animation:
+    cursorType var(--step-cycle) ease-in-out infinite both,
+    cursorBlink 900ms steps(1, end) infinite;
+  fill: var(--text-heading);
+}
+
+.candidateTile {
+  fill: var(--surface-raised);
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+}
+
+.probBar {
+  animation: probabilityFill var(--step-cycle) ease-out both;
+  fill: var(--visual-bg-neutral);
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.samplerShell,
+.samplerStep,
+.samplerFinalStep,
+.candidateLayer,
+.candidateRow,
+.selectedCandidate,
+.choiceArrow,
+.currentOutputToken,
+.typingCursor,
+.outcomeTile {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.selectedCandidate .candidateTile {
+  animation: selectedTileColor var(--step-cycle) ease-out both;
+}
+
+.selectedCandidate .probBar {
+  animation:
+    probabilityFill var(--step-cycle) ease-out both,
+    selectedBarColor var(--step-cycle) ease-out both;
+}
+
+.selectedCandidate .candidateText,
+.selectedCandidate .pct {
+  animation: selectedTextColor var(--step-cycle) ease-out both;
+  font-family: var(--font-mono-ai);
+  font-weight: 700;
+}
+
+.samplerShell {
+  animation: candidateLayerFadeIn 420ms ease-out both;
+}
+
+.samplerFinalStep {
+  animation: samplerFinalFadeOut var(--step-cycle) ease-in both;
+}
+
+.samplerHidden {
+  animation: none;
+  opacity: 0;
+}
+
+.candidateLayer {
+  animation: candidateLayerFadeIn 420ms ease-out both;
+}
+
+.candidateLayerExit {
+  animation: candidateLayerFadeOut 420ms ease-out both;
+}
+
+.candidateLayerExit .selectedCandidate,
+.candidateLayerExit .probBar,
+.candidateLayerExit .choiceArrow {
+  animation: none;
+}
+
+.candidateLayerExit .selectedCandidate .candidateTile,
+.candidateLayerExit .selectedCandidate .probBar {
+  fill: var(--visual-bg-violet);
+  stroke: var(--visual-violet);
+}
+
+.candidateLayerExit .selectedCandidate .candidateText,
+.candidateLayerExit .choiceArrow {
+  fill: var(--visual-violet);
+}
+
+.selectedCandidate {
+  animation: selectedPulse var(--step-cycle) ease-in-out infinite both;
+}
+
+.choiceArrow {
+  animation:
+    choiceArrowLand var(--step-cycle) ease-out both,
+    selectedTextColor var(--step-cycle) ease-out both;
+  fill: var(--text-muted);
+}
+
+.samplerPaused,
+.samplerPaused.samplerFinalStep,
+.samplerPaused .candidateLayer,
+.samplerPaused .selectedCandidate,
+.samplerPaused .probBar,
+.samplerPaused .choiceArrow {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.samplerPaused .selectedCandidate .candidateTile,
+.samplerPaused .selectedCandidate .probBar {
+  fill: var(--visual-bg-violet);
+  stroke: var(--visual-violet);
+}
+
+.samplerPaused .selectedCandidate .candidateText,
+.samplerPaused .selectedCandidate .pct,
+.samplerPaused .choiceArrow {
+  fill: var(--visual-violet);
+}
+
+.selectedChip rect {
+  stroke-width: 1.25;
+}
+
+.selectedChip text {
+  font-family: var(--font-mono-ai);
+  font-weight: 700;
+}
+
+.currentOutputToken {
+  animation: outputTokenFocus var(--step-cycle) ease-in-out infinite both;
+}
+
+.currentOutputToken rect {
+  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--visual-violet) 40%, transparent));
+  stroke-width: 2;
+}
+
+.currentOutputToken text {
+  font-size: 12px;
+}
+
+.outcomeTile {
+  animation: outcomeAppear 420ms ease-out 260ms both;
+}
+
+.outcomeTile rect {
+  stroke-width: 1.25;
+}
+
+.outcomeLabel {
+  font-family: var(--font-mono-ai);
+  font-size: 8.5px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+}
+
+.toneSuccess rect {
+  fill: var(--visual-bg-success);
+  stroke: var(--visual-success);
+}
+
+.toneSuccess text,
+.toneSuccess.resultArrow {
+  fill: var(--visual-success);
+}
+
+.toneWarning rect {
+  fill: var(--visual-bg-warning);
+  stroke: var(--visual-warning);
+}
+
+.toneWarning text,
+.toneWarning.resultArrow {
+  fill: var(--visual-warning);
+}
+
+.toneDanger rect {
+  fill: var(--visual-bg-error);
+  stroke: var(--visual-error);
+}
+
+.toneDanger text,
+.toneDanger.resultArrow {
+  fill: var(--visual-error);
+}
+
+.toneCyan rect {
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
+}
+
+.toneCyan text,
+.toneCyan.resultArrow {
+  fill: var(--visual-cyan);
+}
+
+@keyframes samplerFinalFadeOut {
+  0%,
+  78% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes candidateLayerFadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes candidateLayerFadeOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes cursorType {
+  0%,
+  62% {
+    transform: translateX(0);
+  }
+
+  72%,
+  100% {
+    transform: translateX(var(--cursor-advance));
+  }
+}
+
+@keyframes cursorBlink {
+  0%,
+  46% {
+    opacity: 1;
+  }
+
+  47%,
+  72% {
+    opacity: 0;
+  }
+
+  73%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes outputTokenFocus {
+  0%,
+  62% {
+    opacity: 0;
+    transform: translateY(-2px) scale(0.98);
+  }
+
+  72%,
+  88% {
+    opacity: 1;
+    transform: translateY(0) scale(1.055);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1.025);
+  }
+}
+
+@keyframes selectedPulse {
+  0%,
+  58% {
+    opacity: 0.86;
+    transform: scale(1);
+  }
+
+  72%,
+  88% {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+
+  100% {
+    opacity: 0.94;
+    transform: scale(1.01);
+  }
+}
+
+@keyframes probabilityFill {
+  0%,
+  28% {
+    opacity: 0.55;
+    transform: scaleX(0.18);
+  }
+
+  58%,
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes selectedTileColor {
+  0%,
+  58% {
+    fill: var(--surface-raised);
+    stroke: var(--border-subtle);
+  }
+
+  72%,
+  100% {
+    fill: var(--visual-bg-violet);
+    stroke: var(--visual-violet);
+  }
+}
+
+@keyframes selectedBarColor {
+  0%,
+  58% {
+    fill: var(--visual-bg-neutral);
+    stroke: var(--border-subtle);
+  }
+
+  72%,
+  100% {
+    fill: var(--visual-bg-violet);
+    stroke: var(--visual-violet);
+  }
+}
+
+@keyframes selectedTextColor {
+  0%,
+  58% {
+    fill: var(--text-body);
+  }
+
+  72%,
+  100% {
+    fill: var(--visual-violet);
+  }
+}
+
+@keyframes choiceArrowLand {
+  0%,
+  58% {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  72%,
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes resultArrowLead {
+  0% {
+    opacity: 0;
+    transform: translateX(-5px) scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes outcomeAppear {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@container (max-width: 520px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 560px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .samplerShell,
+  .samplerStep,
+  .samplerFinalStep,
+  .candidateLayer,
+  .selectedCandidate,
+  .probBar,
+  .choiceArrow,
+  .currentOutputToken,
+  .typingCursor,
+  .resultArrow,
+  .outcomeTile {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
