@@ -26,6 +26,18 @@ export function tokenTrainStaticDistance(
   stagger: TokenTrainStagger,
   travelMs: number
 ) {
-  if (stagger.mode === 'fixedStep') return (index * stagger.stepMs * length) / travelMs;
+  if (stagger.mode === 'fixedStep')
+    return (index * stagger.stepMs * length) / travelMs;
   return index * stagger.spacingPx;
+}
+
+export function tokenTrainOpacityKeyTimes(timing: TokenTrainTiming) {
+  const travelEnd = timing.travelMs / timing.cycleMs;
+  return [
+    0,
+    Math.min(0.04, travelEnd / 2),
+    travelEnd,
+    Math.min(1, (timing.travelMs + timing.fadeMs) / timing.cycleMs),
+    1,
+  ];
 }

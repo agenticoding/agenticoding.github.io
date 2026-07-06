@@ -6,13 +6,10 @@ const LCG_INCREMENT = 1013904223;
 
 export const TOKEN_TRAIN_PALETTE = [
   { modality: 'text' },
-  { modality: 'text', signal: 'salient' },
-  { modality: 'text', signal: 'compressed' },
   { modality: 'code' },
   { modality: 'image' },
   { modality: 'audio' },
   { modality: 'video' },
-  { modality: 'generic', signal: 'salient' },
 ] as const satisfies TokenSequence;
 
 function seedState(seed: string) {
@@ -76,4 +73,33 @@ export function seededTokenTrain(
     }
   }
   return tokens;
+}
+
+export type TokenDriftOptions = {
+  minOffsetPx?: number;
+  maxOffsetPx?: number;
+};
+
+function seededUnits(seed: string, count: number) {
+  let state = seedState(seed);
+  return Array.from({ length: count }, () => {
+    state = nextState(state);
+    return state / LCG_MODULUS;
+  });
+}
+
+function driftSign(seed: string, index: number) {
+  const start = seedState(seed) % 2 === 0 ? 1 : -1;
+  return index % 2 === 0 ? start : -start;
+}
+
+export function seededTokenDrift(
+  seed: string,
+  count: number,
+  { minOffsetPx = 6, maxOffsetPx = 22 }: TokenDriftOptions = {}
+) {
+  return seededUnits(seed, count).map((unit, index) => {
+    const amplitude = minOffsetPx + unit * (maxOffsetPx - minOffsetPx);
+    return Math.round(amplitude * driftSign(seed, index));
+  });
 }
