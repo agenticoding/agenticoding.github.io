@@ -2,6 +2,7 @@ import React, { type ReactNode } from 'react';
 import clsx from 'clsx';
 import { useTreeifiedTOC, type TOCTreeNode } from '@docusaurus/theme-common/internal';
 import { useSidebarTOC } from '../../tocStore';
+import AnimatedDisclosure from '../../shared/AnimatedDisclosure';
 import { resolveActiveHeading, type HeadingSnapshot } from './scrollspy';
 import styles from './styles.module.css';
 
@@ -135,6 +136,14 @@ function TocLink({
   );
 }
 
+function H3Disclosure({show, children}: {show: boolean; children: ReactNode}): ReactNode {
+  return (
+    <AnimatedDisclosure show={show} enterDelayMs={0} exitDelayMs={1}>
+      {children}
+    </AnimatedDisclosure>
+  );
+}
+
 export default function SidebarTOC({onNavigate}: {onNavigate?: () => void}): ReactNode {
   const flatToc = useSidebarTOC();
   const toc = useTreeifiedTOC(flatToc as Parameters<typeof useTreeifiedTOC>[0]);
@@ -156,16 +165,18 @@ export default function SidebarTOC({onNavigate}: {onNavigate?: () => void}): Rea
       {toc.map(h2 => (
         <React.Fragment key={h2.id}>
           <TocLink node={h2} active={isActiveLink(h2.id)} onActivate={activateId} onNavigate={onNavigate} />
-          {h2 === activeH2 && h2.children.map(h3 => (
-            <TocLink
-              key={h3.id}
-              node={h3}
-              active={isActiveLink(h3.id)}
-              onActivate={activateId}
-              onNavigate={onNavigate}
-              sublink
-            />
-          ))}
+          <H3Disclosure show={h2 === activeH2 && h2.children.length > 0}>
+            {h2.children.map(h3 => (
+              <TocLink
+                key={h3.id}
+                node={h3}
+                active={isActiveLink(h3.id)}
+                onActivate={activateId}
+                onNavigate={onNavigate}
+                sublink
+              />
+            ))}
+          </H3Disclosure>
         </React.Fragment>
       ))}
     </nav>

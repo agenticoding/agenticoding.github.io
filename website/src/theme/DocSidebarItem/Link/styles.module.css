@@ -51,58 +51,6 @@
   color: var(--text-body);
 }
 
-.tocDisclosure {
-  display: grid;
-  overflow: hidden;
-  transform-origin: top;
-}
-
-.tocDisclosureEnter {
-  animation: tocDisclosureEnter var(--duration-subtle) var(--ease-enter) both;
-}
-
-.tocDisclosureExit {
-  animation: tocDisclosureExit var(--duration-subtle-exit) var(--ease-exit) both;
-}
-
-.tocDisclosureInner {
-  min-height: 0;
-  overflow: hidden;
-}
-
-@keyframes tocDisclosureEnter {
-  from {
-    opacity: 0;
-    grid-template-rows: 0fr;
-    transform: translateY(calc(-1 * var(--space-0h)));
-  }
-  to {
-    opacity: 1;
-    grid-template-rows: 1fr;
-    transform: translateY(0);
-  }
-}
-
-@keyframes tocDisclosureExit {
-  from {
-    opacity: 1;
-    grid-template-rows: 1fr;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    grid-template-rows: 0fr;
-    transform: translateY(calc(-1 * var(--space-0h)));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tocDisclosureEnter,
-  .tocDisclosureExit {
-    animation-duration: 0.01ms !important;
-  }
-}
-
 .linkLabel {
   overflow: hidden;
   display: -webkit-box;

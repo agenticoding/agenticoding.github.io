@@ -7,6 +7,7 @@ import isInternalUrl from '@docusaurus/isInternalUrl';
 import IconExternalLink from '@theme/Icon/ExternalLink';
 import type {Props} from '@theme/DocSidebarItem/Link';
 import SidebarTOC from '../../DocSidebar/Desktop/SidebarTOC';
+import AnimatedDisclosure from '../../shared/AnimatedDisclosure';
 
 import styles from './styles.module.css';
 
@@ -29,44 +30,10 @@ function LinkLabel({label, sectionNumber}: {label: string; sectionNumber?: numbe
   );
 }
 
-const TOC_EXIT_DELAY_MS = 110;
-
 let lastTocActivePath: string | undefined;
 
-function shouldRenderDisclosure(show: boolean, activePath: string) {
-  return show && (lastTocActivePath == null || lastTocActivePath === activePath);
-}
-
-function getDisclosureDelay() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : TOC_EXIT_DELAY_MS;
-}
-
-function useDisclosureState(show: boolean, activePath: string) {
-  const [render, setRender] = React.useState(() => shouldRenderDisclosure(show, activePath));
-  const [closing, setClosing] = React.useState(false);
-
-  React.useEffect(() => {
-    if (show) {
-      if (render) {
-        lastTocActivePath = activePath;
-        setClosing(false);
-        return undefined;
-      }
-      const timeout = window.setTimeout(() => {
-        lastTocActivePath = activePath;
-        setClosing(false);
-        setRender(true);
-      }, getDisclosureDelay());
-      return () => window.clearTimeout(timeout);
-    }
-    if (!render) return undefined;
-
-    setClosing(true);
-    const timeout = window.setTimeout(() => setRender(false), getDisclosureDelay());
-    return () => window.clearTimeout(timeout);
-  }, [show, render, activePath]);
-
-  return {render, closing};
+function canRenderTocDisclosure(activePath: string) {
+  return lastTocActivePath == null || lastTocActivePath === activePath;
 }
 
 function TocDisclosure({
@@ -78,15 +45,17 @@ function TocDisclosure({
   activePath: string;
   onNavigate?: () => void;
 }) {
-  const {render, closing} = useDisclosureState(show, activePath);
-  if (!render) return null;
+  const handleShowCommitted = React.useCallback(() => {
+    lastTocActivePath = activePath;
+  }, [activePath]);
 
   return (
-    <div className={clsx(styles.tocDisclosure, closing ? styles.tocDisclosureExit : styles.tocDisclosureEnter)}>
-      <div className={styles.tocDisclosureInner}>
-        <SidebarTOC onNavigate={onNavigate} />
-      </div>
-    </div>
+    <AnimatedDisclosure
+      show={show}
+      initialRenderAllowed={canRenderTocDisclosure(activePath)}
+      onShowCommitted={handleShowCommitted}>
+      <SidebarTOC onNavigate={onNavigate} />
+    </AnimatedDisclosure>
   );
 }
 

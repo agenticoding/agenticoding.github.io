@@ -1,0 +1,57 @@
+.disclosure {
+  display: grid;
+  overflow: hidden;
+  transform-origin: top;
+}
+
+.disclosureEnter {
+  opacity: 0;
+  grid-template-rows: 0fr;
+  transform: translateY(calc(-1 * var(--space-0h)));
+  animation: disclosureEnter var(--duration-subtle) var(--ease-enter) both;
+}
+
+.disclosureExit {
+  opacity: 1;
+  grid-template-rows: 1fr;
+  transform: translateY(0);
+  animation: disclosureExit var(--duration-subtle-exit) var(--ease-exit) both;
+}
+
+.disclosureInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@keyframes disclosureEnter {
+  from {
+    opacity: 0;
+    grid-template-rows: 0fr;
+    transform: translateY(calc(-1 * var(--space-0h)));
+  }
+  to {
+    opacity: 1;
+    grid-template-rows: 1fr;
+    transform: translateY(0);
+  }
+}
+
+@keyframes disclosureExit {
+  from {
+    opacity: 1;
+    grid-template-rows: 1fr;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    grid-template-rows: 0fr;
+    transform: translateY(calc(-1 * var(--space-0h)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disclosureEnter,
+  .disclosureExit {
+    animation-duration: 0.01ms !important;
+  }
+}
