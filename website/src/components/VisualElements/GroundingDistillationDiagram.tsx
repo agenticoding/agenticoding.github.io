@@ -1,45 +1,114 @@
 import React from 'react';
+import { EmojiImage } from './ActorNodes';
+import {
+  AgentTile,
+  ContextAgentTile,
+  activationStyle,
+  type AgentContextTile,
+} from './AgentTile';
 import type { TokenSequence } from './AnimatedTokenFlow';
+import { DiagramTileSurface } from './DiagramTile';
 import { DIAGRAM_ICON_SIZE, DIAGRAM_TOKEN_SIZE } from './diagramScale';
-import { TokenArrowTrain } from './TokenArrowTrain';
-import { seededTokenTrain } from './TokenTrainSequence';
-import { WorkingAgentNode } from './WorkingAgentNode';
+import { tileToneVars, type DiagramTone } from './diagramTileLayout';
+import { EMOJI, type EmojiAsset } from './emojiAssets';
+import {
+  PairedTokenArrowTrain,
+  TokenArrowTrain,
+  type TokenArrowTrainProps,
+} from './TokenArrowTrain';
+import type { TokenUnitTone } from './TokenUnit';
+import type { WorkingAgentActivation } from './WorkingAgentNode';
 import styles from './GroundingDistillationDiagram.module.css';
 
 const ARIA_LABEL =
-  'Grounding distillation diagram: raw code, documentation, git history, and constraints stay inside an isolated grounding agent context. The grounding agent searches and synthesizes them into compact facts for the root orchestrator context, where the root agent consumes those facts.';
+  'Grounding distillation diagram: one grounding sources container sends dense research to a grounding agent, which distills compact facts into the root orchestrator. The root can send one targeted lookup back to the sources when working context is incomplete.';
 
+const LOOP_MS = 7800;
 const FLOW_SIZE = DIAGRAM_TOKEN_SIZE.flow;
-const TOKEN_TRAIN_TIMING = {
-  cycleMs: 7200,
-  travelMs: 820,
+const FLOW_STAGGER = { mode: 'pathSpacing', spacingPx: 24 } as const;
+const DOUBLE_ARROW_GAP = 16;
+const FLOW_TIMING = {
+  cycleMs: LOOP_MS,
+  travelMs: 1280,
   fadeMs: 160,
   repeat: 'loop',
 } as const;
-const TOKEN_TRAIN_STAGGER = { mode: 'fixedStep', stepMs: 110 } as const;
-const GROUNDING_AGENT_ICON_SIZE = DIAGRAM_ICON_SIZE.primary;
-const GROUNDING_AGENT_ICON_SIZE_COMPACT = DIAGRAM_ICON_SIZE.secondary;
-const ROOT_AGENT_ICON_SIZE = DIAGRAM_ICON_SIZE.actor;
-const ROOT_AGENT_ICON_SIZE_COMPACT = DIAGRAM_ICON_SIZE.primary;
-const SOURCE_TOKENS = seededTokenTrain('grounding-source', 2);
-const FACT_TOKENS = seededTokenTrain('grounding-facts', 2);
-
-const SOURCES = [
-  { label: 'Codebase / patterns', tone: 'cyan', y: 76, tokenY: 96 },
-  { label: 'Docs / current APIs', tone: 'indigo', y: 124, tokenY: 144 },
-  { label: 'Git history / decisions', tone: 'indigo', y: 172, tokenY: 192 },
-  { label: 'Specs / constraints', tone: 'indigo', y: 220, tokenY: 240 },
+const SOURCE_QUERY_DELAY_MS = 0;
+const SOURCE_RESULT_DELAY_MS = 520;
+const GROUNDING_TO_ROOT_DELAY_MS = 2100;
+const LOOKUP_DELAY_MS = 4700;
+const LOOKUP_RESULT_DELAY_MS = 5400;
+const SOURCE_ACTIVATION_STEP_MS = 180;
+const ROOT_CONTEXT_ACTIVATION_DELAY_MS =
+  GROUNDING_TO_ROOT_DELAY_MS + FLOW_TIMING.travelMs;
+const FACT_ACTIVATION_STEP_MS = 250;
+const ROOT_ACTIVE_END_MS =
+  LOOKUP_RESULT_DELAY_MS + FLOW_TIMING.travelMs + FLOW_TIMING.fadeMs;
+const SOURCE_QUERY_TOKENS = [
+  { modality: 'code', signal: 'salient' },
+  { modality: 'text', signal: 'ordinary' },
+] as const satisfies TokenSequence;
+const SOURCE_TOKENS = [
+  { modality: 'code', signal: 'ordinary' },
+  { modality: 'text', signal: 'ordinary' },
+  { modality: 'generic', signal: 'ordinary' },
+  { modality: 'code', signal: 'salient' },
+  { modality: 'text', signal: 'ordinary' },
+  { modality: 'image', signal: 'ordinary' },
+  { modality: 'code', signal: 'ordinary' },
+  { modality: 'text', signal: 'salient' },
+] as const satisfies TokenSequence;
+const DISTILLED_TOKENS = [
+  { modality: 'text', signal: 'compressed' },
+  { modality: 'generic', signal: 'salient' },
+  { modality: 'text', signal: 'compressed' },
+  { modality: 'code', signal: 'salient' },
+] as const satisfies TokenSequence;
+const TARGETED_REQUEST_TOKENS = [
+  { modality: 'code', signal: 'salient' },
+  { modality: 'text', signal: 'ordinary' },
+] as const satisfies TokenSequence;
+const TARGETED_RESULT_TOKENS = [
+  { modality: 'text', signal: 'compressed' },
+  { modality: 'code', signal: 'ordinary' },
+  { modality: 'image', signal: 'ordinary' },
+  { modality: 'generic', signal: 'salient' },
+  { modality: 'text', signal: 'compressed' },
+] as const satisfies TokenSequence;
+const SOURCE_ITEMS = [
+  { label: 'codebase', icon: EMOJI.laptop, tone: 'var(--text-body)' },
+  { label: 'docs', icon: EMOJI.books, tone: 'var(--text-body)' },
+  { label: 'history', icon: EMOJI.receipt, tone: 'var(--text-body)' },
+  { label: 'specs', icon: EMOJI.ruler, tone: 'var(--text-body)' },
 ] as const;
-const FACTS = [
-  'task goal',
-  'module pattern',
-  'API constraint',
-  'prior decision',
+const ROOT_FACTS = [
+  'architecture',
+  'known traps',
+  'where to look next',
 ] as const;
-const MOBILE_SOURCE_Y = [76, 132, 188, 244] as const;
 
-type Tone = 'cyan' | 'indigo';
 type BoxProps = { x: number; y: number; width: number; height: number };
+type SourceItem = { label: string; icon: EmojiAsset; tone: string };
+type FlowStyle = { strokeTone: DiagramTone; tokenTone: TokenUnitTone };
+
+type FlowSpec =
+  | { kind: 'pair'; pair: DoubleArrowSpec }
+  | { kind: 'arrow'; arrow: TokenArrowTrainProps };
+
+type DoubleArrowSpec = {
+  request: TokenArrowTrainProps;
+  response: TokenArrowTrainProps;
+};
+
+type Point = { x: number; y: number };
+
+const FLOW_STYLES = {
+  groundingQuery: { strokeTone: 'model', tokenTone: 'violet' },
+  sourceResult: { strokeTone: 'context', tokenTone: 'indigo' },
+  distilledContext: { strokeTone: 'context', tokenTone: 'indigo' },
+  targetedLookup: { strokeTone: 'system', tokenTone: 'cyan' },
+  targetedResult: { strokeTone: 'context', tokenTone: 'indigo' },
+} as const satisfies Record<string, FlowStyle>;
 
 export default function GroundingDistillationDiagram() {
   return (
@@ -51,457 +120,450 @@ export default function GroundingDistillationDiagram() {
 }
 
 function DesktopDiagram() {
+  const flows = desktopFlows();
   return (
     <svg
       className={`${styles.diagram} ${styles.desktopDiagram}`}
-      viewBox="0 0 760 360"
+      viewBox="0 0 760 420"
       role="img"
       aria-label={ARIA_LABEL}
     >
-      <Frame
-        width={760}
-        height={360}
-        title="GROUNDING AGENT → ROOT ORCHESTRATOR"
+      <DiagramTitle title="GROUNDING SOURCES → COMPACT ROOT CONTEXT" />
+      <FlowLayer flows={flows} />
+      <SourceCloud x={30} y={58} width={250} height={172} density="desktop" />
+      <GroundingAgent x={330} y={260} width={176} height={128} />
+      <RootOrchestrator
+        x={546}
+        y={58}
+        width={184}
+        height={260}
+        facts={ROOT_FACTS}
       />
-      <GroundingBoundary x={24} y={48} width={320} height={256} />
-      <DesktopFlows />
-      {SOURCES.map((source, index) => (
-        <Source key={source.label} {...source} x={40} width={172} />
-      ))}
-      <GroundingAgent x={238} y={132} width={86} height={88} />
-      <RootContext x={398} y={82} width={178} facts={FACTS} />
-      <RootAgent x={672} y={172} />
-      <FallbackNote x={400} y={296} />
+      <LookupLabel x={368} y={126} />
     </svg>
   );
 }
 
 function MobileDiagram() {
+  const flows = mobileFlows();
   return (
     <svg
       className={`${styles.diagram} ${styles.mobileDiagram}`}
-      viewBox="0 0 340 760"
+      viewBox="0 0 340 780"
       role="img"
       aria-label={ARIA_LABEL}
     >
-      <Frame width={340} height={760} title="GROUNDING → ROOT" />
-      <GroundingBoundary x={24} y={48} width={292} height={310} />
-      <MobileFlows />
-      {SOURCES.map((source, index) => (
-        <Source
-          key={source.label}
-          label={source.label}
-          tone={source.tone}
-          x={44}
-          y={MOBILE_SOURCE_Y[index]}
-          width={252}
-        />
-      ))}
-      <GroundingAgent x={90} y={286} width={160} height={64} compact />
-      <RootContext x={42} y={446} width={256} facts={FACTS} />
-      <RootAgent x={170} y={700} compact />
-      <FallbackNote x={54} y={386} />
+      <DiagramTitle title="GROUNDING → ROOT CONTEXT" />
+      <FlowLayer flows={flows} />
+      <SourceCloud x={32} y={56} width={276} height={186} density="mobile" />
+      <GroundingAgent x={82} y={318} width={176} height={104} compact />
+      <RootOrchestrator
+        x={50}
+        y={500}
+        width={240}
+        height={260}
+        facts={ROOT_FACTS}
+        compact
+      />
+      <LookupLabel x={42} y={478} />
     </svg>
   );
 }
 
-function Frame({
-  width,
-  height,
-  title,
-}: {
-  width: number;
-  height: number;
-  title: string;
-}) {
+function DiagramTitle({ title }: { title: string }) {
+  return (
+    <text x={24} y={26} fill="var(--text-muted)" className={styles.frameLabel}>
+      {title}
+    </text>
+  );
+}
+
+function SourceCloud(props: BoxProps & { density: 'desktop' | 'mobile' }) {
+  const layout = sourceItemLayout(props.density);
+  return (
+    <g>
+      <DiagramTileSurface
+        {...props}
+        tone="context"
+        weight={1.5}
+        className={styles.sourceRect}
+      />
+      <SourceHeader x={props.x} y={props.y} />
+      {SOURCE_ITEMS.map((item, index) => (
+        <SourceCloudItem
+          key={item.label}
+          item={item}
+          x={props.x + layout[index].x}
+          y={props.y + layout[index].y}
+          activationDelayMs={sourceActivationDelay(index)}
+        />
+      ))}
+    </g>
+  );
+}
+
+function SourceHeader({ x, y }: { x: number; y: number }) {
   return (
     <>
-      <rect
-        x={0.5}
-        y={0.5}
-        width={width - 1}
-        height={height - 1}
-        fill="var(--surface-page)"
-        stroke="var(--border-subtle)"
-        className={styles.vectorStroke}
-      />
       <text
-        x={24}
-        y={26}
-        fill="var(--text-muted)"
-        className={styles.frameLabel}
+        x={x + 16}
+        y={y + 24}
+        fill="var(--text-heading)"
+        className={styles.nodeEyebrow}
       >
-        {title}
+        GROUNDING SOURCES
+      </text>
+      <text
+        x={x + 16}
+        y={y + 44}
+        fill="var(--text-muted)"
+        className={styles.noteText}
+      >
+        broad material, one searchable surface
       </text>
     </>
   );
 }
 
-function GroundingBoundary({ x, y, width, height }: BoxProps) {
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fill="var(--surface-muted)"
-        stroke="var(--border-default)"
-        className={styles.groundingBoundary}
-      />
-      <text
-        x={x + 14}
-        y={y + 22}
-        fill="var(--text-muted)"
-        className={styles.nodeEyebrow}
-      >
-        ISOLATED GROUNDING AGENT CONTEXT
-      </text>
-    </g>
-  );
-}
-
-function Source({
-  label,
-  tone,
+function SourceCloudItem({
+  item,
   x,
   y,
-  width,
+  activationDelayMs,
 }: {
-  label: string;
-  tone: Tone;
+  item: SourceItem;
   x: number;
   y: number;
-  width: number;
+  activationDelayMs: number;
 }) {
   return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={36}
-        fill="var(--surface-raised)"
-        stroke={`var(--visual-${tone})`}
-        strokeWidth={1.25}
-        className={styles.sourceRect}
-      />
+    <g
+      className={styles.sourceItemActivation}
+      style={activationStyle(activationDelayMs)}
+    >
+      <EmojiImage asset={item.icon} x={x} y={y} size={32} />
       <text
-        x={x + 12}
-        y={y + 23}
-        fill="var(--text-heading)"
+        x={x + 40}
+        y={y + 21}
+        fill={item.tone}
         className={styles.sourceLabel}
       >
-        {label}
+        {item.label}
       </text>
     </g>
   );
 }
 
-function GroundingAgent({
-  x,
-  y,
-  width,
-  height,
-  compact = false,
-}: BoxProps & { compact?: boolean }) {
+function sourceActivationDelay(index: number) {
+  return SOURCE_RESULT_DELAY_MS + index * SOURCE_ACTIVATION_STEP_MS;
+}
+
+function sourceItemLayout(density: 'desktop' | 'mobile') {
+  if (density === 'mobile')
+    return [
+      { x: 24, y: 68 },
+      { x: 150, y: 68 },
+      { x: 24, y: 124 },
+      { x: 150, y: 124 },
+    ];
+  return [
+    { x: 20, y: 70 },
+    { x: 132, y: 70 },
+    { x: 20, y: 124 },
+    { x: 132, y: 124 },
+  ];
+}
+
+function GroundingAgent(props: BoxProps & { compact?: boolean }) {
   return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fill="var(--visual-bg-violet)"
-        stroke="var(--visual-violet)"
-        strokeWidth={1.5}
-        className={styles.agentRect}
-      />
-      <WorkingAgentNode
-        x={x + width / 2}
-        y={compact ? y + 13 : y + 22}
-        size={
-          compact
-            ? GROUNDING_AGENT_ICON_SIZE_COMPACT
-            : GROUNDING_AGENT_ICON_SIZE
-        }
-      />
-      <text
-        x={x + width / 2}
-        y={y + (compact ? 40 : height - 30)}
-        textAnchor="middle"
-        fill="var(--visual-violet)"
-        className={styles.nodeEyebrow}
-      >
-        GROUNDING AGENT
-      </text>
-      <text
-        x={x + width / 2}
-        y={y + (compact ? 56 : height - 12)}
-        textAnchor="middle"
-        fill="var(--text-heading)"
-        className={compact ? styles.agentTitleCompact : styles.nodeTitle}
-      >
-        Search + synthesize
-      </text>
-    </g>
+    <AgentTile
+      {...props}
+      tone="model"
+      title="Filter + distill"
+      eyebrow="GROUNDING AGENT"
+      titleClassName={styles.agentTitleCompact}
+      iconSize={agentIconSize(props.compact)}
+      rectClassName={styles.agentRect}
+      gearActivation={gearActivation(
+        0,
+        GROUNDING_TO_ROOT_DELAY_MS + FLOW_TIMING.travelMs
+      )}
+    />
   );
 }
 
-function RootContext({
-  x,
-  y,
-  width,
-  facts,
-}: {
-  x: number;
-  y: number;
-  width: number;
-  facts: readonly string[];
-}) {
+function agentIconSize(compact = false) {
+  return compact ? DIAGRAM_ICON_SIZE.primary : DIAGRAM_ICON_SIZE.actor;
+}
+
+function RootOrchestrator(
+  props: BoxProps & { facts: readonly string[]; compact?: boolean }
+) {
+  return (
+    <ContextAgentTile
+      {...props}
+      agentBlockHeight={props.compact ? 104 : 132}
+      tone="system"
+      contextEyebrow="ROOT ORCHESTRATOR"
+      contextDetail="usable working context"
+      contextTiles={rootContextTiles(props.facts)}
+      contextClasses={contextClasses()}
+      eyebrow="ROOT AGENT"
+      title="Ask for missing pieces"
+      iconSize={
+        props.compact ? DIAGRAM_ICON_SIZE.primary : DIAGRAM_ICON_SIZE.actor
+      }
+      titleClassName={styles.agentTitleCompact}
+      rectClassName={styles.agentRect}
+      textClasses={{ eyebrow: styles.nodeEyebrow }}
+      gearActivation={gearActivation(
+        GROUNDING_TO_ROOT_DELAY_MS,
+        ROOT_ACTIVE_END_MS
+      )}
+    />
+  );
+}
+
+function contextClasses() {
+  return {
+    detail: styles.noteText,
+    eyebrow: styles.nodeEyebrow,
+    tile: styles.tileActivation,
+    tileRect: styles.factRect,
+    tileText: styles.factText,
+  };
+}
+
+function rootContextTiles(facts: readonly string[]): AgentContextTile[] {
+  return [
+    ...facts.map((label, index) => ({
+      label,
+      activationDelayMs:
+        ROOT_CONTEXT_ACTIVATION_DELAY_MS + index * FACT_ACTIVATION_STEP_MS,
+    })),
+    {
+      label: 'targeted follow-up',
+      activationDelayMs: LOOKUP_RESULT_DELAY_MS + FLOW_TIMING.travelMs,
+    },
+  ];
+}
+
+function gearActivation(
+  startMs: number,
+  endMs: number
+): WorkingAgentActivation {
+  return {
+    activeMs: Math.max(0, endMs - startMs),
+    cycleMs: LOOP_MS,
+    delayMs: startMs,
+  };
+}
+
+function FlowLayer({ flows }: { flows: readonly FlowSpec[] }) {
   return (
     <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={172}
-        fill="var(--surface-raised)"
-        stroke="var(--border-default)"
-        strokeWidth={1.5}
-        className={styles.contextRect}
-      />
-      <text
-        x={x + 14}
-        y={y + 26}
-        fill="var(--text-heading)"
-        className={styles.nodeEyebrow}
-      >
-        ROOT ORCHESTRATOR CONTEXT
-      </text>
-      <text
-        x={x + 14}
-        y={y + 46}
-        fill="var(--text-muted)"
-        className={styles.noteText}
-      >
-        distilled facts only
-      </text>
-      {facts.map((fact, index) => (
-        <FactChip
-          key={fact}
-          x={x + 14}
-          y={y + 64 + index * 24}
-          width={width - 28}
-          label={fact}
-        />
+      {flows.map((flow, index) => (
+        <Flow key={index} flow={flow} />
       ))}
     </g>
   );
 }
 
-function FactChip({
-  x,
-  y,
-  width,
-  label,
+function Flow({ flow }: { flow: FlowSpec }) {
+  if (flow.kind === 'pair') return <PairedTokenArrowTrain {...flow.pair} />;
+  return <TokenArrowTrain {...flow.arrow} />;
+}
+
+function doubleArrow({
+  requestD,
+  responseD,
+  requestTokens,
+  responseTokens,
+  requestStyle,
+  responseStyle,
+  requestDelayMs,
+  responseDelayMs,
 }: {
-  x: number;
-  y: number;
-  width: number;
-  label: string;
-}) {
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={18}
-        fill="var(--surface-page)"
-        stroke="var(--border-subtle)"
-        className={styles.factRect}
-      />
-      <text
-        x={x + 10}
-        y={y + 13}
-        fill="var(--text-body)"
-        className={styles.factText}
-      >
-        {label}
-      </text>
-    </g>
-  );
+  requestD: string;
+  responseD: string;
+  requestTokens: TokenSequence;
+  responseTokens: TokenSequence;
+  requestStyle: FlowStyle;
+  responseStyle: FlowStyle;
+  requestDelayMs: number;
+  responseDelayMs: number;
+}): DoubleArrowSpec {
+  return {
+    request: arrowSpec(requestD, requestTokens, requestStyle, requestDelayMs),
+    response: arrowSpec(
+      responseD,
+      responseTokens,
+      responseStyle,
+      responseDelayMs
+    ),
+  };
 }
 
-function RootAgent({
-  x,
-  y,
-  compact = false,
-}: {
-  x: number;
-  y: number;
-  compact?: boolean;
-}) {
-  return (
-    <g>
-      <WorkingAgentNode
-        x={x}
-        y={y}
-        size={compact ? ROOT_AGENT_ICON_SIZE_COMPACT : ROOT_AGENT_ICON_SIZE}
-      />
-      <text
-        x={x}
-        y={y + (compact ? 36 : 44)}
-        textAnchor="middle"
-        fill="var(--text-heading)"
-        className={styles.nodeTitle}
-      >
-        Root agent
-      </text>
-      <text
-        x={x}
-        y={y + (compact ? 52 : 62)}
-        textAnchor="middle"
-        fill="var(--text-muted)"
-        className={styles.noteText}
-      >
-        uses facts
-      </text>
-    </g>
-  );
+function arrowSpec(
+  d: string,
+  tokens: TokenSequence,
+  style: FlowStyle,
+  startDelayMs: number
+): TokenArrowTrainProps {
+  return {
+    d,
+    tokens,
+    timing: { ...FLOW_TIMING, startDelayMs },
+    stagger: FLOW_STAGGER,
+    tone: style.tokenTone,
+    stroke: tileToneVars(style.strokeTone).accent,
+    size: FLOW_SIZE,
+    pathClassName: styles.connector,
+    strokeLinecap: 'butt',
+    strokeLinejoin: 'miter',
+  };
 }
 
-function DesktopFlows() {
-  return (
-    <g>
-      {SOURCES.map((source, index) => (
-        <DesktopSourceFlow
-          key={source.label}
-          y={source.tokenY}
-          tone={source.tone}
-          delay={index * 360}
-        />
-      ))}
-      <FlowPath
-        d="M 324 176 L 394 176"
-        tokenPathD="M 342 176 L 394 176"
-        tokens={FACT_TOKENS}
-        startDelayMs={1880}
-        tone="violet"
-      />
-      <FlowPath
-        d="M 576 176 L 640 176"
-        tokenPathD="M 594 176 L 640 176"
-        tokens={FACT_TOKENS}
-        startDelayMs={2600}
-        tone="violet"
-      />
-    </g>
-  );
+function pairedFlow(pair: DoubleArrowSpec): FlowSpec {
+  return { kind: 'pair', pair };
 }
 
-function MobileFlows() {
-  return (
-    <g>
-      {SOURCES.map((source, index) => (
-        <MobileSourceFlow
-          key={source.label}
-          y={MOBILE_SOURCE_Y[index] + 28}
-          tone={source.tone}
-          delay={index * 360}
-        />
-      ))}
-      <FlowPath
-        d="M 170 350 L 170 442"
-        tokenPathD="M 170 366 L 170 438"
-        tokens={FACT_TOKENS}
-        startDelayMs={1880}
-        tone="violet"
-      />
-      <FlowPath
-        d="M 170 618 L 170 672"
-        tokenPathD="M 170 634 L 170 672"
-        tokens={FACT_TOKENS}
-        startDelayMs={2600}
-        tone="violet"
-      />
-    </g>
-  );
+function singleFlow(
+  d: string,
+  tokens: TokenSequence,
+  style: FlowStyle,
+  startDelayMs: number
+): FlowSpec {
+  return { kind: 'arrow', arrow: arrowSpec(d, tokens, style, startDelayMs) };
 }
 
-function FlowPath({
-  d,
-  tone,
-  tokens,
-  tokenPathD,
-  startDelayMs,
-}: {
-  d: string;
-  tone: Tone | 'violet';
-  tokens: TokenSequence;
-  tokenPathD?: string;
-  startDelayMs: number;
-}) {
-  return (
-    <TokenArrowTrain
-      d={d}
-      tokenPathD={tokenPathD}
-      tokens={tokens}
-      timing={{ ...TOKEN_TRAIN_TIMING, startDelayMs }}
-      stagger={TOKEN_TRAIN_STAGGER}
-      tone={tone}
-      stroke={`var(--visual-${tone})`}
-      size={FLOW_SIZE}
-      pathClassName={styles.connector}
-    />
-  );
+function verticalEdgePair(left: Point, right: Point) {
+  const slope = (right.y - left.y) / (right.x - left.x);
+  const yOffset = (DOUBLE_ARROW_GAP * Math.hypot(1, slope)) / 2;
+  return {
+    requestD: linePath(
+      { x: right.x, y: right.y - yOffset },
+      { x: left.x, y: left.y - yOffset }
+    ),
+    responseD: linePath(
+      { x: left.x, y: left.y + yOffset },
+      { x: right.x, y: right.y + yOffset }
+    ),
+  };
 }
 
-function DesktopSourceFlow({
-  y,
-  tone,
-  delay,
-}: {
-  y: number;
-  tone: Tone;
-  delay: number;
-}) {
-  const travelY = 176 - y;
-  return (
-    <FlowPath
-      d={`M 212 ${y} L 236 176`}
-      tokenPathD={`M 226 ${y} L 236 176`}
-      tokens={SOURCE_TOKENS}
-      startDelayMs={delay}
-      tone={tone}
-    />
-  );
+function verticalPair(top: Point, bottom: Point) {
+  const xOffset = DOUBLE_ARROW_GAP / 2;
+  return {
+    requestD: linePath(
+      { x: bottom.x - xOffset, y: bottom.y },
+      { x: top.x - xOffset, y: top.y }
+    ),
+    responseD: linePath(
+      { x: top.x + xOffset, y: top.y },
+      { x: bottom.x + xOffset, y: bottom.y }
+    ),
+  };
 }
 
-function MobileSourceFlow({
-  y,
-  tone,
-  delay,
-}: {
-  y: number;
-  tone: Tone;
-  delay: number;
-}) {
-  return (
-    <FlowPath
-      d={`M 296 ${y} L 306 ${y} L 306 286 L 252 286`}
-      tokens={SOURCE_TOKENS}
-      startDelayMs={delay}
-      tone={tone}
-    />
-  );
+function horizontalPair(left: Point, right: Point) {
+  const yOffset = DOUBLE_ARROW_GAP / 2;
+  return {
+    requestD: linePath(
+      { x: right.x, y: right.y - yOffset },
+      { x: left.x, y: left.y - yOffset }
+    ),
+    responseD: linePath(
+      { x: left.x, y: left.y + yOffset },
+      { x: right.x, y: right.y + yOffset }
+    ),
+  };
 }
 
-function FallbackNote({ x, y }: { x: number; y: number }) {
+function linePath(from: Point, to: Point) {
+  return `M ${coordinate(from.x)} ${coordinate(from.y)} L ${coordinate(to.x)} ${coordinate(to.y)}`;
+}
+
+function coordinate(value: number) {
+  return Number(value.toFixed(2));
+}
+
+function desktopFlows(): FlowSpec[] {
+  return [
+    pairedFlow(
+      doubleArrow({
+        ...verticalEdgePair({ x: 280, y: 214 }, { x: 330, y: 294 }),
+        requestTokens: SOURCE_QUERY_TOKENS,
+        responseTokens: SOURCE_TOKENS,
+        requestStyle: FLOW_STYLES.groundingQuery,
+        responseStyle: FLOW_STYLES.sourceResult,
+        requestDelayMs: SOURCE_QUERY_DELAY_MS,
+        responseDelayMs: SOURCE_RESULT_DELAY_MS,
+      })
+    ),
+    singleFlow(
+      linePath({ x: 506, y: 292 }, { x: 546, y: 180 }),
+      DISTILLED_TOKENS,
+      FLOW_STYLES.distilledContext,
+      GROUNDING_TO_ROOT_DELAY_MS
+    ),
+    pairedFlow(
+      doubleArrow({
+        ...horizontalPair({ x: 280, y: 124 }, { x: 546, y: 124 }),
+        requestTokens: TARGETED_REQUEST_TOKENS,
+        responseTokens: TARGETED_RESULT_TOKENS,
+        requestStyle: FLOW_STYLES.targetedLookup,
+        responseStyle: FLOW_STYLES.targetedResult,
+        requestDelayMs: LOOKUP_DELAY_MS,
+        responseDelayMs: LOOKUP_RESULT_DELAY_MS,
+      })
+    ),
+  ];
+}
+
+function mobileFlows(): FlowSpec[] {
+  return [
+    pairedFlow(
+      doubleArrow({
+        ...verticalPair({ x: 170, y: 242 }, { x: 170, y: 318 }),
+        requestTokens: SOURCE_QUERY_TOKENS,
+        responseTokens: SOURCE_TOKENS,
+        requestStyle: FLOW_STYLES.groundingQuery,
+        responseStyle: FLOW_STYLES.sourceResult,
+        requestDelayMs: SOURCE_QUERY_DELAY_MS,
+        responseDelayMs: SOURCE_RESULT_DELAY_MS,
+      })
+    ),
+    singleFlow(
+      linePath({ x: 170, y: 422 }, { x: 170, y: 500 }),
+      DISTILLED_TOKENS,
+      FLOW_STYLES.distilledContext,
+      GROUNDING_TO_ROOT_DELAY_MS
+    ),
+    pairedFlow(
+      doubleArrow({
+        requestD: 'M 50 560 H 24 V 142 H 32',
+        responseD: 'M 32 158 H 40 V 576 H 50',
+        requestTokens: TARGETED_REQUEST_TOKENS,
+        responseTokens: TARGETED_RESULT_TOKENS,
+        requestStyle: FLOW_STYLES.targetedLookup,
+        responseStyle: FLOW_STYLES.targetedResult,
+        requestDelayMs: LOOKUP_DELAY_MS,
+        responseDelayMs: LOOKUP_RESULT_DELAY_MS,
+      })
+    ),
+  ];
+}
+
+function LookupLabel({ x, y }: { x: number; y: number }) {
   return (
-    <text x={x} y={y} fill="var(--text-muted)" className={styles.noteText}>
-      research artifact → fresh context
+    <text
+      x={x}
+      y={y}
+      fill={tileToneVars('context').accent}
+      className={styles.loopLabel}
+    >
+      targeted lookup
     </text>
   );
 }
