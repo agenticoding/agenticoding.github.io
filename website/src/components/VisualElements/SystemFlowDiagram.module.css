@@ -68,7 +68,7 @@
   stroke: var(--visual-cyan);
   stroke-width: 3;
   fill: none;
-  stroke-linecap: round;
+  stroke-linecap: butt;
 }
 
 /* Fork/Join paths for concurrent phases */
@@ -77,7 +77,7 @@
   stroke: var(--visual-cyan);
   stroke-width: 3;
   fill: none;
-  stroke-linecap: round;
+  stroke-linecap: butt;
 }
 
 .arrowMarker {

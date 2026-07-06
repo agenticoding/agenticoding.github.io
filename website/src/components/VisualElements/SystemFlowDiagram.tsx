@@ -192,7 +192,7 @@ export default function SystemFlowDiagram({
             id="arrowhead-flow"
             markerWidth="8"
             markerHeight="8"
-            refX="6"
+            refX="8"
             refY="3"
             orient="auto"
             className={styles.arrowMarker}

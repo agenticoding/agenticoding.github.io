@@ -112,7 +112,7 @@
   stroke: var(--visual-cyan);
   stroke-width: 3;
   fill: none;
-  stroke-linecap: round;
+  stroke-linecap: butt;
 }
 
 .contractMarker {
@@ -124,7 +124,7 @@
   stroke: var(--visual-success);
   stroke-width: 3;
   fill: none;
-  stroke-linecap: round;
+  stroke-linecap: butt;
 }
 
 .inputMarker {
@@ -136,7 +136,7 @@
   stroke: var(--visual-warning);
   stroke-width: 3;
   fill: none;
-  stroke-linecap: round;
+  stroke-linecap: butt;
 }
 
 .outputMarker {

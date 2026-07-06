@@ -76,7 +76,7 @@ export default function SystemBoundaryDiagram() {
 
   const mW = 8;
   const mH = 8;
-  const mRefX = 6;
+  const mRefX = 8;
   const mRefY = 3;
   const mPoly = '0 0, 8 3, 0 6';
 

@@ -23,7 +23,7 @@ export default function MentalModelComparison({ compact: _compact = false }: Pro
           id="mmcArrowRose"
           markerWidth="6"
           markerHeight="6"
-          refX="5"
+          refX="6"
           refY="3"
           orient="auto"
         >
@@ -34,7 +34,7 @@ export default function MentalModelComparison({ compact: _compact = false }: Pro
           id="mmcArrowCyan"
           markerWidth="6"
           markerHeight="6"
-          refX="5"
+          refX="6"
           refY="3"
           orient="auto"
         >

@@ -109,7 +109,7 @@ export default function WorkflowCircle() {
             id="arrowhead"
             markerWidth="10"
             markerHeight="10"
-            refX="8"
+            refX="10"
             refY="3"
             orient="auto"
             className={styles.arrowMarker}
@@ -120,7 +120,7 @@ export default function WorkflowCircle() {
             id="arrowhead-dashed"
             markerWidth="10"
             markerHeight="10"
-            refX="2"
+            refX="10"
             refY="3"
             orient="auto"
             className={styles.arrowMarkerDashed}

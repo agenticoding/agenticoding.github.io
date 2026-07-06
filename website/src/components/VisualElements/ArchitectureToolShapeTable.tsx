@@ -100,6 +100,11 @@ const MODALITY_STREAM_TOKENS = [
   ...MODALITY_STREAM_PATTERN,
   ...MODALITY_STREAM_PATTERN,
   ...MODALITY_STREAM_PATTERN,
+  ...MODALITY_STREAM_PATTERN,
+  ...MODALITY_STREAM_PATTERN,
+  ...MODALITY_STREAM_PATTERN,
+  ...MODALITY_STREAM_PATTERN,
+  ...MODALITY_STREAM_PATTERN,
 ] as const satisfies readonly TokenStreamToken[];
 
 function toneVar(tone: Tone, kind: 'fg' | 'bg') {
@@ -311,7 +316,7 @@ function ModalityIcon({ clipId }: { clipId: string }) {
   return (
     <g clipPath={`url(#${clipId})`}>
       <TokenStream
-        x={-93}
+        x={-218}
         y={16}
         tokens={MODALITY_STREAM_TOKENS}
         size={DIAGRAM_TOKEN_SIZE.flow}

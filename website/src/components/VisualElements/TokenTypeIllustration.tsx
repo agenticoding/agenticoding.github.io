@@ -12,19 +12,16 @@ type TokenExample = {
   label: string;
 };
 
-// All chips use violet tone — consistent with TokenPredictionDiagram and
-// PatternToUsefulWorkFunnel which both use a single tone. Shapes (modality)
-// provide the visual distinction; color carries no per-modality meaning here.
+// All chips use violet tone — consistent with TokenPredictionDiagram. Shapes
+// (modality) provide the visual distinction; color carries no per-modality meaning here.
 const TONE = 'violet' as const;
 
 const TOKEN_EXAMPLES: TokenExample[] = [
-  { modality: 'text', signal: 'salient', label: 'word' },
-  { modality: 'text', signal: 'ordinary', label: 'subword' },
-  { modality: 'code', signal: 'salient', label: 'code' },
-  { modality: 'image', signal: 'compressed', label: 'image' },
+  { modality: 'text', signal: 'ordinary', label: 'text' },
+  { modality: 'code', signal: 'salient', label: 'call' },
+  { modality: 'image', signal: 'ordinary', label: 'image' },
   { modality: 'audio', signal: 'ordinary', label: 'audio' },
   { modality: 'video', signal: 'compressed', label: 'video' },
-  { modality: 'generic', signal: 'ordinary', label: 'tool' },
 ];
 
 const CHIP_SIZE = 28;

@@ -120,7 +120,7 @@
 .arrowTraditional {
   stroke: var(--visual-cyan);
   stroke-width: 2;
-  stroke-linecap: round;
+  stroke-linecap: butt;
   stroke-dasharray: 120;
   stroke-dashoffset: 120;
   animation: drawArrow 0.6s ease-out 0.4s forwards;
@@ -152,7 +152,7 @@
 .arrowAI {
   stroke: var(--visual-success);
   stroke-width: 2;
-  stroke-linecap: round;
+  stroke-linecap: butt;
   stroke-dasharray: 120;
   stroke-dashoffset: 120;
   animation: drawArrow 0.6s ease-out 0.65s forwards;

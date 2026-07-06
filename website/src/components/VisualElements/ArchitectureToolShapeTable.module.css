@@ -187,7 +187,7 @@
   }
 
   to {
-    transform: translateX(100px);
+    transform: translateX(125px);
   }
 }
 
@@ -202,7 +202,7 @@
   }
 
   .modalityStream {
-    transform: translateX(50px);
+    transform: translateX(62.5px);
   }
 }
 

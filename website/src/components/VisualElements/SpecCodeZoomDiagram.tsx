@@ -137,7 +137,7 @@ export default function SpecCodeZoomDiagram() {
             id="sczdArrowGenerate"
             markerWidth="6"
             markerHeight="6"
-            refX="5"
+            refX="6"
             refY="3"
             orient="auto"
             className={styles.arrowMarkerGenerate}
@@ -149,7 +149,7 @@ export default function SpecCodeZoomDiagram() {
             id="sczdArrowExtract"
             markerWidth="6"
             markerHeight="6"
-            refX="5"
+            refX="6"
             refY="3"
             orient="auto"
             className={styles.arrowMarkerExtract}

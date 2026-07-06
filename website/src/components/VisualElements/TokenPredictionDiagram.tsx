@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import { GearNode } from './GearNode';
 import { TokenUnit } from './TokenUnit';
-import { ArrowMarker } from './diagramGeometry';
+import { ArrowMarker, trimPathEnd } from './diagramGeometry';
 import { DIAGRAM_STROKE } from './diagramScale';
 import styles from './TokenPredictionDiagram.module.css';
 
@@ -62,7 +62,7 @@ const MOBILE_MERGE_Y = 162;
 function FlowPath({ d, markerId }: { d: string; markerId?: string }) {
   return (
     <path
-      d={d}
+      d={markerId ? trimPathEnd(d) : d}
       fill="none"
       stroke={FLOW_ARROW_COLOR}
       strokeWidth={DIAGRAM_STROKE.connector}
@@ -129,7 +129,7 @@ function DesktopDiagram() {
       className={clsx(styles.diagram, styles.desktopDiagram)}
     >
       <defs>
-        <ArrowMarker id={DESKTOP_ARROW_MARKER_ID} fill={FLOW_ARROW_COLOR} />
+        <ArrowMarker id={DESKTOP_ARROW_MARKER_ID} fill={FLOW_ARROW_COLOR} refX={0} />
       </defs>
       <text
         x={PILL_X + PILL_W / 2}
@@ -317,7 +317,7 @@ function MobileDiagram() {
       className={clsx(styles.diagram, styles.mobileDiagram)}
     >
       <defs>
-        <ArrowMarker id={MOBILE_ARROW_MARKER_ID} fill={FLOW_ARROW_COLOR} />
+        <ArrowMarker id={MOBILE_ARROW_MARKER_ID} fill={FLOW_ARROW_COLOR} refX={0} />
       </defs>
       <text
         x={MVW / 2}

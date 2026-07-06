@@ -144,7 +144,7 @@ export default function KnowledgeExpansionDiamond() {
             id="arrowTraditional"
             markerWidth="6"
             markerHeight="6"
-            refX="5"
+            refX="6"
             refY="3"
             orient="auto"
             className={styles.arrowMarkerTraditional}
@@ -156,7 +156,7 @@ export default function KnowledgeExpansionDiamond() {
             id="arrowAI"
             markerWidth="6"
             markerHeight="6"
-            refX="5"
+            refX="6"
             refY="3"
             orient="auto"
             className={styles.arrowMarkerAI}
