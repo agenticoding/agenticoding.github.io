@@ -1,38 +1,156 @@
-/* MCPToolSchemaDiagram — causal comparison of context mechanics and tool-call behavior. */
+/* MCPToolSchemaDiagram — startup context shape determines runtime call path. */
+
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  max-width: 760px;
+}
 
 .diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
   font-feature-settings: var(--font-mono-features);
 }
 
-.cardSubtitle,
-.annotation,
-.rule {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
+.desktopDiagram {
+  max-width: 760px;
 }
 
-.cardTitle {
+.mobileDiagram {
+  display: none;
+  max-width: 340px;
+}
+
+.laneTitle,
+.ruleText {
   font-family: var(--font-mono-keyword);
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.04em;
 }
 
-.sectionLabel,
-.causalCue {
+.stageLabel,
+.tradeoffText {
   font-family: var(--font-mono-keyword);
   font-size: var(--text-xs);
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.behaviorLabel {
+.laneSubtitle,
+.pressureText {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+}
+
+.blockLabel,
+.flowLabel {
   font-family: var(--font-mono-spec);
   font-size: var(--text-xs);
   font-weight: 600;
 }
 
-.annotation {
-  font-size: var(--text-xs);
+.blockLabel {
+  font-size: 9.5px;
+}
+
+.flowNode,
+.flowArrow,
+.runtimeSchema {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.flowNode {
+  animation: mcpStepPulse 4200ms ease-in-out infinite both;
+}
+
+.flowArrow {
+  animation: mcpArrowPulse 4200ms ease-in-out infinite both;
+}
+
+.runtimeSchema {
+  animation: mcpSchemaPulse 4200ms ease-in-out infinite both;
+  animation-delay: 1500ms;
+}
+
+.pressureArrow {
+  fill: none;
+  stroke: var(--visual-warning);
+  stroke-width: 1.5;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+}
+
+.semanticNode {
+  color: var(--visual-indigo);
+}
+
+@keyframes mcpStepPulse {
+  0%, 16%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  8% {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+}
+
+@keyframes mcpArrowPulse {
+  0%, 16%, 100% {
+    opacity: 0.55;
+  }
+
+  8% {
+    opacity: 1;
+  }
+}
+
+@keyframes mcpSchemaPulse {
+  0%, 18%, 100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+
+  8% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@container (max-width: 520px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (max-width: 560px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowNode,
+  .flowArrow,
+  .runtimeSchema {
+    animation: none !important;
+  }
+
+  .flowArrow {
+    opacity: 0.75;
+  }
 }

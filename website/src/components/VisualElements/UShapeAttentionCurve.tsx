@@ -23,14 +23,29 @@ function getDotLayers(frac: number, deadCenterStart: number, deadCenterEnd: numb
   return { danger: false, cyanOpacity: 0 };
 }
 
-function getSeverity(contextFill: number): { tier: string; desc: string; color: string } {
+function getSeverity(contextFill: number): { tier: string; desc: string; mobileDesc: string; color: string } {
   if (contextFill <= 20) {
-    return { tier: 'MANAGEABLE', desc: 'middle receives moderate attention', color: 'var(--visual-success)' };
+    return {
+      tier: 'MANAGEABLE',
+      desc: 'middle receives moderate attention',
+      mobileDesc: 'middle still usable',
+      color: 'var(--visual-success)',
+    };
   }
   if (contextFill <= 50) {
-    return { tier: 'SIGNIFICANT', desc: 'middle content often missed on inferential tasks', color: 'var(--visual-warning)' };
+    return {
+      tier: 'SIGNIFICANT',
+      desc: 'middle content often missed on inferential tasks',
+      mobileDesc: 'middle drops first',
+      color: 'var(--visual-warning)',
+    };
   }
-  return { tier: 'SEVERE', desc: 'middle invisible — only recency remains reliable', color: 'var(--visual-error)' };
+  return {
+    tier: 'SEVERE',
+    desc: 'middle invisible — only recency remains reliable',
+    mobileDesc: 'only recency remains reliable',
+    color: 'var(--visual-error)',
+  };
 }
 
 function usePrefersReducedMotion(): boolean {
@@ -92,7 +107,20 @@ export default function UShapeAttentionCurve({
     .map(d => `${d.dotX},${d.dotY}`)
     .join(' ');
 
+  const mobileDots = dots.map((dot, i) => {
+    const frac = i / (DOT_COUNT - 1);
+    const attention = 1 - (dot.dotY - PLOT_TOP) / PLOT_H;
+    return {
+      x: 76 + attention * 212,
+      y: 48 + frac * 284,
+      danger: dot.danger,
+      cyanOpacity: dot.cyanOpacity,
+    };
+  });
+  const mobilePolylinePoints = mobileDots.map(d => `${d.x},${d.y}`).join(' ');
+
   const severity = getSeverity(contextFill);
+  const mobileSeverityX = contextFill > 50 ? 226 : 170;
   const prefersReducedMotion = usePrefersReducedMotion();
 
   // Crossfade state: keep outgoing tier alive for the design-system moderate duration.
@@ -170,7 +198,7 @@ export default function UShapeAttentionCurve({
   return (
     <div className={styles.container}>
       <svg
-        className={styles.svg}
+        className={`${styles.svg} ${styles.desktopDiagram}`}
         viewBox="0 0 800 320"
         preserveAspectRatio="xMidYMid meet"
         role="img"
@@ -282,6 +310,65 @@ export default function UShapeAttentionCurve({
             </g>
           );
         })()}
+      </svg>
+
+      <svg
+        className={`${styles.svg} ${styles.mobileDiagram}`}
+        viewBox="0 0 340 400"
+        preserveAspectRatio="xMidYMid meet"
+        role="img"
+        aria-label={`Mobile attention curve: ${severity.tier.toLowerCase()} context fill, ${severity.mobileDesc}`}
+      >
+        <text x={76} y={18} textAnchor="middle" className={styles.axisLabel}>Low</text>
+        <text x={288} y={18} textAnchor="middle" className={styles.axisLabel}>High</text>
+
+        <rect x={24} y={24} width={292} height={76} fill="var(--surface-muted)" />
+        <rect x={24} y={24} width={292} height={76} fill="var(--visual-bg-cyan)" opacity={1 - jCurveStrength} />
+        <rect x={24} y={100} width={292} height={84} fill="var(--surface-muted)" />
+        <rect x={24} y={184} width={292} height={48 + fillRatio * 40} fill="var(--visual-bg-error)" />
+        <rect x={24} y={232 + fillRatio * 40} width={292} height={100 - fillRatio * 40} fill="var(--surface-muted)" />
+        <rect x={24} y={332} width={292} height={44} fill="var(--visual-bg-cyan)" />
+
+        <text x={40} y={52} className={styles.mobileZoneTitle}>Primacy</text>
+        <text x={40} y={76} className={styles.mobileZoneDesc}>beginning stays reliable</text>
+        <text x={40} y={208} className={styles.mobileZoneTitle}>Middle</text>
+        <text x={40} y={232} className={styles.mobileZoneDesc}>degrades first</text>
+        <text x={40} y={352} className={styles.mobileZoneTitle}>Recency</text>
+        <text x={40} y={370} className={styles.mobileZoneDesc}>recent context dominates</text>
+
+        <polyline
+          points={mobilePolylinePoints}
+          stroke="var(--border-emphasis)"
+          strokeWidth={3}
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {mobileDots.map((dot, i) => (
+          <g key={i}>
+            <rect
+              x={dot.x - 5}
+              y={dot.y - 5}
+              width={10}
+              height={10}
+              rx={0}
+              className={dot.danger ? styles.dotDanger : styles.dot}
+            />
+            {!dot.danger && dot.cyanOpacity > 0 && (
+              <rect
+                x={dot.x - 5}
+                y={dot.y - 5}
+                width={10}
+                height={10}
+                rx={0}
+                className={styles.dotCyan}
+                opacity={dot.cyanOpacity}
+              />
+            )}
+          </g>
+        ))}
+
+        <text x={mobileSeverityX} y={180} textAnchor="middle" style={{ fill: severity.color }} className={styles.mobileSeverityTier}>{severity.tier}</text>
       </svg>
 
       {/* Slider row */}
