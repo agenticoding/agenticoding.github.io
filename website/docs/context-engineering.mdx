@@ -37,13 +37,13 @@ Drag the slider to 50%. Watch what happens to the middle.
 
 Three zones emerge from the curve. The **primacy zone** at the start — where system instructions, developer rules, and project files land. The **recency zone** at the end — where your current task and recent tool results sit. And the **dead center** — the middle of the window, where attention drops off sharply.
 
-**Why does this happen?** Transformer self-attention uses softmax normalization: the model distributes a fixed budget of attention across all tokens. When one token gets more attention, others get less — it's a zero-sum game. Early tokens benefit from causal masking — in autoregressive models, the first token is visible to every later token, accumulating attention across the sequence. Late tokens benefit from recency — the model learns that recent context is often most relevant for predicting the next token. The middle gets squeezed between these two forces.
+**Why does this happen?** Transformer self-attention uses softmax normalization: the model distributes a fixed budget of attention across all tokens. When one token gets more attention, others get less — it's a zero-sum game. Early tokens benefit from causal masking — in autoregressive models, the first token is visible to every later token, accumulating attention across the sequence. Late tokens benefit from recency — the model learns that recent context is often most relevant for predicting the next token. The middle gets squeezed between these two forces. This effect is well-documented: Xiao et al. (2023) showed that initial tokens receive disproportionately high attention scores — an "attention sink" effect — even when those tokens carry no semantic importance ([2309.17453](https://arxiv.org/abs/2309.17453)).
 
 This is not a bug. It is how transformer architecture works under realistic constraints. The [lost-in-the-middle effect](https://arxiv.org/abs/2307.03172) means the same instruction can be reliable at the top or bottom of the window and unreliable in the middle.
 
 Now drag the slider past 70%. Watch the J-curve.
 
-As context fills, even primacy weakens. The left edge of the curve droops. Only recency survives at high fill. The dead center zone expands — at 80% fill, the middle is effectively invisible. This is the constraint that context engineering works within.
+As context fills, even primacy weakens. The left edge of the curve droops. Only recency survives at high fill. The dead center zone expands — at 80% fill, the middle is effectively invisible. RULER benchmark testing found that only half of models advertising 200K+ context maintained satisfactory performance at 32K tokens ([Hsieh et al., 2024](https://arxiv.org/abs/2404.06654)). Chroma's Context Rot study showed that performance degrades non-uniformly as input length grows, with coherent distractor text degrading reasoning more than obvious noise ([Chroma, 2025](https://research.trychroma.com/context-rot)). This is the constraint that context engineering works within.
 
 Every mechanism in this chapter — context files, tool schemas, skills, sub-agents, compaction — is a way to keep important information where the model can still attend to it. The job is not to fit everything. The job is to keep the active task, current constraints, and relevant evidence in the high-attention zones.
 
@@ -66,16 +66,17 @@ The connector on the right side shows how tool definitions produce results that 
 
 The key insight: **it's not about running out of tokens — it's about where your task lands relative to the attention curve.** A 65% full window with heavy tool definitions is worse than an 80% full window where most content is conversation (which sits below the task in the recency zone).
 
+<details>
+<summary>Supporting Research</summary>
 
-## Why Size Doesn't Help
+- **Lost in the Middle** (Liu et al., 2023) — Models perform best when relevant information is at the beginning or end of context; performance drops in the middle. [arXiv:2307.03172](https://arxiv.org/abs/2307.03172)
+- **Attention Sinks** (Xiao et al., 2023) — Initial tokens attract disproportionate attention regardless of semantic content. Explains the primacy mechanism. [arXiv:2309.17453](https://arxiv.org/abs/2309.17453)
+- **RULER** (Hsieh et al., 2024) — Most models degrade before their advertised context window. Only half maintain satisfactory performance at 32K despite claiming 200K+. [arXiv:2404.06654](https://arxiv.org/abs/2404.06654)
+- **Context Rot** (Chroma, 2025) — Performance degrades non-uniformly with input length. Coherent distractors degrade reasoning more than noise. Distractor impact amplifies with context length. [research.trychroma.com/context-rot](https://research.trychroma.com/context-rot)
+- **LongICLBench** (Li et al., 2024) — Long-context LLMs show recency bias and struggle with complex tasks requiring information integration across long inputs. [arXiv:2404.02060](https://arxiv.org/abs/2404.02060)
+- **LOFT** (Lee et al., 2024) — Long-context LLMs can compete with retrieval systems on simple tasks but struggle with compositional reasoning. Prompting strategy significantly impacts performance. [arXiv:2406.13121](https://arxiv.org/abs/2406.13121)
 
-Large context windows have legitimate uses: summarizing regulatory filings, reviewing legal contracts, processing long transcripts. Those are retrieval-heavy tasks where stated facts can be useful even across a large window.
-
-Agentic coding is different. Coding agents connect constraints across files, follow multi-step logic, and reason about architectural relationships. That is inference, and inference degrades when the context fills with search trails, file reads, logs, obsolete plans, and coherent distractors.
-
-[Chapter 1: LLMs Demystified](/how-llms-work#long-context-is-not-reliable-memory) covers the model-selection lesson: bigger context does not mean better retrieval, and newer models can improve coding or tool use while regressing on long-context precision.
-
-A 200K-token window sounds enormous until you realize a single MCP server can consume 55K tokens just for tool schemas — before the agent reads a single line of your code. Capacity is not the goal. Controlled attention is the goal.
+</details>
 
 ## Retrieval Is Not Context Engineering
 
@@ -119,7 +120,7 @@ Each mechanism implements one or more of the four actions:
 
 The spectrum runs from **always-loaded** (context files — guaranteed delivery, high cost) to **fully isolated** (sub-agents — zero cost to parent, but no shared state). Effective context engineering means choosing the right mechanism for each piece of knowledge.
 
-## Context Files — Write {#context-files-claudemd--agentsmd}
+## Context Files
 
 Context files are markdown documents injected between the system prompt and your input — the primacy zone. They give agents project memory without repeated explanations: architecture, conventions, build commands, constraints.
 
@@ -151,7 +152,7 @@ Unlike AGENTS.md (a single file with predictable token cost), Claude Code's hier
 Context files are injected directly into system prompts. Security researchers have identified "Rules File Backdoor" attacks where malicious instructions are injected using Unicode characters or evasion techniques. Keep context files minimal, version-controlled, and code-reviewed like any other code.
 :::
 
-## MCP Tools — Select
+## MCP Tools
 
 Every tool the agent can call ships with a schema: name, description, parameters. Those schemas live in the request context and count toward input tokens. Built-in tools (Read, Edit, Bash) are modest at ~50–1000 tokens each. MCP servers are a different story entirely.
 
@@ -182,7 +183,7 @@ When a deferred tool is needed, the model must **discover → load → call**:
 Deferred loading is powerful precisely because it turns schema exposure into a runtime workflow instead of paying the full cost at startup.
 </details>
 
-## Skills and Procedures — Select
+## Skills and Procedures
 
 Skills are the **procedure-side analogue of deferred MCP tools**. Deferred MCP exposes a cheap capability catalog up front, then loads a tool schema only when the tool is needed. Skill systems do the same for workflows: the agent sees a lightweight listing first, then loads the full procedure only when the task matches or you invoke it directly.
 
@@ -210,7 +211,7 @@ That catalog listing is not free. Procedure metadata — names and descriptions 
 
 The practical framing: **AGENTS.md** holds what the agent should always know — architecture, conventions, constraints. **Skills** hold what the agent should know how to do — specific workflows loaded on demand, with the invocation path controlling who decides which one runs.
 
-## Sub-Agents — Isolate
+## Sub-Agents
 
 Sub-agents run in completely separate context windows. This is the most powerful context engineering tool: a sub-agent might consume 50K–150K tokens researching a codebase, but returns only a 2K–5K synthesis to the orchestrator. **Zero raw research tokens in the parent context** — the search trail, file reads, and partial interpretations never existed as far as the main conversation is concerned.
 
@@ -240,7 +241,7 @@ Example: Claude Code's Explore agent. You send it a task, it autonomously picks 
 
 **Structured architecture:** You build a deterministic control plane that defines the exact algorithm. The LLM makes tactical decisions within your structure ("Should I expand this symbol?" "Is this chunk relevant?"), but the overall flow is fixed.
 
-Example: ChunkHound uses a fixed multi-hop pipeline where the system controls traversal strategy and the LLM ranks relevance at decision points. Deterministic and reproducible — same input, same results every time.
+Example: [ChunkHound](https://chunkhound.github.io) [disclosure] uses a fixed multi-hop pipeline where the system controls traversal strategy and the LLM ranks relevance at decision points. Deterministic and reproducible — same input, same results every time.
 
 <DiagramFrame kicker="Context management" title="Two sub-agent architectures trade flexibility for reproducibility" size="wide" caption="Deterministic pipelines are structured and reproducible; autonomous exploration is adaptive but non-deterministic.">
   <ArchitectureDiagram />
@@ -261,7 +262,7 @@ Without sub-agents, exploit the attention curve directly:
 
 This is less powerful than isolation, but it still respects the core rule: important facts must land where the model can attend to them.
 
-## Context Compaction — Compress {#runtime-management}
+## Context Compaction
 
 Compaction is lossy summarization. The model compresses the current session into a synthetic state guided by your instruction — but it cannot guarantee what survives. Future relevance is unknowable at compaction time: a debugging trace that looks like noise now may be the clue the next step needed.
 

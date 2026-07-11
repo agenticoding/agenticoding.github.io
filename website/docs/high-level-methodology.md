@@ -17,13 +17,11 @@ import GroundingDistillationDiagram from '@site/src/components/VisualElements/Gr
 import PlanningContractCheckpointDiagram from '@site/src/components/VisualElements/PlanningContractCheckpointDiagram';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
-The first three chapters explained the machinery.
+An AI coding agent is a harness that wraps a language model in an action loop: prepare context, call the model, execute tools, observe results, and continue. The model at its core predicts the next token from whatever context it receives — verification against reality only happens through the harness's tool execution loop, not inside the model itself. A well-crafted prompt can shape one interaction toward a clear target and constraints, but that is a single turn in a larger process.
 
-[Chapter 1](./how-llms-work.mdx) established the core constraint: the model predicts tokens from the context it receives. [Chapter 2](./how-agents-work.mdx) showed how an agent harness turns that prediction engine into an action loop: prepare context, call the model, execute tools, observe results, and continue. [Chapter 3](./prompting-101.mdx) covered prompt-level control: how to shape one interaction so the model has a clear target, constraints, evidence, and output format.
+Those three mechanics — how the model generates from context, how the harness turns prediction into action, how prompt-level control shapes individual interactions — are enough to understand how agents work. They are not enough to operate them on production work.
 
-That is enough to understand how agents work. It is not enough to operate them on production work.
-
-Production tasks are larger than one prompt and longer than one tool call. You need to decide what reality the agent must see, how the work should be split, how much autonomy is safe, and what evidence proves the result is acceptable. Those are operator decisions. They determine whether the agent's work converges on your actual goal or merely produces a plausible artifact.
+Production tasks span days or weeks of work for a skilled operator — far larger than a single context window. You need to decide what reality the agent must see in each session, how the work should be split across contexts, how much autonomy is safe, and what evidence proves the result is acceptable. Those are operator decisions. They determine whether the agent's work converges on your actual goal or merely produces a plausible artifact.
 
 This chapter introduces that operating workflow. Each phase answers one operator question:
 
@@ -46,31 +44,33 @@ This matters more than it sounds. Even with perfect grounding, perfect planning,
 
 ## Phase 1: Grounding {#phase-1-grounding}
 
-When you code by hand, you don't work from a blank slate. You have a prior understanding of the codebase — its architecture, its patterns, its conventions. You have Google open in a background tab for framework docs, API references, and migration guides. There's a reason for that: these two sources of knowledge are what you need to code effectively in a given codebase. The same applies to agents. You must deliberately engineer these sources of information into the context to maximize the effectiveness of the agent.
+The main agent — the orchestrator — has a limited context window. Every token of raw source material — a codebase grep, a web search result, a git log — competes for space with the planning, execution, and verification work it still needs to do. The more raw research you dump in, the less room it has to operate effectively.
+
+The solution is not to make the orchestrator do its own research. It is to delegate research to a dedicated sub-agent: a grounding agent that searches the raw sources, filters what matters, and returns only a compact distilled answer. The grounding agent explores broadly in its own context. The orchestrator gets the relevant facts, not the noise.
 
 <DiagramFrame kicker="Methodology" title="Grounding distills research into usable context" size="wide" caption="The grounding agent absorbs noisy sources, distills usable working context, and leaves the root orchestrator to ask targeted follow-ups only when pieces are missing.">
 
   <GroundingDistillationDiagram />
 
 </DiagramFrame>
-Two sources cover most grounding needs:
+The grounding agent searches whatever sources encode relevant knowledge for the task. Two cover most needs:
 
-- **Code grounding** — how your system works: module responsibilities, integration points, naming conventions, error handling patterns, test contracts, and established invariants. This is the agent's equivalent of your prior understanding of the codebase.
-- **Web grounding** — how the external world works: current framework docs, API references, migration guides, security advisories, and production patterns. This is the agent's equivalent of your background tab. The model's training data is stale for fast-moving ecosystems.
+- **Code grounding** — how your system works: module responsibilities, integration points, naming conventions, error handling patterns, test contracts, and established invariants.
+- **Web grounding** — how the external world works: current framework docs, API references, migration guides, security advisories, and production patterns. The model's training data is stale for fast-moving ecosystems.
 
-A third source, **git history**, comes up in specific tasks — prior migrations, reverted approaches, bug fixes that encode hidden constraints, and architectural decisions captured in commits. It's not always needed, but when it is, it provides institutional knowledge that doesn't exist anywhere else.
+A third source, **git history**, comes up in specific tasks — prior migrations, reverted approaches, bug fixes that encode hidden constraints, and architectural decisions captured in commits. Beyond these, any artifact qualifies: specs, Jira tickets, emails, presentations, Slack threads, transcripts, design docs.
 
-Beyond these three, any artifact that encodes relevant knowledge can serve as a grounding source: specs, Jira tickets, emails, presentations, Slack threads, transcripts, design docs. The principle is the same — pull in what the agent needs, nothing more.
-
-These sources are raw and voluminous. A grep across a codebase returns thousands of lines. A web search returns paragraphs of noise. Git history is dense and verbose. Dumping any of this directly into the orchestrator's context floods it with irrelevant tokens and reduces signal-to-noise. The pattern is to use a grounding agent — a sub-agent that searches the raw sources, filters and summarizes what's relevant, then feeds the synthesized answer to the orchestrator. The grounding agent explores extensively in its own context. The orchestrator gets the distilled answer, not the raw search. Claude Code spawns Explore sub-agents for this. [ChunkHound](https://chunkhound.ai/) is built for it. When the setup doesn't have sub-agent support, you first use the agent to create a grounding artifact — a research document saved to a file — then use that artifact in a fresh context to continue into planning and execution.
+Not every harness has built-in sub-agent support. Claude Code spawns Explore sub-agents for this. [ChunkHound](https://chunkhound.github.io/) [disclosure] is built for this pattern. When your setup doesn't support sub-agents, the same pattern works across context boundaries: run grounding in one session, save a research artifact — a markdown file with the distilled findings — then load it into a fresh session and continue to planning. The mechanism changes — sub-agent vs. artifact handoff — but the principle is identical: the orchestrator receives compact context, not raw exploration.
 
 :::tip
-[ChunkHound](https://chunkhound.ai/) is a sister project of this book and implements the grounding agent pattern exactly — it researches code, web, and git history, then returns synthesized findings to the orchestrator. Other tools follow the same general architecture and principles.
+[ChunkHound](https://chunkhound.github.io/) [disclosure] implements the grounding agent pattern — it researches code, web, and git history, then returns synthesized findings to the orchestrator. Other tools follow the same general architecture.
 :::
 
-Grounding is always happening. If you don't explicitly provide the context, the agent will gather it on its own — a capability called agentic search. Models are actively being benchmarked on this ability; [SWE-bench](https://www.swebench.com), the standard benchmark for coding agents, measures how well agents can autonomously navigate unfamiliar codebases and find the information they need to solve real problems.
+The operator's job during grounding is to choose which sources the grounding agent should search, review the distilled output for completeness, send targeted follow-ups when facts are missing, and decide when grounding is sufficient to proceed to planning. A grounding session is complete when the compact context that reaches the orchestrator covers the architecture, conventions, constraints, and evidence the task needs — and you know which gaps remain.
 
-But the agent doesn't know what it doesn't know. It will assume it has everything at hand while missing critical knowledge — the naming convention that isn't documented, the constraint from a reverted PR, the integration point in a different service. Worse, the big picture often isn't fully encoded anywhere: why this product choice was made, what alternatives were considered and ruled out, which business constraints shape the solution space, what the team already tried and abandoned. When you ground explicitly, you're filling both kinds of gaps — the ones scattered across the codebase and the ones buried in Slack threads, emails, presentations, and support tickets.
+If you don't provide context explicitly, the agent will gather it on its own — a capability called agentic search. Models are benchmarked on this ability; [SWE-bench](https://www.swebench.com), the standard benchmark for coding agents, measures how well agents navigate unfamiliar codebases autonomously. But agentic search happens inside the orchestrator's context. Every line of grepped output, every fetched page, every failed hypothesis competes for the same limited space the agent needs for planning and execution. Explicit grounding with a dedicated sub-agent avoids this cost by isolating the exploration in its own context and returning only the answer.
+
+There is a deeper reason to ground explicitly. The agent doesn't know what it doesn't know. It will assume it has everything at hand while missing critical knowledge — the naming convention that isn't documented, the constraint from a reverted PR, the integration point in a different service. Worse, the big picture often isn't fully encoded anywhere: why this product choice was made, what alternatives were considered and ruled out, which business constraints shape the solution space, what the team already tried and abandoned. When you ground explicitly, you're filling both kinds of gaps — the ones scattered across the codebase and the ones buried in Slack threads, emails, presentations, and support tickets.
 
 ## Phase 2: Plan / Orchestrate {#phase-2-plan-orchestrate}
 
@@ -103,7 +103,7 @@ Planning is complete when execution can begin from a reviewed contract instead o
 
 Execution is about maximizing the time the agent works reliably without you watching.
 
-The harness loop from Chapter 2 gives the agent autonomy: it prepares context, calls the model, executes tools, observes results, and continues. The operator's job during execution is to push the boundary of how long that autonomy stays reliable. Every minute of unsupervised work is leverage — but only if the output is trustworthy when you come back.
+The harness loop gives the agent autonomy: it prepares context, calls the model, executes tools, observes results, and continues. The operator's job during execution is to push the boundary of how long that autonomy stays reliable. Every minute of unsupervised work is leverage — but only if the output is trustworthy when you come back.
 
 How long the agent can run autonomously depends on what you did in the previous two phases. Strong grounding means the agent has the right facts and won't drift into plausible-but-wrong patterns. Precise planning means each orchestration unit is small enough and well-defined enough that the agent doesn't need to re-decide the architecture mid-execution. The better your grounding and planning, the longer the reliable autonomous window.
 
@@ -157,7 +157,7 @@ The advanced pattern is not choosing one mode forever. It is assigning the right
 
 Verification exists because the model is probabilistic. Even with perfect grounding and planning, the agent will make mistakes — missed constraints, hallucinated APIs, locally correct but globally wrong implementations. That is not a failure of the technology; it is the nature of a token prediction system. The model generates the next likely continuation from context. It does not verify its own output against context. You do.
 
-Chapter 1 established the ownership boundary: the model generates candidate work, and you own the decision to accept it. Verification is where that ownership lives. It is not quality assurance bolted on at the end — it is the operator responsibility that makes the entire loop work. Without verification, you are accepting probabilistic output on faith.
+The ownership boundary is fundamental: the model generates candidate work, and you own the decision to accept it. Verification is where that ownership lives. It is not quality assurance bolted on at the end — it is the operator responsibility that makes the entire loop work. Without verification, you are accepting probabilistic output on faith.
 
 Verify from multiple independent angles. A single check — passing tests, a clean build, a quick review — is not enough. The agent can produce output that compiles, passes tests, and still violates architecture, leaks secrets, or solves the wrong problem. Multiple angles catch different failure modes.
 
@@ -265,16 +265,16 @@ Code generation is cheap. Do not preserve a bad foundation because the diff look
 
 ## Closing the Loop
 
-The four phases are a control system, and each phase addresses a specific limitation the reader learned in the previous chapters:
+The four phases are a control system, and each phase addresses a specific limitation:
 
-- **Grounding** addresses the context problem. The model generates from context, not checking against it ([Chapter 1](./how-llms-work.mdx)). Grounding ensures the context contains the right facts before the agent acts.
-- **Planning** addresses the orchestration problem. Complex work is a sequence of prompts, not one perfect prompt ([Chapter 3](./prompting-101.mdx)). Planning decomposes the task into bounded units the harness loop can execute ([Chapter 2](./how-agents-work.mdx)).
+- **Grounding** addresses the context problem. The model generates from context — it does not check its output against reality. Grounding ensures the context contains the right facts before the agent acts.
+- **Planning** addresses the orchestration problem. Complex work is a sequence of prompts, not one perfect prompt. Planning decomposes the task into bounded units the harness loop can execute.
 - **Execution** addresses the autonomy problem. The harness gives the agent autonomy; the operator's job is to push the reliable-autonomy frontier outward through better grounding and planning.
-- **Verification** addresses the probabilistic problem. Ownership never moves ([Chapter 1](./how-llms-work.mdx)). The model will make mistakes. Verification is how you catch them before they ship.
+- **Verification** addresses the probabilistic problem. Ownership never moves — the model generates candidates, you accept them. The model will make mistakes. Verification is how you catch them before they ship.
 
 This is the operator loop. You are not trying to personally type every line or review every token. You are designing the conditions under which useful artifacts are likely — grounding the right context, planning the right units, maximizing reliable autonomous execution — then verifying the result from enough angles to own it.
 
-[Chapter 3](./prompting-101.mdx) gave you prompt-level controls. This chapter shows where those controls fit in the operator loop: grounding queries, orchestration plans, execution instructions, and verification reviews.
+A prompt shapes one interaction. This chapter shows where those interactions fit in the operator loop: grounding queries, orchestration plans, execution instructions, and verification reviews.
 
 ---
 
