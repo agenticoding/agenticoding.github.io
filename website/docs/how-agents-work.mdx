@@ -148,7 +148,7 @@ The quality question is not "does the model remember?" It is "did the software r
 :::warning[Memory is a cache; caches drift silently]
 Every fact stored in memory is a cached copy of an external source — a codebase, a document, a database, a ticket system. When the source evolves, the copy stays frozen. No error fires. The agent acts on outdated premises until the drift is large enough to notice. Prefer reading the source directly; use memory only for what the environment cannot express.
 
-For codebases, [ChunkHound](https://chunkhound.ai) implements this principle: it indexes code structure directly and retrieves fresh research, search hits, and cited reports on demand, rather than storing extracted facts that can silently drift. (ChunkHound is an open-source project by the course author.)
+For codebases, tools like [ChunkHound](https://chunkhound.github.io) [disclosure] implement this principle: they index code structure directly and retrieve fresh research, search hits, and cited reports on demand, rather than storing extracted facts that can silently drift.
 :::
 
 ## Same Instruction, Different Source Role
@@ -200,7 +200,9 @@ MCP's structured guarantees justify the cost when the problem is structural, not
 
 ## Two Agent Architectures
 
-The useful distinction is not CLI versus IDE versus chat UI. Those are interaction surfaces. The architectural distinction is whether the LLM or deterministic code owns the next step — harness agents let the model choose; structured systems put orchestration in code.
+The useful distinction is not CLI versus IDE versus chat UI. Those are interaction surfaces. The architectural distinction is where probabilistic decision-making lives. Both architectures wrap the same kind of LLM, but they let it make different kinds of choices: harness agents let the model choose many next steps; structured systems put orchestration in deterministic code and call the model at bounded junctions.
+
+That placement changes the agent's character. A harness agent amplifies the operator's intent through fast, tool-mediated action, but the amplification is never lossless: each model step is still probabilistic token prediction, so even well-scoped work can pick up subtle noise. The more control the architecture gives the LLM, the more places that noise can enter the search path, edits, and conclusions — and the more operator skill and domain knowledge are required to steer it. A structured control-plane agent leaves fewer choices to probabilistic prediction. It trades open-ended flexibility for control, optimization, and accuracy by letting surrounding software own state, routing, validation, and stop conditions — but that control costs more engineering effort and is harder to build well.
 
 ### 1. Interactive Harness Agents
 
@@ -210,7 +212,9 @@ Interactive coding agents — Claude Code, Codex-style terminals, Pi, OpenClaw, 
   <InteractiveHarnessWorkbench />
 </DiagramFrame>
 
-Harness agents hand more autonomy to the LLM; the harness enforces boundaries, but the model chooses the next search, read, edit, or question. This makes them the most flexible architecture and the simplest to build — a loop, guardrails, and tool bindings. The tradeoff is operator-dependent accuracy. The same harness in different hands produces different results: a skilled operator who scopes tasks well, writes precise rules, runs verification, and reviews critically gets reliable output at reasonable cost. A weak operator gets wandering behavior, excessive tool calls, and plausible but wrong conclusions — and pays for every token along the way.
+Harness agents hand more autonomy to the LLM; the harness enforces boundaries, but the model chooses the next search, read, edit, or question. This makes them the most flexible architecture and the simplest to build — a loop, guardrails, and tool bindings.
+
+This is why they feel like leverage. The operator supplies intent, constraints, and judgment; the harness gives the model tools; the model converts that intent into action at machine speed. The tradeoff is that many conversions pass through probabilistic token prediction. Clear intent and tight constraints narrow the action path, but they do not make it deterministic. The wider the model's decision surface, the more the operator must know how to scope, steer, and evaluate the work. Ambiguous intent makes the problem worse: wandering behavior, excessive tool calls, over-broad edits, or plausible but wrong conclusions — and every detour still spends tokens.
 
 #### The Harness Attention Budget
 
@@ -246,7 +250,9 @@ Richer harnesses make the same work look more controlled by adding planning mode
 
 ### 2. Structured Control-Plane Agents
 
-Structured control-plane agents put deterministic code in charge of the workflow. The harness becomes a directed graph, a pipeline, or a state machine; LLM calls happen at bounded junctions where its capabilities are needed — classification, verification, summarization, critique, code understanding. This makes them harder to build and narrower in scope — each step must be designed, typed, and tested — but the payoff is consistency. The same pipeline in different hands produces the same result. Operator skill matters at design time, not at run time.
+Structured control-plane agents put deterministic code in charge of the workflow. The harness becomes a directed graph, a pipeline, or a state machine; LLM calls happen at bounded junctions where its capabilities are needed — classification, verification, summarization, critique, code understanding.
+
+They do not remove probabilistic behavior. They decide where it is allowed to exist. The model may produce a bounded artifact or judgment, but code owns the surrounding state transition: routing, retries, validation, audit, and stop conditions. This makes structured agents harder to build and narrower in scope — each step must be designed, typed, and tested — but the payoff is consistency. The same pipeline in different hands produces the same result. Operator skill matters at design time, not at run time.
 
 <DiagramFrame kicker="Agent mechanics" title="Structured control planes bound agent autonomy" size="wide" caption={'Structured control-plane agents make orchestration the primary actor. The LLM is a bounded subroutine called, validated, retried, audited, and stopped by deterministic code.'}>
     <StructuredControlPlaneWorkbench />
@@ -256,7 +262,7 @@ A customer support pipeline does not let the model decide the escalation path. D
 
 The pattern scales across domains. [Perplexity](https://perplexity.ai) processes 200 million daily queries through a deterministic retrieval pipeline — hybrid search, three-tier reranking, and citation binding all happen before the LLM synthesizes. [Sourcegraph Cody](https://sourcegraph.com/cody) abandoned embeddings entirely in favor of a structural code graph for retrieval, using BM25 and PageRank for ranking — the model only sees 4–6 curated snippets. [Harvey AI](https://harvey.ai) validates each legal knowledge source through a 150K-token evaluation pipeline before it becomes available to the agent.
 
-In the coding domain, [ChunkHound](https://chunkhound.ai) scales deep research to hundreds of millions of lines of code on a developer's laptop — a deterministic research loop with AST-aware indexing, an evidence ledger, constants extraction, LLM-guided exploration, and map-reduce synthesis across code, git history, and web search. The LLM directs the search; the pipeline owns retrieval and evidence integrity.
+In the coding domain, [ChunkHound](https://chunkhound.github.io) [disclosure] scales deep research to hundreds of millions of lines of code on a developer's laptop — a deterministic research loop with AST-aware indexing, an evidence ledger, constants extraction, LLM-guided exploration, and map-reduce synthesis across code, git history, and web search. [Sourcegraph Cody](https://sourcegraph.com/cody) takes a similar structural approach, using BM25 and PageRank over a code graph rather than embeddings. In both cases, the LLM directs the search; the pipeline owns retrieval and evidence integrity.
 
 In every case, the LLM is a bounded subroutine — called where its capabilities are needed, stopped where determinism matters.
 
@@ -266,6 +272,7 @@ In every case, the LLM is a bounded subroutine — called where its capabilities
 | -------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
 | Best for             | Ambiguous coding work, exploration, debugging, implementation with oversight         | Repeatable workflows, production pipelines, governed operations                |
 | Control plane        | LLM chooses many next actions; harness enforces boundaries                           | Code owns workflow, state, routing, validation, and budgets                    |
+| Variance surface     | Broad: search path, tool use, scope, edits, and conclusions                          | Narrow: bounded model calls inside deterministic state transitions             |
 | Strength             | Flexibility, breadth, fast adaptation, high operator leverage                        | Reliability, auditability, predictable cost, easier productization             |
 | Main risk            | Drift, over-tooling, missed context, inconsistent judgment                           | Rigidity, upfront design cost, narrow task coverage                            |
 | Attention allocation | LLM splits attention between user task and harness self-management (18–56% overhead) | Harness code pays its own cost; LLM attention goes entirely to bounded subtask |
