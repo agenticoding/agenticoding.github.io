@@ -11,80 +11,77 @@ import ReliabilityLeversControlPanel from '@site/src/components/VisualElements/R
 import SamplingLeverDiagram from '@site/src/components/VisualElements/SamplingLeverDiagram';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
-[Chapter 4](./high-level-methodology.md#phase-1-grounding) covered getting the right facts into the agent's world. [Chapter 5: Context Engineering](./context-engineering.mdx) covered why long-context capacity does not equal reliable inference, then showed how to keep facts usable by controlling placement, loading, isolation, and handoffs. But context quality is only one part of the reliability problem. Even with good context, agents still operate as probabilistic systems executing multi-step plans.
+Production agent reliability is not one problem. An agent run combines model inference, context retrieval, tool calls, external systems, intermediate state, and final verification. A failure can enter through any of those surfaces, then compound as later steps build on earlier state.
 
-This chapter zooms out to the full reliability model. Before you choose a workflow such as specs, tests, retries, or human checkpoints, you need to know which failure mode you are attacking.
+That is why the first reliability move is classification. A transient tool failure needs a retry. A missing constraint needs better grounding. A task that keeps drifting needs a different work shape. A high-risk decision needs a checkpoint before execution continues.
 
-Now imagine the next step. You ask the agent:
+This chapter gives you four operator levers for those failure classes:
 
-> Add rate limiting to our API.
+1. **Context quality** — give the agent the right reality.
+2. **Orchestration** — change the shape of the work.
+3. **Independent retries** — use more than one attempt when generation is noisy.
+4. **HITL checkpoints** — stop bad state from propagating.
 
-That sounds simple. But the real task is not one step. The agent has to discover your middleware pattern, find your Redis client, preserve your auth behavior, decide what counts as an anonymous user, match your error format, and avoid inventing helpers you already have. Every extra step is another chance to drift.
+The point is not to make agent work deterministic. The point is to know which lever to pull when the output starts drifting.
 
-## The Probabilistic Reality
+## Classify the Failure Before Changing the Workflow
 
-Agents are probabilistic systems. A single step can be mostly right and still be wrong in a costly way: using a new library instead of an existing one, missing an architectural boundary, or implementing the right feature in the wrong place.
+Production systems do not handle every failure with the same recovery path. Agents need the same discipline. A retry is useful for a timeout; it is harmful for an invalid assumption. More context helps when the agent is missing facts; it can make things worse when the workflow is already overloaded.
 
-That problem compounds across a chain of dependent steps. If each step is correct 95% of the time, a 20-step task succeeds only about 36% of the time (`0.95^20 ≈ 0.358`)[^1]. This is not a prompting failure. It is a structural property of sequential probabilistic work.
+| Failure class | What it looks like | Pull this lever |
+|---|---|---|
+| Missing or noisy context | The agent cannot reliably identify the relevant facts, constraints, APIs, or code paths | **Context quality** |
+| Poor work shape | The run has too many dependent decisions, mixes discovery with execution, or keeps re-deciding scope midstream | **Orchestration** |
+| Noisy generation | The target is clear, but any single attempt may vary in quality or miss a detail | **Independent retries** |
+| Propagation risk | A wrong intermediate decision would contaminate later work or trigger an expensive side effect | **HITL checkpoint** |
 
-<DiagramFrame kicker="Reliability levers" title="Reliability decays across long task chains" size="standard" caption={<>
-    Even strong per-step performance decays quickly across dependent execution
-    chains. At 20 steps, an apparently reliable 95% per-step accuracy yields
-    only 35.8% full-task reliability.
-</>}>
-    <AgentReliabilityDecayCurve />
-</DiagramFrame>
-
-### Failure Stickiness Makes It Worse — or Better
-
-The `0.95^20` model treats each step like an isolated coin flip. Real agent runs are usually messier.
-
-Some mistakes stay local. Others spread. If the agent picks the wrong import in step 3, step 4 may call the wrong API, and step 5 may "fix" the problem in the wrong direction because it is reasoning from a bad starting point.
-
-That is **failure stickiness**: once one step goes wrong, the next step becomes more likely to go wrong too. In more formal terms, the chapter later refers to this as the stickiness parameter **S** — the chance that a failed step is followed by another failed step[^2].
-
-<DiagramFrame kicker="Reliability levers" title="Failures stick until a checkpoint interrupts propagation" size="wide" caption={<>
-    Failure stickiness turns one bad assumption into the starting point for the
-    next step. Checkpoints, retries, and fresh-context reviews lower S by
-    breaking that propagation chain before execution continues.
-</>}>
-    <FailureStickinessChain />
-</DiagramFrame>
-
-| S | Effective reliability for 20 steps (R=0.95) |
-|---|---------------------------------------------|
-| 100% | 35.8% (the naive model) |
-| 75%  | ~65% |
-| 50%  | ~91% |
-
-The operational point is simple: **breaking error propagation is its own reliability lever**. Human checkpoints, retries, and fresh-context reviews help not only because they catch mistakes, but because they stop one bad step from contaminating the next few.
-
-## You Have Four Levers, Not One
-
-Production agent reliability breaks down into four operator levers. Each attacks a different failure mode. Specs use some of them. Tests use others. Good orchestration combines all four.
-
-## Four Operator Levers
-
-Each lever changes a different part of the reliability system.
+Start with the failure class, then choose the control. Retrying a context problem produces repeated guesses. Adding context to an orchestration problem increases load without shortening the dependency chain. Continuing past a risky decision turns an unresolved assumption into state.
 
 <DiagramFrame kicker="Reliability levers" title="Four levers shape agent reliability" size="wide" caption={<>
-    The four reliability levers are not interchangeable. Context quality raises
-    baseline R, orchestration changes step hardness and dependencies, sampling
-    raises effective reliability, and HITL checkpoints reduce failure stickiness S.
+    Context quality improves the facts available to each step. Orchestration
+    changes the work shape. Independent retries give noisy steps another shot.
+    HITL checkpoints stop one bad phase from poisoning the next.
 </>}>
     <ReliabilityLeversControlPanel />
 </DiagramFrame>
 
-1. **Context quality** sets the starting reliability of a step.
-2. **Orchestration** changes how hard each step is.
-3. **Sampling** gives you more than one shot at a noisy step.
-4. **Human-in-the-loop (HITL) checkpoints** stop one bad phase from contaminating the next.
+## Why Agent Outputs Drift
 
-Together they are multiplicative. Better context raises your base `R`. Better orchestration keeps steps inside the model's capability. Sampling increases the effective reliability of noisy steps. Checkpoints reduce failure stickiness `S`.
+An agent step is a probabilistic transformation. It reads a prompt, context, tool results, and prior artifacts, then produces an output that is useful but not lossless.
 
-Chapter 6 introduced the operator tools for shaping context: context files, MCP loading strategy, skills, sub-agents, and manual handoffs. Context quality is one lever directly, but those same tools also support orchestration, sampling, and checkpoints.
+The output may preserve the important signal. It may also omit a constraint, over-weight a pattern, smooth away uncertainty, or add a plausible detail that was never grounded. That noise is not limited to long sessions. It can enter through one generated sentence, a summary, a plan, a tool interpretation, a code diff, or a handoff between contexts.
 
-### 1. Context Quality: Raise the Baseline
+The reliability problem starts when generated output becomes input for later work. The next step receives both the useful signal and the noise, then performs another probabilistic transformation on top of it. Repeated reuse turns small distortions into operational drift.
+
+<DiagramFrame kicker="Reliability levers" title="Generated state compounds risk" size="standard" caption={<>
+    Each probabilistic step can preserve useful signal and add noise. Risk grows
+    fastest when later steps depend on unverified generated state.
+</>}>
+    <AgentReliabilityDecayCurve />
+</DiagramFrame>
+
+Long runs are one way this shows up. Large contexts add distractors, long sessions accumulate generated state, multi-agent workflows pass imperfect summaries across boundaries, and hard tasks contain more high-impact decision points. You do not need the exact probability to use the model. The operational point is enough: **dependent transformations need controls that one-shot outputs do not.**
+
+### Some Mistakes Stick
+
+A mistake becomes sticky when it stops being an output defect and becomes input context for the next step.
+
+If the agent picks the wrong import in step 3, step 4 may call the wrong API. Step 5 may then "fix" the wrong problem because it is reasoning from the bad import. The run is no longer making independent mistakes; it is building on contaminated state.
+
+That is **failure stickiness**: once one phase goes wrong, the next phase becomes more likely to go wrong too.
+
+<DiagramFrame kicker="Reliability levers" title="Failures stick until a checkpoint interrupts propagation" size="wide" caption={<>
+    A bad assumption becomes context for the next step. Checkpoints, retries,
+    and fresh-context reviews help by breaking that propagation chain.
+</>}>
+    <FailureStickinessChain />
+</DiagramFrame>
+
+This is why phase boundaries matter. A reviewed plan, a fresh-context implementation, or an independent review can stop a bad assumption before it becomes the foundation for the rest of the run.
+
+The four levers control where noise enters, how far it propagates, and when it gets corrected. Context quality reduces noisy input. Orchestration reduces unnecessary dependent transformations. Independent retries handle variance in a bounded step. HITL checkpoints stop noisy state from becoming authoritative.
+
+## 1. Context Quality: Give the Agent the Right Reality
 
 <DiagramFrame kicker="Reliability levers" title="Better context raises baseline reliability" size="wide" caption={<>
     Context quality is selective loading, not maximal loading. Relevant facts feed
@@ -93,97 +90,103 @@ Chapter 6 introduced the operator tools for shaping context: context files, MCP 
     <ContextQualityLeverDiagram />
 </DiagramFrame>
 
-Context quality is the foundation lever. It sets the baseline reliability `R` for every step by controlling what the agent sees, when it sees it, and how much noise competes with the task.
+Use this lever when the agent is detached from your actual system.
 
-Grounding raises reliability by supplying the right facts: your actual codebase patterns, docs, constraints, and architecture. Context engineering preserves that reliability by keeping those facts small, timely, and well-placed. Together they raise baseline step reliability `R`; they do not eliminate drift across multi-step workflows.
+The failure usually looks like this:
 
-For the rate-limiting task, that means loading the facts that actually constrain the work:
+- it invents a new cache client instead of using the existing abstraction
+- it follows a generic framework pattern instead of your codebase pattern
+- it misses a constraint that lives in tests, docs, or nearby code
+- it produces an answer that is plausible in general but wrong here
+
+The operator move is to load the facts that constrain this task, not to dump everything into context.
+
+For the rate-limiting task, useful context is specific:
 
 - which middleware pattern the codebase already uses
-- how anonymous versus authenticated users are identified
+- how anonymous and authenticated users are identified
 - which Redis client or cache abstraction already exists
-- what error shape the API is expected to return
-- what constraints must not be violated
+- what API error shape callers expect
+- which routes, roles, or failure modes must be protected
 
-The tradeoff is that more context is not better context. Once relevant grounding turns into excess detail, `R` drops because the signal gets pushed out of the model's high-attention zone.
+[Grounding](./high-level-methodology.md#phase-1-grounding) finds those facts. [Context engineering](./context-engineering.mdx) keeps them usable by controlling placement, size, lifetime, and isolation.
 
-### 2. Orchestration: Change the Shape of the Work
+What this lever does **not** fix: a task that is too broad, a vague target, or a bad assumption that has already propagated through the run. Better context raises the starting quality of each step. It does not make long chains safe by itself.
+
+## 2. Orchestration: Change the Shape of the Work
 
 <DiagramFrame kicker="Reliability levers" title="Orchestration changes task shape" size="wide" caption={<>
-    Orchestration improves reliability by changing the shape of the work: avoid
-    both oversized steps and unnecessary dependency chains.
+    Orchestration improves reliability by changing the work shape: avoid both
+    oversized steps and unnecessary dependency chains.
 </>}>
     <OrchestrationLeverDiagram />
 </DiagramFrame>
 
-Orchestration is the lever that changes the structure of the workflow itself: what counts as one step, which steps depend on each other, and which work should be done by tools, procedures, or separate agents.
+Use this lever when the agent has enough facts but the work is shaped badly.
 
-The default human instinct is to break a problem into lots of small serial steps. For agents, that is often backwards. Every extra dependency adds another chance for drift, so you usually want each task to be as close to **one-shot** as the model can handle reliably.
+The failure usually looks like this:
 
-That creates the real orchestration objective: maximize the amount of useful work done per step **without** pushing the step past the model's capability. If you ask for too much in one shot, the step is hard and `R` drops. If you split too aggressively, each step gets easier but the chain gets longer and `R^N` starts to work against you.
+- the agent starts correctly, then drifts over a large implementation
+- one subtask depends on a half-correct result from the previous subtask
+- the agent mixes discovery, design, implementation, and cleanup in one run
+- the task quietly expands into adjacent refactors
 
-For the rate-limiting task, compare these two decompositions:
+The operator move is to choose the right work unit.
 
-- **Too coarse:** "implement rate limiting"
-- **Better:** "inspect middleware pattern → locate Redis integration → implement limiter → run tests"
+For agents, smaller is not always better. Splitting a task into many serial micro-steps creates more handoff points and more chances for drift. But asking for too much in one shot pushes the model past its capability.
 
-The goal is not maximum granularity. The goal is the decomposition that keeps each step inside the model's capability without exploding the chain length.
+The useful question is:
 
-A second implication follows from the same logic: prefer **concurrent execution with minimal dependencies**. If two subtasks can run independently, do them in parallel instead of forcing one long serial chain. Parallel work shortens wall-clock time and, more importantly, avoids creating unnecessary points where one mistake contaminates the next step.
+> What is the largest unit the agent can complete reliably without re-deciding the architecture mid-run?
 
-This is exactly why [Chapter 6's sub-agents](./context-engineering.mdx#sub-agents--isolate) matter so much for orchestration. They let you split independent research or analysis into parallel branches without dragging all of that intermediate work back into one bloated thread.
+For rate limiting, these shapes behave differently:
 
-Mathematically, orchestration is about the balance between per-step reliability `R`, total steps `N`, and the number of hard dependencies between steps. Fewer, more self-contained steps usually improve the chain — but only until a step becomes too hard for the model.
+- **Too broad:** "Implement rate limiting."
+- **Too fragmented:** "Find middleware. Stop. Find Redis. Stop. Design limiter. Stop. Add one helper. Stop..."
+- **Better:** "After grounding, implement the limiter in the existing middleware path, reuse the existing cache abstraction, preserve auth behavior, and add the agreed tests."
 
-The tradeoff is simple: decomposition helps only up to the model's actual capability. If a step is still too hard, splitting the workflow differently will not rescue it. Bad orchestration usually fails in one of two ways: the step is too large for the model to execute reliably, or the workflow adds dependencies that did not need to exist.
+Orchestration also means removing unnecessary dependencies. If two research tasks are independent, run them in parallel sub-agents instead of forcing one long serial thread. If implementation and review need different judgment, separate them. If a task needs a human decision, stop before code turns that decision into structure.
 
-### 3. Sampling: More Coin Tosses, Better Odds
+This is where [sub-agents](./context-engineering.mdx#sub-agents--isolate) matter. They isolate noisy research or independent candidates, then return a compact synthesis instead of dragging the whole search trail into the main context.
 
-<DiagramFrame kicker="Reliability levers" title="Sampling only helps with selection pressure" size="wide" caption={<>
-    Sampling only buys reliability when attempts are meaningfully independent and
+What this lever does **not** fix: missing facts or an objectively unclear target. Better task shape helps only when each unit has enough grounding and a clear success condition.
+
+## 3. Independent Retries: Use More Than One Attempt
+
+<DiagramFrame kicker="Reliability levers" title="Independent retries need selection pressure" size="wide" caption={<>
+    Retries only buy reliability when attempts are meaningfully independent and
     the judge is separate enough to select the best candidate.
 </>}>
     <SamplingLeverDiagram />
 </DiagramFrame>
 
-Sampling is the lever for noisy generations. The intuition is the same as repeated coin tosses: if one toss has a chance of landing heads, the odds of seeing at least one head go up when you toss again.
+Use this lever when one attempt is noisy but the target is clear.
 
-That is what sampling does. You run the task again, then judge the results independently. If the task structure is basically right but any single run might wobble, fresh retries can raise reliability without changing the workflow itself.
+The failure usually looks like this:
 
-For a single step with reliability `R`, sampling `k` times gives:
+- two implementations could satisfy the same spec, but one is cleaner
+- the agent sometimes gets the right shape and sometimes misses a detail
+- the work is cheap to repeat and easy to judge
+- tests, review, or comparison can select the better output
 
-```text
-R_eff = 1 − (1 − R)^k
-```
+The operator move is to generate more than one candidate and apply selection pressure.
 
-With `R = 0.95` and `k = 2` (one retry), effective step reliability becomes `0.9975`. Across 20 steps, that raises full-task reliability from `35.8%` to about `95.1%` (`0.9975^20 ≈ 0.951`)[^3].
+For rate limiting, independent retries might mean:
 
-For the rate-limiting example, sampling might look like:
+- ask separate contexts for implementation plans, then pick the least invasive one
+- generate two code variants and keep the one that passes tests and matches existing patterns
+- retry only the noisy step instead of rerunning the entire workflow
 
-- generate 3 implementation plans and select the cleanest one
-- generate 2 code variants and keep the one that passes tests
-- rerun only the steps that are known to be noisy, rather than the whole workflow
+The word **independent** matters. Asking the same thread to critique itself and then fix its own answer is often not a real retry. The second answer inherits the first answer's framing, blind spots, and contaminated assumptions.
 
-The key is independence. This is not a stylistic preference; it is what the math assumes. `R_eff = 1 − (1 − R)^k` only describes repeated trials when each trial is meaningfully independent.
+A useful retry has two parts:
 
-That is why the tempting pattern — judge one result, feed the critique back into the same thread, then ask it to fix itself — is not really sampling. It converts the problem back into a dependent chain. The second attempt is now conditioned on the first attempt and inherits its framing, blind spots, and mistakes, so you no longer get the multiplicative benefit of independent retries.
+1. **Generate independent candidates.** Separate contexts are better than one long self-correction thread.
+2. **Judge with an independent signal.** Tests are best when available. Human review is strongest for scope and intent. LLM judges can help when the artifact is small and the criteria are explicit.
 
-So sampling is really two operations together:
+What this lever does **not** fix: weak grounding, a bad task shape, or a missing review boundary. Retrying a poorly specified task just gives you multiple plausible wrong answers.
 
-- **generate independent candidates**
-- **judge them independently enough to select one**
-
-In practice the judge is usually one of:
-
-- **Tests** — best when available because they are deterministic
-- **LLM judge** — faster, but still probabilistic
-- **Human judge** — slowest, but usually most reliable
-
-This is where [Chapter 6's sub-agents](./context-engineering.mdx#sub-agents--isolate) are especially powerful. They let you generate parallel candidates in separate contexts instead of producing three near-identical answers from the same degraded thread.
-
-The tradeoff is that latency and cost scale with `k`, and gains depend on how independent the retries really are and how trustworthy the judge is. Sampling is a poor substitute for bad decomposition or weak grounding.
-
-### 4. Human-in-the-Loop (HITL) Checkpoints: Break Error Propagation
+## 4. HITL Checkpoints: Stop Bad State from Propagating {#4-human-in-the-loop-hitl-checkpoints-break-error-propagation}
 
 <DiagramFrame kicker="Reliability levers" title="Human checkpoints reduce failure stickiness" size="wide" caption={<>
     A checkpoint is valuable when it blocks propagation and starts the next phase
@@ -192,55 +195,110 @@ The tradeoff is that latency and cost scale with `k`, and gains depend on how in
     <HITLCheckpointLeverDiagram />
 </DiagramFrame>
 
-Human-in-the-loop means a person deliberately reviews or approves an intermediate artifact before the agent continues. In practice, that artifact might be a plan, a spec, a code diff, a deployment command, or a final answer.
+Use this lever when a wrong assumption would be expensive downstream.
 
-HITL is the lever for **error propagation**. It does not mainly make one step better. It stops one bad phase from poisoning the next.
+The failure usually looks like this:
 
-But this only works when the judgment surface is small enough for a human to actually read and judge. A checkpoint over a long plan or a giant diff often becomes theater: the human skims, approves, and error propagation continues. The best HITL artifacts are compact and high-signal because they make boundary mistakes visible.
+- the plan misses a constraint before implementation begins
+- the agent expands scope into cleanup or refactoring you did not request
+- a design choice needs product, security, architecture, or migration judgment
+- a large diff would be too late to review comfortably
 
-A common agent failure mode here is **scope enlargement**: the model adds adjacent work, future-proofing, or cleanup that was never requested. That is also where humans are strongest. They are especially good at catching what is missing, what should not be included, and whether the task quietly got larger than requested.
+The operator move is to review a small artifact before the next phase begins.
 
-For the rate-limiting example:
+A good checkpoint is not "watch the agent for a while." It is a deliberate gate around a compact surface:
 
-- **Without checkpoint:** the plan misses an auth constraint, then also expands the task into refactoring auth middleware and standardizing API errors across the service
-- **With checkpoint:** a human reviews a short plan, catches both the missing constraint and the extra unrequested work, and execution starts from a validated artifact
+- a short plan before implementation
+- a spec before code changes
+- a diff summary before merge
+- a deployment command before execution
+- a fresh-context review before accepting the result
 
-The highest-leverage checkpoint is usually at a phase boundary:
+Humans are especially strong at catching missing constraints and scope enlargement. They can see when the agent turned "add rate limiting" into "refactor auth middleware and standardize API errors," even if the diff looks coherent.
 
+The checkpoint only works if the artifact is small enough to read seriously. A checkpoint over a giant plan or unreadable diff becomes theater: the human skims, approves, and the bad assumption continues downstream.
+
+The highest-leverage checkpoints usually sit at phase boundaries:
+
+- after grounding, before planning commits to a direction
 - after planning, before implementation
 - after implementation, before merge
-- after agent review, before external action
+- before irreversible external actions
 
-This is where [Chapter 6's manual handoff pattern](./context-engineering.mdx#runtime-management) becomes critical. A checkpoint works best when it is followed by a fresh phase, not by continuing in the same messy thread. The reviewed artifact should become the new starting point.
+A checkpoint is strongest when followed by a fresh phase. The reviewed artifact should become the new starting point, not just another message buried in the same messy thread. Chapter 6's [manual handoff pattern](./context-engineering.mdx#runtime-management) exists for exactly this reason.
 
-The math here is different from sampling. Checkpoints primarily reduce failure stickiness `S`, not just raw per-step error rate. They lower the chance that one failure is followed by another[^2].
+What this lever does **not** fix: work that has no clear review surface. If the human cannot judge the artifact quickly, shrink the artifact or split the task.
 
-The tradeoff is that human attention is expensive and slow. So the checkpoint surface must stay small. If the artifact is too large to review seriously, the lever is no longer doing real work. Place checkpoints where a compact judgment can prevent a large downstream cascade.
+## Optional: The Simple Reliability Model
+
+You can use the four levers without the math. The math is just a compact way to explain why the levers work.
+
+### Long Chains Multiply Risk
+
+If a step has some chance of being right, a chain of dependent steps has to be right repeatedly. A mostly reliable step can still produce an unreliable long run.
+
+For example, if each step is correct 95% of the time, a 20-step dependent task succeeds only about 36% of the time:
+
+```text
+0.95^20 ≈ 0.358
+```
+
+Do not overfit the number. Real agent work is not a clean sequence of coin flips. The useful lesson is that chain length matters.
+
+### Independent Retries Raise Effective Reliability
+
+If one attempt is noisy and retries are meaningfully independent, multiple attempts improve the chance that at least one candidate is good.
+
+For a single step with reliability `R`, sampled `k` times:
+
+```text
+R_eff = 1 − (1 − R)^k
+```
+
+With `R = 0.95` and two independent attempts, the effective step reliability becomes `0.9975`. Across 20 steps, that changes the rough chain outcome from about `35.8%` to about `95.1%`.[^1]
+
+That benefit depends on independence and judgment. If the attempts share the same bad framing, or the judge cannot tell which answer is better, the formula is fiction.
+
+### Failure Stickiness Explains Checkpoints
+
+The naive chain model treats each step like an isolated event. Agent runs are often correlated. Once a bad assumption enters the thread, later steps become more likely to build on it.
+
+That is the stickiness parameter `S`: the chance that a failed step is followed by another failed step.[^2]
+
+| Error stickiness | What it feels like operationally |
+|---|---|
+| High | One bad assumption contaminates the rest of the run |
+| Medium | Some mistakes spread, but reviews or tools catch others |
+| Low | Mistakes stay local and the workflow recovers quickly |
+
+Checkpoints, fresh-context reviews, and independent retries reduce stickiness by interrupting propagation.
 
 ## Choosing the Right Lever
 
-Different failures need different interventions:
+When an agent run fails, diagnose before optimizing.
 
-- If the agent keeps choosing the wrong structure, fix **orchestration**
-- If one run is noisy but alternatives are cheap, use **sampling**
-- If errors compound across phases, insert a **checkpoint**
-- If outputs are vague or detached from your codebase, improve **context quality**
+- **If the agent lacked the right facts:** improve context quality.
+- **If the task shape made drift likely:** change orchestration.
+- **If the target was clear but one output was noisy:** use independent retries.
+- **If one bad assumption would poison later work:** insert a HITL checkpoint.
 
-Many teams overuse one lever because it is familiar. They retry when they really need a human checkpoint, or add more context when they actually need better decomposition.
+Most production workflows combine levers. A spec is both context quality and HITL. Tests are both judgment for retries and verification after execution. Sub-agents are both orchestration and context isolation. Handoffs are both context management and propagation control.
+
+The mistake is treating one familiar mechanism as universal. More context is not always the fix. More decomposition is not always the fix. More retries are not always the fix. More review is not always the fix.
+
+Reliability comes from matching the control to the failure mode.
 
 ## Key Takeaways
 
-- **Agent reliability has four operator levers:** orchestration, sampling, HITL checkpoints, and context quality.
-- **Chapter 6 covered one lever deeply:** context quality. It matters, but it is not enough on its own.
-- **Multi-step agent work drifts structurally:** even high per-step accuracy compounds badly across long chains.
-- **Failure stickiness matters:** once a task goes wrong, later steps often inherit the error unless you deliberately reset the chain.
-- **Specs, tests, and review are not competing ideas:** they are different tools aimed at different failure modes.
+- **Diagnose before you fix.** Similar-looking agent failures can need different reliability levers.
+- **Context quality gives the agent the right reality.** It fixes missing or noisy facts, not bad task shape.
+- **Orchestration changes the work shape.** It keeps each unit inside the model's capability without creating unnecessary serial dependencies.
+- **Independent retries help with noisy steps.** They only work when attempts are independent and the judge can select well.
+- **HITL checkpoints stop propagation.** They work when the review surface is small enough for a human to judge seriously.
 
-[^1]: Multi-source consensus: 0.95^20 = 35.8% reliability. Per-step accuracy in production often ranges 85–93% depending on task complexity and tool surface area. [AgentMarketCap](https://agentmarketcap.com), [ProveAI](https://proveai.com), [MindStudio](https://mindstudio.ai).
+[^1]: Single retry transforms effective per-step reliability: `R_eff = 1 − (1−R)^k`. With R=0.95 and k=2, `R_eff = 99.75%`. Twenty steps at 99.75% yields 95.1% full-task reliability. [MindStudio](https://mindstudio.ai).
 
-[^2]: Failure stickiness parameter S quantifies the conditional probability that step *n* fails given step *n-1* failed. At S=50%, effective 20-step reliability rises to ~91%. [Foundry Data](https://foundrydata.com).
-
-[^3]: Single retry transforms effective per-step reliability: `R_eff = 1 − (1−R)^k`. With R=0.95 and k=2 (one retry), `R_eff = 99.75%`. Twenty steps at 99.75% yields 95.1% full-task reliability. [MindStudio](https://mindstudio.ai).
+[^2]: Failure stickiness describes the conditional probability that step *n* fails given step *n-1* failed. The exact value is workload-dependent; the operational point is that correlated failures make phase boundaries and resets valuable. [Foundry Data](https://foundrydata.com).
 
 ---
 
