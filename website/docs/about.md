@@ -1,11 +1,10 @@
 ---
 title: About
-description: 'Ofri Wolfus — Senior Software Architect, ex-Google engineer, and creator of ChunkHound, ArguSeek, and GoatDB. Author of Agentic Coding, a technical reference for engineers on AI-assisted development.'
-keywords: [Ofri Wolfus, agentic coding, ChunkHound, ArguSeek, GoatDB, AI-assisted development, software architect, open source, distributed systems, MCP]
+description: 'Ofri Wolfus — Senior Software Architect, ex-Google engineer, and creator of ChunkHound and GoatDB. Author of Agentic Coding, a technical reference for engineers on AI-assisted development.'
+keywords: [Ofri Wolfus, agentic coding, ChunkHound, GoatDB, AI-assisted development, software architect, open source, distributed systems, MCP]
 ---
 
 import SchemaMarkup from '@site/src/components/SchemaMarkup';
-import { AuthorWaveNode } from '@site/src/components/VisualElements/ActorNodes';
 
 export const personData = {
   name: 'Ofri Wolfus',
@@ -18,7 +17,6 @@ export const personData = {
     'https://goatdb.dev',
     'https://github.com/goatplatform/goatdb',
     'https://github.com/chunkhound/chunkhound',
-    'https://github.com/ArguSeek/arguseek',
   ],
   knowsAbout: [
     'agentic coding',
@@ -37,29 +35,27 @@ export const personData = {
 
 ## Author
 
-I'm **Ofri Wolfus**, Senior Software Architect at Applied Materials and an ex-Google engineer (Google APIs for Mac, WebKit renderer contributions, Chrome BiDi/RTL). I created [ChunkHound](https://chunkhound.github.io) and [ArguSeek](https://github.com/ArguSeek/arguseek) — the open-source tools used as reference implementations throughout this course.
+I'm **Ofri Wolfus**, Senior Software Architect at Applied Materials and an ex-Google engineer (Google APIs for Mac, WebKit renderer contributions, Chrome BiDi/RTL).
 
-<div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2.5rem' }}>
-  <AuthorWaveNode />
-</div>
+I built [ChunkHound](https://chunkhound.github.io) because I needed a RAG solution that could handle a 100M+ LoC monorepo on my laptop — no servers, no ops, no GPUs. The one hard rule from the start: not a single line of code written by hand. Every feature, fix, and refactor was produced by an AI agent. That experiment became this book's foundation, then grew through real users, maintainer review, and production workflows.
 
 Prior to my current role, I was Co-Founder & CTO of Ovvio.io (real-time collaborative work management) and first employee at Photomyne, where I scaled cloud infrastructure to 100M photos and 10M installs and wrote on-device neural network inference pre-TensorFlow. I co-founded EasyFit Orthopedics, where I designed, built, and patented a smart prosthetic leg interface (WO2015103506A1) — hardware, electronics, and embedded software. I was also an early contributor to Growl and Adium, two foundational Mac open-source projects.
 
-BS Computer Science, Bar-Ilan University. 2 patents. [LinkedIn](https://www.linkedin.com/in/ofriwolfus/) · [GitHub](https://github.com/ofriw)
+BS Computer Science, Bar-Ilan University. 2 patents. 20+ years across compiled languages, embedded systems, cloud infrastructure, and LLM/RAG applications. I taught iOS, Android, and web development courses at John Bryce (2013–2016), including corporate training programs. [LinkedIn](https://www.linkedin.com/in/ofriwolfus/) · [GitHub](https://github.com/ofriw)
 
 ## Open Source
 
-**[ChunkHound](https://chunkhound.github.io)** — Like having a core dev who's been on the project since day one, ready to answer any question — except it works across millions of lines and 30+ languages. Point your AI assistant at a codebase and ChunkHound gives it the kind of deep, structural understanding that normally takes months to build: where things live, why they're built that way, and what depends on what. Runs entirely on your machine. The code grounding tool used throughout this course. **1.1k GitHub stars.** ([GitHub](https://github.com/chunkhound/chunkhound))
+**[ChunkHound](https://chunkhound.github.io)** — Local-first codebase intelligence. Indexes code via AST-aware parsing, extracts architecture and patterns, and returns research-grade answers through MCP. Also handles web research — documentation, CVEs, changelogs, current information beyond training data. Runs entirely on your machine, scales to 100M+ LoC. Used as the reference implementation throughout this book. **1.4k GitHub stars.** ([GitHub](https://github.com/chunkhound/chunkhound))
 
-**[ArguSeek](https://github.com/ArguSeek/arguseek)** — The colleague who always knows what's happening outside the building. When your AI assistant needs current information — is this library still maintained? what changed in the latest API version? any known CVEs? — ArguSeek runs parallel web searches, synthesizes 12+ sources in about 40 seconds, and flags promotional content automatically. Fast breadth over slow depth, for the hundreds of micro-decisions that make up a real coding day. The domain grounding tool used throughout this course. ([GitHub](https://github.com/ArguSeek/arguseek))
+**[GoatDB](https://goatdb.dev)** — I built GoatDB because agent-generated apps need a backend as simple as the agent's mental model. One TypeScript import — database, server, sync, offline — with a Git-style commit graph for conflict resolution. Ship a single Deno binary on a $5 VM. **570 GitHub stars.** ([GitHub](https://github.com/goatplatform/goatdb))
 
-**[GoatDB](https://goatdb.dev)** — The entire backend in a single import. GoatDB collapses database, server, and sync layer into one TypeScript module — no SQL, no REST endpoints, no separate infrastructure to provision. Define a schema, call `useQuery`, and your UI stays in sync across devices, offline included. Under the hood: a Git-style commit graph with three-way merges gives every document a full version history and automatic conflict resolution, while cryptographic signatures let clients restore crashed servers from their own replicas. Ship a single Deno binary on a $5 VM and you have a production-grade, self-healing backend. Ideal for the kind of fast-iteration, single-tenant apps that agentic workflows produce — because the less operational surface area an AI has to manage, the more reliably it ships. **500+ GitHub stars.** ([GitHub](https://github.com/goatplatform/goatdb))
+## Why I Built This
 
-## Why This Reference
+This book and its tools are open-source community projects. There's no company, no commercial interest, and nothing for sale.
 
-I built this course on 20+ years of production experience across compiled languages, embedded systems, cloud infrastructure, and LLM/RAG applications — not in theory. ChunkHound and ArguSeek were built specifically to solve the grounding problems this course teaches: code context collapse, knowledge cutoff hallucination, and context window management at scale. See [MCP Servers](/developer-tools/mcp-servers) for architecture deep-dives on both tools.
+ChunkHound started as a personal experiment: build a production-grade RAG system for a massive monorepo without writing a single line of code by hand. That constraint forced me to learn how to operate AI agents well — how to ground them, plan with them, verify their work, and manage context at scale.
 
-I taught iOS, Android, and web development courses at John Bryce (2013–2016), including corporate training programs for client companies.
+This book distills patterns from multiple production systems built that way, plus what I've learned from hundreds of different engineers using modern AI tools — their workflows, their failures, their breakthroughs. The grounding patterns in Chapter 4 are ChunkHound's research pipeline. The context engineering principles in Chapter 5 are what I learned scaling across codebases of hundreds of millions of lines. These aren't theoretical — they're MIT-licensed, and you can read the code. See [MCP Servers](/developer-tools/mcp-servers) for architecture deep-dives on ChunkHound.
 
 ## Built With
 

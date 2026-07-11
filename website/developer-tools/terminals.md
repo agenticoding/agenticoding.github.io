@@ -14,7 +14,7 @@ The terminal is the foundation—pairing it with [modern CLI tools](/developer-t
 Modern terminals offer IDE-level features—GPU acceleration, programmable layouts, rich scripting, and extensive customization—that legacy terminals can't match. For multi-agent workflows, these capabilities translate directly to productivity: smooth handling of rapid output streams, programmable session management, and visual customization for tracking different contexts.
 
 :::tip Research Customization
-Use ArguSeek to research best practices for your chosen terminal—session management, keybindings, and visual indicators for different agent contexts.
+Use ChunkHound's web research to research best practices for your chosen terminal—session management, keybindings, and visual indicators for different agent contexts.
 :::
 
 ## Ghostty

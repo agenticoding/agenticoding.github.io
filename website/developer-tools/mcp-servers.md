@@ -39,37 +39,7 @@ Requires Python 3.10+ and the uv package manager. See [ChunkHound on GitHub](htt
 
 
 
-## Web Research
-
-### ArguSeek
-
-[ArguSeek](https://github.com/ArguSeek/arguseek) is a web research sub-agent with isolated context and semantic state management.
-
-**What it does:**
-
-- Google Search API (quality vs Bing/proprietary alternatives)
-- Query decomposition—3 concurrent variations per query (docs + community + security advisories)
-- Semantic subtraction—follow-up queries skip covered content and advance research
-- Bias detection—flags vendor marketing, triggers counter-research
-
-**When to use it:**
-
-- Researching best practices and competing approaches
-- Finding security advisories and CVEs
-- Learning new technologies with current (post-training) information
-- Multi-source research (processes 12-30 sources per call, scales to 100+ sources per task)
-
-**Key advantage:** Maintains state across queries—builds on previous research instead of re-explaining basics, keeping your orchestrator context clean.
-
-**Installation:**
-
-```bash
-brew install arguseek
-```
-
-Requires Go 1.23+ and Google API credentials. See [ArguSeek on GitHub](https://github.com/ArguSeek/arguseek) for detailed setup instructions and configuration options.
-
-Multi-source grounding is described in [Chapter 4](/high-level-methodology#phase-1-grounding).
+ChunkHound also handles web research — searching documentation, CVEs, changelogs, and current information beyond training data. Multi-source grounding is described in [Chapter 4](/high-level-methodology#phase-1-grounding).
 
 ## Browser Automation
 

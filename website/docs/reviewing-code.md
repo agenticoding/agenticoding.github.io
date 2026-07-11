@@ -101,7 +101,7 @@ The instruction "Using the sub task tool to conserve context" spawns a separate 
 
 This sub-agent capability is unique to [Claude Code CLI](/developer-tools/cli-coding-agents#claude-code). Other tools (Codex, GitHub Copilot) require splitting this into multiple sequential prompts: explore first, then draft based on findings.
 
-**Multi-source grounding ([Chapter 4](./high-level-methodology.md#phase-1-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
+**Multi-source grounding ([Chapter 4](./high-level-methodology.md#phase-1-grounding)):** ChunkHound researches PR best practices and grounds descriptions in your actual codebase architecture and coding style.
 
 **Structured prompting ([Chapter 3](./prompting-101.mdx)):** Persona, communication constraints, format boundaries, and structural requirements direct the agent to produce dual-optimized outputs.
 

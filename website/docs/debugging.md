@@ -61,7 +61,7 @@ This is where CLI agents (Claude Code, Codex, Copilot CLI) shine over IDE assist
 
 - **Runtime behavior**: Execute diagnostic commands, inspect responses, analyze logs
 - **Codebase**: Use ChunkHound's code research for comprehensive investigation with architectural context and cross-module relationships. For smaller codebases, agentic search (Grep, Read) works well. See [MCP Servers](/developer-tools/mcp-servers#chunkhound) for scale guidance.
-- **Known issues**: Research error patterns, CVEs, and similar bugs using tools like ArguSeek
+- **Known issues**: Research error patterns, CVEs, and similar bugs using web search tools
 
 **5. VERIFY** - Agent applies the fix, re-runs reproduction, and confirms the bug is resolved—or forms a new hypothesis and iterates
 
