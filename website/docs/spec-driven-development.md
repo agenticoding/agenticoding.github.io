@@ -2,298 +2,598 @@
 title: 'Spec-Driven Development'
 ---
 
-[Chapter 7: Reliability Levers](./reliability-levers.md) established the broader model: reliable agent work depends on orchestration, sampling, HITL checkpoints, and context quality. This chapter zooms into one concrete pattern that combines two of those levers: **Spec-Driven Development (SDD)**.
-
-The core move is simple: before the agent writes code, compress intent into a short artifact a human can read and approve. That artifact is the spec.
-
-Now imagine the task:
-
-> Add rate limiting to our API.
-
-That sounds simple. But the real task is not one step. The agent has to discover your middleware pattern, find your Redis client, preserve your auth behavior, decide what counts as an anonymous user, match your error format, and avoid inventing helpers you already have. A spec gives the agent a validated target before execution starts.
-
-## Specs as a HITL Tool
-
-A spec instantiates two levers simultaneously:
-
-1. **HITL checkpoint:** The human reads and approves the spec before code changes begin.
-2. **Context quality:** The spec raises signal-to-noise ratio in the agent's context.
-
-Instead of "add rate limiting," the agent has a structured artifact with scope, rules, constraints, and acceptance criteria.
-
-## What a Readable Spec Looks Like
-
-A spec only works if you actually read it. If it is too long, vague, or fragmented, you skim it, miss the risk, and the checkpoint fails. Readability is not a nicety — it is a reliability requirement.
-
-### Token Ranges
-
-Research on spec length converges on clear boundaries[^1][^2]:
-
-| Length | Words | Lines | Best For | Readability |
-|--------|-------|-------|----------|-------------|
-| ~500 tokens | ~375 words | 10–15 lines | Simple changes, bug fixes | Read in 30s |
-| ~1K tokens | ~750 words | 15–30 lines | Most feature work | Read in 1–2 min |
-| ~2K tokens | ~1,500 words | 30–50 lines | Complex features, cross-module | Read in 3–4 min |
-| ~3K–4K tokens | ~2,250–3,000 words | 50–80+ lines | Multi-session work | Warning: split into sub-specs |
-
-The **50-line ceiling** is a useful heuristic: once a spec exceeds 50 lines, it is usually trying to describe too much at once[^2]. Split into sub-specs or question whether the task is well-defined.
-
-A 2–3 minute spec review by a human can save 2–3 hours of debugging a drifted implementation[^3]. That ratio makes the checkpoint extremely high-leverage — as long as the spec stays readable.
-
-### The Spec Is the Checkpoint
-
-A spec is not a giant requirements document. It is a **readable artifact** that captures what the agent is about to build, how it should fit the system, and what must not drift.
-
-The workflow looks like this:
+[Chapter 4: Four-Phase Workflow](./high-level-methodology.md) introduced the operator loop:
 
 ```text
-Grounding → Plan → Spec → Human read/approve → Execute → Gap analysis
-                                                                ↑
-                                              (iterate with fresh context +
-                                               swap model until converged)
-                                                                ↓
-                                                              Test
+Grounding → Plan → Execute → Validate
 ```
 
-The key move is the one in the middle: a human gate between planning and execution that resets the chain before code begins.
+The **Plan** phase already creates a small spec: a reviewed execution contract for the next run. It says what the agent should do now, what it must not touch, and how the result will be checked.
 
-After grounding and planning — using the exploration workflow from [Chapter 4](./high-level-methodology.md) — you stop and write down the intended change in a form a human can evaluate quickly.
+Spec-driven development applies the same checkpoint at a larger scope.
 
-### Require Evidence to Force Grounding {#require-evidence-to-force-grounding}
+A **feature spec** describes the whole change before the operator decomposes it into multiple agent runs. The spec is not the plan for one execution. It is the higher-level contract that many plans are derived from.
 
-A spec is only as good as the research feeding it. If the agent cannot cite the modules, routes, tables, contracts, or tests that shaped the spec, you are probably reading a plausible summary rather than a grounded one.
+```text
+Feature spec
+  ├─ Run 1: Ground → Plan → Execute → Validate
+  ├─ Run 2: Ground → Plan → Execute → Validate
+  └─ Run 3: Ground → Plan → Execute → Validate
+```
 
-Before approving a spec, ask for concrete evidence from the codebase:
+That distinction matters. A plan is local. A spec is strategic.
 
-- which files and interfaces the change touches
-- which existing patterns it is reusing
-- which constraints came from code, tests, or external docs
-- which assumptions are still guesses
+The plan controls the next execution run. The spec controls the feature.
 
-This forces retrieval before synthesis. The spec becomes a compression of discovered reality, not a freeform design essay.
+## Specs Are HITL Checkpoints
 
-## Running Example
+A spec is a human-in-the-loop checkpoint before implementation momentum takes over.
 
-Suppose the task is to add rate limiting to `/api/*`.
+Without a spec, the agent turns ambiguity into code. It chooses scope, trade-offs, naming, integration strategy, and edge-case behavior inside the diff. By the time a human reviews the result, the wrong assumptions may already be spread across files, tests, and abstractions.
 
-A useful spec might look like this:
+A spec moves that review earlier. The human can inspect the intended change while it is still cheap to correct.
+
+A useful spec lets the reviewer answer:
+
+- Is this the right problem?
+- Is the feature boundary correct?
+- What are we adding, removing, changing, and protecting?
+- Which trade-offs are intentional?
+- Which constraints must survive every implementation plan?
+- What evidence will prove the feature is done?
+
+This is why readability is not polish. It is the mechanism. A spec nobody reads is not a checkpoint; it is a ritual.
+
+## Spec vs Plan
+
+A spec and a plan are both control artifacts, but they operate at different levels.
+
+| Artifact | Scope | Primary question | Output |
+|---|---|---|---|
+| **Feature spec** | Full feature or change set | What must be true when this feature is done? | Scope, intent, constraints, acceptance criteria |
+| **Execution plan** | One agent run | What should the agent do next? | Sequenced steps, files, commands, validation for this run |
+
+The feature spec should stay above implementation mechanics. It should not usually decide exact helper names, line-by-line edits, or task ordering. Those belong in plans.
+
+The execution plan should be narrower. It takes the approved spec, grounds in the current codebase, and defines the next bounded unit of work.
+
+For example, a rate-limiting feature spec might define:
+
+- anonymous users get one limit
+- authenticated users get another
+- admins are exempt
+- login stays exempt
+- Redis outage fails open
+- existing auth behavior must not change
+
+From that spec, the operator may create separate execution plans for:
+
+1. discovering the middleware and cache patterns
+2. adding the limiter
+3. adding tests
+4. running gap analysis and cleanup
+
+Each plan is a small local spec for one run. The feature spec remains the larger contract.
+
+## Where Specs Sit in the Agentic SDLC
+
+Specs sit earlier than implementation. They turn rough intent into a reviewed feature boundary before the operator starts decomposing work.
+
+```text
+Request
+  ↓
+Research the product, codebase, constraints, and risks
+  ↓
+Write the feature spec
+  ↓
+Human reads, edits, approves, or rejects
+  ↓
+Decompose into execution loops
+  ↓
+Ground → Plan → Execute → Validate
+  ↓
+Gap-analyze code against the feature spec
+  ↓
+Repeat until the remaining gap is acceptable
+```
+
+The spec does not eliminate the four-phase workflow. It feeds it.
+
+Every execution loop still needs grounding. The agent must read the approved spec and the current code. Specs do not replace code research; they tell the agent what the code research is trying to satisfy.
+
+## A Good Spec Serves Two Readers
+
+A spec has two audiences.
+
+The **human** needs a compact checkpoint. They need to see the scope, risk, and trade-offs quickly enough to make a real judgment.
+
+The **agent** needs a guardrail. It needs concrete boundaries that survive decomposition into multiple plans and implementation runs.
+
+Good specs are therefore:
+
+- **Short enough to read seriously** — if the human skims, the checkpoint failed.
+- **Structured enough to execute from** — if the agent cannot map the spec to tasks and checks, the guardrail failed.
+- **Higher-level than plans** — if the spec is full of file-by-file steps, it is doing the plan's job.
+- **Concrete about scope** — vague intent creates implementation drift.
+- **Explicit about non-goals** — agents need to know what not to improve.
+
+The goal is not maximum detail. The goal is the smallest artifact that preserves the feature boundary.
+
+## What Different Spec Lengths Feel Like
+
+Token counts are approximate. The point is not exact measurement; the point is review ergonomics.
+
+A 500-token spec can be read carefully. A 1K-token spec is still manageable for most feature work. A 2K-token spec is already a serious checkpoint; if it feels dense, split the feature.
+
+:::note
+The examples below use lorem ipsum so the shape is visible without adding another real feature example. In practice, every line should carry scope, constraints, rationale, or acceptance signal.
+:::
+
+<details>
+<summary>~500 tokens: small enough for a quick but real review</summary>
 
 ```markdown
-# API Rate Limiting
+# Feature Spec: Lorem Checkout Receipts
 
-## Goal
-Protect `/api/*` from abuse without changing existing auth behavior.
+## Why
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Customers need a
+clear post-checkout receipt so support, finance, and account owners can verify
+what happened without opening three different screens.
 
-## Scope
-- Add rate limiting middleware to the API pipeline
-- Keep `/api/auth/login` exempt
-- Use existing Redis infrastructure
+## Add
+- Receipt summary on the checkout confirmation page
+- Downloadable receipt link for completed purchases
+- Email receipt copy sent to the billing contact
+- Receipt ID visible in the admin order timeline
 
-## Rules
-- Anonymous users: 100 requests/hour
-- Authenticated users: 1000 requests/hour
-- Admins: unlimited
-- If Redis is unavailable, fail open and log a warning
-- Return `429` with `Retry-After` header
+## Remove
+- Nothing
 
-## Integration Constraints
-- Follow middleware structure used by `src/middleware/auth.ts`
-- Reuse existing error response format
-- Do not introduce a new cache client or validation library
+## Change
+- Confirmation page now shows billing metadata after payment succeeds
+- Support order search can match on receipt ID
 
-## Acceptance Checks
-- Existing auth middleware behavior unchanged
-- Limits differ by user type
-- Login route remains exempt
-- Redis outage does not block traffic
+## Keep / Protect
+- Existing payment authorization flow
+- Existing invoice generation job
+- Current refund behavior
+- Existing tax calculation source of truth
+
+## Guardrails
+- Do not create a second receipt model
+- Do not change payment capture timing
+- Do not expose internal processor IDs to customers
+- If receipt generation fails, show checkout success and log the receipt error
+
+## Acceptance
+- Completed checkout shows receipt ID, amount, tax, and billing contact
+- Receipt download is unavailable until payment succeeds
+- Billing contact receives one receipt email per completed order
+- Support can search by receipt ID
+- Existing refund and invoice tests still pass
+
+## Open Questions
+- Should receipts include purchase-order metadata in the first release?
 ```
 
-That is short enough to read in one sitting (~500 tokens). It names the behavior, the boundaries, the constraints, and the success criteria. It is not a design novel. It is a checkpoint.
+</details>
+
+<details>
+<summary>~1K tokens: typical feature-scope checkpoint</summary>
+
+```markdown
+# Feature Spec: Lorem Team Seat Management
+
+## Why
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Workspace admins need
+to manage seats without contacting support for routine changes. The business
+needs this because support volume grows with every enterprise rollout, and the
+current manual flow creates delayed onboarding.
+
+## Add
+- Admin screen for viewing assigned and available seats
+- Invite flow that consumes one available seat when accepted
+- Remove-seat action for inactive members
+- Audit events for seat assignment, removal, and failed assignment
+- Billing preview that shows the next invoice impact before confirmation
+
+## Remove
+- Manual support-only seat adjustment path for normal admin changes
+- Legacy copy that tells admins to email support for seat updates
+
+## Change
+- Invite acceptance checks seat availability before activating the member
+- Workspace settings navigation includes a Seats entry for admins
+- Billing preview is shown before destructive or cost-changing actions
+
+## Keep / Protect
+- Owner permissions remain stronger than admin permissions
+- Existing member deactivation behavior stays unchanged
+- Existing billing provider remains the source of truth for paid quantity
+- Existing audit log format and retention rules remain unchanged
+
+## Non-Goals
+- No self-serve plan upgrades
+- No annual contract renegotiation workflow
+- No bulk CSV import
+- No changes to SSO provisioning in this release
+
+## Guardrails
+- Do not create a parallel billing quantity field
+- Do not bypass the existing permission middleware
+- Do not silently drop audit events; fail visibly if audit logging is unavailable
+- Do not let admins remove the last workspace owner
+
+## Acceptance
+- Admin can see total, assigned, and available seats
+- Admin can invite a user when a seat is available
+- Invite acceptance fails with clear copy when no seat remains
+- Admin can remove an inactive member and free the seat
+- Last owner cannot be removed
+- Billing preview appears before any action that changes paid quantity
+- Audit log records who changed seats, when, and which member was affected
+
+## Validation
+- Permission tests cover owner, admin, member, and external user
+- Billing preview test covers monthly and annual workspaces
+- Audit tests assert the existing event envelope
+- Manual QA covers invite acceptance from a fresh email link
+
+## Open Questions
+- Should pending invites reserve seats immediately or only on acceptance?
+- Should removed members keep access to historical invoices?
+```
+
+</details>
+
+<details>
+<summary>~2K tokens: upper bound before splitting becomes attractive</summary>
+
+```markdown
+# Feature Spec: Lorem Usage-Based Alerts
+
+## Why
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Customers with usage
+based billing need earlier warning before they cross budget thresholds. Today
+they discover overages after invoice generation, which creates support tickets,
+refund requests, and account escalations. The feature should make spend risk
+visible without changing metering or billing authority.
+
+## Add
+- Workspace-level usage alert configuration
+- Thresholds at 50%, 80%, 100%, and custom percentage values
+- Email notifications to owners and selected billing contacts
+- In-app alert banner when the current workspace crosses an active threshold
+- Audit events when alert rules are created, changed, disabled, or triggered
+- Admin activity entry linking triggered alerts to the usage period
+- Backfill-safe job that evaluates thresholds for the current billing period
+
+## Remove
+- Static help text that says customers should contact support for usage alerts
+- Internal-only feature flag copy from the billing settings screen
+
+## Change
+- Billing settings includes a Usage Alerts section for owners
+- Usage dashboard shows alert status next to current period usage
+- Notification preferences include usage-alert email controls
+- Existing usage aggregation job publishes threshold evaluation input
+
+## Keep / Protect
+- Billing provider remains the source of truth for invoices and charge amounts
+- Existing metering ingestion, deduplication, and correction behavior remain unchanged
+- Existing invoice generation and payment collection timing remain unchanged
+- Workspace owner permission model remains unchanged
+- Existing notification unsubscribe rules remain enforceable
+- Usage dashboard performance budget remains within current page-load limits
+
+## Non-Goals
+- No hard spending caps in this release
+- No automatic plan downgrade or suspension
+- No invoice recalculation
+- No per-user budget controls
+- No Slack, Teams, or webhook delivery
+- No alert templates editable by customers
+
+## User Stories
+- As a workspace owner, lorem ipsum dolor sit amet so I can know when usage is approaching budget.
+- As a billing contact, consectetur adipiscing elit so I can warn finance before invoice close.
+- As support, sed do eiusmod tempor incididunt so I can see which alerts fired before a ticket arrived.
+
+## Guardrails
+- Do not introduce a second usage counter
+- Do not send notifications from request/response paths
+- Do not expose internal meter event IDs in customer-facing UI
+- Do not send duplicate threshold emails for the same workspace, period, and threshold
+- Do not mark an alert as delivered until the notification provider accepts it
+- If threshold evaluation fails, surface operational telemetry and retry; do not block usage ingestion
+
+## Data and State
+- Alert rule belongs to one workspace
+- Alert rule stores threshold, enabled state, recipients, creator, and update timestamp
+- Trigger state is keyed by workspace, billing period, threshold, and rule ID
+- Trigger state prevents duplicate sends while allowing replay after failed delivery
+- Audit events reference rule ID and trigger state ID, not raw meter events
+
+## Execution Slices
+1. Ground existing usage aggregation, notification, permission, and audit patterns
+2. Add alert rule persistence and owner-only management UI
+3. Add threshold evaluation job and duplicate-send protection
+4. Add email and in-app notification surfaces
+5. Add audit visibility and support-facing traceability
+6. Run gap analysis against this spec and remove accidental scope
+
+## Acceptance
+- Owner can create, edit, disable, and delete alert rules
+- Non-owner cannot manage alert rules
+- 50%, 80%, 100%, and custom thresholds can be configured
+- Alert fires once per workspace, billing period, rule, and threshold
+- Failed notification delivery retries without duplicating accepted sends
+- Usage ingestion continues when alert evaluation fails
+- In-app banner appears after threshold crossing and disappears when dismissed
+- Audit log records create, update, disable, delete, and trigger events
+- Existing invoice, metering, and payment tests still pass
+
+## Validation
+- Unit tests cover threshold crossing, duplicate suppression, disabled rules, and retry behavior
+- Permission tests cover owner, admin, member, and external user access
+- Integration test covers aggregation output flowing into threshold evaluation
+- Notification test verifies unsubscribe rules are respected
+- Manual QA covers owner configuration, banner dismissal, and email receipt
+- Gap analysis compares final code against Add, Change, Keep / Protect, Guardrails, and Acceptance sections
+
+## Rollout
+- Ship behind workspace-level feature flag
+- Enable for internal workspaces first
+- Monitor notification volume, job latency, duplicate suppression, and support tickets
+- Remove flag only after one billing period without duplicate-send incidents
+
+## Open Questions
+- Should custom thresholds allow values over 100%?
+- Should billing contacts receive alerts by default or require opt-in?
+- Should dismissed banners reappear when a higher threshold fires?
+- Which support view should show alert trigger history first?
+```
+
+</details>
+
+If the 2K-token version already feels heavy with realistic structure and placeholder content, imagine reviewing it with real constraints, exceptions, and product nuance. That is the point. Long specs must earn their length.
+
+## What a Useful Feature Spec Contains
+
+Use this as a starting shape, not a mandatory template.
+
+```markdown
+# Feature Spec: API Rate Limiting
+
+## Why
+Protect API routes from abuse without changing existing authentication behavior.
+
+## Add
+- Rate limiting for `/api/*` routes
+- Separate limits for anonymous and authenticated users
+- `429` responses with `Retry-After`
+
+## Remove
+- Nothing
+
+## Change
+- API request handling now checks rate limits before route handlers run
+
+## Keep / Protect
+- Existing auth behavior
+- Existing error response format
+- Existing Redis/cache abstraction
+- `/api/auth/login` remains exempt
+
+## Guardrails
+- Do not introduce a new cache client
+- Do not refactor auth middleware
+- If Redis is unavailable, fail open and log a warning
+
+## Acceptance
+- Anonymous users are limited to 100 requests/hour
+- Authenticated users are limited to 1000 requests/hour
+- Admins are unlimited
+- Exempt routes are not limited
+- Limit failures return `429` and `Retry-After`
+- Redis outage does not block traffic
+
+## Open Questions
+- Should limits be configurable per environment?
+```
 
-## SSOT Tension: Specs Are Temporary
+The section names are doing work:
 
-Every spec creates a second source of truth alongside the codebase. That tension is structural — code and spec describing the same system will eventually drift[^4].
+- **Why** gives the human the product and system rationale.
+- **Add / Remove / Change / Keep** makes scope review explicit.
+- **Guardrails** tell agents where not to improvise.
+- **Acceptance** gives validation and gap analysis a target.
+- **Open Questions** prevents guesses from hiding inside confident prose.
+
+The spec is not trying to be complete implementation knowledge. It is trying to be a readable feature contract.
 
-The standard fix: **specs are temporary scaffolding**.
+## Writing the Spec Is Its Own Agent Loop
+
+Do not ask an agent to write a spec from a vague request and then treat the first draft as truth.
 
-Once implementation is correct and verified, the spec is deleted. The code becomes the sole source of truth. Constraints that are too important to lose are migrated into code as typed comments or domain annotations — the technique covered in [Chapter 12: Agent-Friendly Code](./agent-friendly-code.md).
+Writing the spec is itself an agentic workflow:
 
-Not everything disappears when the file goes away:
-- **Constraints migrate into code** — critical rules become machine-readable comments or type annotations near the relevant code
-- **The WHY residual survives** — decisions that cannot be expressed cleanly in code (rejected alternatives, compliance rationale) live in a small decision record
+```text
+Research → Draft → Read → Revise
+```
 
-Everything else — structure, interfaces, behavior — should be recoverable from the codebase through grounding and code research.
+For production work, run that loop multiple times.
 
-## Execution from a Validated Spec
+### Research
 
-Once the spec is approved, execution becomes an orchestration problem rather than a discovery problem. The agent shifts from inference about your intent to recall against an approved artifact.
+Ground the spec in the actual world:
 
-### The Plan Becomes a Risk Map
+- current code patterns
+- product requirements
+- user workflows
+- security and privacy constraints
+- existing tests
+- external API behavior
+- prior decisions and rejected approaches
 
-A plan derived from a spec is not just a to-do list. It shows where drift is likely and where review matters most.
+Ask the agent for evidence. File paths, existing interfaces, route names, product constraints, and unknowns matter. A spec without evidence is often just plausible prose.
 
-For the rate-limiting example:
+### Draft
 
-- Wiring middleware into existing routes is probably low risk
-- Reusing the correct Redis client is medium risk
-- Preserving auth edge cases and admin exemptions is high risk
-- Matching the existing error envelope is worth spot-checking
+Have the agent produce the spec in the feature-level structure. Keep it above implementation mechanics. If it starts listing exact edits and command sequences, ask it to move those into a future plan.
 
-That lets you place attention deliberately instead of hovering over every line equally.
+### Read
 
-### Review the Dangerous Steps, Not Every Step
+Validation at this stage means reading. The human is not checking whether code works yet. They are checking whether the feature contract is right.
 
-A validated spec lets you say:
+Read for:
 
-- "Let the agent implement the middleware and tests autonomously"
-- "Stop before changing auth-adjacent code"
-- "Show me the final diff for error handling and exemptions"
+- missing scope
+- accidental scope creep
+- unclear acceptance criteria
+- hidden assumptions
+- implementation details pretending to be requirements
+- constraints that should be explicit guardrails
 
-This is the difference between babysitting and orchestration.
+### Revise
 
-### Execution Is Still Probabilistic
+Correct the spec before code exists. This is the cheap point. Once execution begins, mistakes become files, tests, abstractions, and follow-on reasoning.
 
-A validated spec does not make the agent deterministic. It makes the agent's *target* deterministic. The implementation step is still a chain of stochastic operations: file reads, reasoning about structure, choosing identifiers, ordering statements, handling edge cases.
+## Building from the Spec
 
-That means you should expect the first execution attempt to be mostly right and partially wrong. The spec gives you a precise reference to measure that wrongness against. Without the spec, you would not know whether a deviation was a bug or a design decision the agent made on its own.
+After approval, the operator decomposes the spec into execution loops.
 
-### Watch for Invention Over Reuse
+For each loop:
 
-Even with a good spec, agents still drift toward invention because generating plausible code is easier than discovering existing code.
+```text
+Ground in the spec + current code
+  ↓
+Plan the next bounded execution run
+  ↓
+Execute
+  ↓
+Validate the result
+```
 
-If the execution plan says things like:
+The feature spec stays stable enough to coordinate the work. The plans stay small enough to execute reliably.
 
-- "create a helper"
-- "add a new utility"
-- "introduce a cache wrapper"
+A rate-limiting feature might become:
 
-...pause and ask whether that thing already exists. The spec should constrain not just behavior, but also the reuse expectations of the codebase.
+| Loop | Local plan |
+|---|---|
+| 1 | Identify middleware, auth, cache, and error-response patterns |
+| 2 | Add the limiter using existing integration points |
+| 3 | Add tests for user classes, exceeded limits, and Redis failure |
+| 4 | Review implementation against the spec and fix gaps |
 
-### What Makes a Spec Readable (Revisited)
+Each loop has its own plan because each loop needs current grounding. The codebase changes after every execution. The next plan should be based on the approved feature spec and the code that exists now, not the code that existed when the feature spec was written.
 
-Since the checkpoint only works if humans read it, readability criteria bear repeating:
+## Gap Analysis: Compare Code Back to the Spec
 
-**Short.** A spec should distill the change to its essential structure. If it exceeds 2K tokens (~50 lines), the task is probably too broad or the boundaries are unclear. Split into sub-specs.
+Implementation does not end when the agent says it is done. Compare the resulting code against the feature spec.
 
-**Coherent.** A spec should tell one story. The reader should answer:
-- What are we changing?
-- Why are we changing it?
-- What must remain true when we are done?
+Ask:
 
-**Concrete.** Name real things: modules, routes, tables, contracts, constraints, failure behavior. "Improve performance" does not constrain implementation. "Return `429` with `Retry-After` header" does.
+1. **What did the spec require?**
+2. **What did the code implement?**
+3. **What is missing, conflicting, or extra?**
+4. **Is the spec wrong, or is the code wrong?**
 
-Later, in [Chapter 13: Thinking in Systems](./systems-thinking-specs.md), you will make this much more precise with modules, interfaces, state, constraints, and invariants. For now, the important idea is simpler: **if a human cannot read the spec and form a judgment quickly, it is not ready to drive implementation.**
+For the rate-limiting example, gap analysis might find:
 
-## Gap Analysis: The Convergence Loop
+- middleware exists
+- anonymous and authenticated limits work
+- `429` response exists
+- login exemption was missed
+- Redis failure fails closed instead of open
+- implementation introduced a new cache wrapper despite the guardrail
 
-After implementation, compare the spec to the code that was actually produced.
+That output becomes the next plan.
 
-That comparison is **gap analysis**.
+```text
+Gap analysis → Plan fixes → Execute → Validate → Repeat
+```
 
-Ask three questions:
+The number of cycles depends on risk. [Chapter 7: Reliability Levers](./reliability-levers.md) gives the broader model: use the control that matches the failure mode.
 
-1. **What exists?** What did the agent actually build?
-2. **What is missing?** What did the spec require that never made it into code?
-3. **What conflicts?** Where does the implementation diverge from the spec?
+- Low-risk work can use one cheap gap-analysis pass.
+- Medium-risk work may need fresh-context review plus tests.
+- High-risk work may need independent reviewers, stricter acceptance checks, and manual inspection of dangerous paths.
 
-For the rate-limiting example, a useful gap analysis might find:
+There is no universal amount of process. The spec gives you a target; reliability levers decide how hard you push toward it.
 
-- the middleware exists
-- anonymous and authenticated limits are correct
-- `429` responses are correct
-- but the login route exemption was missed
-- and Redis failure currently fails closed instead of open
+## Single Source of Truth: Specs Are Temporary
 
-That is a good checkpoint because it turns a vague feeling—"looks mostly right"—into specific drift.
+A spec is useful because it creates a second source of truth before implementation. That is also why it must not live forever as a duplicate description of the system.
 
-### One Pass Is Not Enough
+During the work, the spec is the feature contract. After the work, the code should become the source of truth.
 
-Gap analysis is an LLM-mediated step. The agent comparing spec and code can miss a real discrepancy or invent one that is not there. Because the operation is probabilistic, **a single pass is insufficient for any task where the cost of an undetected gap is high.**
+The cleanup step is:
 
-The fix is iteration: run gap analysis, feed the findings back into execution, and repeat until the gap is below a threshold you can accept. Production agent orchestration frameworks formalize exactly this. Qualixar OS, for example, routes rejected outputs through an iterative redesign loop with up to five retry iterations before human escalation[^5]. The Kitchen Loop operates in "coverage-exhaustion mode," systematically exercising the specification surface until coverage gaps approach zero[^6].
+1. Move operational knowledge into code.
+2. Move durable verification into tests.
+3. Archive only residual rationale that cannot live in code.
+4. Delete or close the spec.
 
-### Fresh Context and Model Swapping
+### Move Knowledge into Code
 
-To make each iteration useful, change the conditions:
+If future agents need a constraint to work safely, put it where they will find it during code research.
 
-- **Use a fresh context.** Do not run gap analysis in the same conversation where the code was written. The execution context carries assumptions, ignored details, and confirmation bias. A fresh context reads the spec and the code as an outsider would.
-- **Swap the model or provider.** Different models have different blind spots because they are trained on different data distributions and tuned with different reward functions. A gap that Claude misses, GPT-4o might catch, and vice versa. Qualixar OS implements consensus-based judging across multiple providers precisely for this reason: cross-model entropy is harder to game than a single-model evaluation[^5].
+Use:
 
-You do not need a dozen models. Two or three, rotated on each iteration, are enough to escape correlated failure modes.
+- clear names
+- local types and constants
+- nearby validation logic
+- tests around user-facing contracts
+- short inline comments for non-obvious WHAT/WHY/HOW
 
-### Convergence Criteria
+This connects directly to [Chapter 12: Writing Agent-Friendly Code](./agent-friendly-code.md). Agents discover code through search and file reads. If a rule matters locally, make it locally recoverable.
 
-Stop iterating when:
+For example:
 
-- The gap analysis reports no issues **and** you spot-check the most dangerous parts manually
-- The gaps are cosmetic and do not affect behavior
-- You have reached a fixed point — two consecutive iterations with identical findings
+```ts
+// Rate limiting fails open because blocking all API traffic during Redis
+// outages is worse than temporary abuse risk. Keep auth enforcement separate.
+if (!redisAvailable) {
+  logger.warn('Rate limiter unavailable; allowing request')
+  return next()
+}
+```
 
-If you are still finding new gaps after three or four iterations, the spec itself is probably the problem. Fix the spec and regenerate rather than patching a broken approach.
+That comment preserves the decision where future agents need it. The spec can go away because the important operational knowledge migrated into the system.
 
-### Small Gaps vs Large Gaps
+### Archive Only Residual WHY
 
-**Small gaps** mean the implementation is broadly correct but incomplete. Fix the code.
+Some knowledge does not belong in code:
 
-**Large gaps** mean the spec was ambiguous, wrong, or insufficiently constraining. Fix the spec and regenerate rather than patching a broken approach.
+- marketing rationale
+- business constraints
+- compliance context
+- rejected solutions
+- stakeholder decisions
+- historical trade-offs
 
-That distinction matters. Patching a fundamentally wrong implementation usually compounds the mess.
+Keep that as a short decision record if it will matter later. Do not keep a stale feature spec just because it contains one paragraph of useful rationale.
 
-### Gap Analysis Is Not the Final Arbiter
+The rule is simple:
 
-Even iterative gap analysis is probabilistic. The final arbiter arrives in the next chapter: **tests**.
+```text
+Operational truth → code and tests
+Residual rationale → decision record
+Everything else → delete or close
+```
 
-## Specs Are Temporary Scaffolding
-
-Once implementation is correct and verified, **the code is the source of truth**.
-
-That means the normal lifecycle is:
-
-1. Extract or write the spec
-2. Implement from it
-3. Gap-analyze
-4. Test
-5. Delete the spec
-
-This is where many "living spec" approaches go wrong. If both the spec and the code describe the same operational reality, one of them will eventually drift.
-
-### When to Persist a Spec
-
-Keep a spec around longer when:
-
-- work spans multiple sessions or multiple days
-- several people or agents need a shared artifact
-- the scope is too large to hold comfortably in one context window
-- the architecture is still being negotiated
-
-For a single-session task, the spec can be ephemeral. It may live only in the conversation context and disappear once the work is complete.
-
-:::caution The handoff to Chapter 9 matters
-
-Up to this point, every step is still probabilistic: research, planning, spec writing, execution, gap analysis, and even human review. Useful, but probabilistic.
-
-[Chapter 9: Tests as Guardrails](./tests-as-guardrails.md) is where determinism enters the loop. Tests either pass or they don't.
-:::
+Long-lived specs that duplicate code create cache invalidation problems. Future agents may read stale docs and current code, then have to guess which one is true. Avoid that. Let code research recover HOW from the code. Preserve only the WHY that code cannot express.
 
 ## Key Takeaways
 
-- **SDD combines two reliability levers:** HITL checkpoints and context quality.
-- **A spec is the readable checkpoint between planning and execution** — it turns vague intent into an artifact a human can inspect before code is written.
-- **Gap analysis is part of SDD, not an optional extra** — compare implementation to spec, iterate in fresh context, and converge before trusting the result.
-- **Good specs stay under ~2K tokens / ~50 lines** — if a spec is too long to read in one sitting, split into sub-specs.
-- **Specs are scaffolding, not permanent truth** — after tests pass, delete the spec and migrate critical constraints into code.
-
-[^1]: Token-to-word ratio: 1 token ≈ 0.75 words for English text. [llmcalcs.com](https://llmcalcs.com), [benchlm.ai](https://benchlm.ai).
-
-[^2]: Production heuristic: "Over 50 lines over-specifying" — specs exceeding 50 lines tend to describe too much at once. Ideal range is 10–30 lines for most feature work. [amux.io](https://amux.io).
-
-[^3]: Human spec review: 2–3 minutes reviewing a well-written spec saves approximately 2–3 hours of debugging drifted implementations. [getarchie.dev](https://getarchie.dev).
-
-[^4]: SSOT governance: type-based precedence ensures code wins over spec when they diverge. [Spesans](https://spesans.com).
-
-[^5]: *Qualixar OS: A Universal Operating System for AI Agent Orchestration.* [arXiv:2604.06392v1](https://arxiv.org/abs/2604.06392), 2026.
-
-[^6]: *The Kitchen Loop: User-Spec-Driven Development for a Self-Evolving Codebase.* [arXiv:2603.25697v1](https://arxiv.org/abs/2603.25697), 2026.
+- **A plan is a small spec for one execution run.** An SDD feature spec is broader: it covers the full feature scope and feeds many plans.
+- **Specs are HITL checkpoints.** They let humans approve scope, intent, constraints, and acceptance before implementation choices spread through the codebase.
+- **Readable specs are more reliable specs.** If nobody reads the artifact carefully, the checkpoint failed.
+- **Good specs define add/remove/change/keep.** Scope needs positive and negative boundaries.
+- **Specs drive multiple agent loops.** Each loop still grounds, plans, executes, and validates against the current codebase.
+- **Gap analysis compares code back to the feature spec.** Iterate until the remaining gap matches the risk tolerance.
+- **Specs are temporary scaffolding.** Move operational knowledge into code and tests, archive residual WHY, then delete or close the spec.
 
 ---
 
