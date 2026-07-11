@@ -2,7 +2,6 @@
    ContextLensWindow; this file defines the diagram-specific causal loop. */
 
 .windowLabel,
-.sideLabel,
 .panelTitle,
 .warningText,
 .stepNumber,
@@ -13,7 +12,6 @@
 }
 
 .windowLabel,
-.sideLabel,
 .panelTitle,
 .warningText,
 .stepNumber {
@@ -26,8 +24,28 @@
   font-family: var(--font-mono-spec);
 }
 
+.stepBox {
+  fill: var(--surface-muted);
+  stroke: var(--border-subtle);
+}
+
+.stepNumber {
+  fill: var(--text-muted);
+}
+
+.stepText {
+  fill: var(--text-body);
+}
+
+.stepBox,
+.stepNumber,
+.stepText {
+  animation-duration: 9s;
+  animation-iteration-count: infinite;
+  animation-timing-function: var(--ease-standard);
+}
+
 .prefixBlock,
-.bracket,
 .rightColumn {
   opacity: 1;
 }
@@ -38,10 +56,6 @@
 
 .ruleTwo {
   animation: ruleTwoInserted 9s var(--ease-standard) infinite;
-}
-
-.taskBaseline {
-  opacity: 0.46;
 }
 
 .taskShift {
@@ -57,7 +71,6 @@
 .pushOne,
 .pushTwo {
   fill: none;
-  stroke: var(--visual-warning);
   stroke-width: 1.5;
   stroke-linecap: butt;
   stroke-linejoin: miter;
@@ -66,10 +79,39 @@
 
 .pushOne {
   animation: pushCueOne 9s var(--ease-standard) infinite;
+  stroke: var(--visual-success);
 }
 
 .pushTwo {
   animation: pushCueTwo 9s var(--ease-standard) infinite;
+  stroke: var(--visual-warning);
+}
+
+.stepOne .stepBox {
+  animation-name: stepOneBoxActive;
+}
+
+.stepOne .stepNumber,
+.stepOne .stepText {
+  animation-name: stepOneTextActive;
+}
+
+.stepTwo .stepBox {
+  animation-name: stepTwoBoxActive;
+}
+
+.stepTwo .stepNumber,
+.stepTwo .stepText {
+  animation-name: stepTwoTextActive;
+}
+
+.stepThree .stepBox {
+  animation-name: stepThreeBoxActive;
+}
+
+.stepThree .stepNumber,
+.stepThree .stepText {
+  animation-name: stepThreeTextActive;
 }
 
 @keyframes ruleOneInserted {
@@ -97,6 +139,84 @@
   }
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes stepOneBoxActive {
+  0%,
+  24% {
+    fill: var(--visual-bg-cyan);
+    stroke: var(--visual-cyan);
+  }
+  32%,
+  100% {
+    fill: var(--surface-muted);
+    stroke: var(--border-subtle);
+  }
+}
+
+@keyframes stepOneTextActive {
+  0%,
+  24% {
+    fill: var(--visual-cyan);
+  }
+  32%,
+  100% {
+    fill: var(--text-body);
+  }
+}
+
+@keyframes stepTwoBoxActive {
+  0%,
+  24%,
+  72%,
+  100% {
+    fill: var(--surface-muted);
+    stroke: var(--border-subtle);
+  }
+  34%,
+  64% {
+    fill: var(--visual-bg-cyan);
+    stroke: var(--visual-cyan);
+  }
+}
+
+@keyframes stepTwoTextActive {
+  0%,
+  24%,
+  72%,
+  100% {
+    fill: var(--text-body);
+  }
+  34%,
+  64% {
+    fill: var(--visual-cyan);
+  }
+}
+
+@keyframes stepThreeBoxActive {
+  0%,
+  52%,
+  100% {
+    fill: var(--surface-muted);
+    stroke: var(--border-subtle);
+  }
+  64%,
+  84% {
+    fill: var(--visual-bg-warning);
+    stroke: var(--visual-warning);
+  }
+}
+
+@keyframes stepThreeTextActive {
+  0%,
+  52%,
+  100% {
+    fill: var(--text-body);
+  }
+  64%,
+  84% {
+    fill: var(--visual-warning);
   }
 }
 
@@ -177,7 +297,10 @@
   .taskShift,
   .taskRect,
   .pushOne,
-  .pushTwo {
+  .pushTwo,
+  .stepBox,
+  .stepNumber,
+  .stepText {
     animation: none;
   }
 
@@ -198,5 +321,15 @@
   .taskRect {
     fill: var(--visual-bg-warning);
     stroke: var(--visual-warning);
+  }
+
+  .stepThree .stepBox {
+    fill: var(--visual-bg-warning);
+    stroke: var(--visual-warning);
+  }
+
+  .stepThree .stepNumber,
+  .stepThree .stepText {
+    fill: var(--visual-warning);
   }
 }

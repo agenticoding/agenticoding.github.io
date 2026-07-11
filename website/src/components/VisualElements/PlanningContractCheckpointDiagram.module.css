@@ -31,7 +31,9 @@
 .nodeEyebrow,
 .cardText,
 .smallText,
-.badgeText {
+.badgeText,
+.gateEyebrow,
+.gateDetail {
   font-family: var(--font-mono-spec);
 }
 
@@ -65,24 +67,39 @@
   letter-spacing: 0.08em;
 }
 
-.connector,
-.gateRail {
-  fill: none;
-  stroke-width: 1.5px;
-  stroke-linecap: butt;
-  stroke-linejoin: miter;
-  vector-effect: non-scaling-stroke;
+.gateEyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.gateTitle {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.gateDetail {
+  font-size: 9px;
+  font-weight: 500;
 }
 
 .connector {
+  fill: none;
   opacity: 0.8;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
 }
 
-.gateRail {
-  stroke: var(--visual-success);
-  stroke-dasharray: 8 5;
+.gateTileRect {
+  vector-effect: non-scaling-stroke;
 }
 
+.contractIcon {
+  opacity: 0.92;
+}
 
 .flowTrain {
   overflow: visible;
@@ -156,8 +173,8 @@
 }
 
 @keyframes approvalBeat {
-  0%, 44%, 100% { opacity: 1; transform: scale(1); }
-  52% { opacity: 1; transform: scale(1.015); }
+  0%, 42%, 100% { opacity: 1; transform: scale(1); }
+  50%, 58% { opacity: 1; transform: scale(1.01); }
 }
 
 @keyframes executionEnabled {

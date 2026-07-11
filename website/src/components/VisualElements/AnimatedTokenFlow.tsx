@@ -553,9 +553,15 @@ function laneTransform(
   orientation: TokenTrainOrientation
 ) {
   if (offset === 0) return undefined;
-  const normal = orientedNormal(segments[0], orientation);
+  const normal = orientedNormal(pathDirectionSegment(segments), orientation);
   const distance = Math.abs(offset);
   return `translate(${normal.x * distance} ${normal.y * distance})`;
+}
+
+function pathDirectionSegment(segments: readonly PathSegment[]): PathSegment {
+  const from = segments[0].from;
+  const to = segments[segments.length - 1].to;
+  return { from, to, length: segmentLength(from, to) };
 }
 
 function orientedNormal(

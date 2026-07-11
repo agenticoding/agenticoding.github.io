@@ -1,7 +1,7 @@
 import React from 'react';
-import { OperatorNode } from './ActorNodes';
+import { EmojiImage, OperatorNode } from './ActorNodes';
 import { AgentTile } from './AgentTile';
-import { DiagramTile } from './DiagramTile';
+import { DiagramTileSurface } from './DiagramTile';
 import { EMOJI } from './emojiAssets';
 import { TokenArrowTrain } from './TokenArrowTrain';
 import type { TokenSequence } from './AnimatedTokenFlow';
@@ -46,11 +46,11 @@ function DesktopDiagram() {
   return (
     <svg className={`${styles.diagram} ${styles.desktopDiagram}`} viewBox="0 0 760 360" role="img" aria-label={ARIA_LABEL}>
       <Flow d="M 180 188 L 212 188" tokens={FACT_TOKENS} stroke="var(--visual-indigo)" tone="indigo" startDelayMs={0} />
-      <Flow d="M 452 188 L 500 188" tokens={DRAFT_TOKENS} stroke="var(--visual-warning)" tone="warning" startDelayMs={1500} />
-      <Flow d="M 604 188 L 624 188" tokens={APPROVED_TOKENS} stroke="var(--visual-success)" tone="success" startDelayMs={4200} />
+      <Flow d="M 452 188 L 480 188" tokens={DRAFT_TOKENS} stroke="var(--visual-warning)" tone="warning" startDelayMs={1500} />
+      <Flow d="M 600 188 L 624 188" tokens={APPROVED_TOKENS} stroke="var(--visual-success)" tone="success" startDelayMs={4200} />
       <FactsBlock x={48} y={136} width={132} height={104} />
       <ContractCard x={212} y={96} width={240} height={204} />
-      <ReviewGate x={500} y={136} width={104} height={108} />
+      <ReviewGate x={480} y={136} width={120} height={108} />
       <ExecutionAgentTile x={624} y={136} width={112} height={104} />
     </svg>
   );
@@ -61,10 +61,10 @@ function MobileDiagram() {
     <svg className={`${styles.diagram} ${styles.mobileDiagram}`} viewBox="0 0 340 764" role="img" aria-label={ARIA_LABEL}>
       <Flow d="M 170 150 L 170 178" tokens={FACT_TOKENS} stroke="var(--visual-indigo)" tone="indigo" startDelayMs={0} laneOrientation="below" />
       <Flow d="M 170 456 L 170 494" tokens={DRAFT_TOKENS} stroke="var(--visual-warning)" tone="warning" startDelayMs={1500} laneOrientation="below" />
-      <Flow d="M 170 580 L 170 634" tokens={APPROVED_TOKENS} stroke="var(--visual-success)" tone="success" startDelayMs={4200} laneOrientation="below" />
+      <Flow d="M 170 588 L 170 634" tokens={APPROVED_TOKENS} stroke="var(--visual-success)" tone="success" startDelayMs={4200} laneOrientation="below" />
       <FactsBlock x={70} y={56} width={200} height={94} compact />
       <ContractCard x={50} y={224} width={240} height={232} compact />
-      <ReviewGate x={106} y={494} width={128} height={76} compact />
+      <ReviewGate x={70} y={494} width={200} height={94} compact />
       <ExecutionAgentTile x={100} y={634} width={140} height={104} compact />
     </svg>
   );
@@ -143,6 +143,7 @@ function StatusBadge({ x, y, label, tone }: Point & { label: string; tone: 'warn
 function ContractHeader({ x, y, width }: Point & { width: number }) {
   return (
     <>
+      <EmojiImage asset={EMOJI.documentTabs} x={x + width - 102} y={y + 30} size={24} className={styles.contractIcon} />
       <text x={x + 18} y={y + 30} fill="var(--text-heading)" className={styles.cardTitle}>Plan</text>
       <text x={x + 18} y={y + 48} fill="var(--text-muted)" className={styles.cardText}>execution contract</text>
       <line x1={x + 18} y1={y + 64} x2={x + width - 18} y2={y + 64} stroke="var(--border-subtle)" className={styles.vectorStroke} />
@@ -181,36 +182,39 @@ function WaitingStrip({ x, y, width, compact }: Point & { width: number; compact
 }
 
 function ReviewGate(props: Box & { compact?: boolean }) {
+  const layout = reviewGateLayout(props);
   return (
     <g className={styles.approvalBeat}>
-      <GateRail {...props} />
-      <DiagramTile
+      <DiagramTileSurface
         x={props.x}
         y={props.y}
         width={props.width}
-        height={props.compact ? 34 : 40}
-        tone="success"
-        title="APPROVE"
-        icon={EMOJI.check}
-        variant="label"
-        labelIconSize={props.compact ? 18 : 20}
-        labelIconX={props.compact ? 16 : 12}
-        labelTextX={props.compact ? 46 : 42}
+        height={props.height}
+        tone="warning"
         fill="var(--surface-raised)"
-        rectClassName={styles.vectorStroke}
+        weight={2}
+        className={styles.gateTileRect}
       />
+      <text x={layout.textX} y={props.y + 22} fill="var(--visual-warning)" className={styles.gateEyebrow}>{props.compact ? 'HUMAN REVIEW' : 'HUMAN'}</text>
+      <OperatorNode x={layout.iconX} y={layout.iconY} size={layout.iconSize} />
+      <text x={layout.textX} y={layout.titleY} fill="var(--text-heading)" className={styles.gateTitle}>review</text>
+      <line x1={layout.textX} y1={layout.ruleY} x2={props.x + props.width - 16} y2={layout.ruleY} stroke="var(--visual-warning)" opacity={0.45} className={styles.vectorStroke} />
+      <text x={layout.textX} y={layout.detailY} fill="var(--text-muted)" className={styles.gateDetail}>approve</text>
+      <text x={layout.textX} y={layout.detailY + 13} fill="var(--text-muted)" className={styles.gateDetail}>revise</text>
     </g>
   );
 }
 
-function GateRail({ x, y, width, height, compact }: Box & { compact?: boolean }) {
-  const railY = y + (compact ? 38 : 44);
-  return (
-    <g>
-      <line x1={x - 10} y1={railY} x2={x + width + 10} y2={railY} className={styles.gateRail} />
-      {!compact && <text x={x + width / 2} y={y + height - 10} textAnchor="middle" fill="var(--text-muted)" className={styles.smallText}>human checkpoint</text>}
-    </g>
-  );
+function reviewGateLayout(props: Box & { compact?: boolean }) {
+  return {
+    iconX: props.x + (props.compact ? 20 : 18),
+    iconY: props.y + (props.compact ? 43 : 46),
+    iconSize: props.compact ? 30 : 32,
+    textX: props.x + (props.compact ? 66 : 56),
+    titleY: props.y + (props.compact ? 44 : 48),
+    ruleY: props.y + (props.compact ? 54 : 58),
+    detailY: props.y + (props.compact ? 70 : 74),
+  };
 }
 
 function ExecutionAgentTile(props: Box & { compact?: boolean }) {

@@ -33,6 +33,19 @@ type ContextLensZoneBackdropProps = {
   height: number;
 };
 
+type ContextLensFrameProps = ContextLensZoneBackdropProps & {
+  children?: ReactNode;
+};
+
+type ContextLensZoneLabelsProps = ContextLensZoneBackdropProps & {
+  labels?: Partial<Record<ContextLensZone, ReactNode>>;
+};
+
+type ContextLensRegionNotesProps = ContextLensZoneBackdropProps & {
+  notes?: Partial<Record<ContextLensZone, ReactNode>>;
+  side?: 'left' | 'right';
+};
+
 type ContextLensMetricsProps = {
   rows: readonly ContextLensMetric[];
   x: number;
@@ -48,11 +61,11 @@ function zoneIndex(zone: ContextLensZone) {
   return ZONE_ORDER.indexOf(zone);
 }
 
-function toneColor(tone: ContextLensTone) {
+export function toneColor(tone: ContextLensTone) {
   return `var(--visual-${tone})`;
 }
 
-function toneBg(tone: ContextLensTone) {
+export function toneBg(tone: ContextLensTone) {
   return `var(--visual-bg-${tone})`;
 }
 
@@ -73,6 +86,53 @@ export function ContextLensZoneBackdrop({ x, y, width, height }: ContextLensZone
       <rect x={x + 1} y={y + zoneH} width={width - 2} height={zoneH} rx={0} fill="var(--surface-muted)" opacity={0.62} />
       <line x1={x} y1={y + zoneH} x2={x + width} y2={y + zoneH} stroke="var(--border-subtle)" strokeWidth={1} />
       <line x1={x} y1={y + zoneH * 2} x2={x + width} y2={y + zoneH * 2} stroke="var(--border-subtle)" strokeWidth={1} />
+    </g>
+  );
+}
+
+export function ContextLensFrame({ x, y, width, height, children }: ContextLensFrameProps) {
+  return (
+    <g aria-hidden="true">
+      <rect x={x} y={y} width={width} height={height} rx={0} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
+      <ContextLensZoneBackdrop x={x} y={y} width={width} height={height} />
+      {children}
+    </g>
+  );
+}
+
+export function ContextLensZoneLabels({ x, y, width, height, labels = {} }: ContextLensZoneLabelsProps) {
+  const zoneH = height / 3;
+  const labelX = x + width - 12;
+  const zoneLabels = {
+    primacy: labels.primacy ?? 'PRIMACY',
+    middle: labels.middle ?? 'MIDDLE',
+    recency: labels.recency ?? 'RECENCY',
+  };
+
+  return (
+    <g aria-hidden="true">
+      <text x={labelX} y={y + 18} textAnchor="end" className={styles.zoneLabel} fill="var(--visual-success)">{zoneLabels.primacy}</text>
+      <text x={labelX} y={y + zoneH + 18} textAnchor="end" className={styles.zoneLabel} fill="var(--visual-warning)">{zoneLabels.middle}</text>
+      <text x={labelX} y={y + zoneH * 2 + 18} textAnchor="end" className={styles.zoneLabel} fill="var(--text-muted)">{zoneLabels.recency}</text>
+    </g>
+  );
+}
+
+export function ContextLensRegionNotes({ x, y, width, height, notes = {}, side = 'right' }: ContextLensRegionNotesProps) {
+  const zoneH = height / 3;
+  const noteX = side === 'right' ? x + width + 10 : x - 10;
+  const anchor = side === 'right' ? 'start' : 'end';
+  const zoneNotes = {
+    primacy: notes.primacy ?? 'top',
+    middle: notes.middle ?? 'middle',
+    recency: notes.recency ?? 'latest',
+  };
+
+  return (
+    <g aria-hidden="true">
+      <text x={noteX} y={y + 18} textAnchor={anchor} className={styles.regionNote}>{zoneNotes.primacy}</text>
+      <text x={noteX} y={y + zoneH + 18} textAnchor={anchor} className={styles.regionNote}>{zoneNotes.middle}</text>
+      <text x={noteX} y={y + zoneH * 2 + 18} textAnchor={anchor} className={styles.regionNote}>{zoneNotes.recency}</text>
     </g>
   );
 }
@@ -102,12 +162,11 @@ export function ContextLensWindow({ x, y, width = 144, height = 72, blocks, tone
   const blockH = Math.min(18, zoneH - 6);
 
   return (
-    <g aria-hidden="true">
-      <rect x={x} y={y} width={width} height={height} rx={0} fill="var(--surface-page)" stroke="var(--border-default)" strokeWidth={1} />
-      <ContextLensZoneBackdrop x={x} y={y} width={width} height={height} />
+    <ContextLensFrame x={x} y={y} width={width} height={height}>
       {blocks.map((block, index) => {
         const blockTone = block.tone ?? tone;
-        const blockW = blockWidth(width, block);        const bx = x + 10;
+        const blockW = blockWidth(width, block);
+        const bx = x + 10;
         const by = blockY(y, zoneH, block.zone, blockH, index * 2);
 
         return (
@@ -119,7 +178,7 @@ export function ContextLensWindow({ x, y, width = 144, height = 72, blocks, tone
           </g>
         );
       })}
-    </g>
+    </ContextLensFrame>
   );
 }
 

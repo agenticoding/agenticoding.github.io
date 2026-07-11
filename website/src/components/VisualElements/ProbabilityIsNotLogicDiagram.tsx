@@ -24,8 +24,8 @@ const TILE_SIZE = {
   mobile: { width: 136, height: 50 },
 } as const;
 const DESKTOP_TILE_Y = 116;
-const MOBILE_LOGIC = { inputY: 62, arrowStartY: 124, arrowEndY: 166, outputY: 178 } as const;
-const MOBILE_PROBABILITY = { inputY: 312, pathStartY: 374, pathEndY: 438, outputY: 450 } as const;
+const MOBILE_LOGIC = { inputY: 52, arrowStartY: 114, arrowEndY: 156, outputY: 168 } as const;
+const MOBILE_PROBABILITY = { inputY: 312, pathStartY: 374, pathEndY: 430, outputY: 450 } as const;
 const PROBABILITY_TRAIN_TIMING = {
   startDelayMs: 900,
   cycleMs: 7200,
@@ -92,7 +92,7 @@ function zigzagPoints(start: Point, end: Point, axis: Axis, seed: string) {
   return [start, ...bends, end];
 }
 
-function zigzagPathD(points: readonly Point[]) {
+function pathD(points: readonly Point[]) {
   const [start, ...rest] = points;
   const lineCommands = rest.map(({ x, y }) => `L ${x.toFixed(1)} ${y.toFixed(1)}`);
   return [`M ${start.x.toFixed(1)} ${start.y.toFixed(1)}`, ...lineCommands].join(' ');
@@ -106,10 +106,10 @@ function probabilityTokens(seed: string) {
 }
 
 function ProbabilityTokenTrain({ start, end, axis, seed }: { start: Point; end: Point; axis: Axis; seed: string }) {
-  const pathD = zigzagPathD(zigzagPoints(start, end, axis, seed));
+  const visiblePathD = pathD(zigzagPoints(start, end, axis, seed));
   return (
     <TokenArrowTrain
-      d={pathD}
+      d={visiblePathD}
       tokens={probabilityTokens(seed)}
       stroke={MODEL}
       tone="violet"
@@ -174,16 +174,16 @@ function DesktopDiagram() {
 
       <PanelFrame x={392} y={24} width={352} height={236} title="token prediction" />
       <Tile x={424} y={DESKTOP_TILE_Y} {...TILE_SIZE.desktop} title="Context" meta="tokens" />
-      <ProbabilityTokenTrain start={{ x: 520, y: 148 }} end={{ x: 632, y: 148 }} axis="horizontal" seed="probability-is-not-logic-desktop" />
-      <Tile x={640} y={DESKTOP_TILE_Y} {...TILE_SIZE.desktop} title="Artifact" meta="produced" tone="model" className={styles.probabilityOutputPulse} />
-      <text x={576} y={104} textAnchor="middle" className={styles.arrowLabel} fill={MODEL}>probable continuation</text>
+      <ProbabilityTokenTrain start={{ x: 520, y: 148 }} end={{ x: 624, y: 148 }} axis="horizontal" seed="probability-is-not-logic-desktop" />
+      <Tile x={632} y={DESKTOP_TILE_Y} {...TILE_SIZE.desktop} title="Artifact" meta="produced" tone="model" className={styles.probabilityOutputPulse} />
+      <text x={572} y={104} textAnchor="middle" className={styles.arrowLabel} fill={MODEL}>probable continuation</text>
     </svg>
   );
 }
 
 function MobileDiagram() {
   return (
-    <svg viewBox="0 0 320 520" width="100%" aria-hidden="true" className={clsx(styles.diagram, styles.mobileDiagram)}>
+    <svg viewBox="0 0 320 540" width="100%" aria-hidden="true" className={clsx(styles.diagram, styles.mobileDiagram)}>
       <defs>
         <ArrowMarker id={MOBILE_ARROW_ID} fill={LOGIC} refX={0} />
       </defs>
@@ -193,7 +193,7 @@ function MobileDiagram() {
       <LogicRuleSignal start={{ x: 160, y: MOBILE_LOGIC.arrowStartY }} end={{ x: 160, y: MOBILE_LOGIC.arrowEndY }} axis="vertical" />
       <Tile x={92} y={MOBILE_LOGIC.outputY} {...TILE_SIZE.mobile} title="Conclusion" meta="entailed" tone="success" className={styles.logicConclusionPulse} />
 
-      <PanelFrame x={16} y={268} width={288} height={232} title="token prediction" />
+      <PanelFrame x={16} y={268} width={288} height={256} title="token prediction" />
       <Tile x={92} y={MOBILE_PROBABILITY.inputY} {...TILE_SIZE.mobile} title="Context" meta="tokens" />
       <ProbabilityTokenTrain start={{ x: 160, y: MOBILE_PROBABILITY.pathStartY }} end={{ x: 160, y: MOBILE_PROBABILITY.pathEndY }} axis="vertical" seed="probability-is-not-logic-mobile" />
       <Tile x={92} y={MOBILE_PROBABILITY.outputY} {...TILE_SIZE.mobile} title="Artifact" meta="produced" tone="model" className={styles.probabilityOutputPulse} />
