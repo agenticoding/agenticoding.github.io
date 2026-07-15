@@ -1,118 +1,123 @@
-import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
-import sidebars from '../../../sidebars';
+import { getChapterById, type ChapterId } from '../../../chapters';
 import styles from './index.module.css';
 
-// ---------------------------------------------------------------------------
-// Utilities
-// ---------------------------------------------------------------------------
+type Accent = 'indigo' | 'violet' | 'success';
 
-function countChapters(): number {
-  let count = 0;
-  const traverse = (items: unknown[]) => {
-    for (const item of items) {
-      if (typeof item === 'string' && item.includes('chapter-')) {
-        count++;
-      } else if (item && typeof item === 'object' && 'items' in item) {
-        traverse((item as { items: unknown[] }).items);
-      }
-    }
-  };
-  traverse(sidebars.tutorialSidebar as unknown[]);
-  return count;
-}
-
-const CHAPTER_COUNT = countChapters();
-
-// ---------------------------------------------------------------------------
-// Module card
-// ---------------------------------------------------------------------------
-
-interface ModuleCardProps {
+interface BookPart {
   number: number;
   title: string;
-  chapterCount: number;
-  topics: string[];
-  link: string;
-  hue: 'indigo' | 'violet' | 'magenta' | 'rose';
+  chapterIds: readonly ChapterId[];
+  topics: readonly string[];
+  accent: Accent;
 }
 
-function ModuleCard({
-  number,
-  title,
-  chapterCount,
-  topics,
-  link,
-  hue,
-}: ModuleCardProps) {
+const BOOK_PARTS: readonly BookPart[] = [
+  {
+    number: 1,
+    title: 'Understand the machine',
+    chapterIds: ['how-llms-work', 'how-agents-work', 'prompting-101'],
+    topics: [
+      'Model mechanics and failure modes',
+      'Agent harnesses and autonomy',
+      'Prompts as execution contracts',
+    ],
+    accent: 'indigo',
+  },
+  {
+    number: 2,
+    title: 'Operate the work',
+    chapterIds: [
+      'high-level-methodology',
+      'context-engineering',
+      'reliability-levers',
+      'spec-driven-development',
+    ],
+    topics: [
+      'Phase-based orchestration',
+      'Context selection and compression',
+      'Reliability and executable specs',
+    ],
+    accent: 'violet',
+  },
+  {
+    number: 3,
+    title: 'Verify and evolve the system',
+    chapterIds: [
+      'validation',
+      'agent-friendly-code',
+    ],
+    topics: [
+      'Independent validation',
+      'Agent-friendly code',
+    ],
+    accent: 'success',
+  },
+];
+
+const CHAPTER_COUNT = BOOK_PARTS.reduce(
+  (total, part) => total + part.chapterIds.length,
+  0
+);
+
+function getFirstChapter(part: BookPart) {
+  const chapterId = part.chapterIds[0];
+  const chapter = getChapterById(chapterId);
+  if (!chapter) throw new Error(`Unknown curriculum chapter: ${chapterId}`);
+  return chapter;
+}
+
+function TopicList({ topics }: Pick<BookPart, 'topics'>) {
   return (
-    <Link
-      to={link}
-      className={clsx(styles.moduleCard, styles[`module-${hue}`])}
-    >
-      <span className={styles.moduleLabel}>Module {number}</span>
-      <Heading as="h3" className={styles.moduleTitle}>
+    <ul className={styles.partTopics}>
+      {topics.map((topic) => (
+        <li key={topic}>{topic}</li>
+      ))}
+    </ul>
+  );
+}
+
+function PartCard(part: BookPart) {
+  const { number, title, chapterIds, topics, accent } = part;
+  const chapter = getFirstChapter(part);
+  const className = `${styles.partCard} ${styles[`accent-${accent}`]}`;
+  return (
+    <Link to={`/${chapter.id}`} className={className}>
+      <span className={styles.partLabel}>Part {number}</span>
+      <Heading as="h3" className={styles.partTitle}>
         {title}
       </Heading>
-      <span className={styles.moduleMeta}>{chapterCount} chapters</span>
-      <div className={styles.moduleTopics}>
-        {topics.map((t, i) => (
-          <span key={i} className={styles.moduleTopic}>
-            &rarr; {t}
-          </span>
-        ))}
-      </div>
+      <span className={styles.partMeta}>
+        {chapterIds.length} chapters · starts at Chapter {chapter.sectionNumber}
+      </span>
+      <TopicList topics={topics} />
     </Link>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Section
-// ---------------------------------------------------------------------------
+function CurriculumHeader() {
+  return (
+    <>
+      <Heading id="learning-path" as="h2" className={styles.sectionTitle}>
+        A {CHAPTER_COUNT}-chapter learning path
+      </Heading>
+      <p className={styles.sectionSubtitle}>
+        {CHAPTER_COUNT} chapters in three parts, from model mechanics to
+        production systems.
+      </p>
+    </>
+  );
+}
 
 export default function CurriculumSection() {
-  const modules: ModuleCardProps[] = [
-    {
-      number: 1,
-      title: 'Fundamentals',
-      chapterCount: 2,
-      hue: 'indigo',
-      topics: ['LLM internals', 'How agents work'],
-      link: '/how-llms-work',
-    },
-    {
-      number: 2,
-      title: 'Methodology',
-      chapterCount: 3,
-      hue: 'violet',
-      topics: ['Prompt structure', 'Workflow', 'Grounding'],
-      link: '/prompting-101',
-    },
-    {
-      number: 3,
-      title: 'Practical Techniques',
-      chapterCount: 8,
-      hue: 'magenta',
-      topics: ['CI integration', 'Test generation', 'Spec-driven development'],
-      link: '/context-engineering',
-    },
-  ];
-
   return (
-    <section className={styles.curriculum}>
-      <div className="container">
-        <Heading as="h2" className={styles.sectionTitle}>
-          What You&apos;ll Learn
-        </Heading>
-        <p className={styles.sectionSubtitle}>
-          {CHAPTER_COUNT} chapters &middot; Docs
-        </p>
-        <div className={styles.moduleGrid}>
-          {modules.map((m) => (
-            <ModuleCard key={m.number} {...m} />
-          ))}
-        </div>
+    <section className={styles.curriculum} aria-labelledby="learning-path">
+      <CurriculumHeader />
+      <div className={styles.partGrid}>
+        {BOOK_PARTS.map((part) => (
+          <PartCard key={part.number} {...part} />
+        ))}
       </div>
     </section>
   );

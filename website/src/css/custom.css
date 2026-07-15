@@ -1387,15 +1387,44 @@ kbd,
    ANNOUNCEMENT BANNER
    ======================================================================== */
 
-div[class*='announcementBar'] {
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-align: center;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+.theme-announcement-bar {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  border-bottom: var(--border-accent) solid var(--visual-warning);
 }
 
-[data-theme='dark'] div[class*='announcementBar'] {
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+.theme-announcement-bar > div[class*='announcementBarContent'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  text-align: center;
+}
+
+.announcement-status-icon {
+  flex: 0 0 auto;
+}
+
+.announcement-status-label {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.announcement-status-detail {
+  font-weight: 400;
+}
+
+@media (max-width: 576px) {
+  .theme-announcement-bar > div[class*='announcementBarContent'] {
+    gap: var(--space-0h) var(--space-1);
+  }
 }
 
 /* ========================================================================

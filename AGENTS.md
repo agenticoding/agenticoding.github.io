@@ -28,6 +28,7 @@ npm run deploy                       # Deploy to GitHub Pages
 - Skip basic explanations - link to external docs if needed
 - Focus on practical application and production considerations
 - Use industry-standard terminology without over-explaining
+- Write in a way that your product designer or web developer colleague/friend will immediately and intuitively understand
 
 ### Voice
 

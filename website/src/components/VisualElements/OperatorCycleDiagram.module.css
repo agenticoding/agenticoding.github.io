@@ -4,6 +4,23 @@
   vector-effect: non-scaling-stroke;
 }
 
+.desktopDiagram,
+.mobileDiagram {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.desktopDiagram {
+  display: block;
+  max-width: 760px;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 360px;
+}
+
 .operatorWatcher {
   animation: operatorWatchLoop 9600ms linear infinite;
   transform-box: fill-box;
@@ -11,10 +28,55 @@
 }
 
 @keyframes operatorWatchLoop {
-  0%, 10%, 100% { transform: translate(0, 0); }
-  25%, 35% { transform: translate(var(--operator-plan-x), var(--operator-plan-y)); }
-  50%, 60% { transform: translate(var(--operator-execute-x), var(--operator-execute-y)); }
-  75%, 85% { transform: translate(var(--operator-validate-x), var(--operator-validate-y)); }
+  0%,
+  10%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25%,
+  35% {
+    transform: translate(var(--operator-plan-x), var(--operator-plan-y));
+  }
+  50%,
+  60% {
+    transform: translate(var(--operator-execute-x), var(--operator-execute-y));
+  }
+  75%,
+  85% {
+    transform: translate(
+      var(--operator-validate-x),
+      var(--operator-validate-y)
+    );
+  }
+}
+
+.mobileOperatorWatcher {
+  animation: mobileOperatorWatchLoop 9600ms linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes mobileOperatorWatchLoop {
+  0%,
+  10%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25%,
+  35% {
+    transform: translate(var(--operator-plan-x), var(--operator-plan-y));
+  }
+  50%,
+  60% {
+    transform: translate(var(--operator-execute-x), var(--operator-execute-y));
+  }
+  75%,
+  85% {
+    transform: translate(
+      var(--operator-validate-x),
+      var(--operator-validate-y)
+    );
+  }
 }
 
 /* ── Description grid ── */
@@ -57,6 +119,16 @@
   line-height: var(--lh-sm);
 }
 
+@container (max-width: 40rem) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
 @media (max-width: 799px) {
   .descGrid {
     grid-template-columns: 1fr 1fr;
@@ -70,7 +142,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .operatorWatcher {
+  .operatorWatcher,
+  .mobileOperatorWatcher {
     animation: none;
   }
 }

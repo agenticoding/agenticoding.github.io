@@ -10,7 +10,7 @@ const desktopChart: ChartLayout = { width: 820, height: 360, leftX: 92, rightX: 
 const mobileChart: ChartLayout = { width: 340, height: 260, leftX: 36, rightX: 332, topY: 28, bottomY: 202, yLabelX: 2, tickLabelY: 226, axisLabelY: 248 };
 const desktopXTicks = [8192, 32768, 131072, 262144, 524288, 1048576];
 const mobileXTicks = [8192, 131072, 1048576];
-const defaultSelectedIds = ['gpt-55', 'opus-46', 'deepseek-v4-pro'];
+const defaultSelectedIds = ['gpt-55', 'gpt-54', 'opus-46', 'sonnet-46', 'deepseek-v4-pro'];
 const longScoreRows = [...benchmarkRows].sort((a, b) => b.longScore - a.longScore);
 const chipGroups = [
   { label: 'Native 1M candidates', rows: longScoreRows.filter((row) => row.longScore >= 60) },
@@ -44,7 +44,7 @@ function ChartFrame({ chart, ticks }: { chart: ChartLayout; ticks: number[] }) {
 }
 
 function ThresholdBands({ chart }: { chart: ChartLayout }) {
-  return <>{thresholdBands.map((band) => <g key={band.label}><rect className={band.className} x={chart.leftX} y={scoreY(band.to, chart)} width={chart.rightX - chart.leftX} height={scoreY(band.from, chart) - scoreY(band.to, chart)} /><text className={styles.bandLabel} x={chart.leftX + 10} y={(scoreY(band.from, chart) + scoreY(band.to, chart)) / 2 + 4}>{band.label}</text></g>)}</>;
+  return <>{thresholdBands.map((band) => <g key={band.label}><rect className={band.className} x={chart.leftX} y={scoreY(band.to, chart)} width={chart.rightX - chart.leftX} height={scoreY(band.from, chart) - scoreY(band.to, chart)} /></g>)}</>;
 }
 
 function Tick({ chart, tokens }: { chart: ChartLayout; tokens: number }) {
@@ -215,5 +215,5 @@ export default function LongContextBenchmarkExplorer() {
   const selectedRows = getSelectedRows(selectedIds);
   const containerClassName = styles.container;
 
-  return <section className={containerClassName} aria-label="Long-context benchmark explorer"><p className={styles.screenSummary}>The chart plots reported benchmark points from 8K to 1M where available. GPT-5.5 and both DeepSeek Max rows have full MRCR curves; Claude and Gemini rows use sparse measured points.</p><ChartStage selectedRows={selectedRows} selectedIds={selectedIds} onToggle={(id) => setSelectedIds((current) => toggleSelectedId(current, id))} /></section>;
+  return <section className={containerClassName} aria-label="Long-context benchmark explorer"><p className={styles.screenSummary}>The chart plots reported benchmark points from 8K to 1M where available. GPT-5.5, GPT-5.4, and both DeepSeek V4 rows have full MRCR curves; Claude and Gemini rows use sparse published points.</p><ChartStage selectedRows={selectedRows} selectedIds={selectedIds} onToggle={(id) => setSelectedIds((current) => toggleSelectedId(current, id))} /></section>;
 }

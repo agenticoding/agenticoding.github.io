@@ -11,7 +11,11 @@ export interface EmojiAsset {
   visualBounds?: EmojiVisualBounds;
 }
 
-const asset = (file: EmojiAssetName, label: string, visualBounds?: EmojiVisualBounds): EmojiAsset => ({
+const asset = (
+  file: EmojiAssetName,
+  label: string,
+  visualBounds?: EmojiVisualBounds
+): EmojiAsset => ({
   file,
   label,
   visualBounds,
@@ -44,9 +48,12 @@ export const EMOJI = {
   operator: asset('1F913.svg', 'operator', { x: 13, width: 46 }),
   plug: asset('1F50C.svg', 'plug', { x: 19.4, width: 36.4 }),
   question: asset('2753.svg', 'question'),
+  rightArrow: asset('27A1.svg', 'right arrow'),
+  downArrow: asset('2B07.svg', 'down arrow'),
   ruler: asset('1F4CF.svg', 'ruler', { x: 13.5, width: 45.3 }),
   tools: asset('1F6E0.svg', 'tools', { x: 6.6, width: 55 }),
   warning: asset('26A0.svg', 'warning'),
+  construction: asset('1F6A7.svg', 'under construction'),
   emergency: asset('1F6A8.svg', 'emergency'),
   writing: asset('270F.svg', 'writing'),
   receipt: asset('1F9FE.svg', 'receipt', { x: 23.7, width: 24.3 }),

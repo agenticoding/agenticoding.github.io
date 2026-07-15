@@ -33,7 +33,7 @@ export type BenchmarkRow = {
 
 export const conceptLinks = {
   longContext: { label: 'effective context', href: '#long-context-is-not-reliable-memory' },
-  architecture: { label: 'architecture', href: '#architecture-defines-the-tool-shape' },
+  architecture: { label: 'model card decoder', href: '#how-to-read-a-model-card' },
   recall: { label: 'recall strategy', href: '#recall-strategy' },
   inference: { label: 'inference quality', href: '#inference-quality' },
   training: { label: 'training objective', href: '#training-objective' },
@@ -79,7 +79,7 @@ export const benchmarkRows: BenchmarkRow[] = [
     caveat: <>Sparse two-point MRCR evidence; intermediate degradation shape is not published.</>, links: [conceptLinks.longContext, conceptLinks.benchmarks],
   },
   {
-    id: 'deepseek-v4-pro', model: 'DeepSeek V4 Pro Max', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'Max', source: 'https://huggingface.co/blog/deepseekv4', curveDensity: 'full',
+    id: 'deepseek-v4-pro', model: 'DeepSeek V4 Pro', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'Max', source: 'https://huggingface.co/blog/deepseekv4', curveDensity: 'full',
     points: [{ tokens: 8192, label: '8K', score: 90.0 }, { tokens: 16384, label: '16K', score: 85.0 }, { tokens: 32768, label: '32K', score: 94.0 }, { tokens: 65536, label: '64K', score: 90.0 }, { tokens: 131072, label: '128K', score: 92.0 }, { tokens: 262144, label: '256K', score: 82.0 }, { tokens: 524288, label: '512K', score: 66.0 }, { tokens: 1048576, label: '1M', score: 59.0 }],
     moderateContext: '82.0% @256K', longContext: '59.0% @1M', pointDrop: pointDrop(82.0, 59.0), moderateScore: 82.0, longScore: 59.0, dropScore: 23.0,
     signal: 'DeepSeek Figure 9 drops below 60% at 1M', signalTone: 'warning',
@@ -99,7 +99,7 @@ export const benchmarkRows: BenchmarkRow[] = [
     caveat: <>This identifies retrieval decay on MRCR; it does not rank the model&apos;s overall coding or agent behavior.</>, links: [conceptLinks.longContext, conceptLinks.benchmarks],
   },
   {
-    id: 'deepseek-v4-flash', model: 'DeepSeek V4 Flash Max', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'Max', source: 'https://huggingface.co/blog/deepseekv4', curveDensity: 'full',
+    id: 'deepseek-v4-flash', model: 'DeepSeek V4 Flash', window: '1M', benchmark: 'MRCR v2 8-needle', mode: 'Max', source: 'https://huggingface.co/blog/deepseekv4', curveDensity: 'full',
     points: [{ tokens: 8192, label: '8K', score: 91.0 }, { tokens: 16384, label: '16K', score: 84.0 }, { tokens: 32768, label: '32K', score: 87.0 }, { tokens: 65536, label: '64K', score: 85.0 }, { tokens: 131072, label: '128K', score: 87.0 }, { tokens: 262144, label: '256K', score: 76.0 }, { tokens: 524288, label: '512K', score: 60.0 }, { tokens: 1048576, label: '1M', score: 49.0 }],
     moderateContext: '76.0% @256K', longContext: '49.0% @1M', pointDrop: pointDrop(76.0, 49.0), moderateScore: 76.0, longScore: 49.0, dropScore: 27.0,
     signal: 'Flash curve falls into chunk/validate range at 1M', signalTone: 'warning',

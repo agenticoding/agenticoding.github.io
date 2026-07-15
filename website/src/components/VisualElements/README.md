@@ -15,7 +15,6 @@ This directory contains interactive visual components used throughout the AI Cod
 
 | Component                       | Purpose                                |
 | ------------------------------- | -------------------------------------- |
-| **CapabilityMatrix**            | Trust levels for AI capabilities       |
 | **UShapeAttentionCurve**        | Context window attention visualization |
 | **WorkflowCircle**              | 4-phase iterative workflow diagram     |
 | **GroundingComparison**         | Grounding strategies side-by-side      |

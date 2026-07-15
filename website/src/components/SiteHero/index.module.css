@@ -1,155 +1,107 @@
-/* ========================================================================
-   HERO
-   ======================================================================== */
-
-.heroInner {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-4);
-  container-type: inline-size;
+.hero {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 66ch;
+  margin-bottom: var(--space-6);
 }
 
-.heroContent {
-  flex: 1;
-  min-width: 0;
+.eyebrow,
+.title,
+.lead {
+  margin: 0;
 }
 
-/* ========================================================================
-   ASIDE (testimonials) — flex sibling on desktop, block below content on mobile
-   ======================================================================== */
-
-.heroAside {
-  width: 260px;
-  flex-shrink: 0;
-}
-
-.testimonial {
-  margin: 0 0 var(--space-2);
-  padding: 0 0 0 var(--space-2);
-  border-left: 3px solid var(--border-subtle);
-  border-radius: 0;
-}
-
-.testimonial:last-child {
-  margin-bottom: 0;
-}
-
-.testimonialText {
-  font-family: var(--font-body);
-  font-style: italic;
-  color: var(--text-muted);
-  font-size: var(--text-sm);
+.eyebrow {
+  color: var(--text-body);
+  font-family: var(--font-mono-spec);
+  font-feature-settings: var(--font-mono-features);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
   line-height: var(--lh-sm);
-  margin: 0 0 var(--space-0h);
+  text-transform: uppercase;
 }
 
-.testimonialSource {
-  font-family: var(--font-body);
-  color: var(--text-muted);
-  font-size: var(--text-sm);
-  display: block;
-}
-
-/* ========================================================================
-   TITLE BLOCK
-   ======================================================================== */
-
-.heroTitle {
+.title {
+  color: var(--text-heading);
   font-family: var(--font-display);
   font-size: var(--text-4xl);
   font-weight: 700;
-  color: var(--text-heading);
-  margin-bottom: var(--space-2);
   line-height: var(--lh-3xl);
 }
 
-.heroSubtitle {
-  font-family: var(--font-body);
-  font-size: var(--text-lg);
+.lead {
   color: var(--text-body);
-  margin-bottom: var(--space-2);
-  max-width: 60ch;
+  font-size: var(--text-lg);
   line-height: var(--lh-lg);
 }
 
-/* ========================================================================
-   METADATA LINE
-   ======================================================================== */
-
-.heroMeta {
+.actions {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-0h);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  margin: 0;
-  margin-bottom: var(--space-3);
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-1);
 }
 
-.heroMetaLink {
-  color: var(--text-muted);
-  text-decoration: underline;
+.primaryAction,
+.secondaryAction {
+  min-height: var(--target-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.primaryAction {
+  padding-inline: var(--space-4);
+  background: var(--text-heading);
+  color: var(--surface-page);
+  text-decoration: none;
+}
+
+.actionIcon {
+  flex: 0 0 auto;
+  margin-left: var(--space-0h);
+}
+
+.primaryAction:hover {
+  background: var(--text-body);
+  color: var(--surface-page);
+  text-decoration: none;
+}
+
+.secondaryAction {
+  color: var(--text-heading);
+  text-decoration-line: underline;
   text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
 }
 
-.heroMetaLink:hover {
-  color: var(--text-body);
+.secondaryAction:hover {
+  color: var(--text-heading);
   text-decoration-thickness: 2px;
 }
 
-.metaSep {
-  color: var(--text-muted);
-}
-
-/* Star uses warning/amber — the design system's H:70° rating color */
-.starIcon {
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
-  color: var(--visual-warning);
-}
-
-/* GitHub mark — filled silhouette, inherits text color via currentColor */
-.githubIcon {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  margin-right: var(--space-0h);
-}
-
-/* ========================================================================
-   RESPONSIVE
-   ======================================================================== */
-
-@media (max-width: 768px) {
-  .heroInner {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .heroAside {
-    width: auto;
-    display: flex;
-    gap: var(--space-3);
-  }
-
-  .testimonial {
-    flex: 1;
-    margin-bottom: 0;
-  }
+.primaryAction:focus-visible,
+.secondaryAction:focus-visible {
+  outline: 2px solid var(--text-heading);
+  outline-offset: var(--space-0h);
 }
 
 @media (max-width: 576px) {
-  .heroTitle {
+  .title {
     font-size: var(--text-3xl);
     line-height: var(--lh-2xl);
   }
 
-  .heroAside {
-    flex-direction: column;
-    gap: var(--space-2);
+  .actions {
+    display: grid;
+    width: 100%;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    width: 100%;
   }
 }

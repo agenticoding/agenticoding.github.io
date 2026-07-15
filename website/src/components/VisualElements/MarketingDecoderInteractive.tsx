@@ -25,7 +25,7 @@ const examples: TranslationExample[] = [
     output: (
       <>
         Larger model: slower{' '}
-        <ChapterLink href="#architecture-defines-the-tool-shape">
+        <ChapterLink href="#how-to-read-a-model-card">
           inference
         </ChapterLink>{' '}
         and higher{' '}
@@ -44,7 +44,7 @@ const examples: TranslationExample[] = [
     output: (
       <>
         Higher{' '}
-        <ChapterLink href="#architecture-defines-the-tool-shape">
+        <ChapterLink href="#how-to-read-a-model-card">
           token throughput
         </ChapterLink>{' '}
         means faster on-screen feedback, not faster task completion.
@@ -90,13 +90,12 @@ const examples: TranslationExample[] = [
     id: 'gpt-multimodal',
     context: 'OpenAI GPT-5.5 launch',
     claim: 'Natively omnimodal. Best-in-class agentic, cross-modal design.',
-    sourceUrl:
-      'https://lushbinary.com/blog/gpt-5-5-vs-claude-opus-4-7-comparison-benchmarks-pricing/',
-    sourceLabel: 'lushbinary.com',
+    sourceUrl: 'https://openai.com/index/introducing-gpt-5-5/',
+    sourceLabel: 'openai.com',
     output: (
       <>
         Best for screenshot-to-code and UI automation.{' '}
-        <ChapterLink href="#architecture-defines-the-tool-shape">
+        <ChapterLink href="#how-to-read-a-model-card">
           SWE-bench Pro
         </ChapterLink>{' '}
         lags Claude by 6–11 points.

@@ -30,10 +30,8 @@
 .frameLabel,
 .nodeEyebrow,
 .cardText,
-.smallText,
 .badgeText,
-.gateEyebrow,
-.gateDetail {
+.flowLabel {
   font-family: var(--font-mono-spec);
 }
 
@@ -55,33 +53,16 @@
   font-weight: 500;
 }
 
-.smallText {
-  font-size: 9px;
+.contractSubtitle {
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.02em;
 }
 
 .badgeText {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
-}
-
-.gateEyebrow {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.gateTitle {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.gateDetail {
-  font-size: 9px;
-  font-weight: 500;
 }
 
 .connector {
@@ -93,94 +74,37 @@
   vector-effect: non-scaling-stroke;
 }
 
-.gateTileRect {
-  vector-effect: non-scaling-stroke;
-}
-
-.contractIcon {
-  opacity: 0.92;
-}
-
 .flowTrain {
   overflow: visible;
 }
 
-.agentEyebrow {
-  font-family: var(--font-mono-spec);
-  font-size: 8px;
+.flowLabel {
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
 
-.agentTitle {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 700;
+.revisionFlow {
+  stroke-dasharray: 6 4;
 }
 
-.agentDetail {
-  font-family: var(--font-mono-keyword);
-  font-size: 8px;
-  font-weight: 500;
+/* The draft reaches review at 1500ms; inspection settles exactly when approval starts. */
+.reviewSurface {
+  animation-duration: 2000ms;
+  animation-timing-function: ease-in-out;
+  animation-delay: var(--review-start);
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
 }
 
-.factBeat,
-.contractWait,
-.approvalBeat,
-.executionEnabled {
+.reviewOperator {
   transform-box: fill-box;
   transform-origin: center;
-  animation-duration: 7200ms;
+  animation-duration: var(--review-read);
+  animation-timing-function: cubic-bezier(0.22, 0.68, 0, 1.07);
+  animation-delay: var(--review-start);
+  animation-iteration-count: 1;
   animation-fill-mode: both;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in-out;
-}
-
-.factBeat {
-  animation-name: factBeat;
-}
-
-.contractWait {
-  animation-name: contractWait;
-}
-
-.approvalBeat {
-  animation-name: approvalBeat;
-}
-
-.executionEnabled {
-  animation-name: executionEnabled;
-}
-
-.waitingStrip {
-  animation: waitingStrip 7200ms ease-in-out infinite both;
-}
-
-@keyframes factBeat {
-  0%, 15%, 100% { opacity: 1; transform: scale(1); }
-  6% { opacity: 1; transform: scale(1.012); }
-}
-
-@keyframes contractWait {
-  0%, 20%, 100% { opacity: 1; transform: scale(1); }
-  14% { opacity: 1; transform: scale(1.008); }
-  32%, 42% { opacity: 1; transform: scale(1.006); }
-}
-
-@keyframes waitingStrip {
-  0%, 18%, 62%, 100% { opacity: 1; }
-  28%, 48% { opacity: 0.72; }
-}
-
-@keyframes approvalBeat {
-  0%, 42%, 100% { opacity: 1; transform: scale(1); }
-  50%, 58% { opacity: 1; transform: scale(1.01); }
-}
-
-@keyframes executionEnabled {
-  0%, 56% { opacity: 0.72; transform: scale(1); }
-  64%, 82%, 100% { opacity: 1; transform: scale(1); }
-  68% { opacity: 1; transform: scale(1.012); }
 }
 
 @media (max-width: 768px) {
@@ -201,9 +125,5 @@
   .diagram * {
     animation: none !important;
     transition: none !important;
-  }
-
-  .executionEnabled {
-    opacity: 1 !important;
   }
 }

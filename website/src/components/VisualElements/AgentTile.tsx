@@ -1,18 +1,35 @@
 import React from 'react';
 import { DiagramTileSurface } from './DiagramTile';
-import { DIAGRAM_GRID } from './diagramScale';
-import { tileToneVars, type DiagramTone, voiceStyle } from './diagramTileLayout';
+import { DIAGRAM_GRID, DIAGRAM_ICON_SIZE } from './diagramScale';
+import {
+  tileToneVars,
+  type DiagramTone,
+  voiceStyle,
+} from './diagramTileLayout';
 import {
   WorkingAgentNode,
   type WorkingAgentActivation,
+  workingAgentVisualHeight,
 } from './WorkingAgentNode';
 
 type BoxProps = { x: number; y: number; width: number; height: number };
+type AgentTileLayout = {
+  centerX: number;
+  iconSize: number;
+  iconY: number;
+  agentTop: number;
+  agentBottom: number;
+  detailY: number;
+  eyebrowY: number;
+  titleY: number;
+};
 type AgentTileTextClasses = {
   eyebrow?: string;
   title?: string;
   detail?: string;
 };
+
+const CONTEXT_CHIP_ROW_GAP = 22;
 
 type ContextClasses = {
   eyebrow?: string;
@@ -21,6 +38,10 @@ type ContextClasses = {
   tileRect?: string;
   tileText?: string;
 };
+
+export function agentIconSize(compact = false) {
+  return compact ? DIAGRAM_ICON_SIZE.primary : DIAGRAM_ICON_SIZE.actor;
+}
 
 export type AgentTileProps = BoxProps & {
   tone: DiagramTone;
@@ -53,7 +74,11 @@ export type ContextAgentTileProps = Omit<AgentTileProps, 'children'> & {
 };
 
 export function AgentTile(props: AgentTileProps) {
-  const layout = agentTileLayout(agentBox(props), Boolean(props.detail));
+  const layout = agentTileLayout(
+    agentBox(props),
+    Boolean(props.detail),
+    props.iconSize
+  );
   return (
     <g className={props.className}>
       <AgentTileSurface {...props} />
@@ -61,7 +86,7 @@ export function AgentTile(props: AgentTileProps) {
       <WorkingAgentNode
         x={layout.centerX}
         y={layout.iconY}
-        size={props.iconSize}
+        size={layout.iconSize}
         activation={props.gearActivation}
       />
       <AgentTileLabels {...props} layout={layout} />
@@ -109,13 +134,17 @@ function ContextTileHeader(props: ContextAgentTileProps) {
   );
 }
 
-function HeaderText(props: ContextAgentTileProps & { y: number; field: 'eyebrow' | 'detail' }) {
+function HeaderText(
+  props: ContextAgentTileProps & { y: number; field: 'eyebrow' | 'detail' }
+) {
   const className = props.contextClasses?.[props.field];
   return (
     <text
       x={props.x + 14}
       y={props.y}
-      fill={props.field === 'eyebrow' ? 'var(--text-heading)' : 'var(--text-muted)'}
+      fill={
+        props.field === 'eyebrow' ? 'var(--text-heading)' : 'var(--text-muted)'
+      }
       className={className}
       style={className ? undefined : headerStyle(props.field)}
     >
@@ -138,7 +167,7 @@ function ContextTiles(props: {
           key={tile.key ?? tile.label}
           tile={tile}
           x={props.x}
-          y={props.y + index * 22}
+          y={props.y + index * CONTEXT_CHIP_ROW_GAP}
           width={props.width}
           classes={props.classes}
         />
@@ -155,14 +184,22 @@ function ContextChip(props: {
   classes?: ContextClasses;
 }) {
   return (
-    <g className={chipClassName(props)} style={activationStyle(props.tile.activationDelayMs)}>
+    <g
+      className={chipClassName(props)}
+      style={activationStyle(props.tile.activationDelayMs)}
+    >
       <ContextChipRect {...props} />
       <ContextChipText {...props} />
     </g>
   );
 }
 
-function ContextChipRect({ x, y, width, classes }: {
+function ContextChipRect({
+  x,
+  y,
+  width,
+  classes,
+}: {
   x: number;
   y: number;
   width: number;
@@ -182,7 +219,12 @@ function ContextChipRect({ x, y, width, classes }: {
   );
 }
 
-function ContextChipText({ tile, x, y, classes }: {
+function ContextChipText({
+  tile,
+  x,
+  y,
+  classes,
+}: {
   tile: AgentContextTile;
   x: number;
   y: number;
@@ -201,9 +243,11 @@ function ContextChipText({ tile, x, y, classes }: {
   );
 }
 
-function AgentTileLabels(props: AgentTileProps & {
-  layout: ReturnType<typeof agentTileLayout>;
-}) {
+function AgentTileLabels(
+  props: AgentTileProps & {
+    layout: ReturnType<typeof agentTileLayout>;
+  }
+) {
   const className = props.titleClassName ?? props.textClasses?.title;
   return (
     <>
@@ -222,7 +266,9 @@ function AgentTileLabels(props: AgentTileProps & {
   );
 }
 
-function EyebrowText(props: AgentTileProps & { layout: ReturnType<typeof agentTileLayout> }) {
+function EyebrowText(
+  props: AgentTileProps & { layout: ReturnType<typeof agentTileLayout> }
+) {
   if (!props.eyebrow) return null;
   const className = props.textClasses?.eyebrow;
   return (
@@ -231,14 +277,21 @@ function EyebrowText(props: AgentTileProps & { layout: ReturnType<typeof agentTi
       y={props.layout.eyebrowY}
       fill={tileToneVars(props.tone).label}
       className={className}
-      style={className ? undefined : voiceStyle('spec', 10, 600)}
+      style={className ? undefined : agentEyebrowStyle(props.width)}
     >
       {props.eyebrow}
     </CenteredText>
   );
 }
 
-function DetailText(props: AgentTileProps & { layout: ReturnType<typeof agentTileLayout> }) {
+function agentEyebrowStyle(width: number) {
+  const fontSize = width < 128 ? 8 : 10;
+  return { ...voiceStyle('spec', fontSize, 600), letterSpacing: '0.08em' };
+}
+
+function DetailText(
+  props: AgentTileProps & { layout: ReturnType<typeof agentTileLayout> }
+) {
   if (!props.detail) return null;
   const className = props.textClasses?.detail;
   return (
@@ -276,16 +329,40 @@ function CenteredText(props: {
   );
 }
 
-function agentTileLayout({ x, y, width, height }: BoxProps, hasDetail: boolean) {
+function agentTileLayout(
+  { x, y, width, height }: BoxProps,
+  hasDetail: boolean,
+  requestedIconSize: number
+): AgentTileLayout {
   const centerX = x + width / 2;
   const eyebrowY = y + height - DIAGRAM_GRID * (hasDetail ? 5.25 : 4);
+  const contentTop = y + DIAGRAM_GRID;
+  const contentBottom = eyebrowY - DIAGRAM_GRID;
+  const availableHeight = contentBottom - contentTop;
+  const iconSize = fitAgentIconSize(requestedIconSize, availableHeight);
+  const visualHeight = workingAgentVisualHeight(iconSize);
+  const iconY = (contentTop + contentBottom) / 2;
   return {
     centerX,
+    iconSize,
+    iconY,
+    agentTop: iconY - visualHeight / 2,
+    agentBottom: iconY + visualHeight / 2,
     detailY: y + height - DIAGRAM_GRID * 1.25,
     eyebrowY,
-    iconY: y + (eyebrowY - y) / 2,
     titleY: y + height - DIAGRAM_GRID * (hasDetail ? 2.75 : 1.5),
   };
+}
+
+function fitAgentIconSize(requestedSize: number, availableHeight: number) {
+  let size = requestedSize;
+  while (
+    size > DIAGRAM_ICON_SIZE.secondary &&
+    workingAgentVisualHeight(size) > availableHeight
+  ) {
+    size -= DIAGRAM_GRID / 2;
+  }
+  return size;
 }
 
 function agentBox(props: AgentTileProps): BoxProps {
@@ -297,12 +374,20 @@ function agentBox(props: AgentTileProps): BoxProps {
   };
 }
 
-export function activationStyle(delayMs: number | undefined): React.CSSProperties | undefined {
+export function activationStyle(
+  delayMs: number | undefined
+): React.CSSProperties | undefined {
   if (delayMs === undefined) return undefined;
   return { animationDelay: `${delayMs}ms` };
 }
 
-function chipClassName({ tile, classes }: { tile: AgentContextTile; classes?: ContextClasses }) {
+function chipClassName({
+  tile,
+  classes,
+}: {
+  tile: AgentContextTile;
+  classes?: ContextClasses;
+}) {
   return [classes?.tile, tile.className].filter(Boolean).join(' ') || undefined;
 }
 

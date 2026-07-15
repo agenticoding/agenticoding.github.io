@@ -1,0 +1,204 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  max-width: 760px;
+  margin-inline: auto;
+  padding-block-end: var(--space-1);
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.desktopDiagram {
+  max-width: 760px;
+}
+
+.mobileDiagram {
+  display: none !important;
+  max-width: 340px;
+}
+
+.vectorStroke {
+  vector-effect: non-scaling-stroke;
+}
+
+.phaseState {
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+}
+
+.phaseState {
+  animation: phaseState var(--phase-cycle) var(--ease-standard) infinite;
+  animation-delay: var(--phase-delay);
+  opacity: 0;
+}
+
+.phaseState:not(:first-child) {
+  animation-delay: calc(var(--phase-delay) - var(--phase-crossfade));
+}
+
+.phaseState:first-child {
+  animation-name: phaseStateFirst;
+  opacity: 1;
+}
+
+.phaseSurface {
+  animation: phaseSurface var(--phase-cycle) var(--ease-standard) infinite;
+  animation-delay: var(--phase-offset);
+  fill: var(--phase-0-fill);
+  stroke: var(--phase-0-stroke);
+}
+
+.watchRail {
+  stroke: var(--border-default);
+  stroke-width: 1.5px;
+  stroke-dasharray: 4 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.operatorWatcher {
+  animation: watchStreams 8000ms var(--ease-standard) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Non-first labels fade in before the previous label has fully left. */
+@keyframes phaseState {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  2%,
+  23% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  27%,
+  100% {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+/* The first label is visible on mount and crossfades again at loop wrap. */
+@keyframes phaseStateFirst {
+  0%,
+  23% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  27%,
+  98% {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes phaseSurface {
+  0%,
+  23% {
+    fill: var(--phase-0-fill);
+    stroke: var(--phase-0-stroke);
+  }
+
+  25%,
+  48% {
+    fill: var(--phase-1-fill);
+    stroke: var(--phase-1-stroke);
+  }
+
+  50%,
+  73% {
+    fill: var(--phase-2-fill);
+    stroke: var(--phase-2-stroke);
+  }
+
+  75%,
+  98% {
+    fill: var(--phase-3-fill);
+    stroke: var(--phase-3-stroke);
+  }
+
+  100% {
+    fill: var(--phase-0-fill);
+    stroke: var(--phase-0-stroke);
+  }
+}
+
+@keyframes watchStreams {
+  /* Hold each station, then retrace the same rail before looping. */
+  0%,
+  6% {
+    transform: translate(0, 0);
+  }
+  16%,
+  22% {
+    transform: translate(var(--watch-1-x), var(--watch-1-y));
+  }
+  32%,
+  38% {
+    transform: translate(var(--watch-2-x), var(--watch-2-y));
+  }
+  48%,
+  54% {
+    transform: translate(var(--watch-3-x), var(--watch-3-y));
+  }
+  64%,
+  70% {
+    transform: translate(var(--watch-2-x), var(--watch-2-y));
+  }
+  80%,
+  86% {
+    transform: translate(var(--watch-1-x), var(--watch-1-y));
+  }
+  96%,
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    max-width: 340px;
+  }
+
+  .desktopDiagram {
+    display: none !important;
+  }
+
+  .mobileDiagram {
+    display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .operatorWatcher,
+  .phaseState,
+  .phaseState:first-child,
+  .phaseSurface {
+    animation: none;
+  }
+
+  .phaseState:not(:first-child) {
+    display: none;
+  }
+
+  .phaseState:first-child {
+    opacity: 1;
+  }
+}

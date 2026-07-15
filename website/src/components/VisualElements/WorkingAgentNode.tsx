@@ -10,6 +10,7 @@ export type WorkingAgentActivation = {
   activeMs: number;
   cycleMs: number;
   delayMs: number;
+  turnScale?: number;
 };
 
 type SatelliteSpec = {
@@ -72,6 +73,10 @@ const SATELLITE_SPECS: SatelliteSpec[] = [
   },
 ];
 
+export function workingAgentVisualHeight(agentSize: number) {
+  return workingAgentLayout(agentSize).visualHeight;
+}
+
 export function WorkingAgentNode({
   x,
   y,
@@ -99,21 +104,24 @@ export function WorkingAgentNode({
 
 function workingAgentGearClassName(
   satellite: Satellite,
-  activation?: WorkingAgentActivation,
+  activation?: WorkingAgentActivation
 ): string {
-  const modeClassName = activation ? styles.satelliteWindowed : styles.satellite;
+  const modeClassName = activation
+    ? styles.satelliteWindowed
+    : styles.satellite;
   return `${modeClassName} ${satellite.className}`;
 }
 
 function workingAgentGearSpin(
   satellite: Satellite,
-  activation?: WorkingAgentActivation,
+  activation?: WorkingAgentActivation
 ): GearSpin | undefined {
   if (!activation) {
     return undefined;
   }
 
-  return { ...activation, turns: satellite.activeTurns };
+  const { turnScale = 1, ...spin } = activation;
+  return { ...spin, turns: satellite.activeTurns * turnScale };
 }
 
 function workingAgentLayout(agentSize: number) {
@@ -125,9 +133,16 @@ function workingAgentLayout(agentSize: number) {
     size: agentSize,
   };
   const frame = visualFrame([robot, ...satellites.map(satellitePart)]);
+  const shiftedRobot = shiftPart(robot, frame);
+  const shiftedSatellites = satellites.map((part) =>
+    shiftSatellite(part, frame)
+  );
+  const visualParts = [shiftedRobot, ...shiftedSatellites.map(satellitePart)];
+  const bounds = visualBounds(visualParts);
   return {
-    robot: shiftPart(robot, frame),
-    satellites: satellites.map((part) => shiftSatellite(part, frame)),
+    robot: shiftedRobot,
+    satellites: shiftedSatellites,
+    visualHeight: bounds.bottom - bounds.top,
   };
 }
 
@@ -156,6 +171,14 @@ function shiftSatellite(satellite: Satellite, frame: NodePart): Satellite {
     ...satellite,
     dx: satellite.dx - frame.x,
     dy: satellite.dy - frame.y,
+  };
+}
+
+function visualBounds(parts: readonly NodePart[]) {
+  const bounds = parts.map(partBounds);
+  return {
+    top: Math.min(...bounds.map((bound) => bound.top)),
+    bottom: Math.max(...bounds.map((bound) => bound.bottom)),
   };
 }
 

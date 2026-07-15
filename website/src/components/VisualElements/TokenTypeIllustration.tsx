@@ -6,7 +6,7 @@ import {
   type TokenUnitSignal,
 } from './TokenUnit';
 
-type TokenExample = {
+export type TokenExample = {
   modality: TokenUnitModality;
   signal: TokenUnitSignal;
   label: string;
@@ -29,23 +29,32 @@ const GAP = 16;
 const LABEL_GAP = 4;
 const LABEL_HEIGHT = 14;
 const EDGE_PAD = 8;
-const TOTAL_W = TOKEN_EXAMPLES.length * (CHIP_SIZE + GAP) - GAP + EDGE_PAD * 2;
+export const tokenIllustrationWidth = (count: number) =>
+  count * (CHIP_SIZE + GAP) - GAP + EDGE_PAD * 2;
+const TOTAL_W = tokenIllustrationWidth(TOKEN_EXAMPLES.length);
 const SVG_H = CHIP_SIZE + LABEL_GAP + LABEL_HEIGHT;
 
-export default function TokenTypeIllustration() {
+export function TokenTypeTokens({
+  examples,
+  x = 0,
+  y = 0,
+  className,
+  itemClassName,
+}: {
+  examples: readonly TokenExample[];
+  x?: number;
+  y?: number;
+  className?: string;
+  itemClassName?: string;
+}) {
   return (
-    <svg
-      viewBox={`0 0 ${TOTAL_W} ${SVG_H}`}
-      width="100%"
-      style={{ maxWidth: TOTAL_W, margin: '0.5rem auto', display: 'block' }}
-      aria-hidden="true"
-    >
-      {TOKEN_EXAMPLES.map(({ modality, signal, label }, i) => {
-        const x = EDGE_PAD + i * (CHIP_SIZE + GAP);
+    <g className={className} transform={`translate(${x} ${y})`}>
+      {examples.map(({ modality, signal, label }, i) => {
+        const tokenX = EDGE_PAD + i * (CHIP_SIZE + GAP);
         return (
-          <g key={`${modality}-${label}`}>
+          <g className={itemClassName} key={`${modality}-${label}`}>
             <TokenUnit
-              x={x}
+              x={tokenX}
               y={0}
               width={CHIP_SIZE}
               height={CHIP_SIZE}
@@ -54,7 +63,7 @@ export default function TokenTypeIllustration() {
               signal={signal}
             />
             <text
-              x={x + CHIP_SIZE / 2}
+              x={tokenX + CHIP_SIZE / 2}
               y={CHIP_SIZE + LABEL_GAP + LABEL_HEIGHT - 2}
               textAnchor="middle"
               fontFamily="var(--font-mono-keyword)"
@@ -66,6 +75,19 @@ export default function TokenTypeIllustration() {
           </g>
         );
       })}
+    </g>
+  );
+}
+
+export default function TokenTypeIllustration() {
+  return (
+    <svg
+      viewBox={`0 0 ${TOTAL_W} ${SVG_H}`}
+      width="100%"
+      style={{ maxWidth: TOTAL_W, margin: '0.5rem auto', display: 'block' }}
+      aria-hidden="true"
+    >
+      <TokenTypeTokens examples={TOKEN_EXAMPLES} />
     </svg>
   );
 }

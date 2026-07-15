@@ -12,9 +12,11 @@ export type ContextLensBlock = {
   width?: number;
 };
 
+export type ContextLensMetricValue = string | readonly string[];
+
 export type ContextLensMetric = {
   label: ReactNode;
-  value: ReactNode;
+  value: ContextLensMetricValue;
 };
 
 type ContextLensWindowProps = {
@@ -137,6 +139,16 @@ export function ContextLensRegionNotes({ x, y, width, height, notes = {}, side =
   );
 }
 
+function MetricValue({ x, y, value }: { x: number; y: number; value: ContextLensMetricValue }) {
+  const lines = typeof value === 'string' ? [value] : value;
+
+  return (
+    <text x={x} y={y} className={styles.metricValue} fill="var(--text-body)">
+      {lines.map((line, index) => <tspan key={index} x={x} dy={index === 0 ? 0 : 12}>{line}</tspan>)}
+    </text>
+  );
+}
+
 export function ContextLensMetrics({ rows, x, y, columns = 1, columnGap = 160, rowGap = 40 }: ContextLensMetricsProps) {
   return (
     <g>
@@ -149,7 +161,7 @@ export function ContextLensMetrics({ rows, x, y, columns = 1, columnGap = 160, r
         return (
           <g key={`${row.label}-${index}`}>
             <text x={rowX} y={rowY} className={styles.metricLabel} fill="var(--text-muted)">{row.label}</text>
-            <text x={rowX} y={rowY + 16} className={styles.metricValue} fill="var(--text-body)">{row.value}</text>
+            <MetricValue x={rowX} y={rowY + 16} value={row.value} />
           </g>
         );
       })}
@@ -182,13 +194,25 @@ export function ContextLensWindow({ x, y, width = 144, height = 72, blocks, tone
   );
 }
 
-export function ContextLensSubAgent({ x, y, tone = 'magenta' }: { x: number; y: number; tone?: ContextLensTone }) {
+type ContextLensSubAgentProps = {
+  x: number;
+  y: number;
+  width?: number;
+  tone?: ContextLensTone;
+};
+
+export function ContextLensSubAgent({ x, y, width = 144, tone = 'magenta' }: ContextLensSubAgentProps) {
+  const zeroWidth = Math.min(30, width / 4);
+  const zeroX = x + width - zeroWidth;
+  const windowWidth = Math.min(84, width - zeroWidth - 22);
+  const connectorStart = x + windowWidth + 6;
+
   return (
     <g aria-hidden="true">
-      <ContextLensWindow x={x} y={y} width={84} height={72} tone="neutral" blocks={[{ zone: 'primacy', label: 'task', tone: 'neutral', width: 54 }]} />
-      <path d={`M ${x + 90} ${y + 36} C ${x + 100} ${y + 28}, ${x + 106} ${y + 28}, ${x + 114} ${y + 28}`} fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeDasharray="4 3" strokeLinecap="butt" />
-      <rect x={x + 114} y={y + 12} width={30} height={48} rx={0} fill={toneBg(tone)} stroke={toneColor(tone)} strokeWidth={1.5} strokeDasharray="4 3" />
-      <text x={x + 129} y={y + 41} textAnchor="middle" className={styles.zeroLabel} fill={toneColor(tone)}>
+      <ContextLensWindow x={x} y={y} width={windowWidth} height={72} tone="neutral" blocks={[{ zone: 'primacy', label: 'task', tone: 'neutral', width: 54 }]} />
+      <path d={`M ${connectorStart} ${y + 36} C ${connectorStart + 8} ${y + 28}, ${zeroX - 10} ${y + 28}, ${zeroX} ${y + 28}`} fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeDasharray="4 3" strokeLinecap="butt" />
+      <rect x={zeroX} y={y + 12} width={zeroWidth} height={48} rx={0} fill={toneBg(tone)} stroke={toneColor(tone)} strokeWidth={1.5} strokeDasharray="4 3" />
+      <text x={zeroX + zeroWidth / 2} y={y + 41} textAnchor="middle" className={styles.zeroLabel} fill={toneColor(tone)}>
         0
       </text>
     </g>

@@ -29,6 +29,7 @@ type ArrowSpec = {
   from: FlowStep;
   d: string;
   startMs: number;
+  travelMs?: number;
 };
 
 const G = TILE_GRID;
@@ -126,6 +127,52 @@ const ARROWS: ArrowSpec[] = [
   },
 ];
 
+const MOBILE_TILE_X = 56;
+const MOBILE_TILE_WIDTH = 248;
+const MOBILE_TILE_HEIGHT = 104;
+const MOBILE_TILE_Y: Record<FlowStep, number> = {
+  grounding: 48,
+  plan: 190,
+  execute: 332,
+  validate: 474,
+};
+const MOBILE_TILES = TILES.map((tile) => ({
+  ...tile,
+  x: MOBILE_TILE_X,
+  y: MOBILE_TILE_Y[tile.id],
+  width: MOBILE_TILE_WIDTH,
+  height: MOBILE_TILE_HEIGHT,
+}));
+const MOBILE_ARROWS: ArrowSpec[] = [
+  {
+    id: 'grounding-to-plan-mobile',
+    from: 'grounding',
+    d: 'M 180 152 L 180 190',
+    startMs: 0,
+  },
+  {
+    id: 'plan-to-execute-mobile',
+    from: 'plan',
+    d: 'M 180 294 L 180 332',
+    startMs: 2400,
+  },
+  {
+    id: 'execute-to-validate-mobile',
+    from: 'execute',
+    d: 'M 180 436 L 180 474',
+    startMs: 4800,
+  },
+  {
+    id: 'validate-to-grounding-mobile',
+    from: 'validate',
+    // Orthogonal return rail keeps the loop legible as a two-way track.
+    d: 'M 56 526 H 16 V 100 H 56',
+    startMs: 7200,
+    // The long rail is the final quarter-turn, not a 900ms hop.
+    travelMs: 2400,
+  },
+];
+
 const TOKEN_SEQUENCE = seededTokenTrain('operator-cycle', 5);
 
 const FLOW_DURATION_MS = 9600;
@@ -197,8 +244,26 @@ const OPERATOR_STATIONS: Record<FlowStep, { x: number; y: number }> = {
   ),
 };
 
-function WorkflowTile({ tile }: { tile: TileSpec }) {
-  if (tile.id === 'validate') return <ValidationGate tile={tile} />;
+const MOBILE_OPERATOR_SIZE = 32;
+const MOBILE_OPERATOR_STATIONS: Record<FlowStep, { x: number; y: number }> = {
+  grounding: operatorOrigin(
+    28,
+    MOBILE_TILE_Y.grounding + MOBILE_TILE_HEIGHT / 2
+  ),
+  plan: operatorOrigin(28, MOBILE_TILE_Y.plan + MOBILE_TILE_HEIGHT / 2),
+  execute: operatorOrigin(28, MOBILE_TILE_Y.execute + MOBILE_TILE_HEIGHT / 2),
+  validate: operatorOrigin(28, MOBILE_TILE_Y.validate + MOBILE_TILE_HEIGHT / 2),
+};
+
+function WorkflowTile({
+  tile,
+  density = 'desktop',
+}: {
+  tile: TileSpec;
+  density?: 'desktop' | 'mobile';
+}) {
+  if (tile.id === 'validate')
+    return <ValidationGate tile={tile} density={density} />;
 
   const icon =
     tile.id === 'grounding'
@@ -233,12 +298,18 @@ function WorkflowTile({ tile }: { tile: TileSpec }) {
       variant="rich"
       fill="var(--surface-raised)"
       rectClassName={styles.vectorStroke}
-      density="desktop"
+      density={density}
     />
   );
 }
 
-function ValidationGate({ tile }: { tile: TileSpec }) {
+function ValidationGate({
+  tile,
+  density,
+}: {
+  tile: TileSpec;
+  density: 'desktop' | 'mobile';
+}) {
   return (
     <DiagramTile
       x={tile.x}
@@ -254,16 +325,16 @@ function ValidationGate({ tile }: { tile: TileSpec }) {
       variant="rich"
       fill="var(--surface-raised)"
       rectClassName={styles.vectorStroke}
-      density="desktop"
+      density={density}
       weight={2}
     />
   );
 }
 
-function TokenStreams() {
+function TokenStreams({ arrows = ARROWS }: { arrows?: ArrowSpec[] }) {
   return (
     <g>
-      {ARROWS.map((arrow) => {
+      {arrows.map((arrow) => {
         const tile = TILE_BY_ID[arrow.from];
         return (
           <TokenArrowTrain
@@ -271,7 +342,11 @@ function TokenStreams() {
             d={arrow.d}
             tokens={TOKEN_SEQUENCE}
             stroke={tileToneVars(tile.tone).stroke}
-            timing={{ ...TOKEN_TRAIN_TIMING, startDelayMs: arrow.startMs }}
+            timing={{
+              ...TOKEN_TRAIN_TIMING,
+              startDelayMs: arrow.startMs,
+              travelMs: arrow.travelMs ?? TOKEN_TRAIN_TIMING.travelMs,
+            }}
             stagger={TOKEN_TRAIN_STAGGER}
             size={TOKEN_FLOW_SIZE}
             tone={tile.tokenTone}
@@ -283,19 +358,24 @@ function TokenStreams() {
   );
 }
 
-function OperatorWatcher() {
-  const start = OPERATOR_STATIONS.grounding;
+function OperatorWatcher({ mobile = false }: { mobile?: boolean }) {
+  const stations = mobile ? MOBILE_OPERATOR_STATIONS : OPERATOR_STATIONS;
+  const size = mobile ? MOBILE_OPERATOR_SIZE : OPERATOR_SIZE;
+  const start = stations.grounding;
   const motionStyle = {
-    '--operator-plan-x': `${OPERATOR_STATIONS.plan.x - start.x}px`,
-    '--operator-plan-y': `${OPERATOR_STATIONS.plan.y - start.y}px`,
-    '--operator-execute-x': `${OPERATOR_STATIONS.execute.x - start.x}px`,
-    '--operator-execute-y': `${OPERATOR_STATIONS.execute.y - start.y}px`,
-    '--operator-validate-x': `${OPERATOR_STATIONS.validate.x - start.x}px`,
-    '--operator-validate-y': `${OPERATOR_STATIONS.validate.y - start.y}px`,
+    '--operator-plan-x': `${stations.plan.x - start.x}px`,
+    '--operator-plan-y': `${stations.plan.y - start.y}px`,
+    '--operator-execute-x': `${stations.execute.x - start.x}px`,
+    '--operator-execute-y': `${stations.execute.y - start.y}px`,
+    '--operator-validate-x': `${stations.validate.x - start.x}px`,
+    '--operator-validate-y': `${stations.validate.y - start.y}px`,
   } as React.CSSProperties;
   return (
-    <g className={styles.operatorWatcher} style={motionStyle}>
-      <OperatorNode x={start.x} y={start.y} size={OPERATOR_SIZE} />
+    <g
+      className={mobile ? styles.mobileOperatorWatcher : styles.operatorWatcher}
+      style={motionStyle}
+    >
+      <OperatorNode x={start.x} y={start.y} size={size} />
     </g>
   );
 }
@@ -317,24 +397,49 @@ function renderCard(tile: TileSpec) {
   );
 }
 
+function DesktopDiagram() {
+  return (
+    <svg
+      viewBox="0 0 760 464"
+      width="100%"
+      role="img"
+      aria-label="An operator moves between Grounding, Plan, Execute, and a Validation Gate while token streams move between each step."
+      className={styles.desktopDiagram}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <TokenStreams />
+      {TILES.map((tile) => (
+        <WorkflowTile key={tile.id} tile={tile} />
+      ))}
+      <OperatorWatcher />
+    </svg>
+  );
+}
+
+function MobileDiagram() {
+  return (
+    <svg
+      viewBox="0 0 360 620"
+      width="100%"
+      role="img"
+      aria-label="A vertical operator loop moving from Grounding to Plan to Execute to the Validation Gate, then back to Grounding."
+      className={styles.mobileDiagram}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <TokenStreams arrows={MOBILE_ARROWS} />
+      {MOBILE_TILES.map((tile) => (
+        <WorkflowTile key={tile.id} tile={tile} density="mobile" />
+      ))}
+      <OperatorWatcher mobile />
+    </svg>
+  );
+}
+
 export default function OperatorCycleDiagram() {
   return (
     <div>
-      <svg
-        viewBox="0 0 760 464"
-        width="100%"
-        role="img"
-        aria-label="An operator moves between Grounding, Plan, Execute, and a Validation Gate while token streams move between each step."
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ display: 'block', maxWidth: '760px', margin: '0 auto' }}
-      >
-        <TokenStreams />
-        {TILES.map((tile) => (
-          <WorkflowTile key={tile.id} tile={tile} />
-        ))}
-        <OperatorWatcher />
-      </svg>
-
+      <DesktopDiagram />
+      <MobileDiagram />
       <div className={styles.descGrid}>{TILES.map(renderCard)}</div>
     </div>
   );

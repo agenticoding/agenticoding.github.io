@@ -33,17 +33,23 @@ This chapter covers the five mechanisms that control what enters the context win
 
 </DiagramFrame>
 
-Drag the slider to 50%. Watch what happens to the middle.
+Drag the slider to 50%. The diagram is normalized: 50% means halfway through the window, whether the window holds 10K, 100K, or 1M tokens. The same failure exists at every size. What changes is the scale of the weak middle. At 50% fill, those windows contain 5K, 50K, and 500K tokens respectively. The model must find relevant information amid ever more competing context. A larger window gives the agent more room; it does not give the agent uniform recall across that room.
 
-Three zones emerge from the curve. The **primacy zone** at the start — where system instructions, developer rules, and project files land. The **recency zone** at the end — where your current task and recent tool results sit. And the **dead center** — the middle of the window, where attention drops off sharply.
+Three zones emerge from the curve. The **primacy zone** at the start — where system instructions, user rules, and project files land. The **recency zone** at the end — where your current task and recent tool results sit. And the **dead center** — the middle of the window, where attention drops off sharply.
 
-**Why does this happen?** Transformer self-attention uses softmax normalization: the model distributes a fixed budget of attention across all tokens. When one token gets more attention, others get less — it's a zero-sum game. Early tokens benefit from causal masking — in autoregressive models, the first token is visible to every later token, accumulating attention across the sequence. Late tokens benefit from recency — the model learns that recent context is often most relevant for predicting the next token. The middle gets squeezed between these two forces. This effect is well-documented: Xiao et al. (2023) showed that initial tokens receive disproportionately high attention scores — an "attention sink" effect — even when those tokens carry no semantic importance ([2309.17453](https://arxiv.org/abs/2309.17453)).
+**Why does this happen?** Recall that attention is relevance-weighted context mixing, not memory. For each next token, a causal transformer builds a new weighted mix of the tokens that came before it. That mix is not position-neutral.
 
-This is not a bug. It is how transformer architecture works under realistic constraints. The [lost-in-the-middle effect](https://arxiv.org/abs/2307.03172) means the same instruction can be reliable at the top or bottom of the window and unreliable in the middle.
+The two edges have structural advantages. Opening tokens are visible to every later computation, and models often turn some of them into attention sinks. The newest tokens are closest to the prediction frontier, where trained models tend to give recent context more weight. Middle tokens get neither advantage: they must compete with the opening context's accumulated influence and the end of the prompt's recency bias.
 
-Now drag the slider past 70%. Watch the J-curve.
+Causal attention, positional encoding, and learned attention patterns determine how strong each advantage is. The curve differs by model, task, and context length, but the engineering consequence is consistent: information placed in the middle has a lower chance of shaping the next prediction. Initial tokens can receive disproportionately high attention even when they carry no semantic importance.[^attention-sinks]
 
-As context fills, even primacy weakens. The left edge of the curve droops. Only recency survives at high fill. The dead center zone expands — at 80% fill, the middle is effectively invisible. RULER benchmark testing found that only half of models advertising 200K+ context maintained satisfactory performance at 32K tokens ([Hsieh et al., 2024](https://arxiv.org/abs/2404.06654)). Chroma's Context Rot study showed that performance degrades non-uniformly as input length grows, with coherent distractor text degrading reasoning more than obvious noise ([Chroma, 2025](https://research.trychroma.com/context-rot)). This is the constraint that context engineering works within.
+This is not a single bug to fix. The lost-in-the-middle effect means the same instruction can be reliable at the top or bottom of the window and unreliable in the middle.[^lost-in-middle]
+
+Now drag the slider toward high utilization. The J-curve is a **long-context failure mode**, not a universal phase change at 70% fill.
+
+At modest absolute lengths, both primacy and recency can remain useful: the curve is U-shaped. As the sequence becomes much longer, primacy can erode while recency remains strong, turning the U into a J and expanding the unreliable middle. The transition depends on the model, task, and absolute token count — not a fixed utilization percentage. A 10K context at 80% fill contains 8K tokens; a 1M context at the same fill contains 800K. The slider normalizes position, so it cannot predict where a particular model's J-curve begins.
+
+Recent evaluations show that this is not an artifact of an older model generation. Du et al. tested five open and closed models on coding, question-answering, and math tasks: performance fell 13.9–85% as input length grew within the models' claimed windows, even with perfect retrieval and masked or whitespace distractors.[^context-length-alone] Chroma's Context Rot tested 18 frontier models, including GPT-4.1, Claude 4, Gemini 2.5, and Qwen3; every model showed non-uniform degradation as input length grew, with coherent and semantically similar distractors making the decline worse.[^context-rot] This is the constraint that context engineering works within.
 
 Every mechanism in this chapter — context files, tool schemas, skills, sub-agents, compaction — is a way to keep important information where the model can still attend to it. The job is not to fit everything. The job is to keep the active task, current constraints, and relevant evidence in the high-attention zones.
 
@@ -66,44 +72,14 @@ The connector on the right side shows how tool definitions produce results that 
 
 The key insight: **it's not about running out of tokens — it's about where your task lands relative to the attention curve.** A 65% full window with heavy tool definitions is worse than an 80% full window where most content is conversation (which sits below the task in the recency zone).
 
-<details>
-<summary>Supporting Research</summary>
-
-- **Lost in the Middle** (Liu et al., 2023) — Models perform best when relevant information is at the beginning or end of context; performance drops in the middle. [arXiv:2307.03172](https://arxiv.org/abs/2307.03172)
-- **Attention Sinks** (Xiao et al., 2023) — Initial tokens attract disproportionate attention regardless of semantic content. Explains the primacy mechanism. [arXiv:2309.17453](https://arxiv.org/abs/2309.17453)
-- **RULER** (Hsieh et al., 2024) — Most models degrade before their advertised context window. Only half maintain satisfactory performance at 32K despite claiming 200K+. [arXiv:2404.06654](https://arxiv.org/abs/2404.06654)
-- **Context Rot** (Chroma, 2025) — Performance degrades non-uniformly with input length. Coherent distractors degrade reasoning more than noise. Distractor impact amplifies with context length. [research.trychroma.com/context-rot](https://research.trychroma.com/context-rot)
-- **LongICLBench** (Li et al., 2024) — Long-context LLMs show recency bias and struggle with complex tasks requiring information integration across long inputs. [arXiv:2404.02060](https://arxiv.org/abs/2404.02060)
-- **LOFT** (Lee et al., 2024) — Long-context LLMs can compete with retrieval systems on simple tasks but struggle with compositional reasoning. Prompting strategy significantly impacts performance. [arXiv:2406.13121](https://arxiv.org/abs/2406.13121)
-
-</details>
-
-## Retrieval Is Not Context Engineering
-
-Semantic search, code research, and web research improve discovery. They help the agent find the right facts by meaning instead of guessing from keywords or training priors. But retrieval alone does not decide placement, lifetime, or isolation.
-
-Three Grep searches can return 18,000 tokens. Reading five files can add another 22,000. You are at 40,000 tokens before discovery is finished. Ten excellent semantic chunks can cost 15,000 tokens; reading related files adds 25,000; exploring patterns adds another 10,000. You are at 50,000 tokens before implementation starts.
-
-That is why correct retrieval can still hurt reliability. A long search trail can push the actual task into the forgotten middle. A useful web page can arrive too early, sit too long, and compete with more relevant instructions later. Coherent distractor text is especially dangerous because it looks relevant while degrading reasoning more than obvious noise ([Chroma Context Rot study](https://research.trychroma.com/context-rot), 2025).
-
-So treat retrieval as the input to context engineering, not a replacement for it. Grounding answers **what facts should enter the agent's world**. Context engineering answers **how those facts stay usable**.
-
-:::warning The Agentic Coding Cost Trap
-
-Most providers apply per-token surcharges past a context threshold:
-
-- **Gemini 3.1 Pro:** 2× input pricing above 200K tokens
-- **GPT-5.5 / GPT-5.4:** 2× input pricing above ~272K tokens
-- **DeepSeek V4 Pro / Flash:** 1.5× pricing above 512K tokens
-- **Claude 4.6/4.7/4.8 (Opus/Sonnet):** No surcharge — flat rate to 1M
-
-For retrieval tasks (summarization, document review), the surcharge buys tokens in the model's strong accuracy zone. For agentic coding, you're paying a premium for tokens in the model's *worst* accuracy zone — the middle, where your constraints and requirements go to die.
+:::note Scope
+This section describes behavior measured in long-context autoregressive LLMs, especially causal transformers. Diffusion language models denoise a sequence iteratively rather than generate left to right, so they do not share the same causal-mask and recency mechanism. Evaluate their positional reliability separately instead of assuming the same curve.
 :::
 
-## The Five Context Mechanisms
+## The Six Context Mechanisms
 
-<DiagramFrame kicker="Context management" title="Five mechanisms share the same context lens" size="wide" caption={<>
-    The five context mechanisms: where tokens land and when they load.
+<DiagramFrame kicker="Context management" title="Six mechanisms share the same context lens" size="wide" caption={<>
+    The six context mechanisms: where tokens land and when they load.
 </>}>
     <ContextMechanismMap />
 </DiagramFrame>
@@ -117,6 +93,7 @@ Each mechanism implements one or more of the four actions:
 | Skills and procedures | **Select** | Write (when invoked) |
 | Sub-agents | **Isolate** | Compress (synthesis return) |
 | Context compaction | **Compress** | — |
+| Retrieval (RAG, search, memory) | **Select** | **Write** (placement) |
 
 The spectrum runs from **always-loaded** (context files — guaranteed delivery, high cost) to **fully isolated** (sub-agents — zero cost to parent, but no shared state). Effective context engineering means choosing the right mechanism for each piece of knowledge.
 
@@ -282,6 +259,44 @@ Auto-compaction trades usable context for a safety margin you don't need when yo
 Reclaim the buffer for actual work. Compact only when you choose to — at phase boundaries — and always externalize anything that must survive exactly.
 :::
 
+## Retrieval
+
+The agents chapter showed that [memory is retrieval](./how-agents-work.mdx#memory-is-retrieval-not-recall) — the model does not remember your project conventions, previous sessions, or domain facts unless the harness retrieves them and feeds them into a later call. ChunkHound, OpenGrok, vector databases, BM25 indexes, web search, knowledge graphs, and memory systems are all retrieval flavors. They solve the same problem: choosing which facts deserve space in the next request.
+
+Retrieval is a context engineering mechanism because it controls what enters the context window and where it lands. Two placement patterns dominate:
+
+**Harness-level RAG** injects retrieved content before the user prompt — in the primacy zone. The agent sees it as background context. Memory systems, project indexes, and persistent knowledge work this way. The content gets primacy advantage but competes with context files for the fixed prefix.
+
+**Tool-call retrieval** happens when the agent calls a search tool — ChunkHound, grep, web search — and the results land in the conversation stream, after the user prompt. This is how on-demand research works. The content lands in the recency zone initially, but drifts toward the middle as the conversation grows.
+
+Each placement has different attention characteristics. Harness-level retrieval is always visible but always costs tokens. Tool-call retrieval loads on demand but competes with every other conversation turn for attention.
+
+### The Token Cost of Discovery
+
+Retrieval decisions are context engineering decisions because every retrieved chunk costs tokens. Three grep searches can return 18,000 tokens. Reading five files can add another 22,000. You are at 40,000 tokens before discovery is finished. Ten semantic chunks from a vector database can cost 15,000 tokens; reading related files adds 25,000; exploring patterns adds another 10,000. You are at 50,000 tokens before implementation starts.
+
+That is why correct retrieval can still hurt reliability. A long search trail can push the actual task into the forgotten middle. A useful web page can arrive too early, sit too long, and compete with more relevant instructions later. Coherent distractor text is especially dangerous because it looks relevant while degrading reasoning more than obvious noise.[^context-rot]
+
+### Retrieval Quality ≠ Context Quality
+
+The failure mode most teams hit with retrieval is not "the retriever found irrelevant chunks." It is "the retriever found relevant chunks, but the model could not use them."[^context-injection]
+
+Retrieval quality and context injection quality are separate problems. Finding the right facts is necessary but not sufficient. How those facts are structured, prioritized, and wrapped in the context determines whether the model can attend to them. A chunk that is relevant but arrives in the dead center of a 200K-token window may as well not exist.
+
+This is why retrieval is a context engineering mechanism, not a precursor to it. The operator decides what to retrieve, where to place it, how much context budget to spend on it, and when to load it. Those are the same decisions that govern every other mechanism in this chapter.
+
+:::warning The Agentic Coding Cost Trap
+
+Most providers apply per-token surcharges past a context threshold:
+
+- **Gemini 3.1 Pro:** 2× input pricing above 200K tokens
+- **GPT-5.5 / GPT-5.4:** 2× input pricing above ~272K tokens
+- **DeepSeek V4 Pro / Flash:** 1.5× pricing above 512K tokens
+- **Claude 4.6/4.7 (Opus/Sonnet):** No surcharge — flat rate to 1M
+
+For retrieval tasks (summarization, document review), the surcharge buys tokens in the model's strong accuracy zone. For agentic coding, you're paying a premium for tokens in the model's *worst* accuracy zone — the middle, where your constraints and requirements go to die.
+:::
+
 ---
 
 ## Key Takeaways
@@ -289,7 +304,9 @@ Reclaim the buffer for actual work. Compact only when you choose to — at phase
 **Write: Context files give guaranteed delivery at the cost of attention pressure**
 Every token in AGENTS.md shifts the user task band deeper into the middle zone — keep files under 25KB. Put project knowledge in your README where agents can read it on demand; AGENTS.md is for what changes _how_ the agent operates.
 
-**Select: MCP tools and skills choose what capabilities the agent can access**
+**Select: Retrieval, MCP tools, and skills choose what enters the context**
+Retrieval is the broadest select mechanism — ChunkHound, vector DBs, BM25, web search, memory systems all inject grounded facts. Harness-level RAG places content in the primacy zone; tool-call retrieval lands in the conversation stream. Retrieved content that is relevant but poorly placed still degrades. Optimize retrieval quality and context injection together.
+
 A single GitHub MCP server consumes ~55K tokens; three moderate servers can consume 72% of your window before the conversation starts. Enable ToolSearch for deferred loading when you have more than 20 tools. Skills keep lightweight discovery metadata in context until invoked — the invocation path controls who decides which workflow runs.
 
 **Compress: Compaction and summarization fit more signal into fewer tokens**
@@ -302,8 +319,14 @@ A sub-agent may consume 150K tokens internally but return only 2K to the parent 
 Position matters. Put critical instructions at the edges — primacy (start) and recency (end). Keep supporting evidence in the middle summarized and referenced, not pasted wholesale. Start a fresh phase when the middle becomes crowded.
 
 **Choose the mechanism by what the knowledge is for**
-Is it always needed? → Write (context file). Is it a callable tool? → Select (MCP). Is it a workflow procedure? → Select (skill or prompt template). Is it heavy research? → Isolate (sub-agent). Is context accumulating? → Compress (checkpoint file and fresh phase).
+Is it always needed? → Write (context file). Is it a callable tool? → Select (MCP). Is it a workflow procedure? → Select (skill or prompt template). Is it heavy research? → Isolate (sub-agent). Is context accumulating? → Compress (checkpoint file and fresh phase). Is it domain knowledge or project state? → Select (retrieval).
 
 ---
+
+[^attention-sinks]: Xiao et al. (2023), [*Efficient Streaming Language Models with Attention Sinks*](https://arxiv.org/abs/2309.17453).
+[^lost-in-middle]: Liu et al. (2023), [*Lost in the Middle: How Language Models Use Long Contexts*](https://arxiv.org/abs/2307.03172).
+[^context-length-alone]: Du et al. (2025), [*Context Length Alone Hurts LLM Performance Despite Perfect Retrieval*](https://aclanthology.org/2025.findings-emnlp.1264/).
+[^context-rot]: Chroma Research (2025), [*Context Rot*](https://www.trychroma.com/research/context-rot).
+[^context-injection]: ExplainX (2026), [*RAG Context Injection Pipeline Design*](https://www.explainx.ai/blog/rag-context-injection-pipeline-design-2026).
 
 **Next:** [Chapter 7: Reliability Levers](./reliability-levers.md)

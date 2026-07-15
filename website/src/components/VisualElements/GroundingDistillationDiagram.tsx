@@ -4,6 +4,7 @@ import {
   AgentTile,
   ContextAgentTile,
   activationStyle,
+  agentIconSize,
   type AgentContextTile,
 } from './AgentTile';
 import type { TokenSequence } from './AnimatedTokenFlow';
@@ -155,7 +156,7 @@ function MobileDiagram() {
     >
       <DiagramTitle title="GROUNDING → ROOT CONTEXT" />
       <FlowLayer flows={flows} />
-      <SourceCloud x={32} y={56} width={276} height={186} density="mobile" />
+      <SourceCloud x={28} y={56} width={276} height={186} density="mobile" />
       <GroundingAgent x={82} y={318} width={176} height={104} compact />
       <RootOrchestrator
         x={50}
@@ -290,10 +291,6 @@ function GroundingAgent(props: BoxProps & { compact?: boolean }) {
       )}
     />
   );
-}
-
-function agentIconSize(compact = false) {
-  return compact ? DIAGRAM_ICON_SIZE.primary : DIAGRAM_ICON_SIZE.actor;
 }
 
 function RootOrchestrator(
@@ -542,8 +539,8 @@ function mobileFlows(): FlowSpec[] {
     ),
     pairedFlow(
       doubleArrow({
-        requestD: 'M 50 560 H 24 V 142 H 32',
-        responseD: 'M 32 158 H 40 V 576 H 50',
+        requestD: 'M 50 560 H 12 V 142 H 28',
+        responseD: 'M 304 158 H 314 V 576 H 290',
         requestTokens: TARGETED_REQUEST_TOKENS,
         responseTokens: TARGETED_RESULT_TOKENS,
         requestStyle: FLOW_STYLES.targetedLookup,

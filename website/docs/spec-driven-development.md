@@ -547,7 +547,7 @@ Use:
 - tests around user-facing contracts
 - short inline comments for non-obvious WHAT/WHY/HOW
 
-This connects directly to [Chapter 12: Writing Agent-Friendly Code](./agent-friendly-code.md). Agents discover code through search and file reads. If a rule matters locally, make it locally recoverable.
+This connects directly to [Chapter 10: Writing Agent-Friendly Code](./agent-friendly-code.md). Agents discover code through search and file reads. If a rule matters locally, make it locally recoverable.
 
 For example:
 
@@ -597,4 +597,4 @@ Long-lived specs that duplicate code create cache invalidation problems. Future 
 
 ---
 
-**Next:** [Chapter 9: Tests as Guardrails](./tests-as-guardrails.md)
+**Next:** [Chapter 9: Validation](./validation.md)

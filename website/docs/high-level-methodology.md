@@ -3,15 +3,7 @@ title: 'Four-Phase Workflow'
 ---
 
 import OperatorCycleDiagram from '@site/src/components/VisualElements/OperatorCycleDiagram';
-import BookmarkTabsEmoji from '@site/src/components/VisualElements/BookmarkTabsEmoji';
-import RobotEmoji from '@site/src/components/VisualElements/RobotEmoji';
-import StraightRulerEmoji from '@site/src/components/VisualElements/StraightRulerEmoji';
-import MicroscopeEmoji from '@site/src/components/VisualElements/MicroscopeEmoji';
-import ExecutionModeComparison from '@site/src/components/VisualElements/ExecutionModeComparison';
-import AirplaneEmoji from '@site/src/components/VisualElements/AirplaneEmoji';
-import BabysitEmoji from '@site/src/components/VisualElements/BabysitEmoji';
-import CompassEmoji from '@site/src/components/VisualElements/CompassEmoji';
-import BullseyeEmoji from '@site/src/components/VisualElements/BullseyeEmoji';
+import ExecutionPortfolioDiagram from '@site/src/components/VisualElements/ExecutionPortfolioDiagram';
 import PromptExample from '@site/src/components/PromptExample';
 import GroundingDistillationDiagram from '@site/src/components/VisualElements/GroundingDistillationDiagram';
 import PlanningContractCheckpointDiagram from '@site/src/components/VisualElements/PlanningContractCheckpointDiagram';
@@ -27,7 +19,7 @@ This chapter introduces that operating workflow. Each phase answers one operator
 
 1. **Grounding** — what reality does the agent need before it acts? Pull in the code patterns, product constraints, external facts, and prior decisions that define success for this specific task.
 2. **Plan** — what is the intended shape of the work? Define what to add, remove, change, and protect; break the task into bounded units the agent can complete reliably; and place checkpoints before risky decisions propagate.
-3. **Execute** — how much autonomy is safe for this unit? Choose supervised, autonomous, or hybrid execution based on grounding quality, task scope, blast radius, and verification clarity.
+3. **Execute** — which ready unit should run now, and which returned artifact deserves your attention next? Schedule bounded work streams so that agent execution overlaps with grounding, plan review, validation, or a decision on another unit.
 4. **Validate** — did the result actually meet the goal? Check the artifact from multiple angles, then decide whether to accept it, iterate on a smaller unit, re-ground, re-plan, or regenerate.
 
 ## The Four-Phase Workflow
@@ -101,57 +93,31 @@ Planning is complete when execution can begin from a reviewed contract instead o
 
 ## Phase 3: Execute {#phase-3-execute}
 
-Execution is about maximizing the time the agent works reliably without you watching.
+Execution is where the human coordinates several in-flight operator loops.
 
-The harness loop gives the agent autonomy: it prepares context, calls the model, executes tools, observes results, and continues. The operator's job during execution is to push the boundary of how long that autonomy stays reliable. Every minute of unsupervised work is leverage — but only if the output is trustworthy when you come back.
+A plan admits one bounded unit into execution: it names the scope, dependency, expected artifact, stop condition, and validation route. The harness then gives that unit an autonomous window — it prepares context, calls the model, executes tools, observes results, and continues. While Agent A uses that window to implement, the operator monitors the active streams at a depth matched to each agent's risk profile and to their own capacity to context-switch: stay close to high-risk work, check lower-risk work periodically, and let bounded low-risk work run unattended.
 
-How long the agent can run autonomously depends on what you did in the previous two phases. Strong grounding means the agent has the right facts and won't drift into plausible-but-wrong patterns. Precise planning means each orchestration unit is small enough and well-defined enough that the agent doesn't need to re-decide the architecture mid-execution. The better your grounding and planning, the longer the reliable autonomous window.
+Think in the gaps between agent actions. Start Agent A on an approved implementation unit. While it searches, edits, and runs tests, review Agent B's plan. Then help Agent C get ready for its task: point it to the design system, clarify the user flow, or answer the product question it cannot infer. When Agent A finishes, compare what it produced with what the plan asked for and decide what happens next. That is **phase concurrency**: keeping several agents moving while allocating attention where risk and available context-switching capacity justify it.
 
-<DiagramFrame kicker="Methodology" title="Choose supervised or autonomous execution deliberately" size="standard">
+<DiagramFrame kicker="Methodology" title="Execution keeps human judgment ahead of agent work" size="wide" caption="The operator monitors agents as they work, adjusting attention to each agent's risk profile and to their own capacity for context switching.">
 
-  <ExecutionModeComparison />
+  <ExecutionPortfolioDiagram />
 
 </DiagramFrame>
-### <BabysitEmoji size={22} /> Supervised execution
 
-In supervised mode, you watch the agent work and steer it through intermediate decisions. This is the fallback when grounding is weak, the plan is imprecise, or the blast radius is high. Supervision gives control and early correction, but it blocks your time — the agent is running, and so are you.
+### Choose how to stay involved
 
-Supervised execution is appropriate for:
+An approved plan gives the agent a clear target. The right monitoring depth depends on the task's risk profile and how much context switching you can sustain.
 
-- authentication, authorization, payment, privacy, or data-loss paths
-- database migrations and irreversible operations
-- architecture changes
-- unfamiliar codebases where you need to build your own mental model while the agent explores
-- any task where intermediate choices matter more than final syntax
+| Approach                  | What you do                                                                                                                                           | Good fit                                                                          |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **Let it run**            | Give the agent a bounded task, work on something else, then meet at the end to compare what it produced with the plan.                                | A small, familiar change with clear checks.                                       |
+| **Work alongside it**     | Watch the steps, answer questions, and steer decisions as they happen.                                                                                | A new area of the codebase, an architecture decision, or security-sensitive work. |
+| **Check in periodically** | Move between active agent tabs, watch each one briefly, and confirm its latest work still points in the right direction. Leave it alone when it does. | A longer task where the final result would be too late to discover a wrong turn.  |
 
-### Autonomous execution
+Use the lightest approach that gives you enough confidence. If the task is clear and easy to check, letting it run creates time to review another plan, prepare the next task, or validate finished work. If the agent will make decisions you need to own, stay close. For longer work, rotate through the active tabs: look at the latest actions, confirm the direction, and move on unless the agent needs help.
 
-In autonomous mode, you give the agent a bounded unit, let it run, and review the result later. This is where agentic coding creates real leverage: parallel work, longer productive stretches, and less human attention spent on implementation mechanics.
-
-Autonomous execution is appropriate when:
-
-- grounding is strong — the agent has the right facts
-- the plan is precise — the agent knows exactly what to do
-- the work unit is small — the agent won't drift over long horizons
-- blast radius is limited — mistakes are cheap to revert
-- verification is clear — you know how to check the result
-
-The trade-off is delayed discovery. If the agent goes wrong, you find out later. That risk is acceptable only when grounding, planning, and verification are all strong.
-
-### Execution mode rubric
-
-| Work type | Default mode |
-|---|---|
-| Documentation updates | Autonomous |
-| Test generation for existing behavior | Autonomous |
-| Small isolated bug fix | Autonomous or lightly supervised |
-| Feature touching one module | Hybrid: approve plan, then autonomous |
-| Feature crossing module boundaries | Supervised checkpoints |
-| Auth, security, payments, personal data | Supervised |
-| Database migration | Supervised with explicit human checkpoint |
-| Architecture change | Human-led planning, supervised execution |
-
-The advanced pattern is not choosing one mode forever. It is assigning the right level of autonomy per orchestration unit — and knowing that the level you can assign is a function of how well you grounded and planned.
+The productivity gain is not that every agent task finishes faster than a skilled human would finish it. It comes from using the time between those check-ins for other useful work, without losing sight of what each agent is building.
 
 ## Phase 4: Verification {#phase-4-verification}
 
@@ -252,14 +218,14 @@ Review this diff against the approved plan. Check functional correctness, missin
 
 When verification finds problems, choose the right repair loop:
 
-| Finding | Response |
-|---|---|
-| Local bug, missing edge case, small test gap | Iterate |
-| Correct structure but incomplete implementation | Re-execute a smaller unit |
-| Agent missed existing patterns or APIs | Re-ground |
-| Decomposition or sequencing was wrong | Re-plan |
-| Architecture is fundamentally wrong | Regenerate from a corrected plan |
-| Confidence is low but no defect is obvious | Verify from another angle |
+| Finding                                         | Response                         |
+| ----------------------------------------------- | -------------------------------- |
+| Local bug, missing edge case, small test gap    | Iterate                          |
+| Correct structure but incomplete implementation | Re-execute a smaller unit        |
+| Agent missed existing patterns or APIs          | Re-ground                        |
+| Decomposition or sequencing was wrong           | Re-plan                          |
+| Architecture is fundamentally wrong             | Regenerate from a corrected plan |
+| Confidence is low but no defect is obvious      | Verify from another angle        |
 
 Code generation is cheap. Do not preserve a bad foundation because the diff looks substantial. Fix the context, plan, or grounding, then regenerate.
 
@@ -269,10 +235,10 @@ The four phases are a control system, and each phase addresses a specific limita
 
 - **Grounding** addresses the context problem. The model generates from context — it does not check its output against reality. Grounding ensures the context contains the right facts before the agent acts.
 - **Planning** addresses the orchestration problem. Complex work is a sequence of prompts, not one perfect prompt. Planning decomposes the task into bounded units the harness loop can execute.
-- **Execution** addresses the autonomy problem. The harness gives the agent autonomy; the operator's job is to push the reliable-autonomy frontier outward through better grounding and planning.
+- **Execution** addresses the coordination problem. The harness gives each agent run a bounded autonomous window; the operator schedules independent work streams and applies judgment to the next compact artifact that returns.
 - **Verification** addresses the probabilistic problem. Ownership never moves — the model generates candidates, you accept them. The model will make mistakes. Verification is how you catch them before they ship.
 
-This is the operator loop. You are not trying to personally type every line or review every token. You are designing the conditions under which useful artifacts are likely — grounding the right context, planning the right units, maximizing reliable autonomous execution — then verifying the result from enough angles to own it.
+This is the operator loop. You are not trying to personally type every line or review every token. You are designing the conditions under which useful artifacts are likely — grounding the right context, planning the right units, scheduling bounded execution, then verifying the result from enough angles to own it.
 
 A prompt shapes one interaction. This chapter shows where those interactions fit in the operator loop: grounding queries, orchestration plans, execution instructions, and verification reviews.
 

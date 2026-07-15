@@ -1,0 +1,172 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+  --operator-story-duration: 8400ms;
+}
+
+.operatorDesktop,
+.operatorMobile {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.operatorDesktop {
+  max-width: 960px;
+}
+
+.operatorMobile {
+  display: none !important;
+  max-width: 340px;
+}
+
+.agentRect {
+  vector-effect: non-scaling-stroke;
+}
+
+.agentTitle {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.agentEyebrow,
+.contextEyebrow,
+.contextDetail,
+.contextRowText {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.agentEyebrow,
+.contextEyebrow {
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.contextDetail {
+  font-family: var(--font-mono-keyword);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.contextRow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: operatorContextRow var(--operator-story-duration)
+    var(--ease-standard) both infinite;
+}
+
+.contextRowRect {
+  vector-effect: non-scaling-stroke;
+}
+
+.contextRowText {
+  font-family: var(--font-mono-keyword);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.guessContext rect {
+  fill: var(--visual-bg-warning);
+  stroke: var(--visual-warning);
+}
+
+.guessContext text {
+  fill: var(--visual-warning);
+}
+
+.candidateContext rect {
+  fill: var(--visual-bg-violet);
+  stroke: var(--visual-violet);
+}
+
+.candidateContext text {
+  fill: var(--visual-violet);
+}
+
+.storyEntry {
+  animation: operatorStoryEntry var(--operator-story-duration)
+    var(--ease-standard) 800ms infinite both;
+}
+
+.storyGate {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: operatorStoryGate var(--operator-story-duration)
+    var(--ease-standard) 6000ms infinite both;
+}
+
+@keyframes operatorContextRow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  12%,
+  28% {
+    opacity: 1;
+    transform: scale(1.018);
+  }
+}
+
+@keyframes operatorStoryEntry {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  12%,
+  28% {
+    opacity: 1;
+  }
+}
+
+@keyframes operatorStoryGate {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+
+  12%,
+  34% {
+    opacity: 1;
+    transform: scale(1.015);
+  }
+}
+
+@container (max-width: 720px) {
+  .operatorDesktop {
+    display: none !important;
+  }
+
+  .operatorMobile {
+    display: block !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .operatorDesktop {
+    display: none !important;
+  }
+
+  .operatorMobile {
+    display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contextRow,
+  .storyEntry,
+  .storyGate {
+    animation: none !important;
+  }
+}

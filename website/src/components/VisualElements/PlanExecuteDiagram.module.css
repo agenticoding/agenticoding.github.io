@@ -1,18 +1,12 @@
 /* ── PlanExecuteDiagram — Animation module ────────────────────────────────────
-   actEnter keyframe and shared ghost classes are in diagram.module.css.
-   shared.actEntered is applied in TSX for plan card, orchestrator, labels, prompts.
+   actEnter and worker classes are shared in diagram.module.css.
+   This module owns the diagram's context-region timing and transitions.
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* drawPath, workerNode, workerLabel are in diagram.module.css (shared) */
+/* drawPath and workerNode are in diagram.module.css (shared). */
 
 /* ── Plan card — base state; shared.actEntered drives animation ── */
 .planCard {
-  opacity: 0;
-  transform: translateY(12px);
-}
-
-/* ── Actor labels group — base state; shared.actEntered drives animation ── */
-.labels {
   opacity: 0;
   transform: translateY(12px);
 }
@@ -36,26 +30,84 @@
 .mergeNode {
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+  transition:
+    opacity 200ms var(--ease-exit),
+    transform 200ms var(--ease-exit);
 }
 .mergeNode.mergeEntered {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 300ms var(--ease-enter), transform 300ms var(--ease-enter);
+  transition:
+    opacity 300ms var(--ease-enter),
+    transform 300ms var(--ease-enter);
 }
 
-/* ── Static fallback card (reduced-motion only) ── */
-.staticCard {
-  display: none;
+/* Agent work remains coupled to its context rows. */
+.agentRect {
+  vector-effect: non-scaling-stroke;
+}
+
+.agentTitle,
+.workerTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.agentTitle {
+  font-size: 13px;
+}
+
+.workerTitle {
+  font-size: 12px;
+}
+
+.contextTile {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: planContextRow 7800ms var(--ease-standard) both infinite;
+}
+
+.contextTileRect {
+  vector-effect: non-scaling-stroke;
+}
+
+.contextTileText {
+  font-family: var(--font-mono-keyword);
+  font-size: 10px;
+  font-weight: 600;
+  font-feature-settings: var(--font-mono-features);
+}
+
+@keyframes planContextRow {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+
+  12%,
+  28% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
 }
 
 /* ── Reduced-motion overrides ── */
 @media (prefers-reduced-motion: reduce) {
-  .handoffArc              { opacity: 0.35; stroke-dashoffset: 0 !important; }
-  .handoffArc.arcDraw      { animation: none; }
+  .handoffArc {
+    opacity: 0.35;
+    stroke-dashoffset: 0 !important;
+  }
+  .handoffArc.arcDraw {
+    animation: none;
+  }
   .planCard,
   .actorNode,
   .mergeNode,
-  .labels                  { opacity: 1; transform: none; animation: none; transition: none; }
-  .staticCard              { display: block; }
+  .contextTile {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
+  }
 }

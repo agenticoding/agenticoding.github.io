@@ -14,7 +14,7 @@ The course is organized into three modules with 10 hands-on lessons:
 
 1. **[Fundamentals](website/docs/fundamentals)** - Mental models and architecture (Lessons 1-2)
 2. **[Methodology](website/docs/methodology)** - Prompting, grounding, workflow design (Lessons 3-5)
-3. **[Practical Techniques](website/docs/practical-techniques)** - Onboarding, planning, testing, reviewing, debugging (Lessons 6-10)
+3. **[Practical Techniques](website/docs/practical-techniques)** - Onboarding, planning, testing (Lessons 6-8)
 
 ## Behind the Scenes
 

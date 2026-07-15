@@ -14,11 +14,8 @@ export const chapters = [
   { id: 'context-engineering',      kind: 'chapter' as const },
   { id: 'reliability-levers',       kind: 'chapter' as const },
   { id: 'spec-driven-development',  kind: 'chapter' as const },
-  { id: 'tests-as-guardrails',      kind: 'chapter' as const },
-  { id: 'reviewing-code',           kind: 'chapter' as const },
-  { id: 'debugging',                kind: 'chapter' as const },
+  { id: 'validation',      kind: 'chapter' as const },
   { id: 'agent-friendly-code',      kind: 'chapter' as const },
-  { id: 'systems-thinking-specs',   kind: 'chapter' as const },
   { id: 'about',                    kind: 'reference' as const },
 ] as const;
 
