@@ -3,6 +3,7 @@ title: 'Validation'
 ---
 
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+import SpeedAccuracyTradeoff from '@site/src/components/VisualElements/SpeedAccuracyTradeoff';
 import ValidationEvidenceLifecycle from '@site/src/components/VisualElements/ValidationEvidenceLifecycle';
 
 A car manufacturer cannot justify "good for 100,000 miles" by inspecting a design drawing. An aircraft maker cannot assume wings stay attached because a prototype completed one flight. Both claims need evidence under representative conditions.
@@ -29,10 +30,9 @@ Build the profile from production traces, support incidents, and domain knowledg
 
 Then define the **tolerance**: how much error, delay, degradation, or manual intervention is acceptable for this claim. The fundamental tradeoff is between **throughput** and **accuracy** — most workloads fall somewhere between those poles.
 
-| Tradeoff pole | Calibration | Validation approach |
-| --- | --- | --- |
-| Maximize throughput (e.g., a landing-page factory producing campaign pages) | Favor speed and volume; accept bounded variation in individual artifacts | Maximum automation — LLM judges triage output, deterministic checks catch regressions, active monitoring detects drift, humans only sample. Use agent capacity to scale review, not to slow it down. |
-| Maximize accuracy (e.g., low-level code operating industrial machinery) | Favor correctness and predictability; invest in review latency | Maximum human review — exhaustive deterministic checks, independent review, explicit release gates. Use the agent to expand claims coverage and prepare evidence for human decision-makers, not to replace them. |
+<DiagramFrame kicker="Calibration" title="Precision costs throughput" size="wide" caption={<>Higher accuracy costs decision time; higher speed accepts more variation. Choose the position your claim can tolerate.</>}>
+  <SpeedAccuracyTradeoff />
+</DiagramFrame>
 
 Even the throughput end still needs validation: a broken form, false claim, or inaccessible page is not acceptable merely because the campaign moves fast. The accuracy end demands much stronger evidence because the cost of an undetected defect is radically higher. Most workloads sit between these poles — calibrate your position by deciding how much manual intervention per artifact the claim can tolerate.
 
@@ -44,26 +44,18 @@ The throughput/accuracy tradeoff is not solely an engineering decision — it is
 
 ## Build a Portfolio of Complementary Evidence
 
-No single check validates the full claim. Build the smallest portfolio that produces enough confidence for the tolerance you set. Each technique is a lens that reveals one class of failure — the art is matching evidence type to claim property and covering the blind spots with another technique.
-
-| Technique | Strong signal | Blind spot |
-| --- | --- | --- |
-| Deterministic automation | Contracts, invariants, schemas, builds, types, known regressions | Ambiguous intent, product quality, unknown edge cases |
-| LLM as judge | Rubric-bound semantic comparison and high-volume triage | Ground truth, systematic bias, inherent noise (false positives/negatives), high-consequence acceptance |
-| Manual validation | Actual experience, intent, trade-offs, and acceptance | Repetitive high-volume coverage |
-| Probabilistic exploration | Unknown paths, adversarial inputs, and resilience gaps | Repeatable regression protection |
-
-The techniques reinforce rather than replace one another. Use deterministic checks wherever a property can be stated mechanically. Use a person where judgment is inherently product-, domain-, or consequence-dependent. Use LLMs and exploratory agents to scale the space between those boundaries.
+No single validation technique catches every possible failure. Choose the smallest combination of techniques whose collective blind spots you can accept for the claim at hand. Four classes of technique — **deterministic checks**, **LLM judges**, **manual validation**, and **exploratory agents** — each reveal different failure modes and complement one another's blind spots. What follows breaks down each technique in detail.
 
 ### What Deterministic Checks Protect
 
-Deterministic checks are the cheapest, most reliable signal — but only for properties that can be stated as machine-verifiable invariants. They validate user-facing contracts, schemas, build output, and known regressions. They *cannot* validate ambiguous quality attributes or detect missing requirements.
+Deterministic checks are the cheapest, most reliable signal — but only for properties that can be stated as machine-verifiable invariants. They validate user-facing contracts, schemas, build output, and known regressions. They _cannot_ validate ambiguous quality attributes or detect missing requirements.
 
 The critical discipline with deterministic checks is to protect **promises, not construction**. A deterministic check should remain valid after an internal refactor. If a refactor breaks a check, the check was coupled to code rather than to a behavioral contract. Checks that assert internal call sequences, private state, or mock interactions with implementation details impose a repair tax every time the code improves.
 
 Mock true system boundaries — paid third-party APIs, remote services, dependencies that cannot safely run in a test environment — not internal implementation details. An authentication test using a real test database, password hashing, and session construction catches broken interactions that mock sequences cannot.
 
 Deterministic evidence useful in practice includes:
+
 - builds, type checks, linters, formatters, and dependency or security scanners
 - behavior and invariant tests for known requirements
 - consumer or provider contract tests at service boundaries
@@ -87,6 +79,7 @@ If web search discovered a pattern the operating profile did not anticipate, add
 An LLM judge asks a model to assess an artifact against a supplied rubric. It is useful when a deterministic assertion is too narrow but reviewing every artifact manually is too expensive — which is most real-world validation scenarios.
 
 Examples include:
+
 - ranking generated landing pages against a campaign brief
 - checking whether an agent plan fulfills approved scope and avoids prohibited changes
 - triaging support responses for grounding, completeness, and policy compliance
@@ -120,6 +113,7 @@ Do not use an LLM judge as the only gate when a deterministic check can express 
 ## Humans Own the Acceptance Decision
 
 Manual validation means a human actually experiences and inspects the artifact:
+
 - run the workflow as a user
 - inspect empty, loading, failure, and recovery states
 - assess visual hierarchy, copy, accessibility, and interaction feel
@@ -165,14 +159,14 @@ Confirmed production failures and newly observed usage belong in the operating p
 
 Validation should change the workflow, not merely attach a score to it.
 
-| Finding | Next move |
-| --- | --- |
-| A local defect or missing known edge case | Fix the bounded unit and revalidate |
-| The agent missed a codebase fact, API, or constraint | Re-ground |
-| The solution shape or sequencing is wrong | Re-plan |
-| One candidate is noisy but the target is clear | Generate independent candidates and judge them with independent evidence |
-| Evidence conflicts or the consequence is high | Add a human checkpoint |
-| Exploration or field telemetry finds a confirmed failure mode | Encode it as a deterministic regression check and update the profile |
+| Finding                                                       | Next move                                                                |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| A local defect or missing known edge case                     | Fix the bounded unit and revalidate                                      |
+| The agent missed a codebase fact, API, or constraint          | Re-ground                                                                |
+| The solution shape or sequencing is wrong                     | Re-plan                                                                  |
+| One candidate is noisy but the target is clear                | Generate independent candidates and judge them with independent evidence |
+| Evidence conflicts or the consequence is high                 | Add a human checkpoint                                                   |
+| Exploration or field telemetry finds a confirmed failure mode | Encode it as a deterministic regression check and update the profile     |
 
 This maps directly to the controls in [Reliability Levers](./reliability-levers.md): improve context for missing facts, change orchestration for bad work shape, retry independently for noisy generation, and use human checkpoints to stop a bad assumption from propagating.
 

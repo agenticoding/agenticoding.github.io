@@ -17,6 +17,7 @@ type TextProps = {
   size?: number;
   weight?: number;
   voice?: 'ai' | 'human' | 'spec' | 'keyword';
+  dominantBaseline?: React.SVGAttributes<SVGTextElement>['dominantBaseline'];
 };
 
 type MarkerProps = {
@@ -25,15 +26,25 @@ type MarkerProps = {
 };
 
 const CALLOUT_LINE_HEIGHT = 16;
-const CALLOUT_TEXT_OFFSET = 17;
+const CALLOUT_TOP_PADDING = 16;
+const CALLOUT_BOTTOM_PADDING = 16;
+const CALLOUT_MIN_HEIGHT = 64;
 const CALLOUT_INLINE_PADDING = 16;
-const CALLOUT_PADDING = 16;
 const CALLOUT_TO_TILE_GAP = 8;
 const TILE_TO_GATE_GAP = 8;
 const GATE_HEIGHT = 24;
+const SCENE_HEIGHT = 416;
+const SCENE_BOTTOM_PADDING = TILE_TO_GATE_GAP;
+const DESKTOP_SCENE_Y = 24;
+const DESKTOP_TRANSITION_Y = DESKTOP_SCENE_Y + SCENE_HEIGHT / 2 - 114;
 
 function calloutHeight(lines: readonly string[]) {
-  return lines.length * CALLOUT_LINE_HEIGHT + CALLOUT_PADDING;
+  return Math.max(
+    CALLOUT_MIN_HEIGHT,
+    lines.length * CALLOUT_LINE_HEIGHT +
+      CALLOUT_TOP_PADDING +
+      CALLOUT_BOTTOM_PADDING
+  );
 }
 
 function DiagramText({
@@ -45,6 +56,7 @@ function DiagramText({
   size = 11,
   weight = 500,
   voice = 'spec',
+  dominantBaseline,
 }: TextProps) {
   return (
     <text
@@ -52,6 +64,7 @@ function DiagramText({
       y={y}
       fill={tone}
       textAnchor={anchor}
+      dominantBaseline={dominantBaseline}
       fontSize={size}
       fontWeight={weight}
       style={{
@@ -124,11 +137,12 @@ function Callout({
         <DiagramText
           key={`${line}-${index}`}
           x={x + CALLOUT_INLINE_PADDING}
-          y={y + CALLOUT_TEXT_OFFSET + index * CALLOUT_LINE_HEIGHT}
+          y={y + CALLOUT_TOP_PADDING + (index + 0.5) * CALLOUT_LINE_HEIGHT}
           tone="var(--text-heading)"
           voice={voice}
           size={size}
           weight={400}
+          dominantBaseline="middle"
         >
           {line}
         </DiagramText>
@@ -159,11 +173,16 @@ function OneShotScene({
   height: number;
 }) {
   const tileX = x + 16;
-  const requestLines = ['“Can you fix this?”'];
-  const requestY = y + 48;
-  const tileHeight = 184;
+  const requestLines = ['Can you fix this?'];
+  const feedbackLines = [
+    '“It changed the wrong thing.”',
+    '“Now I have to find what broke.”',
+  ];
+  const requestY = y + 44;
   const tileY = requestY + calloutHeight(requestLines) + CALLOUT_TO_TILE_GAP;
-  const feedbackY = tileY + tileHeight + CALLOUT_TO_TILE_GAP;
+  const feedbackHeight = calloutHeight(feedbackLines);
+  const feedbackY = y + SCENE_HEIGHT - SCENE_BOTTOM_PADDING - feedbackHeight;
+  const tileHeight = feedbackY - tileY - CALLOUT_TO_TILE_GAP;
   return (
     <g>
       <Frame x={x} y={y} width={width} height={height} />
@@ -190,7 +209,7 @@ function OneShotScene({
         y={tileY}
         width={width - 32}
         height={tileHeight}
-        agentBlockHeight={104}
+        agentBlockHeight={tileHeight - 84}
         tone="warning"
         contextEyebrow="ONE-SHOT OUTPUT"
         contextDetail="no working context"
@@ -209,7 +228,7 @@ function OneShotScene({
         width={width - 32}
         tone="var(--visual-warning)"
         voice="human"
-        lines={['“Looks right. Is it?”', 'Who owns the result?']}
+        lines={feedbackLines}
       />
     </g>
   );
@@ -217,7 +236,7 @@ function OneShotScene({
 
 function oneShotTile(): AgentContextTile {
   return {
-    label: 'DONE?',
+    label: 'UNEXPECTED CHANGE',
     activationDelayMs: 900,
     className: styles.guessContext,
   };
@@ -262,9 +281,9 @@ function WorkingScene({
       </DiagramText>
       <OperatorNode x={x + 16} y={y + 44} size={40} />
       <Callout
-        x={x + 76}
+        x={x + 72}
         y={requestY}
-        width={width - 92}
+        width={width - 88}
         tone="var(--border-emphasis)"
         voice="human"
         lines={requestLines}
@@ -295,7 +314,7 @@ function WorkingScene({
           height={GATE_HEIGHT}
           rx={0}
           fill="var(--surface-raised)"
-          stroke="var(--border-emphasis)"
+          stroke="var(--visual-system)"
           strokeWidth={1}
         />
         <DiagramText
@@ -384,11 +403,21 @@ function DesktopDiagram() {
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <OneShotScene x={24} y={24} width={320} height={336} />
-      <Transition x={480} y={24} />
-      <WorkingScene x={616} y={24} width={320} height={400} />
+      <OneShotScene
+        x={24}
+        y={DESKTOP_SCENE_Y}
+        width={320}
+        height={SCENE_HEIGHT}
+      />
+      <Transition x={480} y={DESKTOP_TRANSITION_Y} />
+      <WorkingScene
+        x={616}
+        y={DESKTOP_SCENE_Y}
+        width={320}
+        height={SCENE_HEIGHT}
+      />
       <path
-        d="M 360 114 H 400"
+        d="M 360 208 H 400"
         fill="none"
         stroke="var(--border-emphasis)"
         strokeWidth={1.5}
@@ -396,7 +425,7 @@ function DesktopDiagram() {
       />
       <path
         className={styles.storyEntry}
-        d="M 560 114 H 600"
+        d="M 560 208 H 600"
         fill="none"
         stroke="var(--visual-indigo)"
         strokeWidth={1.5}
@@ -420,25 +449,25 @@ function MobileDiagram() {
   return (
     <svg
       className={styles.operatorMobile}
-      viewBox="0 0 340 976"
+      viewBox="0 0 340 1056"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <OneShotScene x={16} y={24} width={308} height={336} />
+      <OneShotScene x={16} y={24} width={308} height={SCENE_HEIGHT} />
       <path
-        d="M 170 376 V 416"
+        d="M 170 448 V 488"
         fill="none"
         stroke="var(--border-emphasis)"
         strokeWidth={1.5}
         markerEnd="url(#operator-arrow-mobile)"
       />
-      <EmojiImage asset={EMOJI.books} x={150} y={424} size={40} />
-      <DiagramText x={170} y={484} anchor="middle" size={16} weight={700}>
+      <EmojiImage asset={EMOJI.books} x={150} y={496} size={40} />
+      <DiagramText x={170} y={556} anchor="middle" size={16} weight={700}>
         THE SKILL IS NOT BETTER ASKING.
       </DiagramText>
       <DiagramText
         x={170}
-        y={504}
+        y={576}
         anchor="middle"
         tone="var(--visual-indigo)"
         size={16}
@@ -448,13 +477,13 @@ function MobileDiagram() {
       </DiagramText>
       <path
         className={styles.storyEntry}
-        d="M 170 520 V 552"
+        d="M 170 592 V 624"
         fill="none"
         stroke="var(--visual-indigo)"
         strokeWidth={1.5}
         markerEnd="url(#operator-arrow-indigo-mobile)"
       />
-      <WorkingScene x={16} y={568} width={308} height={400} />
+      <WorkingScene x={16} y={632} width={308} height={SCENE_HEIGHT} />
       <defs>
         <ArrowMarker id="operator-arrow-mobile" tone="var(--border-emphasis)" />
         <ArrowMarker

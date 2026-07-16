@@ -10,13 +10,21 @@ import {
 } from './TokenTypeIllustration';
 import type { TokenUnitModality } from './TokenUnit';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
+import {
+  BenchmarkChartSvg,
+  compactChart,
+  compactXTicks,
+  layoutCurveLabels,
+} from './LongContextBenchmarkChart';
+import { benchmarkRows, type BenchmarkRow } from './LongContextBenchmarkTable';
 import styles from './ModelCardFitExplorer.module.css';
 
 type ModelId = 'opus' | 'sonnet' | 'gpt55' | 'flash' | 'pro';
 
-type PublishedScore = {
-  metric: string;
+type PublishedBenchmark = {
+  name: string;
   score: string;
+  source: { label: string; href: string };
 };
 
 type PriceProfile = {
@@ -45,7 +53,7 @@ type CardField = {
   value: string;
   implication: string;
   boundary: string;
-  publishedScores?: readonly PublishedScore[];
+  publishedBenchmark?: PublishedBenchmark;
   price?: PriceProfile;
   modality?: ModalityProfile;
 };
@@ -60,6 +68,7 @@ type FieldSignal = {
 
 type ModelCard = {
   id: ModelId;
+  benchmarkId: BenchmarkRow['id'];
   provider: string;
   name: string;
   architecture: ArchitectureProfile;
@@ -91,9 +100,18 @@ const SOURCES = {
   },
 } as const;
 
+const LIVEBENCH_INSTRUCTION_FOLLOWING = {
+  name: 'LIVEBENCH · INSTRUCTION FOLLOWING',
+  source: {
+    label: 'LiveBench methodology and leaderboard ↗',
+    href: 'https://livebench.ai/',
+  },
+} as const;
+
 const CARDS: readonly ModelCard[] = [
   {
     id: 'opus',
+    benchmarkId: 'opus-46',
     provider: 'Anthropic',
     name: 'Claude Opus 4.6',
     architecture: {
@@ -107,7 +125,7 @@ const CARDS: readonly ModelCard[] = [
       { label: 'High listed cost', status: 'limited' },
       { label: 'Text route candidate', status: 'strong' },
       { label: 'Strong 1M MRCR result', status: 'strong' },
-      { label: 'Terminal-Bench + behavioral audit scores', status: 'strong' },
+      { label: 'LiveBench instruction-following score', status: 'strong' },
     ],
     fields: [
       {
@@ -145,22 +163,22 @@ const CARDS: readonly ModelCard[] = [
           'MRCR does not measure extraction, ranking, or schema validity.',
       },
       {
-        label: 'Instruction and safety',
-        icon: EMOJI.warning,
-        value: 'Terminal-Bench 2.0 score shown below',
-        publishedScores: [
-          { metric: 'TERMINAL-BENCH 2.0', score: '65.4% (reported)' },
-          { metric: 'BEHAVIORAL AUDIT', score: '≈1.0% misaligned' },
-        ],
+        label: 'Instruction following',
+        icon: EMOJI.map,
+        value: 'LiveBench Instruction Following: 63.3%',
+        publishedBenchmark: {
+          ...LIVEBENCH_INSTRUCTION_FOLLOWING,
+          score: '63.3%',
+        },
         implication:
-          'Comparable tool-use evidence is available; the audit rate is a separate safety signal.',
-        boundary:
-          'Neither score replaces host-side action controls or an inbox-specific evaluation.',
+          'The score is comparable across the cards and provides a broad instruction-following signal.',
+        boundary: 'It does not replace an inbox-specific evaluation.'
       },
     ],
   },
   {
     id: 'sonnet',
+    benchmarkId: 'sonnet-46',
     provider: 'Anthropic',
     name: 'Claude Sonnet 4.6',
     architecture: {
@@ -174,7 +192,7 @@ const CARDS: readonly ModelCard[] = [
       { label: 'Moderate listed cost', status: 'mixed' },
       { label: 'Text route candidate', status: 'strong' },
       { label: 'Visible 1M retrieval decay', status: 'mixed' },
-      { label: 'No comparable numeric score published', status: 'unknown' },
+      { label: 'LiveBench instruction-following score', status: 'unknown' },
     ],
     fields: [
       {
@@ -209,21 +227,22 @@ const CARDS: readonly ModelCard[] = [
           'Sparse points do not show the intermediate degradation shape.',
       },
       {
-        label: 'Instruction and safety',
-        icon: EMOJI.warning,
-        value: 'Terminal-Bench 2.0 score shown below',
-        publishedScores: [
-          { metric: 'TERMINAL-BENCH 2.0', score: '59.1% (reported)' },
-          { metric: 'BEHAVIORAL AUDIT', score: 'Not published' },
-        ],
+        label: 'Instruction following',
+        icon: EMOJI.map,
+        value: 'LiveBench Instruction Following: 63.2%',
+        publishedBenchmark: {
+          ...LIVEBENCH_INSTRUCTION_FOLLOWING,
+          score: '63.2%',
+        },
         implication:
-          'The reported benchmark is a narrow agentic coding signal, not a general ranking.',
-        boundary: 'Hostile mail remains a local evaluation requirement.',
+          'The score measures explicit constraint adherence, not the quality of the extracted todo list.',
+        boundary: 'The email-to-todo workflow still requires a local evaluation.'
       },
     ],
   },
   {
     id: 'gpt55',
+    benchmarkId: 'gpt-55',
     provider: 'OpenAI',
     name: 'GPT-5.5',
     architecture: {
@@ -237,7 +256,7 @@ const CARDS: readonly ModelCard[] = [
       { label: 'Higher listed cost at saturation', status: 'mixed' },
       { label: 'Text, image, audio, and video input', status: 'strong' },
       { label: 'MRCR cliff after 256K', status: 'limited' },
-      { label: 'No comparable numeric score published', status: 'unknown' },
+      { label: 'LiveBench instruction-following score', status: 'unknown' },
     ],
     fields: [
       {
@@ -279,22 +298,23 @@ const CARDS: readonly ModelCard[] = [
           'MRCR does not predict date normalization, ranking, or schema validity.',
       },
       {
-        label: 'Instruction and safety',
-        icon: EMOJI.warning,
-        value: 'No comparable numeric score published',
-        publishedScores: [
-          { metric: 'TERMINAL-BENCH 2.0', score: 'Not published' },
-          { metric: 'BEHAVIORAL AUDIT', score: 'Not published' },
-        ],
+        label: 'Instruction following',
+        icon: EMOJI.map,
+        value: 'LiveBench Instruction Following: 70.7%',
+        publishedBenchmark: {
+          ...LIVEBENCH_INSTRUCTION_FOLLOWING,
+          score: '70.7%',
+        },
         implication:
-          'The API exposes tools and structured output, but this source does not publish a comparable score.',
+          'The score measures instruction adherence; API tool and structured-output support are separate capabilities.',
         boundary:
-          'Published capability claims do not replace a hostile-inbox test set.',
+          'Published benchmark results do not replace an inbox-specific test set.'
       },
     ],
   },
   {
     id: 'flash',
+    benchmarkId: 'deepseek-v4-flash',
     provider: 'DeepSeek',
     name: 'DeepSeek V4 Flash',
     architecture: {
@@ -309,7 +329,7 @@ const CARDS: readonly ModelCard[] = [
       { label: 'Text-route fit', status: 'strong' },
       { label: 'Capacity only', status: 'unknown' },
       {
-        label: 'Terminal-Bench score; safety audit not published',
+        label: 'LiveBench instruction-following score',
         status: 'unknown',
       },
     ],
@@ -348,22 +368,22 @@ const CARDS: readonly ModelCard[] = [
           'DeepSeek’s published 1M result is a model-specific benchmark signal, not a workload result.',
       },
       {
-        label: 'Instruction and safety',
-        icon: EMOJI.warning,
-        value: 'No comparable numeric score published',
-        publishedScores: [
-          { metric: 'TERMINAL-BENCH 2.0', score: '56.9% (Acc, Flash Max)' },
-          { metric: 'BEHAVIORAL AUDIT', score: 'Not published' },
-        ],
+        label: 'Instruction following',
+        icon: EMOJI.map,
+        value: 'LiveBench Instruction Following: 63.1%',
+        publishedBenchmark: {
+          ...LIVEBENCH_INSTRUCTION_FOLLOWING,
+          score: '63.1%',
+        },
         implication:
-          'A published tool-use score gives the card one comparable integration signal.',
-        boundary:
-          'Tool use is not an instruction-safety measurement; test hostile mail locally.',
+          'The score provides a comparable constraint-following signal for the text-only inbox route.',
+        boundary: 'Test the email-to-todo workflow locally.',
       },
     ],
   },
   {
     id: 'pro',
+    benchmarkId: 'deepseek-v4-pro',
     provider: 'DeepSeek',
     name: 'DeepSeek V4 Pro',
     architecture: {
@@ -378,7 +398,7 @@ const CARDS: readonly ModelCard[] = [
       { label: 'Text-route fit', status: 'strong' },
       { label: 'Separate reported curve', status: 'mixed' },
       {
-        label: 'Terminal-Bench score; safety audit not published',
+        label: 'LiveBench instruction-following score',
         status: 'unknown',
       },
     ],
@@ -417,17 +437,16 @@ const CARDS: readonly ModelCard[] = [
           'This separately scoped curve is not comparable to the Terra/Luna pair.',
       },
       {
-        label: 'Instruction and safety',
-        icon: EMOJI.warning,
-        value: 'No comparable numeric score published',
-        publishedScores: [
-          { metric: 'TERMINAL-BENCH 2.0', score: '67.9% (Acc, Pro Max)' },
-          { metric: 'BEHAVIORAL AUDIT', score: 'Not published' },
-        ],
+        label: 'Instruction following',
+        icon: EMOJI.map,
+        value: 'LiveBench Instruction Following: 62.4%',
+        publishedBenchmark: {
+          ...LIVEBENCH_INSTRUCTION_FOLLOWING,
+          score: '62.4%',
+        },
         implication:
-          'A published tool-use score gives the card one comparable integration signal.',
-        boundary:
-          'Tool use is not an instruction-safety measurement; test hostile mail locally.',
+          'The score provides a comparable constraint-following signal for the text-only inbox route.',
+        boundary: 'Test the email-to-todo workflow locally.',
       },
     ],
   },
@@ -534,16 +553,18 @@ function ProviderMark({ provider }: { provider: ModelCard['provider'] }) {
 function CardFieldView({
   field,
   signal,
+  benchmarkRow,
 }: {
   field: CardField;
   signal: FieldSignal;
+  benchmarkRow: BenchmarkRow;
 }) {
   return (
     <section className={`${styles.cardField} ${styles[signal.status]}`}>
       <p className={styles.fieldLabel}>
         <EmojiLabel asset={field.icon}>{field.label}</EmojiLabel>
       </p>
-      <FieldGraphic field={field} status={signal.status} />
+      <FieldGraphic field={field} status={signal.status} benchmarkRow={benchmarkRow} />
     </section>
   );
 }
@@ -551,12 +572,16 @@ function CardFieldView({
 function FieldGraphic({
   field,
   status,
+  benchmarkRow,
 }: {
   field: CardField;
   status: SignalStatus;
+  benchmarkRow: BenchmarkRow;
 }) {
-  const graphic = field.publishedScores ? (
-    <PublishedScoreTable scores={field.publishedScores} />
+  const graphic = field.label === 'Context vs. recall' ? (
+    <BenchmarkRecallGraphic row={benchmarkRow} />
+  ) : field.publishedBenchmark ? (
+    <PublishedBenchmarkGraphic benchmark={field.publishedBenchmark} />
   ) : field.price ? (
     <PriceGraphic profile={field.price} />
   ) : field.modality ? (
@@ -565,6 +590,20 @@ function FieldGraphic({
     <RecallGraphic value={field.value} status={status} />
   );
   return <div className={styles.fieldGraphic}>{graphic}</div>;
+}
+
+type PricePhase = 'input' | 'output' | 'static';
+
+function pricePhase(label: string): PricePhase {
+  if (label === 'INPUT' || label === 'CACHE READ') return 'input';
+  if (label === 'OUTPUT' || label === 'CACHE WRITE') return 'output';
+  return 'static';
+}
+
+function pricePhaseClass(phase: PricePhase) {
+  if (phase === 'input') return styles.priceRowInput;
+  if (phase === 'output') return styles.priceRowOutput;
+  return '';
 }
 
 function PriceGraphic({ profile }: { profile: PriceProfile }) {
@@ -582,7 +621,10 @@ function PriceGraphic({ profile }: { profile: PriceProfile }) {
     >
       <div className={styles.priceUnit}>USD / MTOK</div>
       {rows.map(([label, value]) => (
-        <div className={styles.priceRow} key={label}>
+        <div
+          className={`${styles.priceRow} ${pricePhaseClass(pricePhase(label))}`}
+          key={label}
+        >
           <span>{label}</span>
           <strong>{value}</strong>
         </div>
@@ -619,8 +661,13 @@ function ModalityGraphic({ profile }: { profile: ModalityProfile }) {
       className={styles.modalityGraphic}
       aria-label={`Documented modality flow: ${modalityLabel(profile.input)} input becomes ${modalityLabel(profile.output)} output`}
     >
-      <svg viewBox="0 0 338 190" role="img" aria-hidden="true">
-        <text x={20} y={14} className={styles.modalityDirection}>
+      <svg viewBox="0 0 338 192" role="img" aria-hidden="true">
+        <text
+          x={20}
+          y={36}
+          dominantBaseline="middle"
+          className={styles.modalityDirection}
+        >
           INPUT
         </text>
         <TokenTypeTokens
@@ -640,7 +687,12 @@ function ModalityGraphic({ profile }: { profile: ModalityProfile }) {
         />
         <path className={styles.modalityConnector} d="M 169 122 V 130" />
         <path className={styles.modalityArrow} d="M 169 134 l -4 -6 h 8 z" />
-        <text x={20} y={144} className={styles.modalityDirection}>
+        <text
+          x={20}
+          y={160}
+          dominantBaseline="middle"
+          className={styles.modalityDirection}
+        >
           OUTPUT
         </text>
         <TokenTypeTokens
@@ -655,6 +707,32 @@ function ModalityGraphic({ profile }: { profile: ModalityProfile }) {
   );
 }
 
+function BenchmarkRecallGraphic({ row }: { row: BenchmarkRow }) {
+  const labels = layoutCurveLabels([row], compactChart).map((label) => ({
+    ...label,
+    visible: true,
+  }));
+  return (
+    <div className={styles.benchmarkRecallGraphic}>
+      <BenchmarkChartSvg
+        chart={compactChart}
+        ticks={compactXTicks}
+        rows={[row]}
+        selectedIds={[row.id]}
+        labels={labels}
+        variant="compact"
+        title={`${row.model} ${row.benchmark} retrieval curve`}
+        description={`${row.model} reported ${row.benchmark} retrieval scores across the plotted context range. ${row.curveDensity === 'full' ? 'Multiple reported points form a full curve.' : 'Only sparse reported points are available; the connecting line is not a measured intermediate curve.'}`}
+      />
+      <div className={styles.benchmarkMeta}>
+        <span>{row.benchmark}</span>
+        <span>{row.mode} · {row.curveDensity === 'full' ? 'full reported curve' : 'sparse reported points'}</span>
+        <a href={row.source}>Benchmark source ↗</a>
+      </div>
+    </div>
+  );
+}
+
 function RecallGraphic({
   value,
   status,
@@ -665,21 +743,14 @@ function RecallGraphic({
   const scores = [...value.matchAll(/(\d+(?:\.\d+)?)%/g)].map((match) =>
     Number(match[1])
   );
-  const labels = [...value.matchAll(/@([^;,]+)/g)].map((match) =>
-    match[1].trim()
-  );
   return (
     <div
       className={`${styles.recallGraphic} ${styles[status]}`}
-      aria-label={`MRCR retrieval scores: ${scores.join(', ')} percent`}
+      aria-label={`Retrieval scores: ${scores.join(', ')} percent`}
     >
-      <div className={styles.recallAxis}>
-        <span>RETRIEVAL</span>
-        <span>0—100%</span>
-      </div>
       {scores.map((score, index) => (
         <div className={styles.recallRow} key={`${score}-${index}`}>
-          <span>{labels[index] ?? 'POINT'}</span>
+          <span>POINT {index + 1}</span>
           <span className={styles.recallTrack}>
             <span style={{ width: `${Math.min(score, 100)}%` }} />
           </span>
@@ -690,21 +761,20 @@ function RecallGraphic({
   );
 }
 
-function PublishedScoreTable({
-  scores,
+function PublishedBenchmarkGraphic({
+  benchmark,
 }: {
-  scores: readonly PublishedScore[];
+  benchmark: PublishedBenchmark;
 }) {
   return (
-    <div className={styles.scoreTable} aria-label="Comparable benchmark scores">
-      {scores
-        .filter((score) => score.metric !== 'BEHAVIORAL AUDIT')
-        .map((score) => (
-          <div className={styles.scoreRow} key={score.metric}>
-            <span>{score.metric}</span>
-            <strong>{score.score}</strong>
-          </div>
-        ))}
+    <div className={styles.benchmarkGraphic}>
+      <div className={styles.scoreHero} aria-label={`${benchmark.name}: ${benchmark.score}`}>
+        <span>{benchmark.name}</span>
+        <strong>{benchmark.score}</strong>
+      </div>
+      <div className={styles.benchmarkMeta}>
+        <a href={benchmark.source.href}>{benchmark.source.label}</a>
+      </div>
     </div>
   );
 }
@@ -725,6 +795,8 @@ function ModelCardView({
   card: ModelCard;
   direction: SlideDirection;
 }) {
+  const benchmarkRow = benchmarkRows.find((row) => row.id === card.benchmarkId);
+  if (!benchmarkRow) throw new Error(`Missing benchmark row: ${card.benchmarkId}`);
   return (
     <section
       id={`model-card-panel-${card.id}`}
@@ -766,6 +838,7 @@ function ModelCardView({
             key={field.label}
             field={field}
             signal={card.signals[index]}
+            benchmarkRow={benchmarkRow}
           />
         ))}
       </div>

@@ -10,6 +10,8 @@
 }
 
 .container {
+  --flow-cycle-duration: 6200ms;
+  --flow-output-delay: 2600ms;
   color: var(--text-body);
 }
 
@@ -256,6 +258,33 @@
   color: var(--text-heading);
 }
 
+.benchmarkGraphic {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.scoreHero {
+  display: grid;
+  gap: var(--space-0h);
+  color: var(--text-heading);
+}
+
+.scoreHero span {
+  color: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: var(--lh-sm);
+}
+
+.scoreHero strong {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: var(--lh-2xl);
+}
+
 .priceGraphic {
   display: grid;
   gap: 1px;
@@ -281,8 +310,19 @@
   align-items: baseline;
   min-width: 0;
   padding: var(--space-0h) var(--space-1);
+  border-left: 2px solid transparent;
   background: var(--surface-raised);
 }
+
+.priceRowInput,
+.priceRowOutput {
+  animation: priceRowPulse var(--flow-cycle-duration) ease-in-out infinite both;
+}
+
+.priceRowOutput {
+  animation-delay: var(--flow-output-delay);
+}
+
 
 .priceRow span {
   color: var(--text-muted);
@@ -345,6 +385,7 @@
   text-align: right;
 }
 
+
 .modalityGraphic {
   color: var(--visual-violet);
 }
@@ -380,7 +421,7 @@
 }
 
 .modalityToken {
-  animation: modalityTokenWake 6200ms ease-in-out infinite both;
+  animation: modalityTokenWake var(--flow-cycle-duration) ease-in-out infinite both;
   transform-box: fill-box;
   transform-origin: center;
 }
@@ -402,13 +443,28 @@
 }
 
 .outputTokens > .modalityToken {
-  animation-delay: 2600ms;
+  animation-delay: var(--flow-output-delay);
 }
 
 .modalityGear {
   animation: modalityGearSpin 6200ms linear infinite both;
   transform-box: fill-box;
   transform-origin: center;
+}
+
+@keyframes priceRowPulse {
+  0%,
+  24%,
+  100% {
+    border-left-color: transparent;
+    background: var(--surface-raised);
+  }
+
+  4%,
+  10% {
+    border-left-color: var(--visual-violet);
+    background: var(--surface-raised);
+  }
 }
 
 @keyframes modalityTokenWake {
@@ -419,8 +475,8 @@
   }
 
   4% {
-    opacity: 0.58;
-    transform: scale(0.84);
+    opacity: 0.72;
+    transform: scale(0.92);
   }
 
   10% {
@@ -445,6 +501,42 @@
   display: grid;
   align-content: center;
   gap: var(--space-0h);
+}
+
+.benchmarkRecallGraphic {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.benchmarkRecallGraphic svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.benchmarkMeta {
+  display: grid;
+  gap: var(--space-0h);
+  color: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: var(--lh-sm);
+}
+
+.benchmarkMeta span:first-child {
+  color: var(--text-heading);
+  font-weight: 700;
+}
+
+.benchmarkMeta a {
+  width: fit-content;
+  color: var(--text-heading);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
 }
 
 .recallAxis,
@@ -620,6 +712,7 @@
   line-height: var(--lh-sm);
 }
 
+
 @keyframes card-forward {
   from {
     opacity: 0.35;
@@ -679,8 +772,12 @@
   }
 
   .modalityToken,
-  .modalityGear {
+  .modalityGear,
+  .priceRowInput,
+  .priceRowOutput {
     animation: none;
+    border-left-color: transparent;
+    background: var(--surface-raised);
     opacity: 1;
     transform: none;
   }

@@ -105,15 +105,15 @@
 
 @keyframes operatorContextRow {
   0%,
+  16%,
   100% {
-    opacity: 0.55;
+    opacity: 1;
     transform: scale(1);
   }
 
-  12%,
-  28% {
+  7% {
     opacity: 1;
-    transform: scale(1.018);
+    transform: scale(1.035);
   }
 }
 
@@ -140,6 +140,12 @@
   34% {
     opacity: 1;
     transform: scale(1.015);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .container * {
+    animation: none !important;
   }
 }
 

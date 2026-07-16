@@ -38,7 +38,7 @@ export type WorkingAgentNodeProps = AgentNodeProps & {
 };
 
 const DEFAULT_AGENT_SIZE = DIAGRAM_ICON_SIZE.actor;
-const DEFAULT_SATELLITE_SIZE = DIAGRAM_ICON_SIZE.tertiary;
+const FIXED_LAYOUT_SCALE = 1;
 const ROBOT_OFFSET = {
   gridX: 1,
   gridY: -1,
@@ -125,11 +125,10 @@ function workingAgentGearSpin(
 }
 
 function workingAgentLayout(agentSize: number) {
-  const scale = agentSize / DEFAULT_AGENT_SIZE;
-  const satellites = satelliteLayout(agentSize);
+  const satellites = satelliteLayout();
   const robot = {
-    x: gridOffset(ROBOT_OFFSET.gridX, scale) + ROBOT_OFFSET.nudgeX,
-    y: gridOffset(ROBOT_OFFSET.gridY, scale) + ROBOT_OFFSET.nudgeY,
+    x: gridOffset(ROBOT_OFFSET.gridX, FIXED_LAYOUT_SCALE) + ROBOT_OFFSET.nudgeX,
+    y: gridOffset(ROBOT_OFFSET.gridY, FIXED_LAYOUT_SCALE) + ROBOT_OFFSET.nudgeY,
     size: agentSize,
   };
   const frame = visualFrame([robot, ...satellites.map(satellitePart)]);
@@ -146,13 +145,11 @@ function workingAgentLayout(agentSize: number) {
   };
 }
 
-function satelliteLayout(agentSize: number): Satellite[] {
-  const scale = agentSize / DEFAULT_AGENT_SIZE;
-
+function satelliteLayout(): Satellite[] {
   return SATELLITE_SPECS.map((spec) => ({
-    dx: gridOffset(spec.gridX, scale) + (spec.nudgeX ?? 0),
-    dy: gridOffset(spec.gridY, scale) + (spec.nudgeY ?? 0),
-    size: scaledSatellite(spec.baseSize, scale),
+    dx: gridOffset(spec.gridX, FIXED_LAYOUT_SCALE) + (spec.nudgeX ?? 0),
+    dy: gridOffset(spec.gridY, FIXED_LAYOUT_SCALE) + (spec.nudgeY ?? 0),
+    size: spec.baseSize,
     className: spec.className,
     activeTurns: spec.activeTurns,
   }));
@@ -191,6 +188,10 @@ function visualFrame(parts: readonly NodePart[]): NodePart {
   return { x: (left + right) / 2, y: (top + bottom) / 2, size: 0 };
 }
 
+function gridOffset(slots: number, scale: number): number {
+  return Math.round(slots * DIAGRAM_GRID * scale);
+}
+
 function partBounds({ x, y, size }: NodePart) {
   const displaySize = size * OPENMOJI_VISUAL_SCALE;
   const offset = (displaySize - size) / 2;
@@ -200,12 +201,4 @@ function partBounds({ x, y, size }: NodePart) {
     top: y - offset,
     bottom: y - offset + displaySize,
   };
-}
-
-function gridOffset(slots: number, scale: number): number {
-  return Math.round(slots * DIAGRAM_GRID * scale);
-}
-
-function scaledSatellite(baseSize: number, scale: number): number {
-  return Math.max(DEFAULT_SATELLITE_SIZE, Math.round(baseSize * scale));
 }

@@ -1,0 +1,63 @@
+.container {
+  width: 100%;
+}
+
+/* The marker samples several tick-aligned operating positions. */
+.positionCue {
+  animation: positionCueSweep 11s ease-in-out infinite;
+}
+
+@keyframes positionCueSweep {
+  0%,
+  10% {
+    transform: translateX(calc(var(--cue-step) * -2));
+  }
+
+  26%,
+  36% {
+    transform: translateX(calc(var(--cue-step) * 2));
+  }
+
+  52%,
+  62% {
+    transform: translateX(calc(var(--cue-step) * -1));
+  }
+
+  78%,
+  84% {
+    transform: translateX(calc(var(--cue-step) * 3));
+  }
+
+  /* Return over the longest leg so the loop closes without a reset jump. */
+  100% {
+    transform: translateX(calc(var(--cue-step) * -2));
+  }
+}
+
+.desktop,
+.mobile {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mobile {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .desktop {
+    display: none;
+  }
+
+  .mobile {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .positionCue {
+    animation: none;
+    transform: none;
+  }
+}

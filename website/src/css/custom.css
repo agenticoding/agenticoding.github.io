@@ -252,6 +252,7 @@
   --visual-warning: var(--semantic-warning); /* #a76900 — Caution, attention */
   --visual-success: var(--semantic-success); /* #00894d — Validated, complete */
   --visual-neutral: var(--semantic-neutral); /* #666666 — Neutral */
+  --visual-system: var(--visual-cyan); /* System/code role — cyan hue */
 
   /* Hue-based (categorical) */
   --visual-lime: var(
