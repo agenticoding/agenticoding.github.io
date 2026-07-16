@@ -38,6 +38,8 @@
    ======================================================================== */
 
 :root {
+  --announcement-height: 0px;
+
   /* === NEUTRAL SCALE — Pure achromatic (C:0.000) === */
   --neutral-50: #f5f5f5;
   --neutral-100: #e8e8e8;
@@ -794,15 +796,25 @@ article h1 {
   :root,
   [data-theme='dark'] {
     --ifm-navbar-height: 0px;
+    --announcement-height: 30px;
   }
 
   .theme-doc-sidebar-container {
     border-right: none;
     border-bottom: none;
   }
+
+  .theme-doc-sidebar-container [class*='sidebarViewport'] {
+    top: var(--announcement-height);
+    height: calc(100vh - var(--announcement-height));
+    max-height: calc(100vh - var(--announcement-height));
+    height: calc(100dvh - var(--announcement-height));
+    max-height: calc(100dvh - var(--announcement-height));
+  }
 }
 
 .navbar {
+  top: var(--announcement-height);
   border-bottom: 1px solid var(--neutral-300);
 }
 
@@ -1389,6 +1401,10 @@ kbd,
    ======================================================================== */
 
 .theme-announcement-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: env(safe-area-inset-top, 0px);
   font-family: var(--font-body);
   font-size: var(--text-sm);
   line-height: var(--lh-sm);

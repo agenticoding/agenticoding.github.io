@@ -596,14 +596,6 @@
   text-align: right;
 }
 
-.fieldSummary h5 {
-  color: var(--text-heading);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  line-height: var(--lh-lg);
-}
-
 .fieldValue {
   color: var(--text-heading);
   font-size: var(--text-base);
@@ -651,23 +643,6 @@
 
 .cardField .boundary > span {
   align-self: start;
-}
-
-.signalStatus {
-  font-weight: 700;
-}
-
-.signalStatus.strong {
-  color: var(--visual-success);
-}
-
-.signalStatus.mixed,
-.signalStatus.limited {
-  color: var(--visual-warning);
-}
-
-.signalStatus.unknown {
-  color: var(--visual-neutral);
 }
 
 .boundary > span,

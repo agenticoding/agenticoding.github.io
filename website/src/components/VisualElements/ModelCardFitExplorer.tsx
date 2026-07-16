@@ -58,13 +58,7 @@ type CardField = {
   modality?: ModalityProfile;
 };
 
-type SignalStatus = 'strong' | 'mixed' | 'limited' | 'unknown';
 type SlideDirection = 'forward' | 'backward';
-
-type FieldSignal = {
-  label: string;
-  status: SignalStatus;
-};
 
 type ModelCard = {
   id: ModelId;
@@ -73,7 +67,6 @@ type ModelCard = {
   name: string;
   architecture: ArchitectureProfile;
   source: { label: string; href: string };
-  signals: readonly FieldSignal[];
   fields: readonly CardField[];
 };
 
@@ -121,12 +114,6 @@ const CARDS: readonly ModelCard[] = [
       context: '1M tokens · context compaction',
     },
     source: SOURCES.opus,
-    signals: [
-      { label: 'High listed cost', status: 'limited' },
-      { label: 'Text route candidate', status: 'strong' },
-      { label: 'Strong 1M MRCR result', status: 'strong' },
-      { label: 'LiveBench instruction-following score', status: 'strong' },
-    ],
     fields: [
       {
         label: 'Price',
@@ -188,12 +175,6 @@ const CARDS: readonly ModelCard[] = [
       context: '1M tokens · context compaction',
     },
     source: SOURCES.sonnet,
-    signals: [
-      { label: 'Moderate listed cost', status: 'mixed' },
-      { label: 'Text route candidate', status: 'strong' },
-      { label: 'Visible 1M retrieval decay', status: 'mixed' },
-      { label: 'LiveBench instruction-following score', status: 'unknown' },
-    ],
     fields: [
       {
         label: 'Price',
@@ -252,12 +233,6 @@ const CARDS: readonly ModelCard[] = [
       context: '2M tokens (reported)',
     },
     source: SOURCES.gpt55,
-    signals: [
-      { label: 'Higher listed cost at saturation', status: 'mixed' },
-      { label: 'Text, image, audio, and video input', status: 'strong' },
-      { label: 'MRCR cliff after 256K', status: 'limited' },
-      { label: 'LiveBench instruction-following score', status: 'unknown' },
-    ],
     fields: [
       {
         label: 'Price',
@@ -324,15 +299,6 @@ const CARDS: readonly ModelCard[] = [
       context: '1M tokens',
     },
     source: SOURCES.flash,
-    signals: [
-      { label: 'Low listed cost', status: 'strong' },
-      { label: 'Text-route fit', status: 'strong' },
-      { label: 'Capacity only', status: 'unknown' },
-      {
-        label: 'LiveBench instruction-following score',
-        status: 'unknown',
-      },
-    ],
     fields: [
       {
         label: 'Price',
@@ -393,15 +359,6 @@ const CARDS: readonly ModelCard[] = [
       context: '1M tokens',
     },
     source: SOURCES.pro,
-    signals: [
-      { label: 'Low listed cost', status: 'strong' },
-      { label: 'Text-route fit', status: 'strong' },
-      { label: 'Separate reported curve', status: 'mixed' },
-      {
-        label: 'LiveBench instruction-following score',
-        status: 'unknown',
-      },
-    ],
     fields: [
       {
         label: 'Price',
@@ -552,30 +509,37 @@ function ProviderMark({ provider }: { provider: ModelCard['provider'] }) {
 
 function CardFieldView({
   field,
-  signal,
   benchmarkRow,
 }: {
   field: CardField;
-  signal: FieldSignal;
   benchmarkRow: BenchmarkRow;
 }) {
   return (
-    <section className={`${styles.cardField} ${styles[signal.status]}`}>
+    <section className={styles.cardField}>
       <p className={styles.fieldLabel}>
         <EmojiLabel asset={field.icon}>{field.label}</EmojiLabel>
       </p>
-      <FieldGraphic field={field} status={signal.status} benchmarkRow={benchmarkRow} />
+      <div className={styles.fieldSummary}>
+        <p className={styles.fieldValue}>{field.value}</p>
+      </div>
+      <FieldGraphic field={field} benchmarkRow={benchmarkRow} />
+      <div className={styles.fieldImplication}>
+        <span>IMPLICATION</span>
+        <p>{field.implication}</p>
+      </div>
+      <div className={styles.boundary}>
+        <span>BOUNDARY</span>
+        <p>{field.boundary}</p>
+      </div>
     </section>
   );
 }
 
 function FieldGraphic({
   field,
-  status,
   benchmarkRow,
 }: {
   field: CardField;
-  status: SignalStatus;
   benchmarkRow: BenchmarkRow;
 }) {
   const graphic = field.label === 'Context vs. recall' ? (
@@ -587,7 +551,7 @@ function FieldGraphic({
   ) : field.modality ? (
     <ModalityGraphic profile={field.modality} />
   ) : (
-    <RecallGraphic value={field.value} status={status} />
+    <RecallGraphic value={field.value} />
   );
   return <div className={styles.fieldGraphic}>{graphic}</div>;
 }
@@ -733,19 +697,13 @@ function BenchmarkRecallGraphic({ row }: { row: BenchmarkRow }) {
   );
 }
 
-function RecallGraphic({
-  value,
-  status,
-}: {
-  value: string;
-  status: SignalStatus;
-}) {
+function RecallGraphic({ value }: { value: string }) {
   const scores = [...value.matchAll(/(\d+(?:\.\d+)?)%/g)].map((match) =>
     Number(match[1])
   );
   return (
     <div
-      className={`${styles.recallGraphic} ${styles[status]}`}
+      className={styles.recallGraphic}
       aria-label={`Retrieval scores: ${scores.join(', ')} percent`}
     >
       {scores.map((score, index) => (
@@ -833,11 +791,10 @@ function ModelCardView({
         </div>
       </header>
       <div className={styles.fieldGrid}>
-        {card.fields.map((field, index) => (
+        {card.fields.map((field) => (
           <CardFieldView
             key={field.label}
             field={field}
-            signal={card.signals[index]}
             benchmarkRow={benchmarkRow}
           />
         ))}

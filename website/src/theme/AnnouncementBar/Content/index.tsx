@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import {useEffect, useRef, type ReactNode} from 'react';
 import { useThemeConfig } from '@docusaurus/theme-common';
 import type { Props } from '@theme/AnnouncementBar/Content';
 import InlineEmojiImage from '@site/src/components/VisualElements/InlineEmojiImage';
@@ -9,9 +9,29 @@ export default function AnnouncementBarContent({
   ...props
 }: Props): ReactNode {
   const { announcementBar } = useThemeConfig();
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const bar = contentRef.current?.parentElement;
+    if (!bar) return;
+
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        '--announcement-height',
+        `${bar.getBoundingClientRect().height}px`,
+      );
+    };
+
+    updateHeight();
+    if (typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(bar);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div {...props} className={className}>
+    <div ref={contentRef} {...props} className={className}>
       <InlineEmojiImage
         asset={EMOJI.construction}
         size={16}

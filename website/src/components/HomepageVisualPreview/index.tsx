@@ -306,11 +306,11 @@ function PreviewHeader() {
   return (
     <>
       <Heading id="inside-the-book" as="h2" className={styles.sectionTitle}>
-        Inside the book
+        How to operate coding agents accountably
       </Heading>
       <p className={styles.sectionSubtitle}>
-        Representative models you can apply to production work—not feature
-        screenshots.
+        Three production decisions that turn model output into work you can
+        inspect, validate, and accept.
       </p>
     </>
   );

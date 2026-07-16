@@ -33,21 +33,11 @@ The goal is not autonomous code generation. It is controlled leverage: faster ex
 
 ## The operating method
 
-### Give agents reality
+Production agent work is not prompting. It is directing bounded work with independent evidence. Agents make execution cheap; they do not make acceptance cheap.
 
-Useful context is selected, not dumped. You will learn to find the code, constraints, documentation, and decisions that define the task; choose the **largest reliable unit of work**; and manage context with a recurring cycle: **Write, Select, Isolate, Compress**.
-
-### Give agents boundaries
-
-A request becomes operable when scope, contracts, stop conditions, and checkpoints are explicit. The book uses a four-phase loop—ground, plan, execute, validate—and shows where phases can run concurrently while keeping one context's framing from carrying directly into another.
-
-### Demand independent evidence
-
-Implementation is a candidate, not a conclusion. You will derive tests in fresh contexts, route failures back to the phase that caused them, and move truth from temporary plans into durable specs, tests, code, and release evidence. Over time, the specification and the system converge.
+The method is visible in the decisions that keep plausible output accountable: route work through the right phase, separate execution from judgment, and treat every accepted change as context for the next agent.
 
 <HomepageVisualPreview />
-
-<CurriculumSection />
 
 ## Start with your current problem
 
@@ -59,6 +49,8 @@ You can read the book sequentially or enter where the work is stuck:
 - **A feature request is still ambiguous:** turn it into an executable contract with [Spec-Driven Development](/spec-driven-development).
 - **A diff looks plausible but is not yet trustworthy:** derive evidence with [Validation](/validation).
 - **Agent output degrades as the codebase grows:** read [Writing Agent-Friendly Code](/agent-friendly-code).
+
+<CurriculumSection />
 
 ## Who this is for
 

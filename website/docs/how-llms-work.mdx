@@ -281,19 +281,27 @@ That is not a contradiction. It is the point: **"better model" is not a scalar p
 
 Use benchmarks to identify which dimension improved, which dimension paid the cost, and whether your workload depends on the dimension that moved. This chapter stops at the model-selection question; Chapter 6 handles the operational attention shape and context-engineering tactics.
 
-## How to Read a Model Card
+## Model Cards Are Spec Sheets
 
-A publisher document is useful only when it changes a workload decision. Consider a text-only agent that turns one day of email into a prioritized todo list: it must recover commitments, normalize dates, merge duplicates, rank work, and emit a valid structure. Read one published model card at a time across cost, published modality, recall, and hostile-input scope. A result in one field is only a candidate for the next decision—not a winner for the whole route.
+A publisher document is useful only when it changes a workload decision. Consider an agent that turns one day of email into a prioritized todo list: it must recover commitments, normalize dates, merge duplicates, rank work, and emit a valid structure. Some emails carry inline images, attachments, or screenshots — those are workload requirements the model's modality field either covers or doesn't. A full inbox pushes the context window — recall benchmarks test whether commitments stay recoverable as the prompt grows. The output must follow a strict schema, deduplicate, rank, and filter spam — instruction-following benchmarks approximate that constraint density.
+
+A modern model card publishes dozens of benchmarks across coding, math, reasoning, vision, safety, and domain-specific tasks. Most are irrelevant to any specific workload. The skill is picking the few fields that map to your actual constraints — price, modality, context-vs-recall, instruction following — and reading across them.
+
+A model card is a spec sheet, not a scorecard. Each field reports a single published measurement under specific conditions — price at listed rates, recall at a given context length, instruction-following on one benchmark. Strong in one field does not predict strong in another. A field without a published result for your workload dimension is simply unknown.
+
+Read across the fields on a card to build a model profile. Then compare profiles across models. The result is a candidate set, not a single winner.
 
 <DiagramFrame
   kicker="Model selection"
-  title="Read published fields against one workload"
+  title="A model card is a profile, not a rank"
   size="wide"
   caption={
     <>
-      Each card stays within its published source boundary. Its icon and title
-      name the field; its score indicator signals the narrow published result:
-      strong, mixed, limited, or unknown. No card is an overall winner.
+      Each field is a narrow published measurement with a known boundary. A
+      strong price score does not predict instruction-following, and a high
+      recall score does not guarantee reliable extraction. No card is an
+      across-the-board winner. The comparison builds a model profile — a sense
+      of where each model fits and where it falls short.
     </>
   }
 >
@@ -304,7 +312,7 @@ A publisher document is useful only when it changes a workload decision. Conside
 LiveBench measures compliance with multiple explicit constraints in language tasks. Its score combines strict all-constraints accuracy with partial per-constraint accuracy from automated checks. The reported July 2026 scores are a broad instruction-following signal, not a direct evaluation of email extraction, date normalization, deduplication, ranking, or schema validity. [View the methodology and leaderboard](https://livebench.ai/).
 :::
 
-The context step points back to the retrieval graph above: capacity and recall are separate published signals. The completed journey produces a short-list, not a production route. Run the labeled inbox set before routing work, and score commitment recall, date normalization, duplicate handling, ranking, schema validity, latency, and cost.
+When comparing cards, "context vs. recall" points back to the retrieval graph above — capacity and recall are separate published signals. The cross-model comparison produces a candidate shortlist, not a production route. Run the labeled inbox set before routing real work, and score commitment recall, date normalization, duplicate handling, ranking, schema validity, latency, and cost.
 
 :::note[Published specifications]
 A model card describes a released checkpoint. A system card describes a provider&apos;s assessed safety scope. A release report describes selected published results. Each is release-specific; none replaces a local evaluation of the agent and serving environment.
