@@ -6,15 +6,19 @@
   container-type: inline-size;
 }
 
-.diagram {
-  display: block;
+.diagram.desktopDiagram,
+.diagram.mobileDiagram {
   width: 100%;
   height: auto;
   max-width: 640px;
   margin-inline: auto;
 }
 
-.mobileDiagram {
+.diagram.desktopDiagram {
+  display: block;
+}
+
+.diagram.mobileDiagram {
   display: none;
   max-width: 360px;
 }
@@ -26,21 +30,21 @@
 }
 
 @container (max-width: 520px) {
-  .desktopDiagram {
+  .diagram.desktopDiagram {
     display: none;
   }
 
-  .mobileDiagram {
+  .diagram.mobileDiagram {
     display: block;
   }
 }
 
 @media (max-width: 520px) {
-  .desktopDiagram {
+  .diagram.desktopDiagram {
     display: none;
   }
 
-  .mobileDiagram {
+  .diagram.mobileDiagram {
     display: block;
   }
 }
