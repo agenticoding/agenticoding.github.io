@@ -527,10 +527,10 @@ function CardFieldView({
         <span>IMPLICATION</span>
         <p>{field.implication}</p>
       </div>
-      <div className={styles.boundary}>
-        <span>BOUNDARY</span>
+      <aside className={styles.gotcha}>
+        <span>GOTCHA</span>
         <p>{field.boundary}</p>
-      </div>
+      </aside>
     </section>
   );
 }
