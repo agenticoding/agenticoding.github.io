@@ -32,8 +32,7 @@ function HeroCopy() {
         AI agents write code. You still ship software.
       </Heading>
       <p className={styles.lead}>
-        A field guide for software engineers, product designers, project managers,
-        and product managers using coding agents to deliver production software –
+        An advanced reference book for operating coding agents in production –
         without outsourcing judgment.
       </p>
     </>
@@ -51,7 +50,7 @@ function HeroActions() {
       />
       <HeroAction
         className={styles.secondaryAction}
-        href="#start-with-your-current-problem"
+        href="#where-is-the-work-stuck"
         label="Find your starting point"
         icon={EMOJI.downArrow}
       />

@@ -1,0 +1,178 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  width: 100%;
+  max-width: 800px;
+  margin-inline: auto;
+}
+
+.desktop,
+.mobile {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.mobile {
+  display: none;
+  max-width: 340px;
+}
+
+.pressure rect,
+.systemBoundary,
+.stabilizer rect,
+.loopStage rect {
+  vector-effect: non-scaling-stroke;
+}
+
+.pressure rect {
+  fill: var(--surface-raised);
+  stroke: var(--border-default);
+  stroke-width: 1px;
+}
+
+.pressure text {
+  fill: var(--text-heading);
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.pressure[data-tone='violet'] rect {
+  fill: var(--visual-bg-violet);
+  stroke: var(--visual-violet);
+}
+
+.pressure[data-tone='indigo'] rect {
+  fill: var(--visual-bg-indigo);
+  stroke: var(--visual-indigo);
+}
+
+.pressure[data-tone='cyan'] rect {
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
+}
+
+.pressure[data-tone='warning'] rect {
+  fill: var(--visual-bg-warning);
+  stroke: var(--visual-warning);
+}
+
+.pressureArrow path {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+.pressureArrow path[data-tone='violet'] {
+  stroke: var(--visual-violet);
+}
+
+marker path[data-tone='violet'] {
+  fill: var(--visual-violet);
+}
+
+.pressureArrow path[data-tone='indigo'] {
+  stroke: var(--visual-indigo);
+}
+
+marker path[data-tone='indigo'] {
+  fill: var(--visual-indigo);
+}
+
+.pressureArrow path[data-tone='cyan'] {
+  stroke: var(--visual-cyan);
+}
+
+marker path[data-tone='cyan'] {
+  fill: var(--visual-cyan);
+}
+
+.pressureArrow path[data-tone='warning'] {
+  stroke: var(--visual-warning);
+}
+
+marker path[data-tone='warning'] {
+  fill: var(--visual-warning);
+}
+
+.systemBoundary {
+  stroke-width: 1.5px;
+}
+
+.stabilizer rect {
+  fill: var(--surface-raised);
+  stroke-width: 1px;
+}
+
+.stabilizer text {
+  fill: var(--text-heading);
+  font-family: var(--font-mono-keyword);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.stabilizer[data-tone='cyan'] rect {
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
+}
+
+.stabilizer[data-tone='indigo'] rect {
+  fill: var(--visual-bg-indigo);
+  stroke: var(--visual-indigo);
+}
+
+.stabilizer[data-tone='success'] rect {
+  fill: var(--visual-bg-success);
+  stroke: var(--visual-success);
+}
+
+.loop path {
+  fill: none;
+  stroke: var(--border-emphasis);
+  stroke-width: 1.5px;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+.loop marker path {
+  fill: var(--border-emphasis);
+}
+
+.loopStage rect {
+  fill: var(--surface-raised);
+  stroke: var(--border-emphasis);
+  stroke-width: 1px;
+}
+
+.loopStage text,
+.systemNote {
+  fill: var(--text-heading);
+  font-family: var(--font-mono-spec);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.systemNote {
+  fill: var(--text-muted);
+  font-size: 9px;
+  font-weight: 400;
+}
+
+@container (max-width: 36rem) {
+  .desktop {
+    display: none;
+  }
+
+  .mobile {
+    display: block;
+  }
+}

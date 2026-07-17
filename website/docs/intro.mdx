@@ -5,67 +5,71 @@ sidebar_label: 'Introduction'
 hide_table_of_contents: false
 ---
 
-import CurriculumSection from '@site/src/components/CurriculumSection';
-import HomepageVisualPreview from '@site/src/components/HomepageVisualPreview';
-import OperatorTransformationDiagram from '@site/src/components/VisualElements/OperatorTransformationDiagram';
+import AgentWorkStabilityDiagram from '@site/src/components/VisualElements/AgentWorkStabilityDiagram';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+import OperatorTransformationDiagram from '@site/src/components/VisualElements/OperatorTransformationDiagram';
 
 AI agents make execution cheap. They also make production judgment more valuable.
 
-An agent can search, edit, run commands, and produce convincing artifacts faster than you can trust it. The bottleneck is no longer typing. It is deciding what the agent needs to know, what it may change, and what makes it trustworthy enough to ship.
+**Agentic Coding is an advanced technical reference for operating coding agents on production software.** It helps you decide what an agent needs to know, what it may change, and what evidence makes its work safe to accept.
 
-**Agentic Coding is a technical reference for operating coding agents on production work.** It turns those decisions into a repeatable system: ground the agent in reality, bound the work, isolate execution from judgment, and require evidence before acceptance.
-
-## What changes after reading
-
-You will be able to move beyond one-shot prompting and run complete production work loops:
+An agent can produce candidate work; the operator still defines its boundaries and decides whether the evidence is enough to accept it.
 
 <DiagramFrame
-  kicker="Operator mechanics"
-  title="Stop accepting guesses. Start directing accountable work."
+  kicker="Operating model"
+  title="The agent executes; the operator owns acceptance."
   size="wide"
-  caption="Agentic coding turns model output into bounded, evidenced work that remains subject to human acceptance."
+  caption={
+    <>
+      The agent turns bounded work and context into a candidate. The operator
+      decides what ships.
+    </>
+  }
 >
   <OperatorTransformationDiagram />
 </DiagramFrame>
 
-The goal is not autonomous code generation. It is controlled leverage: faster execution without transferring architecture, product, security, or release ownership to a model.
+## What this book covers
 
-## The operating method
+This is a book about directing agent-assisted work without outsourcing engineering, product, security, or release ownership. It covers model and harness behavior, context and task design, production workflows, validation, and codebase practices that make agents more reliable over time.
 
-Production agent work is not prompting. It is directing bounded work with independent evidence. Agents make execution cheap; they do not make acceptance cheap.
+It is not a beginner programming course, a prompt library, or a recipe for hands-off software generation. You do not need ML expertise, a preferred model, or a specific harness. You do need enough fluency in your discipline to recognize incomplete, unsafe, or incorrect work.
 
-The method is visible in the decisions that keep plausible output accountable: route work through the right phase, separate execution from judgment, and treat every accepted change as context for the next agent.
+## What you will be able to do
 
-<HomepageVisualPreview />
+After reading, you will be able to:
 
-## Start with your current problem
+- reason about an agent's capabilities, failure modes, and autonomy boundaries;
+- turn ambiguous requests into bounded work with explicit constraints and acceptance criteria;
+- supply the right codebase, product, and external context without overwhelming execution;
+- evaluate agent output with independent evidence rather than plausible diffs; and
+- improve the systems, code, and workflows that determine reliability at scale.
 
-You can read the book sequentially or enter where the work is stuck:
+The book is for software engineers, product designers, project managers, and product managers working with coding agents in production. The responsibilities differ by role; accountability for the outcome does not.
 
-- **The model is unpredictable:** start with [LLMs Demystified](/how-llms-work), [Agents Demystified](/how-agents-work), and [Prompting 101](/prompting-101).
-- **The agent lacks codebase reality:** go to [Context Engineering](/context-engineering).
-- **A task is too large or unreliable:** use the [Four-Phase Workflow](/high-level-methodology) and [Reliability Levers](/reliability-levers).
-- **A feature request is still ambiguous:** turn it into an executable contract with [Spec-Driven Development](/spec-driven-development).
-- **A diff looks plausible but is not yet trustworthy:** derive evidence with [Validation](/validation).
-- **Agent output degrades as the codebase grows:** read [Writing Agent-Friendly Code](/agent-friendly-code).
+## Where is the work stuck?
 
-<CurriculumSection />
+Where does agent work break first? Find the pressure you recognize. This book gives you the next move—not another prompt trick.
 
-## Who this is for
+<DiagramFrame
+  kicker="Production pressure"
+  title="Stabilize the agent loop before asking it to carry more work."
+  size="wide"
+  caption={
+    <>
+      Production pressure enters from model behavior, missing reality, task
+      shape, and unverified output. Boundaries, working context, and independent
+      evidence make the loop reliable.
+    </>
+  }
+>
+  <AgentWorkStabilityDiagram />
+</DiagramFrame>
 
-This book is for software engineers, product designers, project managers, and product managers who use coding agents on production work. It treats each as an operator: the relevant context, decisions, and evidence change by role, but responsibility for the outcome does not.
+The dangerous runs are not the obviously broken ones. They look finished early—until a missing constraint, stale assumption, or untested change turns speed into rework.
 
-This is an advanced guide, not a beginner programming course, prompt library, or recipe for hands-off software generation. Production-level agent work requires basic software engineering fluency. You are expected to recognize most of the engineering concepts used here, follow the technical implications, and fill any gaps on your own—not to be a software engineer by title.
+**Agentic Coding is about making that moment predictable:** direct the work, expose the pressure, and keep acceptance in your hands.
 
-You do not need ML expertise, a preferred model, or a specific harness. You do need enough judgment in your discipline to recognize when the work is incomplete, unsafe, or wrong.
+## Trust note
 
-## Where the method comes from
-
-The book is written by [Ofri Wolfus](/about), an ex-Google engineer and Senior Software Architect with more than 20 years across embedded systems, cloud infrastructure, developer tools, and LLM applications. Its methods grew from production systems, lessons from hundreds of engineers using modern AI tools, and a deliberately inspectable experiment: building [ChunkHound](https://chunkhound.github.io)—including its implementation—through coding agents.
-
-ChunkHound is open source under the MIT license and handles codebases above 100 million lines. It appears throughout the book as one reference implementation of grounding, research pipelines, and context isolation—not as an exclusive recommendation. The [book source](https://github.com/agenticoding/agenticoding.github.io) and [ChunkHound source](https://github.com/chunkhound/chunkhound) are available for inspection.
-
----
-
-**For the complete progression, begin with [Chapter 1: LLMs Demystified](/how-llms-work). For a live task, [jump to your current problem](#start-with-your-current-problem).**
+The book is written by [Ofri Wolfus](/about) and grounded in production practice and open-source experimentation. Inspect the [book source](https://github.com/agenticoding/agenticoding.github.io), the [ChunkHound source](https://github.com/chunkhound/chunkhound), or the [author background](/about).
