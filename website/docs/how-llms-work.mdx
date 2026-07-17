@@ -199,6 +199,31 @@ This is the fundamental limitation: probability can imitate correctness, but it 
 
 So an LLM response should be treated as a candidate artifact, not as a verified answer. First judge whether it has the right shape. Then validate whether it is actually correct: run the tests, check the citation, inspect the API, verify the constraint, reproduce the result.
 
+### Human Errors Have Reasons; LLM Errors Don't
+
+When a human makes a mistake, there is always a reason: they don't understand the domain, they're tired, they skimmed the input, their agenda pulls a different direction, or a cognitive bias distorts their judgment. Every human error has a causal story. Those reasons create **predictable error funnels** — you know where to look. A junior engineer struggles with distributed systems. A tired reviewer misses subtle bugs. Competence boundaries are learnable, and trust builds along them.
+
+An LLM has no such reasons. The model that just produced a flawless architecture analysis can, in the next sentence, add 2+2 and get 5. There is no "why" — no misunderstanding, no distraction, no fatigue, no misaligned incentive. The model took a statistically plausible wrong turn in a probability landscape. That is the entire explanation.
+
+Research confirms this structural difference. LLM errors superficially resemble human errors — models pick the same wrong answers students do[^arxiv-distractors] — but the mechanism is fundamentally different. Human cognitive biases are stable and rooted in evolved heuristics; LLM biases are learned from training data. Scaling and instruction tuning can shift the error distribution — reducing some error types while making others more systematic — but they cannot eliminate errors. The model is a probabilistic local minimum in a high-dimensional weight space, not a reasoning system. Error is mathematically irreducible: hallucination is provably unavoidable,[^arxiv-limits] and even temperature zero does not guarantee deterministic output.[^temp-zero]
+
+| | Human mistakes | LLM mistakes |
+|---|---|---|
+| **Cause** | Always a reason (fatigue, knowledge gap, bias, agenda) | No reason — statistical fluctuation |
+| **Distribution** | Concentrated in predictable funnels (expertise gaps, cognitive biases, fatigue) | Driven by step count (p^n), training coverage, and architecture fit. |
+| **Difficulty correlation** | Error rate rises with cognitive difficulty | Error rate depends on step depth, training coverage, and architecture fit — not cognitive difficulty.[^pattern-difficulty] |
+| **Predictability** | Competence boundaries are learnable | Predictable only along the three axes: more steps = less reliable, sparse patterns = less reliable, poor fit = less reliable. Instance-level failure remains unpredictable. |
+| **Self-awareness** | Can catch and correct own errors | Cannot introspect, cannot learn — stateless and fixed. Each error is a fresh event. |
+
+:::tip[Why letter counting and basic math mislead]
+
+Letter counting and arithmetic are common "LLM tests" but they test the wrong thing. LLMs process tokens, not characters or exact numbers. To count letters correctly, the model must write code, extract the exact input from your prompt, execute it, and reproduce the output — a multi-step pipeline where each step can introduce error. Same for math: the model needs to generate and run code.
+
+These tests measure tool-use orchestration reliability, not understanding. A model that fails at counting the number of r's in "strawberry" can still reason correctly about architecture trade-offs.
+:::
+
+The operational implication: **you cannot trust an LLM based on human notions of task difficulty.** A brilliant design analysis does not make the next token — a trivial constraint check — safe. Reliability follows probability depth: each step multiplies the space, so longer chains decay exponentially regardless of how "easy" each step looks.[^step-decay] Validate at phase boundaries, where unverified state would propagate.
+
 This also explains why more context does not remove the problem. More context gives the model more material to condition on, but it does not turn probability into logic. The model can still weight the wrong evidence, miss a constraint, or continue from a locally plausible pattern instead of the globally correct one.
 
 ### Local Prediction, Global Consequences
@@ -222,9 +247,16 @@ The previous framing — probability imitates logic but does not guarantee it �
 
 A wrong token early in a response does not stay local. It becomes part of the context for every prediction that follows, shifting what looks probable next. The model [was trained on clean human-written text](https://link.springer.com/article/10.1007/s00521-025-11162-0), so when its own output goes off track, recovery is unreliable. Post-training via RLHF [partially mitigates this](https://halil7hatun.medium.com/so-your-llm-falls-apart-after-20-tokens-yeah-thats-exposure-bias-a6511b31c734) by training on flawed outputs, not just clean text — but prompting the model to ["check your work"](https://aclanthology.org/2024.tacl-1.78.pdf) does not reliably fix errors. Recovery needs external feedback: tool calls, code execution, tests.
 
-One visible side effect is **probability wells**. Once the model starts down a path — a reasoning direction, a factual commitment, a repeating pattern — that path reinforces itself through context. Each token conditioned on the previous ones makes the same trajectory more likely. The most extreme case is [repetition loops](https://sebastianraschka.com/faq/docs/repetition-loops-generation.html): a pattern like `ab ab ab` becomes self-reinforcing, and with greedy decoding (temperature 0), escape is impossible once the loop forms.
+One visible side effect is **probability wells** — a black hole in the model's probability space. Once the model crosses the threshold — repeating a token, doubling down on a reasoning direction, committing to a wrong fact — the self-reinforcement dynamic takes over. Each token deepens the well by making the same path more probable. The most extreme case is [repetition loops](https://sebastianraschka.com/faq/docs/repetition-loops-generation.html): a pattern like `ab ab ab` becomes inescapable because the context now predicts `ab` with near-certainty. Under greedy decoding (temperature 0), escape is mathematically impossible once the loop forms — the expected escape time is infinite.[^deterministic-loops] The only reliable way out is external: a context reset that collapses the well by removing the self-reinforcing context. The rare non-deterministic floating-point flips in the inference stack can break a near-tie before the well sets, but once locked in, the model stays trapped until `max_tokens` or a reset intervenes.
 
-This is why [chain-of-thought](https://arxiv.org/abs/2201.11903), reasoning models, and [tree-of-thoughts](https://arxiv.org/abs/2305.10601) exist — not as intelligence upgrades, but as ways to give the model more intermediate steps so a wrong turn does not compound unchecked.
+This is the fingerprint of a system with frozen weights — a local minimum found during training, locked at inference. The probability landscape is fixed for the session. Every well that exists in that landscape is permanent. The model cannot adapt its way out, cannot learn mid-conversation, cannot dynamically reshape the terrain. It can only continue generating through the static landscape it was given. Context resets work because they change the input, not the weights — collapsing the well by removing the self-reinforcing context.
+
+:::tip[Lookahead: advanced well mitigation]
+
+Production systems reduce probability well traps with **lookahead techniques** (Lookahead Decoding, n-gram speculation). Instead of generating one token at a time, the model drafts multiple future tokens in parallel using n-gram caches and mask-predict, then verifies them in a single pass. By considering several future positions at once, lookahead can "see past" an incipient well and accept a token that breaks the cycle — like jumping over a pothole instead of stepping into it.
+
+Lookahead can cut well frequency 3–4× on repetitive workloads without changing the output distribution, but because the landscape is structurally fixed (frozen weights), it cannot eliminate wells entirely. A model already locked in a deep well still needs a context reset.
+:::
 
 ## Context Under Pressure
 
@@ -345,6 +377,22 @@ The useful abstraction is:
 > A probabilistic engine inside a deterministic control plane.
 
 The next chapter covers that control plane: how agents wrap the LLM brain with software that can plan, use tools, observe results, and continue the loop.
+
+---
+
+[^arxiv-distractors]: arXiv 2502.15140 — LLM distractor selection aligns with common student errors across model sizes; Pearson correlations of 0.28–0.37 between LLM probabilities and human distractor frequency. [Read the paper](https://arxiv.org/abs/2502.15140)
+
+[^nature-biases]: Nature Communications (2024) — GPT-3 exhibits human-like reasoning biases (conjunction fallacy, CRT), while GPT-4 mostly overcomes them. Unlike stable human cognitive biases, LLM bias profiles shift with scale — but error never disappears. [Read the paper](https://www.nature.com/articles/s44271-024-00091-8)
+
+[^arxiv-limits]: arXiv 2511.12869 — Formal proof that hallucination is mathematically inevitable for any computable LLM: diagonalization guarantees adversarial inputs for every model, undecidable problems force infinite failure sets, and finite capacity cannot compress infinite complexity. [Read the paper](https://arxiv.org/abs/2511.12869)
+
+[^temp-zero]: Temperature zero only makes the token-sampling step deterministic. The inference stack — floating-point arithmetic, batch composition, GPU hardware, MoE routing — introduces run-to-run variability even under identical prompts. This non-determinism has a silver lining: without it, every near-tie would lock into a repetition loop. [Why LLMs Are Not Deterministic](https://mbrenndoerfer.com/writing/why-llms-are-not-deterministic)
+
+[^deterministic-loops]: Under pure greedy decoding, the expected escape time from a probability well is infinite. The self-reinforcement mechanism monotonically increases repetition probability, and with deterministic argmax selection there is no escape. [arXiv 2512.04419](https://arxiv.org/abs/2512.04419)
+
+[^pattern-difficulty]: LLM success rate is governed by surface pattern frequency in training data, not cognitive difficulty. Models show flat accuracy across Putnam difficulty levels while human accuracy drops sharply. [ACL 2026](https://aclanthology.org/2026.acl-srw.85.pdf)
+
+[^step-decay]: Agent reliability follows P = p^n for n sequential steps. With correlated errors the decay is even faster. This is the mathematical foundation of the orchestration and retry levers in [Chapter 7: Reliability Levers](./reliability-levers.md). [Reliability Science Framework](https://arxiv.org/abs/2603.29231)
 
 ---
 
