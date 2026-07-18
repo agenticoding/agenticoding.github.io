@@ -1,6 +1,17 @@
 import type { CSSProperties } from 'react';
 
-export type DiagramTone = 'context' | 'model' | 'system' | 'warning' | 'success' | 'decision' | 'neutral' | 'indigo' | 'violet' | 'cyan' | 'magenta';
+export type DiagramTone =
+  | 'context'
+  | 'model'
+  | 'system'
+  | 'warning'
+  | 'success'
+  | 'decision'
+  | 'neutral'
+  | 'indigo'
+  | 'violet'
+  | 'cyan'
+  | 'magenta';
 export type DiagramVoice = 'display' | 'human' | 'ai' | 'spec' | 'keyword';
 
 export const TILE_GRID = 8;
@@ -52,8 +63,17 @@ export function tileToneVars(tone: DiagramTone) {
   };
 }
 
-export function voiceStyle(voice: DiagramVoice, fontSize: number, fontWeight: number | string): CSSProperties {
-  return { fontFamily: `var(--font-${voiceFamily(voice)})`, fontSize, fontWeight, fontFeatureSettings: 'var(--font-mono-features)' };
+export function voiceStyle(
+  voice: DiagramVoice,
+  fontSize: number,
+  fontWeight: number | string
+): CSSProperties {
+  return {
+    fontFamily: `var(--font-${voiceFamily(voice)})`,
+    fontSize,
+    fontWeight,
+    fontFeatureSettings: 'var(--font-mono-features)',
+  };
 }
 
 function voiceFamily(voice: DiagramVoice) {
@@ -62,19 +82,47 @@ function voiceFamily(voice: DiagramVoice) {
   return `mono-${voice}`;
 }
 
-export function wrapSvgText(text: string, maxWidth: number, fontSize: number, maxLines: number) {
+export function wrapSvgText(
+  text: string,
+  maxWidth: number,
+  fontSize: number,
+  maxLines: number
+) {
   const words = text.split(/\s+/).filter(Boolean);
-  const lines = words.reduce<string[]>((acc, word) => addWord(acc, word, maxWidth, fontSize), ['']);
-  return clampLines(lines.filter(Boolean), maxLines);
+  const lines = words.reduce<string[]>(
+    (acc, word) => addWord(acc, word, maxWidth, fontSize),
+    []
+  );
+  return clampLines(lines, maxLines);
 }
 
-function addWord(lines: string[], word: string, maxWidth: number, fontSize: number) {
+function addWord(
+  lines: string[],
+  word: string,
+  maxWidth: number,
+  fontSize: number
+) {
   const next = [...lines];
   const index = next.length - 1;
   const candidate = next[index] ? `${next[index]} ${word}` : word;
-  if (estimateSvgTextWidth(candidate, fontSize) <= maxWidth) next[index] = candidate;
-  else next.push(word);
-  return next;
+  if (estimateSvgTextWidth(candidate, fontSize) <= maxWidth) {
+    next[index < 0 ? 0 : index] = candidate;
+    return next;
+  }
+
+  return [...next, ...splitLongWord(word, maxWidth, fontSize)];
+}
+
+function splitLongWord(word: string, maxWidth: number, fontSize: number) {
+  const charactersPerLine = Math.max(
+    1,
+    Math.floor(maxWidth / (fontSize * 0.6))
+  );
+  const chunks: string[] = [];
+  for (let index = 0; index < word.length; index += charactersPerLine) {
+    chunks.push(word.slice(index, index + charactersPerLine));
+  }
+  return chunks;
 }
 
 function clampLines(lines: string[], maxLines: number) {
@@ -83,5 +131,5 @@ function clampLines(lines: string[], maxLines: number) {
 }
 
 function estimateSvgTextWidth(text: string, fontSize: number) {
-  return text.length * fontSize * 0.5;
+  return text.length * fontSize * 0.6;
 }
