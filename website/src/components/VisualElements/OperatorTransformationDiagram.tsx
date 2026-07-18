@@ -7,6 +7,7 @@ import {
 } from './AgentTile';
 import { EmojiImage, OperatorNode } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
+import { wrapSvgText } from './diagramTileLayout';
 
 type TextProps = {
   x: number;
@@ -34,9 +35,16 @@ const CALLOUT_TO_TILE_GAP = 8;
 const TILE_TO_GATE_GAP = 8;
 const GATE_HEIGHT = 24;
 const SCENE_HEIGHT = 416;
+const ONE_SHOT_TILE_HEIGHT = 208;
 const SCENE_BOTTOM_PADDING = TILE_TO_GATE_GAP;
 const DESKTOP_SCENE_Y = 24;
 const DESKTOP_TRANSITION_Y = DESKTOP_SCENE_Y + SCENE_HEIGHT / 2 - 114;
+
+function calloutLines(lines: readonly string[], width: number, size: number) {
+  return lines.flatMap((line) =>
+    wrapSvgText(line, width - CALLOUT_INLINE_PADDING * 2, size, 20)
+  );
+}
 
 function calloutHeight(lines: readonly string[]) {
   return Math.max(
@@ -44,6 +52,49 @@ function calloutHeight(lines: readonly string[]) {
     lines.length * CALLOUT_LINE_HEIGHT +
       CALLOUT_TOP_PADDING +
       CALLOUT_BOTTOM_PADDING
+  );
+}
+
+function oneShotSceneHeight(width: number) {
+  const requestHeight = calloutHeight(
+    calloutLines(['Can you fix this?'], width - 88, 13)
+  );
+  const feedbackHeight = calloutHeight(
+    calloutLines(
+      ['“It changed the wrong thing.”', '“Now I have to find what broke.”'],
+      width - 32,
+      13
+    )
+  );
+  return Math.max(
+    SCENE_HEIGHT,
+    44 +
+      requestHeight +
+      CALLOUT_TO_TILE_GAP +
+      ONE_SHOT_TILE_HEIGHT +
+      CALLOUT_TO_TILE_GAP +
+      feedbackHeight +
+      SCENE_BOTTOM_PADDING
+  );
+}
+
+function workingSceneHeight(width: number) {
+  const requestHeight = calloutHeight(
+    calloutLines(
+      ['THIS IS THE JOB.', 'THIS IS WHAT “DONE” MEANS.'],
+      width - 88,
+      13
+    )
+  );
+  return Math.max(
+    SCENE_HEIGHT,
+    44 +
+      requestHeight +
+      CALLOUT_TO_TILE_GAP +
+      260 +
+      TILE_TO_GATE_GAP +
+      GATE_HEIGHT +
+      SCENE_BOTTOM_PADDING
   );
 }
 
@@ -121,19 +172,20 @@ function Callout({
   voice: TextProps['voice'];
   size?: number;
 }) {
+  const wrappedLines = calloutLines(lines, width, size);
   return (
     <>
       <rect
         x={x}
         y={y}
         width={width}
-        height={calloutHeight(lines)}
+        height={calloutHeight(wrappedLines)}
         rx={0}
         fill="var(--surface-page)"
         stroke={tone}
         strokeWidth={1}
       />
-      {lines.map((line, index) => (
+      {wrappedLines.map((line, index) => (
         <DiagramText
           key={`${line}-${index}`}
           x={x + CALLOUT_INLINE_PADDING}
@@ -178,14 +230,17 @@ function OneShotScene({
     '“It changed the wrong thing.”',
     '“Now I have to find what broke.”',
   ];
+  const sceneHeight = Math.max(height, oneShotSceneHeight(width));
   const requestY = y + 44;
-  const tileY = requestY + calloutHeight(requestLines) + CALLOUT_TO_TILE_GAP;
-  const feedbackHeight = calloutHeight(feedbackLines);
-  const feedbackY = y + SCENE_HEIGHT - SCENE_BOTTOM_PADDING - feedbackHeight;
-  const tileHeight = feedbackY - tileY - CALLOUT_TO_TILE_GAP;
+  const requestHeight = calloutHeight(
+    calloutLines(requestLines, width - 88, 13)
+  );
+  const tileY = requestY + requestHeight + CALLOUT_TO_TILE_GAP;
+  const tileHeight = ONE_SHOT_TILE_HEIGHT;
+  const feedbackY = tileY + tileHeight + CALLOUT_TO_TILE_GAP;
   return (
     <g>
-      <Frame x={x} y={y} width={width} height={height} />
+      <Frame x={x} y={y} width={width} height={sceneHeight} />
       <DiagramText
         x={x + 16}
         y={y + 24}
@@ -257,8 +312,12 @@ function WorkingScene({
   const boardWidth = width - 32;
   const boardHeight = 260;
   const requestLines = ['THIS IS THE JOB.', 'THIS IS WHAT “DONE” MEANS.'];
+  const sceneHeight = Math.max(height, workingSceneHeight(width));
   const requestY = y + 44;
-  const boardY = requestY + calloutHeight(requestLines) + CALLOUT_TO_TILE_GAP;
+  const requestHeight = calloutHeight(
+    calloutLines(requestLines, width - 88, 13)
+  );
+  const boardY = requestY + requestHeight + CALLOUT_TO_TILE_GAP;
   const gateY = boardY + boardHeight + TILE_TO_GATE_GAP;
   const gateX = x + width / 2;
   return (
@@ -267,7 +326,7 @@ function WorkingScene({
         x={x}
         y={y}
         width={width}
-        height={height}
+        height={sceneHeight}
         tone="var(--border-emphasis)"
       />
       <DiagramText
@@ -446,28 +505,46 @@ function DesktopDiagram() {
 }
 
 function MobileDiagram() {
+  const oneShotY = 24;
+  const oneShotHeight = oneShotSceneHeight(308);
+  const oneShotBottom = oneShotY + oneShotHeight;
+  const workingY = oneShotBottom + 192;
+  const workingHeight = workingSceneHeight(308);
+  const viewBoxHeight = workingY + workingHeight + 24;
+
   return (
     <svg
       className={styles.operatorMobile}
-      viewBox="0 0 340 1056"
+      viewBox={`0 0 340 ${viewBoxHeight}`}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <OneShotScene x={16} y={24} width={308} height={SCENE_HEIGHT} />
+      <OneShotScene x={16} y={oneShotY} width={308} height={oneShotHeight} />
       <path
-        d="M 170 448 V 488"
+        d={`M 170 ${oneShotBottom + 8} V ${oneShotBottom + 48}`}
         fill="none"
         stroke="var(--border-emphasis)"
         strokeWidth={1.5}
         markerEnd="url(#operator-arrow-mobile)"
       />
-      <EmojiImage asset={EMOJI.books} x={150} y={496} size={40} />
-      <DiagramText x={170} y={556} anchor="middle" size={16} weight={700}>
+      <EmojiImage
+        asset={EMOJI.books}
+        x={150}
+        y={oneShotBottom + 56}
+        size={40}
+      />
+      <DiagramText
+        x={170}
+        y={oneShotBottom + 116}
+        anchor="middle"
+        size={16}
+        weight={700}
+      >
         THE SKILL IS NOT BETTER ASKING.
       </DiagramText>
       <DiagramText
         x={170}
-        y={576}
+        y={oneShotBottom + 136}
         anchor="middle"
         tone="var(--visual-indigo)"
         size={16}
@@ -477,13 +554,13 @@ function MobileDiagram() {
       </DiagramText>
       <path
         className={styles.storyEntry}
-        d="M 170 592 V 624"
+        d={`M 170 ${oneShotBottom + 152} V ${oneShotBottom + 184}`}
         fill="none"
         stroke="var(--visual-indigo)"
         strokeWidth={1.5}
         markerEnd="url(#operator-arrow-indigo-mobile)"
       />
-      <WorkingScene x={16} y={632} width={308} height={SCENE_HEIGHT} />
+      <WorkingScene x={16} y={workingY} width={308} height={workingHeight} />
       <defs>
         <ArrowMarker id="operator-arrow-mobile" tone="var(--border-emphasis)" />
         <ArrowMarker
