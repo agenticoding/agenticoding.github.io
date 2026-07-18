@@ -38,6 +38,7 @@ const SCENE_HEIGHT = 416;
 const ONE_SHOT_TILE_HEIGHT = 208;
 const SCENE_BOTTOM_PADDING = TILE_TO_GATE_GAP;
 const DESKTOP_SCENE_Y = 24;
+const DESKTOP_VIEWBOX_BOTTOM_PADDING = 24;
 const DESKTOP_TRANSITION_Y = DESKTOP_SCENE_Y + SCENE_HEIGHT / 2 - 114;
 
 function calloutLines(lines: readonly string[], width: number, size: number) {
@@ -97,6 +98,9 @@ function workingSceneHeight(width: number) {
       SCENE_BOTTOM_PADDING
   );
 }
+
+const DESKTOP_VIEWBOX_HEIGHT =
+  DESKTOP_SCENE_Y + workingSceneHeight(320) + DESKTOP_VIEWBOX_BOTTOM_PADDING;
 
 function DiagramText({
   x,
@@ -458,7 +462,7 @@ function DesktopDiagram() {
   return (
     <svg
       className={styles.operatorDesktop}
-      viewBox="0 0 960 448"
+      viewBox={`0 0 960 ${DESKTOP_VIEWBOX_HEIGHT}`}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
     >
