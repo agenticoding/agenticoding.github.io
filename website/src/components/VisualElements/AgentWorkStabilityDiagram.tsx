@@ -2,7 +2,12 @@ import React from 'react';
 
 import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
-import { ModelCallFrame } from './ModelCallFrame';
+import {
+  type ModelCallFrameBounds,
+  modelCallFrameTab,
+  ModelCallFrame,
+} from './ModelCallFrame';
+import { TILE_GRID } from './diagramTileLayout';
 import styles from './AgentWorkStabilityDiagram.module.css';
 
 type Tone = 'violet' | 'indigo' | 'cyan' | 'warning' | 'success';
@@ -23,6 +28,32 @@ const PRESSURE_TONES = PRESSURES.map(({ tone }) => tone);
 
 const ARIA_LABEL =
   'Four production pressures surround a bounded agent-work loop: unpredictable model behavior, missing codebase reality, an oversized or ambiguous task, and plausible but unverified output. Explicit boundaries, working context, and independent evidence stabilize the loop of plan, act, observe, and verify.';
+const WORK_TAB_LABEL = 'BOUNDED AGENT WORK';
+const DESKTOP_FRAME = { x: 200, y: 112, width: 400, height: 296 };
+const MOBILE_FRAME = { x: 16, y: 160, width: 308, height: 352 };
+const DESKTOP_TAB_WIDTH = 216;
+const MOBILE_TAB_WIDTH = 212;
+const PRESSURE_ARROW_GRID = TILE_GRID;
+
+type WorkFrameGeometry = {
+  frame: ModelCallFrameBounds;
+  tab: ModelCallFrameBounds;
+};
+type ArrowSide = 'left' | 'right';
+
+function workFrameGeometry(
+  frame: ModelCallFrameBounds,
+  compact: boolean
+): WorkFrameGeometry {
+  const tab = modelCallFrameTab(
+    frame.x,
+    frame.y,
+    WORK_TAB_LABEL,
+    compact ? MOBILE_TAB_WIDTH : DESKTOP_TAB_WIDTH,
+    { tabAlign: 'center', frameWidth: frame.width }
+  );
+  return { frame, tab };
+}
 
 export default function AgentWorkStabilityDiagram() {
   return (
@@ -34,6 +65,7 @@ export default function AgentWorkStabilityDiagram() {
 }
 
 function DesktopDiagram() {
+  const geometry = workFrameGeometry(DESKTOP_FRAME, false);
   return (
     <svg className={styles.desktop} viewBox="0 0 800 512" aria-hidden="true">
       <Markers suffix="desktop" />
@@ -41,22 +73,23 @@ function DesktopDiagram() {
       <PressureBox pressure={PRESSURES[1]} x={584} y={24} />
       <PressureBox pressure={PRESSURES[2]} x={16} y={424} />
       <PressureBox pressure={PRESSURES[3]} x={584} y={424} />
-      <PressureArrows suffix="desktop" />
-      <WorkSystem x={200} y={112} width={400} />
+      <PressureArrows {...geometry} compact={false} suffix="desktop" />
+      <WorkSystem {...geometry} compact={false} />
     </svg>
   );
 }
 
 function MobileDiagram() {
+  const geometry = workFrameGeometry(MOBILE_FRAME, true);
   return (
     <svg className={styles.mobile} viewBox="0 0 340 680" aria-hidden="true">
       <Markers suffix="mobile" />
       <PressureBox pressure={PRESSURES[0]} x={16} y={16} width={148} />
       <PressureBox pressure={PRESSURES[1]} x={176} y={16} width={148} />
-      <WorkSystem x={16} y={160} width={308} compact />
+      <WorkSystem {...geometry} compact />
       <PressureBox pressure={PRESSURES[2]} x={16} y={576} width={148} />
       <PressureBox pressure={PRESSURES[3]} x={176} y={576} width={148} />
-      <MobilePressureArrows suffix="mobile" />
+      <PressureArrows {...geometry} compact suffix="mobile" />
     </svg>
   );
 }
@@ -84,34 +117,100 @@ function PressureBox({
   );
 }
 
-function PressureArrows({ suffix }: { suffix: string }) {
-  return (
-    <g className={styles.pressureArrow}>
-      <PressureArrow d="M 192 88 L 208 111" tone="violet" suffix={suffix} />
-      <PressureArrow d="M 608 88 L 592 111" tone="indigo" suffix={suffix} />
-      <PressureArrow d="M 216 424 L 240 408" tone="cyan" suffix={suffix} />
-      <PressureArrow d="M 584 424 L 560 408" tone="warning" suffix={suffix} />
-    </g>
-  );
-}
-
-function MobilePressureArrows({ suffix }: { suffix: string }) {
+function PressureArrows({
+  frame,
+  tab,
+  compact,
+  suffix,
+}: WorkFrameGeometry & { compact: boolean; suffix: string }) {
   return (
     <g className={styles.pressureArrow}>
       <PressureArrow
-        d="M 90 80 V 128 L 24 144 V 159"
+        d={topPressurePath(frame, tab, 'left', compact)}
         tone="violet"
         suffix={suffix}
       />
       <PressureArrow
-        d="M 250 80 V 128 L 316 144 V 159"
+        d={topPressurePath(frame, tab, 'right', compact)}
         tone="indigo"
         suffix={suffix}
       />
-      <PressureArrow d="M 90 576 V 561" tone="cyan" suffix={suffix} />
-      <PressureArrow d="M 250 576 V 561" tone="warning" suffix={suffix} />
+      <PressureArrow
+        d={bottomPressurePath(frame, 'left', compact)}
+        tone="cyan"
+        suffix={suffix}
+      />
+      <PressureArrow
+        d={bottomPressurePath(frame, 'right', compact)}
+        tone="warning"
+        suffix={suffix}
+      />
     </g>
   );
+}
+
+function topPressurePath(
+  frame: ModelCallFrameBounds,
+  tab: ModelCallFrameBounds,
+  side: ArrowSide,
+  compact: boolean
+) {
+  const sourceX = compact
+    ? mobilePressureX(frame, side)
+    : frame.x +
+      (side === 'left'
+        ? PRESSURE_ARROW_GRID * 2
+        : frame.width - PRESSURE_ARROW_GRID * 2);
+  const sourceY =
+    frame.y - (compact ? PRESSURE_ARROW_GRID * 10 : PRESSURE_ARROW_GRID * 3);
+  const targetX = compact
+    ? sourceX
+    : frame.x +
+      (side === 'left'
+        ? PRESSURE_ARROW_GRID * 5
+        : frame.width - PRESSURE_ARROW_GRID * 5);
+  const targetY = compact ? tab.y - 1 : frame.y;
+  return compact
+    ? `M ${sourceX} ${sourceY} V ${targetY}`
+    : `M ${sourceX} ${sourceY} L ${targetX} ${targetY}`;
+}
+
+function mobilePressureX(frame: ModelCallFrameBounds, side: ArrowSide) {
+  return (
+    frame.x +
+    frame.width / 2 +
+    (side === 'left' ? -PRESSURE_ARROW_GRID * 10 : PRESSURE_ARROW_GRID * 10)
+  );
+}
+
+function bottomPressurePath(
+  frame: ModelCallFrameBounds,
+  side: ArrowSide,
+  compact: boolean
+) {
+  const bottom = bottomEdge(frame);
+  const sourceY =
+    bottom + (compact ? PRESSURE_ARROW_GRID * 8 : PRESSURE_ARROW_GRID * 2);
+  const sourceX = compact
+    ? mobilePressureX(frame, side)
+    : frame.x +
+      (side === 'left'
+        ? PRESSURE_ARROW_GRID * 2
+        : frame.width - PRESSURE_ARROW_GRID * 2);
+  const targetX = compact
+    ? sourceX
+    : frame.x +
+      (side === 'left'
+        ? PRESSURE_ARROW_GRID * 5
+        : frame.width - PRESSURE_ARROW_GRID * 5);
+  const targetY = bottom + (compact ? 1 : 0);
+  return compact
+    ? `M ${sourceX} ${sourceY} V ${targetY}`
+    : `M ${sourceX} ${sourceY} L ${targetX} ${targetY}`;
+}
+
+function bottomEdge(box: ModelCallFrameBounds) {
+  return box.y + box.height;
 }
 
 function PressureArrow({
@@ -133,38 +232,39 @@ function PressureArrow({
 }
 
 function WorkSystem({
-  x,
-  y,
-  width,
+  frame,
+  tab,
   compact = false,
-}: {
-  x: number;
-  y: number;
-  width: number;
-  compact?: boolean;
-}) {
-  const height = compact ? 400 : 296;
-  const center = x + width / 2;
+}: WorkFrameGeometry & { compact?: boolean }) {
+  const center = frame.x + frame.width / 2;
   return (
     <g>
       <ModelCallFrame
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        tabLabel="BOUNDED AGENT WORK"
+        {...frame}
+        tabLabel={WORK_TAB_LABEL}
         tabIcon={EMOJI.agent}
         fill="var(--surface-page)"
         stroke="var(--border-emphasis)"
-        tabWidth={compact ? 212 : 216}
+        tabWidth={tab.width}
+        tabAlign="center"
         rectClassName={styles.systemBoundary}
       />
-      <Stabilizers x={x} y={y} width={width} compact={compact} />
-      <AgentLoop x={x} y={y} width={width} compact={compact} />
+      <Stabilizers
+        x={frame.x}
+        y={frame.y}
+        width={frame.width}
+        compact={compact}
+      />
+      <AgentLoop
+        x={frame.x}
+        y={frame.y}
+        width={frame.width}
+        compact={compact}
+      />
       <text
         className={styles.systemNote}
         x={center}
-        y={y + height - (compact ? 24 : 16)}
+        y={bottomEdge(frame) - (compact ? 24 : 16)}
         textAnchor="middle"
       >
         REPEAT WITH CONTROL
