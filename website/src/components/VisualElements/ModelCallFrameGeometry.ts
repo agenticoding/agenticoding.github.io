@@ -8,6 +8,13 @@ export type ModelCallFrameBounds = {
   height: number;
 };
 
+export type ModelCallFrameTabAlign = 'start' | 'center';
+
+export type ModelCallFrameTabOptions = {
+  tabAlign?: ModelCallFrameTabAlign;
+  frameWidth?: number;
+};
+
 export const MODEL_CALL_FRAME_TAB_OVERHANG =
   MODEL_CALL_FRAME_LAYOUT.tabHeight / 2;
 export const MODEL_CALL_FRAME_STROKE_OUTSET = DIAGRAM_STROKE.default / 2;
@@ -22,11 +29,12 @@ export function modelCallFrameTab(
   x: number,
   y: number,
   label: string,
-  tabWidth?: number
+  tabWidth?: number,
+  options: ModelCallFrameTabOptions = {}
 ): ModelCallFrameBounds {
   const computedWidth = tabWidth ?? autoTabWidth(label);
   return {
-    x: x + TILE_GRID * 3,
+    x: tabX(x, computedWidth, options),
     y: y - MODEL_CALL_FRAME_TAB_OVERHANG,
     width: computedWidth,
     height: MODEL_CALL_FRAME_LAYOUT.tabHeight,
@@ -36,10 +44,28 @@ export function modelCallFrameTab(
 export function modelCallFrameVisualBounds(
   frame: ModelCallFrameBounds,
   tabLabel: string,
-  tabWidth?: number
+  tabWidth?: number,
+  options: Pick<ModelCallFrameTabOptions, 'tabAlign'> = {}
 ): ModelCallFrameBounds {
-  const tab = modelCallFrameTab(frame.x, frame.y, tabLabel, tabWidth);
+  const tab = modelCallFrameTab(frame.x, frame.y, tabLabel, tabWidth, {
+    ...options,
+    frameWidth: frame.width,
+  });
   return boxUnion(outsetBox(frame), outsetBox(tab));
+}
+
+function tabX(
+  x: number,
+  tabWidth: number,
+  { tabAlign = 'start', frameWidth }: ModelCallFrameTabOptions
+) {
+  if (tabAlign === 'center') {
+    if (frameWidth === undefined) {
+      throw new Error('Centered model call frame tabs require frameWidth');
+    }
+    return x + (frameWidth - tabWidth) / 2;
+  }
+  return x + TILE_GRID * 3;
 }
 
 function autoTabWidth(label: string) {

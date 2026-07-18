@@ -27,3 +27,36 @@ test('model call frame tab geometry honors explicit tab width', () => {
   assert.equal(tab.width, 228);
   assert.equal(tab.height, 32);
 });
+
+test('model call frame tab centers within the frame when opted in', () => {
+  const tab = modelCallFrameTab(52, 328, 'DETERMINISTIC WORKFLOW', 228, {
+    tabAlign: 'center',
+    frameWidth: 320,
+  });
+
+  assert.equal(tab.x, 98);
+});
+
+test('centered tab visual bounds include a centered tab wider than the frame', () => {
+  const frame = { x: 20, y: 20, width: 180, height: 200 };
+  const bounds = modelCallFrameVisualBounds(frame, 'inside the model', 216, {
+    tabAlign: 'center',
+  });
+
+  assert.equal(
+    bounds.x,
+    frame.x + (frame.width - 216) / 2 - MODEL_CALL_FRAME_STROKE_OUTSET
+  );
+  assert.equal(
+    bounds.y,
+    frame.y - MODEL_CALL_FRAME_TAB_OVERHANG - MODEL_CALL_FRAME_STROKE_OUTSET
+  );
+});
+
+test('centered tab geometry requires frame width', () => {
+  assert.throws(() =>
+    modelCallFrameTab(52, 328, 'DETERMINISTIC WORKFLOW', 228, {
+      tabAlign: 'center',
+    })
+  );
+});

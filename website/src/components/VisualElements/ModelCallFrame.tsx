@@ -3,6 +3,7 @@ import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import {
   type ModelCallFrameBounds,
+  type ModelCallFrameTabAlign,
   modelCallFrameTab,
 } from './ModelCallFrameGeometry';
 import {
@@ -17,6 +18,8 @@ export {
   MODEL_CALL_FRAME_TAB_OVERHANG,
   MODEL_CALL_FRAME_VISUAL_OUTSET,
   type ModelCallFrameBounds,
+  type ModelCallFrameTabAlign,
+  type ModelCallFrameTabOptions,
   modelCallFrameTab,
   modelCallFrameVisualBounds,
 } from './ModelCallFrameGeometry';
@@ -43,6 +46,7 @@ export type ModelCallFrameProps = ModelCallFrameBounds & {
   fill?: string;
   stroke?: string;
   tabWidth?: number;
+  tabAlign?: ModelCallFrameTabAlign;
 };
 
 export function ModelCallFrame({
@@ -62,8 +66,12 @@ export function ModelCallFrame({
   fill = 'var(--surface-raised)',
   stroke = 'var(--visual-violet)',
   tabWidth,
+  tabAlign = 'start',
 }: ModelCallFrameProps) {
-  const tab = modelCallFrameTab(x, y, tabLabel, tabWidth);
+  const tab = modelCallFrameTab(x, y, tabLabel, tabWidth, {
+    tabAlign,
+    frameWidth: width,
+  });
   return (
     <g className={className}>
       <rect
