@@ -22,7 +22,7 @@
 
 .pressure rect,
 .systemBoundary,
-.stabilizer rect,
+.stabilizer > rect,
 .loopStage rect {
   vector-effect: non-scaling-stroke;
 }
@@ -105,7 +105,7 @@ marker path[data-tone='warning'] {
   stroke-width: 1.5px;
 }
 
-.stabilizer rect {
+.stabilizer > rect {
   fill: var(--surface-raised);
   stroke-width: 1px;
 }
@@ -118,22 +118,52 @@ marker path[data-tone='warning'] {
   letter-spacing: 0.03em;
 }
 
-.stabilizer[data-tone='cyan'] rect {
+.stabilizer[data-tone='cyan'] > rect {
   fill: var(--visual-bg-cyan);
   stroke: var(--visual-cyan);
 }
 
-.stabilizer[data-tone='indigo'] rect {
+.stabilizer[data-tone='indigo'] > rect {
   fill: var(--visual-bg-indigo);
   stroke: var(--visual-indigo);
 }
 
-.stabilizer[data-tone='success'] rect {
+.stabilizer[data-tone='success'] > rect {
   fill: var(--visual-bg-success);
   stroke: var(--visual-success);
 }
 
-.loop path {
+.stabilizerMotion {
+  pointer-events: none;
+}
+
+.stabilizerOutline,
+.stabilizerPing {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.stabilizerOutline {
+  stroke-width: 2px;
+}
+
+.stabilizerPing {
+  stroke-width: 1.5px;
+}
+
+.stabilizerMotion[data-tone='cyan'] rect {
+  stroke: var(--visual-cyan);
+}
+
+.stabilizerMotion[data-tone='indigo'] rect {
+  stroke: var(--visual-indigo);
+}
+
+.stabilizerMotion[data-tone='success'] rect {
+  stroke: var(--visual-success);
+}
+
+.loop > path {
   fill: none;
   stroke: var(--border-emphasis);
   stroke-width: 1.5px;
@@ -165,6 +195,12 @@ marker path[data-tone='warning'] {
   fill: var(--text-muted);
   font-size: 9px;
   font-weight: 400;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stabilizerMotion {
+    display: none;
+  }
 }
 
 @container (max-width: 36rem) {

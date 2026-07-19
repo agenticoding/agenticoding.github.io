@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { AnimatedTokenTrain } from './AnimatedTokenFlow';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import {
@@ -8,6 +9,7 @@ import {
   ModelCallFrame,
 } from './ModelCallFrame';
 import { TILE_GRID } from './diagramTileLayout';
+import { seededTokenTrain } from './TokenTrainSequence';
 import styles from './AgentWorkStabilityDiagram.module.css';
 
 type Tone = 'violet' | 'indigo' | 'cyan' | 'warning' | 'success';
@@ -34,6 +36,25 @@ const MOBILE_FRAME = { x: 16, y: 160, width: 308, height: 352 };
 const DESKTOP_TAB_WIDTH = 216;
 const MOBILE_TAB_WIDTH = 212;
 const PRESSURE_ARROW_GRID = TILE_GRID;
+const STABILIZER_HEIGHT = 24;
+const WORKING_CONTEXT_OFFSET = 80;
+const EVIDENCE_OFFSET = { desktop: 240, mobile: 272 } as const;
+const LOOP_STAGE_HEIGHT = 32;
+const LOOP_STAGE_STEP = 40;
+const LOOP_VISUAL_HEIGHT = LOOP_STAGE_STEP * 2 + LOOP_STAGE_HEIGHT;
+const CONTROLLED_RUN_DURATION = '9.6s';
+const CONTROLLED_RUN_TIMING = {
+  cycleMs: 9600,
+  travelMs: 7600,
+  fadeMs: 900,
+  repeat: 'loop',
+} as const;
+const CONTROLLED_RUN_STAGGER = { mode: 'pathSpacing', spacingPx: 32 } as const;
+const CONTROLLED_RUN_TOKENS = seededTokenTrain('agent-work-stability-loop', 4);
+
+// Motion spec — A token train repeats Plan → Act → Observe → Verify on the actual loop
+// connectors. Stabilizer pings mark their control points; all moving elements disappear
+// under reduced motion, where this complete static diagram is canonical.
 
 type WorkFrameGeometry = {
   frame: ModelCallFrameBounds;
@@ -294,27 +315,56 @@ function Stabilizers({
         width={cardWidth}
         label="EXPLICIT BOUNDARIES"
         tone="cyan"
+        motion="boundaries"
         icon={EMOJI.compass}
       />
       <Stabilizer
         x={cardX}
-        y={y + 80}
+        y={y + WORKING_CONTEXT_OFFSET}
         width={cardWidth}
         label="WORKING CONTEXT"
         tone="indigo"
+        motion="context"
         icon={EMOJI.books}
       />
       <Stabilizer
         x={cardX}
-        y={compact ? y + 272 : y + 240}
+        y={evidenceStabilizerY(y, compact)}
         width={cardWidth}
         label="INDEPENDENT EVIDENCE"
         tone="success"
+        motion="evidence"
         icon={EMOJI.check}
       />
     </>
   );
 }
+
+type StabilizerMotion = 'boundaries' | 'context' | 'evidence';
+
+type StabilizerMotionTiming = {
+  outlineTimes: string;
+  outlineValues: string;
+  pingTimes: string;
+};
+
+const STABILIZER_MOTION: Record<StabilizerMotion, StabilizerMotionTiming> = {
+  boundaries: {
+    outlineTimes: '0;0.02;0.12;0.16;1',
+    outlineValues: '0;1;1;0;0',
+    pingTimes: '0;0.02;0.06;1',
+  },
+  context: {
+    outlineTimes: '0;0.22;0.27;0.61;0.66;1',
+    outlineValues: '0;0;1;1;0;0',
+    pingTimes: '0;0.22;0.26;1',
+  },
+  evidence: {
+    outlineTimes: '0;0.72;0.77;0.85;0.90;1',
+    outlineValues: '0;0;1;1;0;0',
+    pingTimes: '0;0.72;0.76;1',
+  },
+};
 
 function Stabilizer({
   x,
@@ -322,6 +372,7 @@ function Stabilizer({
   width,
   label,
   tone,
+  motion,
   icon,
 }: {
   x: number;
@@ -329,17 +380,93 @@ function Stabilizer({
   width: number;
   label: string;
   tone: Tone;
+  motion: StabilizerMotion;
   icon: EmojiAsset;
 }) {
   return (
     <g className={styles.stabilizer} data-tone={tone}>
-      <rect x={x} y={y} width={width} height={24} rx={0} />
+      <rect x={x} y={y} width={width} height={STABILIZER_HEIGHT} rx={0} />
       <EmojiImage asset={icon} x={x + 8} y={y + 4} size={16} />
       <text x={x + 32} y={y + 16} textAnchor="start">
         {label}
       </text>
+      <StabilizerSignal x={x} y={y} width={width} tone={tone} motion={motion} />
     </g>
   );
+}
+
+function StabilizerSignal({
+  x,
+  y,
+  width,
+  tone,
+  motion,
+}: {
+  x: number;
+  y: number;
+  width: number;
+  tone: Tone;
+  motion: StabilizerMotion;
+}) {
+  const timing = STABILIZER_MOTION[motion];
+  return (
+    <g
+      className={styles.stabilizerMotion}
+      data-tone={tone}
+      transform={`translate(${x + width / 2} ${y + 12})`}
+    >
+      <rect
+        className={styles.stabilizerOutline}
+        x={-width / 2 - 4}
+        y={-16}
+        width={width + 8}
+        height={32}
+        opacity="0"
+      >
+        <animate
+          attributeName="opacity"
+          dur={CONTROLLED_RUN_DURATION}
+          repeatCount="indefinite"
+          values={timing.outlineValues}
+          keyTimes={timing.outlineTimes}
+        />
+      </rect>
+      <rect
+        className={styles.stabilizerPing}
+        x={-width / 2 - 4}
+        y={-16}
+        width={width + 8}
+        height={32}
+        opacity="0"
+      >
+        <animate
+          attributeName="opacity"
+          dur={CONTROLLED_RUN_DURATION}
+          repeatCount="indefinite"
+          values="0;0.8;0;0"
+          keyTimes={timing.pingTimes}
+        />
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          dur={CONTROLLED_RUN_DURATION}
+          repeatCount="indefinite"
+          values="1;1;1.12;1.12"
+          keyTimes={timing.pingTimes}
+        />
+      </rect>
+    </g>
+  );
+}
+
+function evidenceStabilizerY(y: number, compact: boolean) {
+  return y + EVIDENCE_OFFSET[compact ? 'mobile' : 'desktop'];
+}
+
+function centeredLoopTop(y: number, compact: boolean) {
+  const contextBottom = y + WORKING_CONTEXT_OFFSET + STABILIZER_HEIGHT;
+  const evidenceTop = evidenceStabilizerY(y, compact);
+  return contextBottom + (evidenceTop - contextBottom - LOOP_VISUAL_HEIGHT) / 2;
 }
 
 function AgentLoop({
@@ -354,12 +481,21 @@ function AgentLoop({
   compact: boolean;
 }) {
   const center = x + width / 2;
-  const top = compact ? y + 136 : y + 120;
-  const side = top + 40;
-  const bottom = top + 80;
+  const top = centeredLoopTop(y, compact);
+  const side = top + LOOP_STAGE_STEP;
+  const bottom = top + LOOP_STAGE_STEP * 2;
   const sideWidth = compact ? 80 : 96;
   const left = x + 24;
   const right = x + width - sideWidth - 24;
+  const trainPath = loopTrainPath(
+    center,
+    top,
+    side,
+    bottom,
+    left,
+    right,
+    sideWidth
+  );
   return (
     <g className={styles.loop}>
       <LoopPath
@@ -373,6 +509,14 @@ function AgentLoop({
       />
       <LoopPath
         d={`M ${left} ${side + 16} H ${left + 16} V ${top + 16} H ${center - 48}`}
+      />
+      <AnimatedTokenTrain
+        pathD={trainPath}
+        tokens={CONTROLLED_RUN_TOKENS}
+        timing={CONTROLLED_RUN_TIMING}
+        stagger={CONTROLLED_RUN_STAGGER}
+        size={16}
+        tone="violet"
       />
       <LoopStage
         x={center - 48}
@@ -404,6 +548,26 @@ function AgentLoop({
   );
 }
 
+function loopTrainPath(
+  center: number,
+  top: number,
+  side: number,
+  bottom: number,
+  left: number,
+  right: number,
+  sideWidth: number
+) {
+  const planY = top + 16;
+  const sideY = side + 16;
+  const observeY = bottom + 16;
+  return [
+    `M ${center} ${planY} H ${right - 16} V ${sideY} H ${right + sideWidth}`,
+    `H ${right + sideWidth - 16} V ${observeY} H ${center - 48}`,
+    `H ${left + sideWidth + 16} V ${sideY} H ${left}`,
+    `H ${left + 16} V ${planY} H ${center}`,
+  ].join(' ');
+}
+
 function LoopPath({ d }: { d: string }) {
   return <path d={d} markerEnd="url(#loop-arrow)" />;
 }
@@ -423,7 +587,7 @@ function LoopStage({
 }) {
   return (
     <g className={styles.loopStage}>
-      <rect x={x} y={y} width={width} height={32} rx={0} />
+      <rect x={x} y={y} width={width} height={LOOP_STAGE_HEIGHT} rx={0} />
       <EmojiImage asset={icon} x={x + 8} y={y + 8} size={16} />
       <text x={x + 30} y={y + 21} textAnchor="start">
         {label}

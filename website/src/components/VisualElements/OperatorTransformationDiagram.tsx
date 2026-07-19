@@ -376,7 +376,7 @@ function WorkingScene({
           width={width - 32}
           height={GATE_HEIGHT}
           rx={0}
-          fill="var(--surface-raised)"
+          fill="var(--visual-bg-cyan)"
           stroke="var(--visual-system)"
           strokeWidth={1}
         />
