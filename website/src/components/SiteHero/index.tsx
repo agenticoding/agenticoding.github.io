@@ -2,6 +2,7 @@ import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import { type ReactNode } from 'react';
 
+import GitHubSocialProof from '../GitHubSocialProof';
 import InlineEmojiImage from '../VisualElements/InlineEmojiImage';
 import { EMOJI, type EmojiAsset } from '../VisualElements/emojiAssets';
 import styles from './index.module.css';
@@ -29,7 +30,12 @@ function HeroCopy() {
         An advanced reference for production work
       </p>
       <Heading as="h1" className={styles.title}>
-        AI agents write code. You still ship software.
+        AI agents write code. You still ship software.{' '}
+        <GitHubSocialProof
+          repo="agenticoding/agenticoding.github.io"
+          fallbackStars={102}
+          variant="hero"
+        />
       </Heading>
       <p className={styles.lead}>
         An advanced reference book for operating coding agents in production –
@@ -47,12 +53,6 @@ function HeroActions() {
         href="/how-llms-work"
         label="Read Chapter 1: LLMs Demystified"
         icon={EMOJI.rightArrow}
-      />
-      <HeroAction
-        className={styles.secondaryAction}
-        href="#where-is-the-work-stuck"
-        label="Find your starting point"
-        icon={EMOJI.downArrow}
       />
     </div>
   );

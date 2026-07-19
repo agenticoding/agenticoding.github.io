@@ -1,0 +1,73 @@
+.hero,
+.project {
+  display: inline-flex;
+  gap: var(--space-0h);
+  align-items: center;
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+}
+
+.hero {
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  line-height: var(--lh-lg);
+  vertical-align: baseline;
+  /* Overrides Docusaurus's generic content-link underline. */
+  text-decoration: none !important;
+}
+
+.hero:focus-visible {
+  outline: 2px solid var(--text-heading);
+  outline-offset: var(--space-0h);
+}
+
+.hero svg,
+.project svg {
+  flex: 0 0 auto;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  fill: none;
+  stroke: currentColor;
+  stroke-linejoin: miter;
+  stroke-width: 2;
+}
+
+.starCount {
+  display: inline-flex;
+  gap: var(--space-0h);
+  align-items: baseline;
+}
+
+.hero svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+.hero .label {
+  font-size: var(--text-sm);
+}
+
+.count {
+  color: var(--text-heading);
+  font-weight: 700;
+}
+
+.label {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.project {
+  margin-inline-start: var(--space-1);
+  vertical-align: baseline;
+}
+
+.starCount {
+  transform: translateY(var(--space-px));
+}

@@ -45,16 +45,23 @@ const LOOP_VISUAL_HEIGHT = LOOP_STAGE_STEP * 2 + LOOP_STAGE_HEIGHT;
 const CONTROLLED_RUN_DURATION = '9.6s';
 const CONTROLLED_RUN_TIMING = {
   cycleMs: 9600,
-  travelMs: 7600,
-  fadeMs: 900,
+  travelMs: 600,
+  fadeMs: 300,
   repeat: 'loop',
 } as const;
 const CONTROLLED_RUN_STAGGER = { mode: 'pathSpacing', spacingPx: 32 } as const;
 const CONTROLLED_RUN_TOKENS = seededTokenTrain('agent-work-stability-loop', 4);
+const LOOP_CONNECTOR_IDS = [
+  'plan-act',
+  'act-observe',
+  'observe-verify',
+  'verify-plan',
+] as const;
+const LOOP_START_DELAYS = [0, 2400, 4800, 7200] as const;
 
-// Motion spec — A token train repeats Plan → Act → Observe → Verify on the actual loop
-// connectors. Stabilizer pings mark their control points; all moving elements disappear
-// under reduced motion, where this complete static diagram is canonical.
+// Motion spec — one token train occupies each 2.4s loop beat: Plan → Act → Observe → Verify.
+// Stabilizer pings mark their control points; all moving elements disappear under reduced motion,
+// where this complete static diagram is canonical.
 
 type WorkFrameGeometry = {
   frame: ModelCallFrameBounds;
@@ -487,7 +494,7 @@ function AgentLoop({
   const sideWidth = compact ? 80 : 96;
   const left = x + 24;
   const right = x + width - sideWidth - 24;
-  const trainPath = loopTrainPath(
+  const geometry = loopGeometry(
     center,
     top,
     side,
@@ -498,48 +505,33 @@ function AgentLoop({
   );
   return (
     <g className={styles.loop}>
-      <LoopPath
-        d={`M ${center + 48} ${top + 16} H ${right - 16} V ${side + 16} H ${right}`}
-      />
-      <LoopPath
-        d={`M ${right + sideWidth} ${side + 16} H ${right + sideWidth - 16} V ${bottom + 16} H ${center + 48}`}
-      />
-      <LoopPath
-        d={`M ${center - 48} ${bottom + 16} H ${left + sideWidth + 16} V ${side + 16} H ${left + sideWidth}`}
-      />
-      <LoopPath
-        d={`M ${left} ${side + 16} H ${left + 16} V ${top + 16} H ${center - 48}`}
-      />
-      <AnimatedTokenTrain
-        pathD={trainPath}
-        tokens={CONTROLLED_RUN_TOKENS}
-        timing={CONTROLLED_RUN_TIMING}
-        stagger={CONTROLLED_RUN_STAGGER}
-        size={16}
-        tone="violet"
-      />
+      {geometry.connectors.map(({ id, arrowPath }) => (
+        <LoopPath key={id} d={arrowPath} />
+      ))}
+      {geometry.connectors.map((connector) => (
+        <AnimatedTokenTrain
+          key={connector.id}
+          pathD={connector.tokenPath}
+          tokens={CONTROLLED_RUN_TOKENS}
+          timing={{
+            ...CONTROLLED_RUN_TIMING,
+            startDelayMs: connector.startDelayMs,
+          }}
+          stagger={CONTROLLED_RUN_STAGGER}
+          size={16}
+          tone="violet"
+        />
+      ))}
+      <LoopStage {...geometry.plan} label="PLAN" icon={EMOJI.documentTabs} />
       <LoopStage
-        x={center - 48}
-        y={top}
-        label="PLAN"
-        icon={EMOJI.documentTabs}
-      />
-      <LoopStage
-        x={right}
-        y={side}
+        {...geometry.act}
         label="ACT"
         width={sideWidth}
         icon={EMOJI.act}
       />
+      <LoopStage {...geometry.observe} label="OBSERVE" icon={EMOJI.observe} />
       <LoopStage
-        x={center - 48}
-        y={bottom}
-        label="OBSERVE"
-        icon={EMOJI.observe}
-      />
-      <LoopStage
-        x={left}
-        y={side}
+        {...geometry.verify}
         label="VERIFY"
         width={sideWidth}
         icon={EMOJI.ruler}
@@ -548,7 +540,22 @@ function AgentLoop({
   );
 }
 
-function loopTrainPath(
+type LoopConnector = {
+  id: string;
+  arrowPath: string;
+  tokenPath: string;
+  startDelayMs: number;
+};
+
+type LoopGeometry = {
+  connectors: readonly LoopConnector[];
+  plan: { x: number; y: number };
+  act: { x: number; y: number };
+  observe: { x: number; y: number };
+  verify: { x: number; y: number };
+};
+
+function loopGeometry(
   center: number,
   top: number,
   side: number,
@@ -556,16 +563,109 @@ function loopTrainPath(
   left: number,
   right: number,
   sideWidth: number
+): LoopGeometry {
+  const planX = center - 48;
+  const actRight = right + sideWidth;
+  const routeTop = top + 16;
+  const routeSide = side + 16;
+  const routeBottom = bottom + 16;
+  return {
+    connectors: loopConnectors(
+      center,
+      planX,
+      routeTop,
+      routeSide,
+      routeBottom,
+      left,
+      right,
+      actRight,
+      sideWidth
+    ),
+    plan: { x: planX, y: top },
+    act: { x: right, y: side },
+    observe: { x: planX, y: bottom },
+    verify: { x: left, y: side },
+  };
+}
+
+function loopConnectors(
+  center: number,
+  planX: number,
+  routeTop: number,
+  routeSide: number,
+  routeBottom: number,
+  left: number,
+  right: number,
+  actRight: number,
+  sideWidth: number
+): readonly LoopConnector[] {
+  const arrowPaths = loopArrowPaths(
+    center,
+    planX,
+    routeTop,
+    routeSide,
+    routeBottom,
+    left,
+    right,
+    actRight,
+    sideWidth
+  );
+  const tokenPaths = loopTokenPaths(
+    center,
+    planX,
+    routeTop,
+    routeSide,
+    routeBottom,
+    left,
+    right,
+    actRight,
+    sideWidth
+  );
+  return arrowPaths.map((arrowPath, index) => ({
+    id: LOOP_CONNECTOR_IDS[index],
+    arrowPath,
+    tokenPath: tokenPaths[index],
+    startDelayMs: LOOP_START_DELAYS[index],
+  }));
+}
+
+function loopArrowPaths(
+  center: number,
+  planX: number,
+  routeTop: number,
+  routeSide: number,
+  routeBottom: number,
+  left: number,
+  right: number,
+  actRight: number,
+  sideWidth: number
 ) {
-  const planY = top + 16;
-  const sideY = side + 16;
-  const observeY = bottom + 16;
   return [
-    `M ${center} ${planY} H ${right - 16} V ${sideY} H ${right + sideWidth}`,
-    `H ${right + sideWidth - 16} V ${observeY} H ${center - 48}`,
-    `H ${left + sideWidth + 16} V ${sideY} H ${left}`,
-    `H ${left + 16} V ${planY} H ${center}`,
-  ].join(' ');
+    `M ${center + 48} ${routeTop} H ${right - 16} V ${routeSide} H ${right}`,
+    `M ${actRight} ${routeSide} H ${actRight - 16} V ${routeBottom} H ${center + 48}`,
+    `M ${planX} ${routeBottom} H ${left + sideWidth + 16} V ${routeSide} H ${left + sideWidth}`,
+    `M ${left} ${routeSide} H ${left + 16} V ${routeTop} H ${planX}`,
+  ];
+}
+
+function loopTokenPaths(
+  center: number,
+  planX: number,
+  routeTop: number,
+  routeSide: number,
+  routeBottom: number,
+  left: number,
+  right: number,
+  actRight: number,
+  sideWidth: number
+) {
+  const offset = 12;
+  return [
+    `M ${center + 48} ${routeTop - offset} H ${right - 16 + offset} V ${routeSide - offset} H ${right + offset}`,
+    `M ${actRight} ${routeSide + offset} H ${actRight - 16 + offset} V ${routeBottom + offset} H ${center + 48}`,
+    `M ${planX} ${routeBottom + offset} H ${left + sideWidth + 16 - offset} V ${routeSide + offset} H ${left + sideWidth - offset}`,
+    `M ${left} ${routeSide - offset} H ${left + 16 - offset} V ${routeTop - offset} H ${planX}`,
+  ];
 }
 
 function LoopPath({ d }: { d: string }) {
