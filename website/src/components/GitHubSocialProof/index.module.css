@@ -68,6 +68,45 @@
   vertical-align: baseline;
 }
 
+.projectSourceName,
+.projectSourceLink,
+.projectSourceStars {
+  vertical-align: baseline;
+}
+
 .starCount {
   transform: translateY(var(--space-px));
+}
+
+@media (max-width: 576px) {
+  .hero {
+    display: flex;
+    width: fit-content;
+    margin-top: var(--space-2);
+  }
+
+  .projectSource {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .projectSourceDetails {
+    display: contents;
+  }
+
+  .projectSourceLink {
+    flex-basis: 100%;
+    order: 3;
+  }
+
+  .projectSourceStars {
+    order: 2;
+    transform: translate(calc(var(--space-0h) * -1), calc(var(--space-px) * 2));
+  }
+
+  .projectSourceStars .project {
+    margin-inline-start: 0;
+  }
 }

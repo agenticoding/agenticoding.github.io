@@ -14,6 +14,12 @@ interface GitHubRepository {
   stargazers_count: number;
 }
 
+interface GitHubProjectSourceProps {
+  name: string;
+  repo: string;
+  fallbackStars: number;
+}
+
 const starCountRequests = new Map<string, Promise<number | null>>();
 
 function fetchStarCount(repo: string): Promise<number | null> {
@@ -73,6 +79,35 @@ function StarCount({
     <span className={styles.starCount} aria-live="polite">
       <span className={styles.count}>{formatStars(stars)}</span>
       <span className={styles.label}>{label}</span>
+    </span>
+  );
+}
+
+export function GitHubProjectSource({
+  name,
+  repo,
+  fallbackStars,
+}: GitHubProjectSourceProps): ReactNode {
+  return (
+    <span className={styles.projectSource}>
+      <strong className={styles.projectSourceName}>{name}</strong>{' '}
+      <span className={styles.projectSourceDetails}>
+        <a
+          className={styles.projectSourceLink}
+          href={`https://github.com/${repo}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          github.com/{repo}
+        </a>{' '}
+        <span className={styles.projectSourceStars}>
+          <GitHubSocialProof
+            repo={repo}
+            fallbackStars={fallbackStars}
+            variant="project"
+          />
+        </span>
+      </span>
     </span>
   );
 }
