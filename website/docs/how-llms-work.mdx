@@ -12,6 +12,7 @@ import ProbabilityIsNotLogicDiagram from '@site/src/components/VisualElements/Pr
 import LocalPredictionConsequenceDiagram from '@site/src/components/VisualElements/LocalPredictionConsequenceDiagram';
 import TokenTypeIllustration from '@site/src/components/VisualElements/TokenTypeIllustration';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+import ErrorReasonComparisonDiagram from '@site/src/components/VisualElements/ErrorReasonComparisonDiagram';
 
 You're here to operate agents. That starts with a grounded model of the engine inside the agent.
 
@@ -204,6 +205,21 @@ So an LLM response should be treated as a candidate artifact, not as a verified 
 When a human makes a mistake, there is always a reason: they don't understand the domain, they're tired, they skimmed the input, their agenda pulls a different direction, or a cognitive bias distorts their judgment. Every human error has a causal story. Those reasons create **predictable error funnels** — you know where to look. A junior engineer struggles with distributed systems. A tired reviewer misses subtle bugs. Competence boundaries are learnable, and trust builds along them.
 
 An LLM has no such reasons. The model that just produced a flawless architecture analysis can, in the next sentence, add 2+2 and get 5. There is no "why" — no misunderstanding, no distraction, no fatigue, no misaligned incentive. The model took a statistically plausible wrong turn in a probability landscape. That is the entire explanation.
+
+<DiagramFrame
+  kicker="Error structure"
+  title="Human mistakes reveal a cause; LLM mistakes reveal a probability shift"
+  size="wide"
+  caption={
+    <>
+      Human errors cluster around causal factors that guide review. An LLM can
+      produce a locally plausible wrong answer without an equivalent causal
+      story, so each output still needs external verification.
+    </>
+  }
+>
+  <ErrorReasonComparisonDiagram />
+</DiagramFrame>
 
 Research confirms this structural difference. LLM errors superficially resemble human errors — models pick the same wrong answers students do[^arxiv-distractors] — but the mechanism is fundamentally different. Human cognitive biases are stable and rooted in evolved heuristics; LLM biases are learned from training data. Scaling and instruction tuning can shift the error distribution — reducing some error types while making others more systematic — but they cannot eliminate errors. The model is a probabilistic local minimum in a high-dimensional weight space, not a reasoning system. Error is mathematically irreducible: hallucination is provably unavoidable,[^arxiv-limits] and even temperature zero does not guarantee deterministic output.[^temp-zero]
 

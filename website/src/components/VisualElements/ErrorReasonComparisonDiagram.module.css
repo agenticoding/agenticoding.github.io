@@ -1,0 +1,50 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  overflow: visible;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 320px;
+}
+
+.panelTitle,
+.funnelTitle,
+.funnelDetail {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.panelTitle {
+  font-family: var(--font-mono-spec);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.funnelTitle {
+  font-family: var(--font-mono-keyword);
+  font-weight: 700;
+}
+
+.funnelDetail {
+  font-family: var(--font-mono-keyword);
+}
+
+@container (max-width: 520px) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
