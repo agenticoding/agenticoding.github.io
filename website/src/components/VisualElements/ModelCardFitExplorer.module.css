@@ -227,19 +227,30 @@
 
 .fieldGrid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: 1px;
   background: var(--border-default);
 }
 
 .cardField {
   display: grid;
-  grid-template-rows: auto auto minmax(15rem, auto) minmax(4.5rem, auto) minmax(4.5rem, auto);
+  grid-template-rows: auto minmax(calc(var(--lh-lg) * 2), auto) minmax(15rem, 1fr) minmax(4.5rem, auto) minmax(4.5rem, auto);
   gap: var(--space-2);
-  align-content: start;
   min-width: 0;
+  min-height: 0;
   padding: var(--space-2);
   border: 0;
   background: var(--surface-page);
+}
+
+/* Every field keeps its native evidence visual inside the same reading frame. */
+.cardField > * {
+  min-width: 0;
+}
+
+.cardField .fieldImplication,
+.cardField .gotcha {
+  align-content: start;
 }
 
 .cardField .fieldLabel {
@@ -250,6 +261,8 @@
 
 .fieldSummary {
   display: grid;
+  align-content: start;
+  min-height: calc(var(--lh-lg) * 2);
   gap: var(--space-0h);
   margin: 0;
 }
@@ -257,7 +270,7 @@
 .fieldGraphic {
   display: grid;
   align-items: center;
-  min-height: 56px;
+  min-height: 0;
   margin: 0;
 }
 
@@ -747,22 +760,23 @@
     grid-column: 2;
   }
 
-  .modelButton:last-child {
-    grid-column: 1 / -1;
-  }
-
   .modelCard {
     min-height: 0;
   }
 }
 
 @media (max-width: 30rem) {
+  .modelSelector,
   .fieldGrid {
     grid-template-columns: 1fr;
   }
 
+  .fieldGrid {
+    grid-auto-rows: auto;
+  }
+
   .cardField {
-    grid-template-rows: auto;
+    grid-template-rows: auto auto minmax(15rem, auto) auto auto;
   }
 }
 
