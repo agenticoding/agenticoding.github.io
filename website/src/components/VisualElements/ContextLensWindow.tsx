@@ -71,8 +71,10 @@ export function toneBg(tone: ContextLensTone) {
   return `var(--visual-bg-${tone})`;
 }
 
-function blockY(y: number, zoneH: number, zone: ContextLensZone, blockH: number, offset: number) {
-  return y + zoneIndex(zone) * zoneH + Math.max(4, (zoneH - blockH) / 2) + offset;
+function blockY(y: number, zoneH: number, zone: ContextLensZone, blockH: number, index: number, count: number) {
+  const gap = 4;
+  const contentH = count * blockH + (count - 1) * gap;
+  return y + zoneIndex(zone) * zoneH + Math.max(4, (zoneH - contentH) / 2) + index * (blockH + gap);
 }
 
 function blockWidth(width: number, block: ContextLensBlock) {
@@ -171,27 +173,25 @@ export function ContextLensMetrics({ rows, x, y, columns = 1, columnGap = 160, r
 
 export function ContextLensWindow({ x, y, width = 144, height = 72, blocks, tone = 'cyan' }: ContextLensWindowProps) {
   const zoneH = height / 3;
-  const blockH = Math.min(18, zoneH - 6);
+  return <ContextLensFrame x={x} y={y} width={width} height={height}>{blocks.map((block, index) => (
+    <ContextLensBlockShape key={`${block.zone}-${index}`} {...{ block, index, blocks, tone, x, y, width, zoneH }} />
+  ))}</ContextLensFrame>;
+}
 
-  return (
-    <ContextLensFrame x={x} y={y} width={width} height={height}>
-      {blocks.map((block, index) => {
-        const blockTone = block.tone ?? tone;
-        const blockW = blockWidth(width, block);
-        const bx = x + 10;
-        const by = blockY(y, zoneH, block.zone, blockH, index * 2);
-
-        return (
-          <g key={`${block.zone}-${index}`}>
-            <rect x={bx} y={by} width={blockW} height={blockH} rx={0} fill={toneBg(blockTone)} stroke={toneColor(blockTone)} strokeWidth={1.5} strokeDasharray={block.dashed ? '4 3' : undefined} />
-            <text x={bx + blockW / 2} y={by + blockH / 2 + 3} textAnchor="middle" className={styles.blockLabel} fill={toneColor(blockTone)}>
-              {block.label}
-            </text>
-          </g>
-        );
-      })}
-    </ContextLensFrame>
-  );
+function ContextLensBlockShape({ block, index, blocks, tone, x, y, width, zoneH }: {
+  block: ContextLensBlock; index: number; blocks: readonly ContextLensBlock[]; tone: ContextLensTone; x: number; y: number; width: number; zoneH: number;
+}) {
+  const zoneBlocks = blocks.filter(({ zone }) => zone === block.zone);
+  const zoneIndex = zoneBlocks.indexOf(block);
+  const blockH = Math.min(18, (zoneH - 8 - (zoneBlocks.length - 1) * 4) / zoneBlocks.length);
+  const blockTone = block.tone ?? tone;
+  const bx = x + 10;
+  const by = blockY(y, zoneH, block.zone, blockH, zoneIndex, zoneBlocks.length);
+  const blockW = blockWidth(width, block);
+  return <g>
+    <rect x={bx} y={by} width={blockW} height={blockH} rx={0} fill={toneBg(blockTone)} stroke={toneColor(blockTone)} strokeWidth={1.5} strokeDasharray={block.dashed ? '4 3' : undefined} />
+    <text x={bx + blockW / 2} y={by + blockH / 2 + 3} textAnchor="middle" className={styles.blockLabel} fill={toneColor(blockTone)}>{block.label}</text>
+  </g>;
 }
 
 type ContextLensSubAgentProps = {
