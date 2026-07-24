@@ -7,8 +7,6 @@
 /* Self-hosted font faces */
 @import './fonts.css';
 
-
-
 /* Motion tokens: durations, easings, stagger, reveal offsets */
 @import './motion-tokens.css';
 
@@ -914,7 +912,9 @@ article h1 {
   border: 1px solid transparent;
   border-radius: 0;
   color: var(--text-muted);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .navbar-github-link svg {
@@ -1011,11 +1011,13 @@ article h1 {
     display: none;
   }
 
-  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar__items:not(.navbar__items--right) {
+  .navbar:has(> .navbar__inner .navbar__search-input:focus)
+    .navbar__items:not(.navbar__items--right) {
     flex: 0 0 auto;
   }
 
-  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar__items--right {
+  .navbar:has(> .navbar__inner .navbar__search-input:focus)
+    .navbar__items--right {
     flex: 1 1 auto;
   }
 
@@ -1024,21 +1026,30 @@ article h1 {
     display: none;
   }
 
-  .navbar:has(> .navbar__inner .navbar__search-input:focus) .navbar__items--right > * {
+  .navbar:has(> .navbar__inner .navbar__search-input:focus)
+    .navbar__items--right
+    > * {
     flex: 1 1 auto;
     min-width: 0;
     position: static;
     width: 100%;
   }
 
-  .navbar:has(> .navbar__inner .navbar__search-input:focus) > .navbar__inner .navbar__search {
+  .navbar:has(> .navbar__inner .navbar__search-input:focus)
+    > .navbar__inner
+    .navbar__search {
     flex: 1 1 auto;
     margin-left: 0;
     width: 100% !important;
   }
 
-  .navbar:has(> .navbar__inner .navbar__search-input:focus) > .navbar__inner .navbar__search > span,
-  .navbar:has(> .navbar__inner .navbar__search-input:focus) > .navbar__inner .navbar__search-input {
+  .navbar:has(> .navbar__inner .navbar__search-input:focus)
+    > .navbar__inner
+    .navbar__search
+    > span,
+  .navbar:has(> .navbar__inner .navbar__search-input:focus)
+    > .navbar__inner
+    .navbar__search-input {
     width: 100% !important;
   }
 }
