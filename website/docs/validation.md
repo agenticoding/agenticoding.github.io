@@ -80,11 +80,12 @@ An LLM judge asks a model to assess an artifact against a supplied rubric. It is
 
 Examples include:
 
-- ranking generated landing pages against a campaign brief
-- checking whether an agent plan fulfills approved scope and avoids prohibited changes
-- triaging support responses for grounding, completeness, and policy compliance
-- finding likely architectural drift or missing edge cases in a diff
-- prioritizing production traces that deserve human review
+- scoring summarization outputs for faithfulness and coherence against a reference
+- verifying that a generated answer is grounded in retrieved context with no unsupported claims
+- pairwise comparison of candidate responses to select the higher-quality output
+- classifying model outputs as safe/unsafe or pass/fail against explicit criteria
+- running rubric-based regression on golden datasets in CI/CD pipelines
+- evaluating workflow step correctness (did each extraction or tool call follow the specified contract?)
 
 LLMs are better at discriminating between explicit options or criteria than at open-ended evaluation. Prefer classification, pairwise comparison, or a score against named criteria over "is this good?" See OpenAI's [evaluation guidance](https://developers.openai.com/api/docs/guides/evaluation-best-practices).
 

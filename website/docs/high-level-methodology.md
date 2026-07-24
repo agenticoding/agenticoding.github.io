@@ -4,9 +4,9 @@ title: 'Four-Phase Workflow'
 
 import OperatorCycleDiagram from '@site/src/components/VisualElements/OperatorCycleDiagram';
 import ExecutionPortfolioDiagram from '@site/src/components/VisualElements/ExecutionPortfolioDiagram';
-import PromptExample from '@site/src/components/PromptExample';
 import GroundingDistillationDiagram from '@site/src/components/VisualElements/GroundingDistillationDiagram';
 import PlanningContractCheckpointDiagram from '@site/src/components/VisualElements/PlanningContractCheckpointDiagram';
+import ValidationClaimBenchDiagram from '@site/src/components/VisualElements/ValidationClaimBenchDiagram';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
 An AI coding agent is a harness that wraps a language model in an action loop: prepare context, call the model, execute tools, observe results, and continue. The model at its core predicts the next token from whatever context it receives — verification against reality only happens through the harness's tool execution loop, not inside the model itself. A well-crafted prompt can shape one interaction toward a clear target and constraints, but that is a single turn in a larger process.
@@ -119,115 +119,43 @@ Use the lightest approach that gives you enough confidence. If the task is clear
 
 The productivity gain is not that every agent task finishes faster than a skilled human would finish it. It comes from using the time between those check-ins for other useful work, without losing sight of what each agent is building.
 
-## Phase 4: Verification {#phase-4-verification}
+## Phase 4: Validation {#phase-4-validation}
 
-Verification exists because the model is probabilistic. Even with perfect grounding and planning, the agent will make mistakes — missed constraints, hallucinated APIs, locally correct but globally wrong implementations. That is not a failure of the technology; it is the nature of a token prediction system. The model generates the next likely continuation from context. It does not verify its own output against context. You do.
+Agents are probabilistic generators. Even with strong grounding, an approved plan, and disciplined execution, an agent can miss a constraint, invent an API, or produce work that is locally correct but fails in production. A plausible artifact is not evidence that it will hold under the conditions where it must operate.
 
-The ownership boundary is fundamental: the model generates candidate work, and you own the decision to accept it. Verification is where that ownership lives. It is not quality assurance bolted on at the end — it is the operator responsibility that makes the entire loop work. Without verification, you are accepting probabilistic output on faith.
+Validation is how the operator builds measurable confidence in that uncertain process. The agent produces a candidate; the system and the person responsible for the outcome decide whether the evidence is sufficient to accept it. Without validation, acceptance is faith in a likely-looking continuation.
 
-Verify from multiple independent angles. A single check — passing tests, a clean build, a quick review — is not enough. The agent can produce output that compiles, passes tests, and still violates architecture, leaks secrets, or solves the wrong problem. Multiple angles catch different failure modes.
+Start before choosing a test or review technique:
 
-### Functional verification
+1. **State the claim.** What must remain true? For example: a checkout completes correctly after a declined payment, or a generated page remains usable at campaign volume.
+2. **Set the tolerance.** How much error, delay, degradation, or manual intervention can this claim tolerate? This is a product decision: higher confidence costs more time and evidence.
+3. **Define the operating profile.** Specify the representative environments and conditions in which the claim must hold: real user workflows, data shapes and volume, permissions, dependency failures, retries, and credible malformed or adversarial inputs.
+4. **Gather evidence against that profile.** Choose the smallest portfolio of checks whose remaining blind spots the claim can tolerate.
 
-Check whether the artifact does what the plan said it should do:
+<DiagramFrame kicker="Methodology" title="The claim meets its real world" size="wide" caption="Preset tolerance and representative operating conditions turn a plausible artifact into an evidence-backed acceptance decision.">
 
-- happy path behavior
-- edge cases
-- failure modes
-- user-facing contracts
-- API compatibility
-- data correctness
+  <ValidationClaimBenchDiagram />
 
-Be the user when possible. Run the feature, call the endpoint, inspect the UI, trigger errors, and try to break it.
+</DiagramFrame>
 
-### Automated verification
+A build, test suite, or reviewer verdict is only useful when it measures part of that predefined claim under representative conditions. Passing checks prove their stated properties; they do not prove requirements nobody expressed.
 
-Run the mechanical checks that produce hard signal:
+Use complementary evidence because every technique has blind spots: deterministic checks protect known machine-verifiable contracts; LLM judges extend evaluation where the rubric is explicit but manual review does not scale; people apply situated product and risk judgment; exploratory agents vary credible operating conditions to discover requirements that are not yet encoded. For high-impact claims, collect independent evidence and retain human ownership of the acceptance decision.
 
-- tests
-- build
-- typecheck
-- lint
-- format
-- dependency checks
-- security scanners where relevant
+Validation continues after release. Controlled exposure, telemetry, sampled review, and rollback test the claim against real behavior. Confirmed failures become new operating-profile conditions and deterministic regression protection.
 
-Passing automated checks is not proof of correctness. Failing them is proof you are not done.
+Evidence should identify what to change next. Do not treat every failed check as an implementation bug: return to the phase that introduced the uncertainty.
 
-### Architecture and maintainability verification
+| What the evidence shows | Next action |
+| --- | --- |
+| The candidate has a local defect or misses a known edge case | Fix that bounded unit, then measure it again. |
+| The candidate relied on a missing or incorrect codebase fact, API, or constraint | Re-ground before attempting another implementation. |
+| The proposed solution or task sequence is wrong | Re-plan the work before executing again. |
+| The target is clear, but this candidate is unreliable | Generate independent candidates and compare them with independent evidence. |
+| The evidence conflicts, or accepting an error would be costly | Add a human acceptance checkpoint. |
+| Exploration or production reveals a confirmed new failure mode | Add it to the operating profile and protect it with a regression check. |
 
-Agent output often looks locally reasonable while damaging the system shape. Review for:
-
-- module boundary violations
-- duplicated logic
-- hidden coupling
-- inconsistent error handling
-- unnecessary abstractions
-- compatibility layers nobody asked for
-- dead code or unused dependencies
-- code that solves the prompt but not the system problem
-
-This is where senior judgment matters. You are checking whether the implementation belongs in the codebase, not whether it merely compiles.
-
-### Design system and product verification
-
-For UI work, verify the product artifact directly:
-
-- visual alignment with the design system
-- responsive behavior
-- empty, loading, error, and disabled states
-- accessibility basics
-- interaction feel
-- copy and information hierarchy
-
-Screenshots and browser automation help, but human visual review is still part of the quality gate.
-
-### Security and privacy verification
-
-Treat agent-generated code as untrusted until checked:
-
-- permissions and authorization boundaries
-- data exposure
-- secret handling
-- injection risks
-- unsafe dependency additions
-- logging of sensitive data
-- prompt-injection surfaces for agent-facing systems
-
-Security verification should be planned before execution, not added after a risky diff exists.
-
-### Agent-assisted verification
-
-Use agents to verify agent work, but do not confuse that with ownership transfer.
-
-Useful patterns:
-
-- ask the original agent to self-review against the plan
-- use a separate reviewer agent with no access to the implementation reasoning
-- run cross-model review for high-risk changes
-- ask an agent to search for missing tests, edge cases, and architectural drift
-- ask an agent to compare the diff against project conventions
-
-Independent agreement is useful signal. Divergence is even more useful: it tells you the task, plan, or implementation has ambiguity worth inspecting.
-
-<PromptExample>
-Review this diff against the approved plan. Check functional correctness, missing edge cases, architecture compliance, maintainability, security risks, test quality, and design-system impact. Separate blocking issues from non-blocking improvements. Do not rewrite code unless asked.
-</PromptExample>
-
-### Iterate, regenerate, re-ground, or re-plan
-
-When verification finds problems, choose the right repair loop:
-
-| Finding                                         | Response                         |
-| ----------------------------------------------- | -------------------------------- |
-| Local bug, missing edge case, small test gap    | Iterate                          |
-| Correct structure but incomplete implementation | Re-execute a smaller unit        |
-| Agent missed existing patterns or APIs          | Re-ground                        |
-| Decomposition or sequencing was wrong           | Re-plan                          |
-| Architecture is fundamentally wrong             | Regenerate from a corrected plan |
-| Confidence is low but no defect is obvious      | Verify from another angle        |
-
-Code generation is cheap. Do not preserve a bad foundation because the diff looks substantial. Fix the context, plan, or grounding, then regenerate.
+Read [Validation](./validation.md) for the full framework: defining claims and operating profiles, calibrating deterministic checks and LLM judges, manual acceptance, exploratory discovery, and production evidence.
 
 ## Closing the Loop
 
