@@ -1,156 +1,149 @@
-/* MCPToolSchemaDiagram — startup context shape determines runtime call path. */
+/* One catalog slider grows the eager prefix and the task's relevant lazy schemas. */
 
 .container {
-  container-type: inline-size;
-  display: block;
-  margin-inline: auto;
-  max-width: 760px;
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-2) auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--border-default);
+  background: var(--surface-raised);
+}
+
+.catalogControl {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  color: var(--text-body);
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+}
+
+.catalogControl {
+  grid-template-columns: 1fr auto;
+}
+
+.catalogControl strong {
+  color: var(--visual-indigo);
+  font-family: var(--font-mono-spec);
+  font-weight: 600;
+}
+
+.catalogControl input {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: var(--target-sm);
+  margin: 0;
+  accent-color: var(--text-heading);
+}
+
+.catalogControl input:focus-visible {
+  outline: 2px solid var(--text-heading);
+  outline-offset: 2px;
+}
+
+.relevanceNote {
+  max-width: 28ch;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-sm);
+}
+
+.relevanceNote strong {
+  color: var(--visual-violet);
+  font-family: var(--font-mono-spec);
+  font-weight: 600;
 }
 
 .diagram {
   display: block;
   width: 100%;
-  height: auto;
-  margin-inline: auto;
-  font-feature-settings: var(--font-mono-features);
+  margin: 0 auto;
 }
 
 .desktopDiagram {
-  max-width: 760px;
+  max-width: 600px;
 }
 
 .mobileDiagram {
   display: none;
-  max-width: 340px;
 }
 
-.laneTitle,
-.ruleText {
+.contextBlock {
+  transition: transform var(--duration-moderate) var(--ease-standard);
+}
+
+.lazyVisible,
+.lazyHidden {
+  transition:
+    opacity var(--duration-subtle) var(--ease-standard),
+    transform var(--duration-moderate) var(--ease-standard);
+}
+
+.lazyVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lazyHidden {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.lensTitle,
+.detailText {
   font-family: var(--font-mono-keyword);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-}
-
-.stageLabel,
-.tradeoffText {
-  font-family: var(--font-mono-keyword);
   font-size: var(--text-xs);
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  fill: var(--text-muted);
 }
 
-.laneSubtitle,
-.pressureText {
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
+.detailText {
+  letter-spacing: 0;
+  fill: var(--text-muted);
 }
 
-.blockLabel,
-.flowLabel {
-  font-family: var(--font-mono-spec);
-  font-size: var(--text-xs);
-  font-weight: 600;
-}
-
-.blockLabel {
-  font-size: 9.5px;
-}
-
-.flowNode,
-.flowArrow,
-.runtimeSchema {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.flowNode {
-  animation: mcpStepPulse 4200ms ease-in-out infinite both;
-}
-
-.flowArrow {
-  animation: mcpArrowPulse 4200ms ease-in-out infinite both;
-}
-
-.runtimeSchema {
-  animation: mcpSchemaPulse 4200ms ease-in-out infinite both;
-  animation-delay: 1500ms;
-}
-
-.pressureArrow {
-  fill: none;
-  stroke: var(--visual-warning);
-  stroke-width: 1.5;
-  stroke-linecap: butt;
-  stroke-linejoin: miter;
-}
-
-.semanticNode {
-  color: var(--visual-indigo);
-}
-
-@keyframes mcpStepPulse {
-  0%, 16%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  8% {
-    opacity: 1;
-    transform: scale(1.035);
-  }
-}
-
-@keyframes mcpArrowPulse {
-  0%, 16%, 100% {
-    opacity: 0.55;
-  }
-
-  8% {
-    opacity: 1;
-  }
-}
-
-@keyframes mcpSchemaPulse {
-  0%, 18%, 100% {
-    opacity: 0.72;
-    transform: scale(1);
-  }
-
-  8% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-}
-
-@container (max-width: 520px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
+.liveRegion {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 @media (max-width: 560px) {
+  .controls {
+    grid-template-columns: 1fr;
+  }
+
   .desktopDiagram {
     display: none;
   }
 
   .mobileDiagram {
     display: block;
+    max-width: 280px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flowNode,
-  .flowArrow,
-  .runtimeSchema {
+  .container * {
+    transition: none !important;
     animation: none !important;
   }
 
-  .flowArrow {
-    opacity: 0.75;
+  .lazyHidden {
+    display: none;
   }
 }

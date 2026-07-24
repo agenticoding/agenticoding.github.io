@@ -133,17 +133,26 @@ Context files are injected directly into system prompts. Security researchers ha
 
 Every tool the agent can call ships with a schema: name, description, parameters. Those schemas live in the request context and count toward input tokens. Built-in tools (Read, Edit, Bash) are modest at ~50–1000 tokens each. MCP servers are a different story entirely.
 
-The real issue is placement, not just capacity. **Eager loading** puts tool definitions in the initial request context before the model plans its first action. **Deferred loading** keeps only a search tool and compact catalog metadata upfront, preserving attention for the user task until a capability is actually needed.
+The real issue is placement, not just capacity. **Eager loading** puts tool definitions in the initial request context before the model plans its first action. With Anthropic Tool Search, **deferred loading** initially exposes the search tool and any non-deferred core tools; a task-relevant search result is then expanded into a callable schema.
 
 The cost is structural: every tool schema is serialized as JSON with repeated type annotations, nested `required` arrays, and verbose natural-language descriptions. A typical tool runs 300–600 tokens; complex API tools like GitHub's file operations hit 1,000–2,000. These costs compound quickly across multi-server setups. The governing rule is simple: **small, high-frequency toolsets favor eager loading; large, broad catalogs favor deferred loading.**
 
 ### Eager vs Deferred Loading
 
-Eager loading keeps calls simple because the model already has the schema when it starts planning. Deferred loading protects the startup prompt by exposing ToolSearch first, but every deferred tool now depends on runtime discovery.
+Eager loading keeps calls simple because the model already has the schema when it starts planning. Deferred loading protects the startup prompt, but every deferred tool now depends on runtime discovery. A longer task can create more searches as it gains new capability needs; context length alone does not trigger them.
 
-<DiagramFrame kicker="Context management" title="Load MCP schemas by catalog shape" size="wide" caption={'The MCP loading tradeoff: eager loading keeps schemas in the initial request so calls stay direct, but it pushes the task lower in context. Deferred loading keeps the startup prompt compact by exposing ToolSearch first, then discovers and loads schemas only when needed.'}>
-    <MCPToolSchemaDiagram />
+<DiagramFrame
+  kicker="Context management"
+  title="A growing catalog increases eager pressure, not lazy startup cost"
+  size="wide"
+  caption={
+    'One catalog control grows eager schema pressure and the task-relevant Tool Search results. Lazy loading keeps the remaining catalog outside the request.'
+  }
+>
+  <MCPToolSchemaDiagram />
 </DiagramFrame>
+
+Drag the catalog control. As the catalog broadens, the task can need more relevant schemas. Eager loading puts every schema in the fixed prefix; Tool Search brings in only the growing relevant subset and keeps the remainder out of the request.
 
 **Takeaway:** the more your catalog behaves like infrastructure, the more you should optimize for prompt placement instead of immediate tool visibility. The same logic applies one layer up to reusable procedures: if a workflow library is broad, discover it cheaply and load the full instructions only when needed. The same automation-versus-reliability tradeoff applies here.
 
@@ -307,7 +316,7 @@ Every token in AGENTS.md shifts the user task band deeper into the middle zone �
 **Select: Retrieval, MCP tools, and skills choose what enters the context**
 Retrieval is the broadest select mechanism — ChunkHound, vector DBs, BM25, web search, memory systems all inject grounded facts. Harness-level RAG places content in the primacy zone; tool-call retrieval lands in the conversation stream. Retrieved content that is relevant but poorly placed still degrades. Optimize retrieval quality and context injection together.
 
-A single GitHub MCP server consumes ~55K tokens; three moderate servers can consume 72% of your window before the conversation starts. Enable ToolSearch for deferred loading when you have more than 20 tools. Skills keep lightweight discovery metadata in context until invoked — the invocation path controls who decides which workflow runs.
+Anthropic documents a five-server example with 58 tools and ~55K definition tokens; actual schema cost varies widely by server and description depth. OpenAI advises starting with fewer than 20 functions, while Anthropic suggests considering Tool Search at 10+ tools or >10K definition tokens and reports degraded selection past 30–50 available tools. Treat these as workload-specific guardrails, not a universal cutoff. Skills keep lightweight discovery metadata in context until invoked — the invocation path controls who decides which workflow runs.
 
 **Compress: Compaction and summarization fit more signal into fewer tokens**
 Compaction is lossy summarization — it drops what looks irrelevant now but may be critical later. External checkpoint files provide reliable recall; a fresh context provides inference quality. If you must use compaction, externalize anything that must survive exactly.
