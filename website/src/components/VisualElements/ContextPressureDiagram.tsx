@@ -43,6 +43,133 @@ interface Preset {
   toolSearchEnabled: boolean;
 }
 
+interface RangeControlProps {
+  label: string;
+  value: number;
+  display: string;
+  min: number;
+  max: number;
+  step: number;
+  drained?: boolean;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function RangeControl({
+  label,
+  value,
+  display,
+  min,
+  max,
+  step,
+  drained,
+  onChange,
+}: RangeControlProps) {
+  return (
+    <div className={styles.sliderRow}>
+      <span className={styles.sliderLabel}>{label}</span>
+      <input
+        className={styles.slider}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={onChange}
+        aria-label={label}
+      />
+      <span
+        className={`${styles.sliderValue} ${drained ? styles.sliderValueDrained : ''}`}
+      >
+        {display}
+      </span>
+    </div>
+  );
+}
+
+interface ConfigControlsProps {
+  showCompaction: boolean;
+  contextFiles: number;
+  installedTools: number;
+  toolSearchEnabled: boolean;
+  turnCount: number;
+  skillTurns: number;
+  ctxDisplay: string;
+  toolDisplay: string;
+  convDisplay: string;
+  skillDisplay: string;
+  drained: Record<DrainKey, number>;
+  onCompactionToggle: () => void;
+  onContextFiles: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onInstalledTools: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onToolSearchToggle: () => void;
+  onTurnCount: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSkillTurns: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function ConfigControls(props: ConfigControlsProps) {
+  return (
+    <div className={styles.sliders}>
+      <label className={styles.checkRow}>
+        <input
+          type="checkbox"
+          checked={props.showCompaction}
+          onChange={props.onCompactionToggle}
+        />
+        <span>Compaction buffer (33K)</span>
+      </label>
+      <RangeControl
+        label="Context Files"
+        min={0}
+        max={20000}
+        step={1000}
+        value={props.contextFiles}
+        display={props.ctxDisplay}
+        drained={props.drained.contextFiles > 0}
+        onChange={props.onContextFiles}
+      />
+      <div className={styles.controlWithToggle}>
+        <RangeControl
+          label="Installed Tools"
+          min={45}
+          max={200}
+          step={5}
+          value={props.installedTools}
+          display={props.toolDisplay}
+          drained={props.drained.toolDefs > 0}
+          onChange={props.onInstalledTools}
+        />
+        <label className={styles.inlineCheck}>
+          <input
+            type="checkbox"
+            checked={props.toolSearchEnabled}
+            onChange={props.onToolSearchToggle}
+          />
+          <span>ToolSearch</span>
+        </label>
+      </div>
+      <RangeControl
+        label="Conv. Turns"
+        min={0}
+        max={20}
+        step={1}
+        value={props.turnCount}
+        display={props.convDisplay}
+        drained={props.drained.conversation > 0}
+        onChange={props.onTurnCount}
+      />
+      <RangeControl
+        label="Skill Turns"
+        min={0}
+        max={5}
+        step={1}
+        value={props.skillTurns}
+        display={props.skillDisplay}
+        onChange={props.onSkillTurns}
+      />
+    </div>
+  );
+}
+
 const PRESETS: Preset[] = [
   {
     label: 'Fresh Session',
@@ -110,6 +237,17 @@ const PRESETS: Preset[] = [
   },
 ];
 
+const MOBILE_PRESET_LABELS: Record<string, string> = {
+  'Fresh Session': 'Fresh',
+  'Normal Session': 'Normal',
+  'Heavy MCP (eager)': 'MCP eager',
+  'Heavy MCP (deferred)': 'MCP deferred',
+  'Deep Conversation': 'Deep convo',
+  'Skill-Heavy': 'Skill-heavy',
+  'Near Compaction': 'Near limit',
+  Overloaded: 'Overloaded',
+};
+
 const SCENARIO_DESCRIPTIONS: Record<string, string> = {
   'Fresh Session':
     'Built-in tools only, no conversation history. Task sits in recency — full attention.',
@@ -161,22 +299,32 @@ function buildAttentionCurve(fillRatio: number): {
 
   // Desktop: x = attention (right = strong), y = frac (top = start)
   const curvePath = pts
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${(p.att * 100).toFixed(1)},${(p.frac * 100).toFixed(1)}`)
+    .map(
+      (p, i) =>
+        `${i === 0 ? 'M' : 'L'} ${(p.att * 100).toFixed(1)},${(p.frac * 100).toFixed(1)}`
+    )
     .join(' ');
   const fillPath = [
     'M 100,0',
-    ...pts.map((p) => `L ${(p.att * 100).toFixed(1)},${(p.frac * 100).toFixed(1)}`),
+    ...pts.map(
+      (p) => `L ${(p.att * 100).toFixed(1)},${(p.frac * 100).toFixed(1)}`
+    ),
     'L 100,100',
     'Z',
   ].join(' ');
 
   // Mobile: x = frac (left = start), y = 100 - attention*100 (top = strong)
   const mobileCurvePath = pts
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${(p.frac * 100).toFixed(1)},${(100 - p.att * 100).toFixed(1)}`)
+    .map(
+      (p, i) =>
+        `${i === 0 ? 'M' : 'L'} ${(p.frac * 100).toFixed(1)},${(100 - p.att * 100).toFixed(1)}`
+    )
     .join(' ');
   const mobileFillPath = [
     'M 0,0',
-    ...pts.map((p) => `L ${(p.frac * 100).toFixed(1)},${(100 - p.att * 100).toFixed(1)}`),
+    ...pts.map(
+      (p) => `L ${(p.frac * 100).toFixed(1)},${(100 - p.att * 100).toFixed(1)}`
+    ),
     'L 100,0',
     'Z',
   ].join(' ');
@@ -318,20 +466,25 @@ function rowBg(layer: Layer, isDrained: boolean, taskZone: string): string {
 
 /* ── Flex redistribution with minimum readable height ─────────────── */
 function redistributeWithMinHeight(
-  items: Array<{ id: string; tokens: number }>,
+  items: Array<{ id: string; tokens: number; minHeight?: number }>,
   totalTokens: number,
   containerHeight: number,
   minHeight: number
 ): Record<string, number> {
-  const rawHeights = items.map((i) => (i.tokens / totalTokens) * containerHeight);
-  const belowMin = rawHeights.map((h) => h < minHeight);
+  const rawHeights = items.map(
+    (i) => (i.tokens / totalTokens) * containerHeight
+  );
+  const minimums = items.map((item) => item.minHeight ?? minHeight);
+  const belowMin = rawHeights.map((height, index) => height < minimums[index]);
 
   if (!belowMin.some(Boolean)) {
     return Object.fromEntries(items.map((i) => [i.id, i.tokens]));
   }
 
-  const belowMinCount = belowMin.filter(Boolean).length;
-  const reservedHeight = belowMinCount * minHeight;
+  const reservedHeight = minimums.reduce(
+    (total, minimum, index) => total + (belowMin[index] ? minimum : 0),
+    0
+  );
   const largeItems = items.filter((_, i) => !belowMin[i]);
   const largeTotalTokens = largeItems.reduce((s, i) => s + i.tokens, 0);
   const remainingHeight = Math.max(0, containerHeight - reservedHeight);
@@ -339,7 +492,7 @@ function redistributeWithMinHeight(
   const result: Record<string, number> = {};
   items.forEach((item, i) => {
     if (belowMin[i]) {
-      result[item.id] = (minHeight / containerHeight) * totalTokens;
+      result[item.id] = (minimums[i] / containerHeight) * totalTokens;
     } else {
       const h = (item.tokens / largeTotalTokens) * remainingHeight;
       result[item.id] = (h / containerHeight) * totalTokens;
@@ -415,7 +568,11 @@ export default function ContextPressureDiagram() {
     turnLayers.push({
       id: `turn-${i}`,
       label: active ? `Turn ${t.index + 1}` : '',
-      shortLabel: active ? (t.isSkill ? `S${t.index + 1}` : `T${t.index + 1}`) : '',
+      shortLabel: active
+        ? t.isSkill
+          ? `S${t.index + 1}`
+          : `T${t.index + 1}`
+        : '',
       voice: 'data',
       tokens: active ? Math.round(t.tokens * conversationScale) : 0,
       fixed: false,
@@ -487,7 +644,8 @@ export default function ContextPressureDiagram() {
   }, []);
 
   /* ── Redistribute flex space with readable minimum ───────────── */
-  const MIN_ROW_HEIGHT = 16;
+  const MIN_ROW_HEIGHT = 24;
+  const MIN_COMPACTION_HEIGHT = 32;
 
   const adjustedFlexProps = useMemo(() => {
     const middleTurnIds = new Set<string>();
@@ -497,16 +655,29 @@ export default function ContextPressureDiagram() {
     }
 
     const items = [
-      ...layers.filter((l) => !middleTurnIds.has(l.id)).map((l) => ({ id: l.id, tokens: l.tokens })),
+      ...layers
+        .filter((l) => !middleTurnIds.has(l.id))
+        .map((l) => ({ id: l.id, tokens: l.tokens })),
       { id: 'headroom', tokens: headroom >= 6000 ? headroom : 0 },
-      { id: 'compaction', tokens: showCompaction ? COMPACTION_BUFFER : 0 },
+      {
+        id: 'compaction',
+        tokens: showCompaction ? COMPACTION_BUFFER : 0,
+        minHeight: MIN_COMPACTION_HEIGHT,
+      },
     ].filter((i) => i.tokens > 0);
 
-    const adjusted = redistributeWithMinHeight(items, TOTAL_WINDOW, stackHeight, MIN_ROW_HEIGHT);
+    const adjusted = redistributeWithMinHeight(
+      items,
+      TOTAL_WINDOW,
+      stackHeight,
+      MIN_ROW_HEIGHT
+    );
 
-    layers.filter((l) => middleTurnIds.has(l.id)).forEach((l) => {
-      adjusted[l.id] = l.tokens;
-    });
+    layers
+      .filter((l) => middleTurnIds.has(l.id))
+      .forEach((l) => {
+        adjusted[l.id] = l.tokens;
+      });
 
     return adjusted;
   }, [layers, headroom, showCompaction, stackHeight, turnCount]);
@@ -559,7 +730,8 @@ export default function ContextPressureDiagram() {
             : 'critical';
 
   /* ── Budget bar ──────────────────────────────────────────────── */
-  const effectiveFillRatio = effectiveWindow > 0 ? Math.min(totalTokens / effectiveWindow, 1) : 0;
+  const effectiveFillRatio =
+    effectiveWindow > 0 ? Math.min(totalTokens / effectiveWindow, 1) : 0;
   const budgetColor =
     effectiveFillRatio < 0.6
       ? 'var(--visual-success)'
@@ -664,105 +836,64 @@ export default function ContextPressureDiagram() {
                 className={`${styles.chip} ${activePreset === p.label ? styles.chipActive : ''}`}
                 onClick={() => applyPreset(p)}
               >
-                {p.label}
+                <span className={styles.chipLabel}>{p.label}</span>
+                <span className={styles.chipMobileLabel} aria-hidden="true">
+                  {MOBILE_PRESET_LABELS[p.label]}
+                </span>
               </button>
             ))}
           </div>
 
-          <p className={`${styles.scenarioDesc} ${SCENARIO_DESCRIPTIONS[activePreset] ? styles.descVisible : ''}`}>
+          <p
+            className={`${styles.scenarioDesc} ${SCENARIO_DESCRIPTIONS[activePreset] ? styles.descVisible : ''}`}
+          >
             {SCENARIO_DESCRIPTIONS[activePreset] || '\u00A0'}
           </p>
 
-          <div className={styles.sliders}>
-            <label className={styles.checkRow}>
-              <input
-                type="checkbox"
-                checked={showCompaction}
-                onChange={handleCompactionToggle}
-              />
-              <span>Compaction buffer (33K)</span>
-            </label>
-
-            <div className={styles.sliderRow}>
-              <span className={styles.sliderLabel}>Context Files</span>
-              <input
-                type="range"
-                min={0}
-                max={20000}
-                step={1000}
-                value={contextFiles}
-                onChange={handleContextFiles}
-                className={styles.slider}
-                aria-label="Context files token count"
-              />
-              <span
-                className={`${styles.sliderValue} ${drained.contextFiles > 0 ? styles.sliderValueDrained : ''}`}
-              >
-                {ctxDisplay}
-              </span>
-            </div>
-
-            <div className={styles.sliderRow}>
-              <span className={styles.sliderLabel}>Installed Tools</span>
-              <input
-                type="range"
-                min={45}
-                max={200}
-                step={5}
-                value={installedTools}
-                onChange={handleInstalledTools}
-                className={styles.slider}
-                aria-label="Installed tools count"
-              />
-              <span
-                className={`${styles.sliderValue} ${drained.toolDefs > 0 ? styles.sliderValueDrained : ''}`}
-              >
-                {toolDisplay}
-              </span>
-              <label className={styles.inlineCheck}>
-                <input
-                  type="checkbox"
-                  checked={toolSearchEnabled}
-                  onChange={handleToolSearchToggle}
-                />
-                <span>ToolSearch</span>
-              </label>
-            </div>
-
-            <div className={styles.sliderRow}>
-              <span className={styles.sliderLabel}>Conv. Turns</span>
-              <input
-                type="range"
-                min={0}
-                max={20}
-                step={1}
-                value={turnCount}
-                onChange={handleTurnCount}
-                className={styles.slider}
-                aria-label="Conversation turn count"
-              />
-              <span
-                className={`${styles.sliderValue} ${drained.conversation > 0 ? styles.sliderValueDrained : ''}`}
-              >
-                {convDisplay}
-              </span>
-            </div>
-
-            <div className={styles.sliderRow}>
-              <span className={styles.sliderLabel}>Skill Turns</span>
-              <input
-                type="range"
-                min={0}
-                max={5}
-                step={1}
-                value={skillTurns}
-                onChange={handleSkillTurns}
-                className={styles.slider}
-                aria-label="Skill expansion turn count"
-              />
-              <span className={styles.sliderValue}>{skillDisplay}</span>
-            </div>
+          <div className={styles.desktopControls}>
+            <ConfigControls
+              showCompaction={showCompaction}
+              contextFiles={contextFiles}
+              installedTools={installedTools}
+              toolSearchEnabled={toolSearchEnabled}
+              turnCount={turnCount}
+              skillTurns={skillTurns}
+              ctxDisplay={ctxDisplay}
+              toolDisplay={toolDisplay}
+              convDisplay={convDisplay}
+              skillDisplay={skillDisplay}
+              drained={drained}
+              onCompactionToggle={handleCompactionToggle}
+              onContextFiles={handleContextFiles}
+              onInstalledTools={handleInstalledTools}
+              onToolSearchToggle={handleToolSearchToggle}
+              onTurnCount={handleTurnCount}
+              onSkillTurns={handleSkillTurns}
+            />
           </div>
+
+          <details className={styles.mobileControls}>
+            <summary>Fine-tune this scenario</summary>
+            <ConfigControls
+              showCompaction={showCompaction}
+              contextFiles={contextFiles}
+              installedTools={installedTools}
+              toolSearchEnabled={toolSearchEnabled}
+              turnCount={turnCount}
+              skillTurns={skillTurns}
+              ctxDisplay={ctxDisplay}
+              toolDisplay={toolDisplay}
+              convDisplay={convDisplay}
+              skillDisplay={skillDisplay}
+              drained={drained}
+              onCompactionToggle={handleCompactionToggle}
+              onContextFiles={handleContextFiles}
+              onInstalledTools={handleInstalledTools}
+              onToolSearchToggle={handleToolSearchToggle}
+              onTurnCount={handleTurnCount}
+              onSkillTurns={handleSkillTurns}
+            />
+          </details>
         </div>
 
         {/* ── Arrow 1 ──────────────────────────────────────────── */}
@@ -787,8 +918,14 @@ export default function ContextPressureDiagram() {
                       : false;
               const isTask = layer.id === 'userTask';
               const isTurn = layer.id.startsWith('turn-');
-              const turnIdx = isTurn ? parseInt(layer.id.replace('turn-', ''), 10) : -1;
-              const isMiddleTurn = isTurn && turnCount > MAX_INDIVIDUAL && turnIdx >= 2 && turnIdx < Math.min(turnCount, MAX_TURNS) - 3;
+              const turnIdx = isTurn
+                ? parseInt(layer.id.replace('turn-', ''), 10)
+                : -1;
+              const isMiddleTurn =
+                isTurn &&
+                turnCount > MAX_INDIVIDUAL &&
+                turnIdx >= 2 &&
+                turnIdx < Math.min(turnCount, MAX_TURNS) - 3;
               const isInactiveTurn = isTurn && turnIdx >= turnCount;
 
               if (isMiddleTurn) {
@@ -801,7 +938,7 @@ export default function ContextPressureDiagram() {
                         flexGrow: turnGroupTokens,
                         flexBasis: 0,
                         flexShrink: 0,
-                        minHeight: 0,
+                        minHeight: MIN_ROW_HEIGHT,
                       }}
                     >
                       <span className={styles.turnGroupLabel}>
@@ -821,9 +958,13 @@ export default function ContextPressureDiagram() {
                     flexGrow: adjustedFlexProps[layer.id] ?? layer.tokens,
                     flexBasis: 0,
                     flexShrink: 0,
-                    minHeight: 0,
+                    minHeight: isInactiveTurn ? 0 : MIN_ROW_HEIGHT,
                     background: rowBg(layer, isDrained, taskZone),
-                    opacity: layer.isCompacted ? 0.55 : (layer.tokens > 0 ? 1 : 0),
+                    opacity: layer.isCompacted
+                      ? 0.55
+                      : layer.tokens > 0
+                        ? 1
+                        : 0,
                   }}
                 >
                   <div
@@ -839,9 +980,21 @@ export default function ContextPressureDiagram() {
                     {layer.label}
                   </span>
                   <span className={styles.badgeGroup}>
-                    <span className={`${styles.compactedBadge} ${layer.isCompacted ? styles.badgeVisible : ''}`}>compacted</span>
-                    <span className={`${styles.skillBadge} ${layer.isSkillTurn && !layer.isCompacted ? styles.badgeVisible : ''}`}>skill</span>
-                    <span className={`${styles.drainBadge} ${isDrained ? styles.badgeVisible : ''}`}>drained</span>
+                    <span
+                      className={`${styles.compactedBadge} ${layer.isCompacted ? styles.badgeVisible : ''}`}
+                    >
+                      compacted
+                    </span>
+                    <span
+                      className={`${styles.skillBadge} ${layer.isSkillTurn && !layer.isCompacted ? styles.badgeVisible : ''}`}
+                    >
+                      skill
+                    </span>
+                    <span
+                      className={`${styles.drainBadge} ${isDrained ? styles.badgeVisible : ''}`}
+                    >
+                      drained
+                    </span>
                   </span>
                   <span className={styles.rowTokens}>
                     {formatK(layer.tokens)}
@@ -855,7 +1008,9 @@ export default function ContextPressureDiagram() {
             <div
               className={`${styles.headroomRow} ${headroom >= 6000 ? styles.headroomRowActive : ''}`}
               style={{
-                flexGrow: adjustedFlexProps['headroom'] ?? (headroom >= 6000 ? headroom : 0),
+                flexGrow:
+                  adjustedFlexProps['headroom'] ??
+                  (headroom >= 6000 ? headroom : 0),
                 flexBasis: 0,
                 flexShrink: 0,
               }}
@@ -868,9 +1023,12 @@ export default function ContextPressureDiagram() {
             <div
               className={`${styles.compactionRow} ${showCompaction ? styles.compactionRowActive : ''}`}
               style={{
-                flexGrow: adjustedFlexProps['compaction'] ?? (showCompaction ? COMPACTION_BUFFER : 0),
+                flexGrow:
+                  adjustedFlexProps['compaction'] ??
+                  (showCompaction ? COMPACTION_BUFFER : 0),
                 flexBasis: 0,
                 flexShrink: 0,
+                minHeight: showCompaction ? MIN_COMPACTION_HEIGHT : 0,
               }}
             >
               <span className={styles.compactionLabel}>Buffer 33K</span>
@@ -881,7 +1039,10 @@ export default function ContextPressureDiagram() {
           <div className={styles.budgetBar}>
             <div
               className={styles.budgetFill}
-              style={{ width: `${effectiveFillRatio * 100}%`, background: budgetColor }}
+              style={{
+                width: `${effectiveFillRatio * 100}%`,
+                background: budgetColor,
+              }}
             />
           </div>
           <div className={styles.budgetLabel}>
