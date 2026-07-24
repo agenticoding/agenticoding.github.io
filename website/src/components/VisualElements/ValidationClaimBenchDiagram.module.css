@@ -1,0 +1,118 @@
+.container {
+  display: block;
+  margin-inline: auto;
+  max-width: 760px;
+  padding-block-end: var(--space-1);
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 340px;
+}
+
+.vectorStroke {
+  vector-effect: non-scaling-stroke;
+}
+
+.nodeEyebrow,
+.actorLabel,
+.conditionLabel {
+  font-family: var(--font-mono-spec);
+}
+
+.nodeEyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.actorLabel,
+.conditionLabel {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.conditionLabel {
+  font-size: 8px;
+}
+
+.claimText {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.claimPath,
+.evidencePath {
+  fill: none;
+  opacity: 0.82;
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.evidenceFlow {
+  overflow: visible;
+}
+
+.condition {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: condition-arrival 6400ms ease-in-out var(--condition-delay)
+    infinite;
+}
+
+.outcome {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: outcome-confirmation 6400ms ease-in-out var(--outcome-delay)
+    infinite;
+}
+
+@keyframes condition-arrival {
+  0%,
+  10%,
+  100% {
+    transform: translateY(0);
+  }
+  4% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes outcome-confirmation {
+  0%,
+  10%,
+  100% {
+    transform: scale(1);
+  }
+  4% {
+    transform: scale(1.03);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 340px;
+  }
+  .desktopDiagram {
+    display: none;
+  }
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diagram * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
