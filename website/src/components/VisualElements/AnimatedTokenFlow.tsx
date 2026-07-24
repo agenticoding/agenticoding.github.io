@@ -1,4 +1,4 @@
-import React, { type CSSProperties } from 'react';
+import React, { type CSSProperties, type ReactNode } from 'react';
 import clsx from 'clsx';
 
 import {
@@ -7,7 +7,9 @@ import {
   type TokenUnitSignal,
   type TokenUnitTone,
 } from './TokenUnit';
+import { EmojiImage } from './ActorNodes';
 import { DIAGRAM_TOKEN_SIZE } from './diagramScale';
+import type { EmojiAsset } from './emojiAssets';
 import { tokenFlowFade } from './diagramMotion';
 import {
   tokenTrainBeginOffsetMs,
@@ -72,16 +74,33 @@ type AnimatedTokenFlowProps = {
 
 export type TokenTrainOrientation = 'above' | 'below';
 
-type AnimatedTokenTrainProps = {
+type AnimatedPathTravelerProps<Item> = {
   pathD: string;
-  tokens: TokenSequence;
+  items: readonly Item[];
   timing: TokenTrainTiming;
   stagger: TokenTrainStagger;
-  size?: number;
-  tone?: TokenUnitTone;
   laneOffsetPx?: number;
   laneOrientation?: TokenTrainOrientation;
   className?: string;
+  renderItem: (item: Item, center: PathPoint) => ReactNode;
+  renderStaticItems?: boolean;
+};
+
+type AnimatedTokenTrainProps = Omit<
+  AnimatedPathTravelerProps<TokenSequence[number]>,
+  'items' | 'renderItem'
+> & {
+  tokens: TokenSequence;
+  size?: number;
+  tone?: TokenUnitTone;
+};
+
+export type AnimatedEmojiTrainProps = Omit<
+  AnimatedPathTravelerProps<EmojiAsset>,
+  'items' | 'renderItem'
+> & {
+  asset: EmojiAsset;
+  size?: number;
 };
 
 const VARIANT_CLASS: Record<FlowVariant, string> = {
@@ -535,14 +554,6 @@ function pathPointAt(segments: readonly PathSegment[], distance: number) {
   return segments[segments.length - 1].to;
 }
 
-function tokenTrainEntries(tokens: TokenSequence) {
-  return tokens.map(({ modality, signal = 'ordinary' }, index) => ({
-    modality,
-    signal,
-    index,
-  }));
-}
-
 function seconds(ms: number) {
   return `${(ms / 1000).toFixed(3)}s`;
 }
@@ -619,101 +630,124 @@ export function AnimatedTokenFlow({
   );
 }
 
-export function AnimatedTokenTrain({
+export function AnimatedPathTraveler<Item>({
   pathD,
-  tokens,
+  items,
   timing,
   stagger,
-  size = DIAGRAM_TOKEN_SIZE.flow,
-  tone = 'violet',
   laneOffsetPx = 0,
   laneOrientation = 'above',
   className,
-}: AnimatedTokenTrainProps) {
+  renderItem,
+  renderStaticItems = true,
+}: AnimatedPathTravelerProps<Item>) {
   const segments = parsePath(pathD);
   const length = pathLength(segments);
-  const entries = tokenTrainEntries(tokens).reverse();
+  const entries = items.map((item, index) => ({ item, index })).reverse();
   const lane = laneTransform(segments, laneOffsetPx, laneOrientation);
   const startDelayMs = timing.startDelayMs ?? 0;
   return (
     <g className={className} aria-hidden="true">
       <g className={styles.tokenTrainAnimated} transform={lane}>
-        {entries.map(({ modality, signal, index }) => (
-          <TokenTrainMotion
-            key={`${index}-${modality}-${signal}`}
+        {entries.map(({ item, index }) => (
+          <PathTravelerMotion
+            key={index}
             pathD={pathD}
             beginMs={
               startDelayMs +
               tokenTrainBeginOffsetMs(index, length, stagger, timing.travelMs)
             }
             timing={timing}
-            size={size}
-            tone={tone}
-            modality={modality}
-            signal={signal}
-          />
+          >
+            {renderItem(item, { x: 0, y: 0 })}
+          </PathTravelerMotion>
         ))}
       </g>
-      <g className={styles.tokenTrainStatic} transform={lane}>
-        {entries.map(({ modality, signal, index }) => {
-          const point = pathPointAt(
-            segments,
-            Math.min(
-              length,
-              tokenTrainStaticDistance(index, length, stagger, timing.travelMs)
-            )
-          );
-          return (
-            <TokenUnit
-              key={`${index}-${modality}-${signal}`}
-              x={point.x - size / 2}
-              y={point.y - size / 2}
-              width={size}
-              height={size}
-              tone={tone}
-              modality={modality}
-              signal={signal}
-            />
-          );
-        })}
-      </g>
+      {renderStaticItems && (
+        <g className={styles.tokenTrainStatic} transform={lane}>
+          {entries.map(({ item, index }) => {
+            const point = pathPointAt(
+              segments,
+              Math.min(
+                length,
+                tokenTrainStaticDistance(
+                  index,
+                  length,
+                  stagger,
+                  timing.travelMs
+                )
+              )
+            );
+            return (
+              <React.Fragment key={index}>
+                {renderItem(item, point)}
+              </React.Fragment>
+            );
+          })}
+        </g>
+      )}
     </g>
   );
 }
 
-function TokenTrainMotion({
+export function AnimatedTokenTrain({
+  tokens,
+  size = DIAGRAM_TOKEN_SIZE.flow,
+  tone = 'violet',
+  ...props
+}: AnimatedTokenTrainProps) {
+  return (
+    <AnimatedPathTraveler
+      {...props}
+      items={tokens}
+      renderItem={({ modality, signal = 'ordinary' }, center) => (
+        <TokenUnit
+          x={center.x - size / 2}
+          y={center.y - size / 2}
+          width={size}
+          height={size}
+          tone={tone}
+          modality={modality}
+          signal={signal}
+        />
+      )}
+    />
+  );
+}
+
+export function AnimatedEmojiTrain({
+  asset,
+  size = DIAGRAM_TOKEN_SIZE.flow,
+  ...props
+}: AnimatedEmojiTrainProps) {
+  return (
+    <AnimatedPathTraveler
+      {...props}
+      items={[asset]}
+      renderStaticItems={false}
+      renderItem={(item, center) => (
+        <EmojiImage asset={item} x={center.x} y={center.y} size={size} />
+      )}
+    />
+  );
+}
+
+function PathTravelerMotion({
   pathD,
   beginMs,
   timing,
-  size,
-  tone,
-  modality,
-  signal,
+  children,
 }: {
   pathD: string;
   beginMs: number;
   timing: TokenTrainTiming;
-  size: number;
-  tone: TokenUnitTone;
-  modality: TokenUnitModality;
-  signal: TokenUnitSignal;
+  children: ReactNode;
 }) {
-  const keyTimes = tokenTrainOpacityKeyTimes(timing);
-  const fadeInEnd = keyTimes[1];
-  const travelEnd = keyTimes[2];
-  const fadeEnd = keyTimes[3];
+  const [, fadeInEnd, travelEnd, fadeEnd] = tokenTrainOpacityKeyTimes(timing);
   const repeatCount = timing.repeat === 'once' ? undefined : 'indefinite';
   return (
     <g className={styles.tokenTrainItem} opacity="0">
-      <TokenUnit
-        x={-size / 2}
-        y={-size / 2}
-        width={size}
-        height={size}
-        tone={tone}
-        modality={modality}
-        signal={signal}
-      />
+      {children}
       <animateMotion
         path={pathD}
         dur={seconds(timing.cycleMs)}

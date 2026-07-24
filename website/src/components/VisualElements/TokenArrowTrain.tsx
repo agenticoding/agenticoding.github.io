@@ -1,10 +1,13 @@
+/* eslint-disable react/prop-types -- TypeScript owns prop validation for SVG primitive props. */
 import React, { useId, type ReactNode } from 'react';
 
 import {
+  AnimatedEmojiTrain,
   AnimatedTokenTrain,
   type TokenSequence,
   type TokenTrainOrientation,
 } from './AnimatedTokenFlow';
+import type { EmojiAsset } from './emojiAssets';
 import type { TokenTrainStagger, TokenTrainTiming } from './TokenTrainTiming';
 import { ArrowMarker, trimPathEnd } from './diagramGeometry';
 import { DIAGRAM_STROKE, DIAGRAM_TOKEN_SIZE } from './diagramScale';
@@ -33,17 +36,30 @@ type TokenTrainPathProps = {
   strokeLinejoin?: 'miter' | 'round' | 'bevel';
 };
 
-export type TokenArrowTrainProps = TokenTrainPathProps & {
-  markerId?: string;
+type EmojiTrainPathProps = Omit<TokenTrainPathProps, 'tokens' | 'tone'> & {
+  asset: EmojiAsset;
 };
 
+type TrainFrameProps = Omit<
+  TokenTrainPathProps,
+  | 'tokens'
+  | 'tone'
+  | 'timing'
+  | 'stagger'
+  | 'size'
+  | 'laneOffsetPx'
+  | 'laneOrientation'
+>;
+
+export type TokenArrowTrainProps = TokenTrainPathProps & { markerId?: string };
+export type EmojiArrowTrainProps = EmojiTrainPathProps & { markerId?: string };
 export type PairedTokenArrowTrainProps = {
   className?: string;
   request: TokenArrowTrainProps;
   response: TokenArrowTrainProps;
 };
-
 type TokenPathTrainProps = TokenTrainPathProps;
+type EmojiPathTrainProps = EmojiTrainPathProps;
 
 function svgId(id: string) {
   return id.replace(/:/g, '');
@@ -97,7 +113,7 @@ function TrainLabel({
   labelFill,
   stroke,
 }: Pick<
-  TokenTrainPathProps,
+  TrainFrameProps,
   'label' | 'labelX' | 'labelY' | 'labelClassName' | 'labelFill' | 'stroke'
 >) {
   if (!label) return null;
@@ -113,64 +129,68 @@ function TrainLabel({
   );
 }
 
-function TrainTokens({
-  d,
-  tokenPathD,
-  tokens,
-  timing,
-  stagger,
-  size,
-  tone,
-  laneOffsetPx,
-  laneOrientation,
-}: Required<Pick<TokenTrainPathProps, 'size' | 'tone' | 'laneOrientation'>> &
-  Pick<
-    TokenTrainPathProps,
-    'd' | 'tokenPathD' | 'tokens' | 'timing' | 'stagger' | 'laneOffsetPx'
-  >) {
-  return (
-    <AnimatedTokenTrain
-      pathD={tokenPathD ?? d}
-      tokens={tokens}
-      timing={timing}
-      stagger={stagger}
-      size={size}
-      tone={tone}
-      laneOffsetPx={laneOffsetPx}
-      laneOrientation={laneOrientation}
-    />
-  );
-}
-
 function TrainBody({
   markerEnd,
+  traveler,
   ...props
-}: TokenTrainPathProps & { markerEnd?: string }) {
-  const size = props.size ?? DIAGRAM_TOKEN_SIZE.flow;
-  const strokeWidth = props.strokeWidth ?? DIAGRAM_STROKE.connector;
-  const laneOrientation = props.laneOrientation ?? 'above';
+}: TrainFrameProps & { markerEnd?: string; traveler: ReactNode }) {
   return (
     <>
       <TrainPath
         {...props}
-        strokeWidth={strokeWidth}
+        strokeWidth={props.strokeWidth ?? DIAGRAM_STROKE.connector}
         strokeLinecap={props.strokeLinecap ?? 'butt'}
         strokeLinejoin={props.strokeLinejoin ?? 'round'}
         markerEnd={markerEnd}
       />
       <TrainLabel {...props} />
-      <TrainTokens
-        {...props}
-        size={size}
-        tone={props.tone ?? 'violet'}
-        laneOffsetPx={tokenLaneOffset(size, strokeWidth, props.laneOffsetPx)}
-        laneOrientation={laneOrientation}
-      />
+      {traveler}
     </>
   );
 }
 
-export function TokenArrowTrain({ markerId, ...props }: TokenArrowTrainProps) {
+function TokenTraveler(props: TokenTrainPathProps) {
+  const size = props.size ?? DIAGRAM_TOKEN_SIZE.flow;
+  const strokeWidth = props.strokeWidth ?? DIAGRAM_STROKE.connector;
+  return (
+    <AnimatedTokenTrain
+      pathD={props.tokenPathD ?? props.d}
+      tokens={props.tokens}
+      timing={props.timing}
+      stagger={props.stagger}
+      size={size}
+      tone={props.tone ?? 'violet'}
+      laneOffsetPx={tokenLaneOffset(size, strokeWidth, props.laneOffsetPx)}
+      laneOrientation={props.laneOrientation ?? 'above'}
+    />
+  );
+}
+
+function EmojiTraveler(props: EmojiTrainPathProps) {
+  const size = props.size ?? DIAGRAM_TOKEN_SIZE.flow;
+  const strokeWidth = props.strokeWidth ?? DIAGRAM_STROKE.connector;
+  return (
+    <AnimatedEmojiTrain
+      pathD={props.tokenPathD ?? props.d}
+      asset={props.asset}
+      timing={props.timing}
+      stagger={props.stagger}
+      size={size}
+      laneOffsetPx={tokenLaneOffset(size, strokeWidth, props.laneOffsetPx)}
+      laneOrientation={props.laneOrientation ?? 'above'}
+    />
+  );
+}
+
+function ArrowTrain({
+  markerId,
+  props,
+  traveler,
+}: {
+  markerId?: string;
+  props: TrainFrameProps;
+  traveler: ReactNode;
+}) {
   const generatedId = svgId(useId());
   const arrowMarkerId = markerId ?? `token-arrow-${generatedId}`;
   return (
@@ -182,8 +202,29 @@ export function TokenArrowTrain({ markerId, ...props }: TokenArrowTrainProps) {
         {...props}
         d={trimPathEnd(props.d)}
         markerEnd={`url(#${arrowMarkerId})`}
+        traveler={traveler}
       />
     </g>
+  );
+}
+
+export function TokenArrowTrain({ markerId, ...props }: TokenArrowTrainProps) {
+  return (
+    <ArrowTrain
+      markerId={markerId}
+      props={props}
+      traveler={<TokenTraveler {...props} />}
+    />
+  );
+}
+
+export function EmojiArrowTrain({ markerId, ...props }: EmojiArrowTrainProps) {
+  return (
+    <ArrowTrain
+      markerId={markerId}
+      props={props}
+      traveler={<EmojiTraveler {...props} />}
+    />
   );
 }
 
@@ -203,7 +244,15 @@ export function PairedTokenArrowTrain({
 export function TokenPathTrain(props: TokenPathTrainProps) {
   return (
     <g className={props.className}>
-      <TrainBody {...props} />
+      <TrainBody {...props} traveler={<TokenTraveler {...props} />} />
+    </g>
+  );
+}
+
+export function EmojiPathTrain(props: EmojiPathTrainProps) {
+  return (
+    <g className={props.className}>
+      <TrainBody {...props} traveler={<EmojiTraveler {...props} />} />
     </g>
   );
 }

@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   tokenTrainBeginOffsetMs,
   tokenTrainOpacityKeyTimes,
+  trainArrivalMs,
   tokenTrainStaticDistance,
 } from './TokenTrainTiming.ts';
 
@@ -42,6 +43,18 @@ test('fixed step stagger keeps short connector trains inside a beat', () => {
   );
 
   assert.equal(lastBeginMs + 420 + 100, 940);
+});
+
+test('arrival includes the train start delay and travel time', () => {
+  assert.equal(
+    trainArrivalMs({
+      startDelayMs: 720,
+      cycleMs: 6400,
+      travelMs: 520,
+      fadeMs: 160,
+    }),
+    1240
+  );
 });
 
 test('opacity key times stay monotonic for short beat windows', () => {

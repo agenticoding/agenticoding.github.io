@@ -31,6 +31,10 @@ export function tokenTrainStaticDistance(
   return index * stagger.spacingPx;
 }
 
+export function trainArrivalMs(timing: TokenTrainTiming) {
+  return (timing.startDelayMs ?? 0) + timing.travelMs;
+}
+
 export function tokenTrainOpacityKeyTimes(timing: TokenTrainTiming) {
   const travelEnd = timing.travelMs / timing.cycleMs;
   return [
