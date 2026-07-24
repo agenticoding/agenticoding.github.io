@@ -1,29 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useId, useState } from 'react';
 import styles from './UShapeAttentionCurve.module.css';
+import {
+  createAttentionCurve,
+  curvePoints,
+  projectCurve,
+  type AttentionCurve,
+  type PlotBounds,
+  type ProjectedCurvePoint,
+} from './UShapeAttentionCurveGeometry';
 
 interface UShapeAttentionCurveProps {
-  initialContextFill?: number; // 0-100, default 30
+  initialContextFill?: number;
 }
 
-const PLOT_LEFT = 60;
-const PLOT_RIGHT = 760;
-const PLOT_TOP = 30;
-const PLOT_BOT = 260;
-const PLOT_W = PLOT_RIGHT - PLOT_LEFT; // 700
-const PLOT_H = PLOT_BOT - PLOT_TOP;   // 230
-const DOT_COUNT = 9;
-const DOT_SIZE = 10;
+const DESKTOP_PLOT: PlotBounds = { left: 60, right: 760, top: 30, bottom: 260 };
+const MOBILE_PLOT: PlotBounds = { left: 40, right: 316, top: 40, bottom: 176 };
+const PRIMACY_END = 0.2;
+const RECENCY_START = 0.8;
 
-// Returns { danger, cyanOpacity } so dots can be rendered as layered rects
-// matching the background zone fade approach exactly.
-function getDotLayers(frac: number, deadCenterStart: number, deadCenterEnd: number, jCurveStrength: number): { danger: boolean; cyanOpacity: number } {
-  if (frac >= deadCenterStart && frac <= deadCenterEnd) return { danger: true, cyanOpacity: 0 };
-  if (frac >= 0.80) return { danger: false, cyanOpacity: 1 };
-  if (frac <= 0.20) return { danger: false, cyanOpacity: 1 - jCurveStrength };
-  return { danger: false, cyanOpacity: 0 };
-}
-
-function getSeverity(contextFill: number): { tier: string; desc: string; mobileDesc: string; color: string } {
+function getSeverity(contextFill: number) {
   if (contextFill <= 20) {
     return {
       tier: 'MANAGEABLE',
@@ -43,157 +38,94 @@ function getSeverity(contextFill: number): { tier: string; desc: string; mobileD
   return {
     tier: 'SEVERE',
     desc: 'middle invisible — only recency remains reliable',
-    mobileDesc: 'only recency remains reliable',
+    mobileDesc: 'recency dominates',
     color: 'var(--visual-error)',
   };
 }
 
-function usePrefersReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+function ZoneBackground({
+  curve,
+  plot,
+}: {
+  curve: AttentionCurve;
+  plot: PlotBounds;
+}) {
+  const width = plot.right - plot.left;
+  const x = (position: number) => plot.left + position * width;
+  const zones = [
+    [0, PRIMACY_END, 'var(--surface-muted)'],
+    [0, PRIMACY_END, 'var(--visual-bg-cyan)', 1 - curve.jCurveStrength],
+    [PRIMACY_END, curve.deadCenterStart, 'var(--surface-muted)'],
+    [curve.deadCenterStart, curve.deadCenterEnd, 'var(--visual-bg-error)'],
+    [curve.deadCenterEnd, RECENCY_START, 'var(--surface-muted)'],
+    [RECENCY_START, 1, 'var(--visual-bg-cyan)'],
+  ] as const;
 
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setPrefersReducedMotion(query.matches);
-    update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
+  return zones.map(([start, end, fill, opacity], index) => (
+    <rect
+      key={index}
+      x={x(start)}
+      y={plot.top}
+      width={x(end) - x(start)}
+      height={plot.bottom - plot.top}
+      fill={fill}
+      opacity={opacity}
+    />
+  ));
+}
 
-  return prefersReducedMotion;
+function CurveDots({
+  points,
+  size,
+}: {
+  points: ProjectedCurvePoint[];
+  size: number;
+}) {
+  return (
+    <>
+      {points.map((point) => (
+        <g key={point.position}>
+          <rect
+            x={point.x - size / 2}
+            y={point.y - size / 2}
+            width={size}
+            height={size}
+            className={point.danger ? styles.dotDanger : styles.dot}
+          />
+          {!point.danger && point.cyanOpacity > 0 && (
+            <rect
+              x={point.x - size / 2}
+              y={point.y - size / 2}
+              width={size}
+              height={size}
+              className={styles.dotCyan}
+              opacity={point.cyanOpacity}
+            />
+          )}
+        </g>
+      ))}
+    </>
+  );
 }
 
 export default function UShapeAttentionCurve({
   initialContextFill = 30,
 }: UShapeAttentionCurveProps) {
-  const [contextFill, setContextFill] = useState(Math.max(0, Math.min(100, initialContextFill)));
-
-  const fillRatio = contextFill / 100;
-
-  // Zone boundary math
-  const deadCenterHalf = fillRatio * 0.15;
-  const deadCenterStart = 0.5 - deadCenterHalf;
-  const deadCenterEnd = 0.5 + deadCenterHalf;
-
-  // Fixed zone boundaries
-  const primacyEnd = PLOT_LEFT + 0.20 * PLOT_W;       // x=200
-  const recencyStart = PLOT_LEFT + 0.80 * PLOT_W;     // x=620
-  const deadStart = PLOT_LEFT + deadCenterStart * PLOT_W;
-  const deadEnd = PLOT_LEFT + deadCenterEnd * PLOT_W;
-
-  // J-curve strength (extracted for use in both zone backgrounds and dot colors)
-  const jCurveStrength = Math.max(0, fillRatio - 0.5) * 2; // 0 at ≤50%, 1 at 100%
-
-  // Dot positions
-  const dots = Array.from({ length: DOT_COUNT }, (_, i) => {
-    const frac = i / (DOT_COUNT - 1);
-    const dotX = PLOT_LEFT + frac * PLOT_W;
-
-    const maxDrop = fillRatio * 0.85;
-
-    // Base symmetric U-shape
-    const distFromCenter = 1 - Math.abs(frac - 0.5) * 2; // 0 at edges, 1 at center
-    let drop = distFromCenter ** 2 * maxDrop;
-
-    // J-curve: primacy decays at high fill (left edge droops, right stays high)
-    const primacyDecay = (1 - frac) * jCurveStrength * 0.3;  // max at start, zero at end
-    drop = Math.min(drop + primacyDecay, 0.95);
-
-    const dotY = PLOT_TOP + drop * PLOT_H;
-    const layers = getDotLayers(frac, deadCenterStart, deadCenterEnd, jCurveStrength);
-    return { dotX, dotY, ...layers };
-  });
-
-  const polylinePoints = dots
-    .map(d => `${d.dotX},${d.dotY}`)
-    .join(' ');
-
-  const mobileDots = dots.map((dot, i) => {
-    const frac = i / (DOT_COUNT - 1);
-    const attention = 1 - (dot.dotY - PLOT_TOP) / PLOT_H;
-    return {
-      x: 76 + attention * 212,
-      y: 48 + frac * 284,
-      danger: dot.danger,
-      cyanOpacity: dot.cyanOpacity,
-    };
-  });
-  const mobilePolylinePoints = mobileDots.map(d => `${d.x},${d.y}`).join(' ');
-
+  const [contextFill, setContextFill] = useState(
+    Math.max(0, Math.min(100, initialContextFill))
+  );
+  const sliderMarksId = useId();
+  const curve = createAttentionCurve(contextFill);
+  const desktopPoints = projectCurve(curve.points, DESKTOP_PLOT);
+  const mobilePoints = projectCurve(curve.points, MOBILE_PLOT);
   const severity = getSeverity(contextFill);
-  const mobileSeverityX = contextFill > 50 ? 226 : 170;
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  // Crossfade state: keep outgoing tier alive for the design-system moderate duration.
-  type Severity = ReturnType<typeof getSeverity>;
-  const [displayed, setDisplayed] = useState<Severity>(severity);
-  const [outgoing, setOutgoing] = useState<Severity | null>(null);
-  const displayedRef = useRef(displayed);
-  displayedRef.current = displayed;
-
-  useEffect(() => {
-    if (severity.tier === displayedRef.current.tier) return;
-    if (prefersReducedMotion) {
-      setOutgoing(null);
-      setDisplayed(severity);
-      return;
-    }
-    const prev = displayedRef.current;
-    setOutgoing(prev);
-    setDisplayed(severity);
-    const t = setTimeout(() => setOutgoing(null), 240);
-    return () => clearTimeout(t);
-  }, [severity.tier, prefersReducedMotion]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Zone visibility fade: animate entrance and leave when zone crosses the 60px threshold
-  const zoneWidth = deadEnd - deadStart;
-  const isWide = zoneWidth >= 60;
-  const [zoneShown, setZoneShown] = useState(isWide);
-  const [zoneFade, setZoneFade] = useState<'in' | 'out' | null>(null);
-  const prevIsWideRef = useRef(isWide);
-
-  useEffect(() => {
-    if (isWide === prevIsWideRef.current) return;
-    prevIsWideRef.current = isWide;
-    if (prefersReducedMotion) {
-      setZoneShown(isWide);
-      setZoneFade(null);
-      return;
-    }
-    if (isWide) {
-      setZoneShown(true);
-      setZoneFade('in');
-      const t = setTimeout(() => setZoneFade(null), 240);
-      return () => clearTimeout(t);
-    }
-    setZoneFade('out');
-    const t = setTimeout(() => { setZoneShown(false); setZoneFade(null); }, 240);
-    return () => clearTimeout(t);
-  }, [isWide, prefersReducedMotion]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Desc visibility fade: animate entrance and leave when zone crosses the 120px threshold
-  const isDescWide = zoneWidth >= 120;
-  const [descShown, setDescShown] = useState(isDescWide);
-  const [descFade, setDescFade] = useState<'in' | 'out' | null>(null);
-  const prevIsDescWideRef = useRef(isDescWide);
-
-  useEffect(() => {
-    if (isDescWide === prevIsDescWideRef.current) return;
-    prevIsDescWideRef.current = isDescWide;
-    if (prefersReducedMotion) {
-      setDescShown(isDescWide);
-      setDescFade(null);
-      return;
-    }
-    if (isDescWide) {
-      setDescShown(true);
-      setDescFade('in');
-      const t = setTimeout(() => setDescFade(null), 240);
-      return () => clearTimeout(t);
-    }
-    setDescFade('out');
-    const t = setTimeout(() => { setDescShown(false); setDescFade(null); }, 240);
-    return () => clearTimeout(t);
-  }, [isDescWide, prefersReducedMotion]); // eslint-disable-line react-hooks/exhaustive-deps
+  const desktopZoneWidth = curve.deadCenterEnd - curve.deadCenterStart;
+  const desktopAnnotationVisible = desktopZoneWidth >= 0.09;
+  const desktopDescriptionVisible = desktopZoneWidth >= 0.18;
+  const desktopZoneCenter =
+    DESKTOP_PLOT.left +
+    ((curve.deadCenterStart + curve.deadCenterEnd) / 2) *
+      (DESKTOP_PLOT.right - DESKTOP_PLOT.left);
 
   return (
     <div className={styles.container}>
@@ -202,191 +134,209 @@ export default function UShapeAttentionCurve({
         viewBox="0 0 800 320"
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label="Attention curve showing how attention distributes across context window"
+        aria-label="Attention curve showing high attention at the start and end of a context window and lower attention in the middle"
       >
-        {/* Zone backgrounds */}
-        {/* Primacy: neutral base + cyan overlay fading with jCurveStrength */}
-        <rect x={PLOT_LEFT} y={PLOT_TOP} width={primacyEnd - PLOT_LEFT} height={PLOT_H} fill="var(--surface-muted)" />
-        <rect x={PLOT_LEFT} y={PLOT_TOP} width={primacyEnd - PLOT_LEFT} height={PLOT_H} fill="var(--visual-bg-cyan)" opacity={1 - jCurveStrength} />
-        {/* Middle-left */}
-        <rect x={primacyEnd} y={PLOT_TOP} width={Math.max(0, deadStart - primacyEnd)} height={PLOT_H} fill="var(--surface-muted)" />
-        {/* Dead center */}
-        <rect x={deadStart} y={PLOT_TOP} width={Math.max(0, deadEnd - deadStart)} height={PLOT_H} fill="var(--visual-bg-error)" />
-        {/* Middle-right */}
-        <rect x={deadEnd} y={PLOT_TOP} width={Math.max(0, recencyStart - deadEnd)} height={PLOT_H} fill="var(--surface-muted)" />
-        {/* Recency: always cyan */}
-        <rect x={recencyStart} y={PLOT_TOP} width={PLOT_RIGHT - recencyStart} height={PLOT_H} fill="var(--visual-bg-cyan)" />
-
-        {/* Y-axis */}
+        <ZoneBackground curve={curve} plot={DESKTOP_PLOT} />
         <line
-          x1={PLOT_LEFT} y1={PLOT_TOP}
-          x2={PLOT_LEFT} y2={PLOT_BOT}
-          stroke="var(--border-subtle)"
-          strokeWidth={1}
+          x1={DESKTOP_PLOT.left}
+          y1={DESKTOP_PLOT.top}
+          x2={DESKTOP_PLOT.left}
+          y2={DESKTOP_PLOT.bottom}
+          className={styles.axis}
         />
-
-        {/* Polyline connecting dot centers */}
+        <line
+          x1={DESKTOP_PLOT.left}
+          y1={DESKTOP_PLOT.bottom}
+          x2={DESKTOP_PLOT.right}
+          y2={DESKTOP_PLOT.bottom}
+          className={styles.axis}
+        />
         <polyline
-          points={polylinePoints}
-          stroke="var(--border-emphasis)"
-          strokeWidth={2}
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          points={curvePoints(desktopPoints)}
+          className={styles.curveLine}
         />
+        <CurveDots points={desktopPoints} size={10} />
 
-        {/* Dots: neutral base + cyan overlay (mirrors zone background layering) */}
-        {dots.map((dot, i) => (
-          <g key={i}>
-            <rect
-              x={dot.dotX - DOT_SIZE / 2}
-              y={dot.dotY - DOT_SIZE / 2}
-              width={DOT_SIZE}
-              height={DOT_SIZE}
-              rx={0}
-              className={dot.danger ? styles.dotDanger : styles.dot}
-            />
-            {!dot.danger && dot.cyanOpacity > 0 && (
-              <rect
-                x={dot.dotX - DOT_SIZE / 2}
-                y={dot.dotY - DOT_SIZE / 2}
-                width={DOT_SIZE}
-                height={DOT_SIZE}
-                rx={0}
-                className={styles.dotCyan}
-                opacity={dot.cyanOpacity}
-              />
-            )}
-          </g>
-        ))}
-
-        {/* Y-axis labels */}
-        <text x={PLOT_LEFT - 8} y={PLOT_TOP + 4} textAnchor="end" className={styles.axisLabel}>High</text>
-        <text x={PLOT_LEFT - 8} y={PLOT_BOT}     textAnchor="end" className={styles.axisLabel}>Low</text>
-
-        {/* X-axis zone labels */}
         <text
-          x={(PLOT_LEFT + primacyEnd) / 2}
-          y={PLOT_BOT + 22}
+          x={DESKTOP_PLOT.left - 8}
+          y={DESKTOP_PLOT.top + 4}
+          textAnchor="end"
+          className={styles.axisLabel}
+        >
+          High
+        </text>
+        <text
+          x={DESKTOP_PLOT.left - 8}
+          y={DESKTOP_PLOT.bottom}
+          textAnchor="end"
+          className={styles.axisLabel}
+        >
+          Low
+        </text>
+        <text
+          x={130}
+          y={DESKTOP_PLOT.bottom + 22}
           textAnchor="middle"
           className={styles.axisLabel}
         >
           PRIMACY
         </text>
         <text
-          x={(primacyEnd + recencyStart) / 2}
-          y={PLOT_BOT + 22}
+          x={410}
+          y={DESKTOP_PLOT.bottom + 22}
           textAnchor="middle"
           className={styles.zoneLabelError}
         >
           LOST IN MIDDLE
         </text>
         <text
-          x={(recencyStart + PLOT_RIGHT) / 2}
-          y={PLOT_BOT + 22}
+          x={690}
+          y={DESKTOP_PLOT.bottom + 22}
           textAnchor="middle"
           className={styles.axisLabel}
         >
           RECENCY
         </text>
 
-        {/* Inline zone annotation — fades in/out as zone crosses 60px threshold */}
-        {zoneShown && (() => {
-          const cx = (deadStart + deadEnd) / 2;
-          const zoneCls = !prefersReducedMotion && zoneFade === 'in' ? styles.zoneAnnotationIn : !prefersReducedMotion && zoneFade === 'out' ? styles.zoneAnnotationOut : '';
-          const descCls = `${styles.zoneAnnotationDesc} ${!prefersReducedMotion && descFade === 'in' ? styles.zoneAnnotationIn : !prefersReducedMotion && descFade === 'out' ? styles.zoneAnnotationOut : ''}`;
-          const renderText = (s: ReturnType<typeof getSeverity>, cls: string, key: string) => (
-            <text key={key} x={cx} y={PLOT_TOP + 16} textAnchor="middle" className={cls}>
-              <tspan fill={s.color} className={styles.zoneAnnotationTier}>{s.tier}</tspan>
-              {descShown && (
-                <tspan x={cx} dy="14" className={descCls}>{s.desc}</tspan>
-              )}
-            </text>
-          );
-          return (
-            <g className={zoneCls}>
-              {outgoing && renderText(outgoing, `${styles.zoneAnnotation} ${styles.zoneAnnotationOut}`, 'out')}
-              {renderText(displayed, `${styles.zoneAnnotation} ${outgoing ? styles.zoneAnnotationIn : ''}`, displayed.tier)}
-            </g>
-          );
-        })()}
+        {desktopAnnotationVisible && (
+          <text
+            x={desktopZoneCenter}
+            y={DESKTOP_PLOT.top + 16}
+            textAnchor="middle"
+            className={styles.zoneAnnotation}
+          >
+            <tspan fill={severity.color} className={styles.zoneAnnotationTier}>
+              {severity.tier}
+            </tspan>
+            {desktopDescriptionVisible && (
+              <tspan
+                x={desktopZoneCenter}
+                dy="14"
+                className={styles.zoneAnnotationDesc}
+              >
+                {severity.desc}
+              </tspan>
+            )}
+          </text>
+        )}
       </svg>
 
       <svg
         className={`${styles.svg} ${styles.mobileDiagram}`}
-        viewBox="0 0 340 400"
+        viewBox="0 0 340 288"
         preserveAspectRatio="xMidYMid meet"
         role="img"
-        aria-label={`Mobile attention curve: ${severity.tier.toLowerCase()} context fill, ${severity.mobileDesc}`}
+        aria-label={`Attention curve from context start to end: ${severity.tier.toLowerCase()}, ${severity.mobileDesc}`}
       >
-        <text x={76} y={18} textAnchor="middle" className={styles.axisLabel}>Low</text>
-        <text x={288} y={18} textAnchor="middle" className={styles.axisLabel}>High</text>
-
-        <rect x={24} y={24} width={292} height={76} fill="var(--surface-muted)" />
-        <rect x={24} y={24} width={292} height={76} fill="var(--visual-bg-cyan)" opacity={1 - jCurveStrength} />
-        <rect x={24} y={100} width={292} height={84} fill="var(--surface-muted)" />
-        <rect x={24} y={184} width={292} height={48 + fillRatio * 40} fill="var(--visual-bg-error)" />
-        <rect x={24} y={232 + fillRatio * 40} width={292} height={100 - fillRatio * 40} fill="var(--surface-muted)" />
-        <rect x={24} y={332} width={292} height={44} fill="var(--visual-bg-cyan)" />
-
-        <text x={40} y={52} className={styles.mobileZoneTitle}>Primacy</text>
-        <text x={40} y={76} className={styles.mobileZoneDesc}>beginning stays reliable</text>
-        <text x={40} y={208} className={styles.mobileZoneTitle}>Middle</text>
-        <text x={40} y={232} className={styles.mobileZoneDesc}>degrades first</text>
-        <text x={40} y={352} className={styles.mobileZoneTitle}>Recency</text>
-        <text x={40} y={370} className={styles.mobileZoneDesc}>recent context dominates</text>
-
-        <polyline
-          points={mobilePolylinePoints}
-          stroke="var(--border-emphasis)"
-          strokeWidth={3}
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        <text x={MOBILE_PLOT.left} y={18} className={styles.mobileHeading}>
+          ATTENTION
+        </text>
+        <text
+          x={MOBILE_PLOT.right}
+          y={18}
+          textAnchor="end"
+          className={styles.axisLabel}
+        >
+          HIGH → LOW
+        </text>
+        <ZoneBackground curve={curve} plot={MOBILE_PLOT} />
+        <line
+          x1={MOBILE_PLOT.left}
+          y1={MOBILE_PLOT.top}
+          x2={MOBILE_PLOT.left}
+          y2={MOBILE_PLOT.bottom}
+          className={styles.axis}
         />
-        {mobileDots.map((dot, i) => (
-          <g key={i}>
-            <rect
-              x={dot.x - 5}
-              y={dot.y - 5}
-              width={10}
-              height={10}
-              rx={0}
-              className={dot.danger ? styles.dotDanger : styles.dot}
-            />
-            {!dot.danger && dot.cyanOpacity > 0 && (
-              <rect
-                x={dot.x - 5}
-                y={dot.y - 5}
-                width={10}
-                height={10}
-                rx={0}
-                className={styles.dotCyan}
-                opacity={dot.cyanOpacity}
-              />
-            )}
-          </g>
-        ))}
+        <line
+          x1={MOBILE_PLOT.left}
+          y1={MOBILE_PLOT.bottom}
+          x2={MOBILE_PLOT.right}
+          y2={MOBILE_PLOT.bottom}
+          className={styles.axis}
+        />
+        <polyline
+          points={curvePoints(mobilePoints)}
+          className={styles.curveLine}
+        />
+        <CurveDots points={mobilePoints} size={8} />
 
-        <text x={mobileSeverityX} y={180} textAnchor="middle" style={{ fill: severity.color }} className={styles.mobileSeverityTier}>{severity.tier}</text>
+        <text
+          x={MOBILE_PLOT.left - 8}
+          y={MOBILE_PLOT.top + 4}
+          textAnchor="end"
+          className={styles.axisLabel}
+        >
+          High
+        </text>
+        <text
+          x={MOBILE_PLOT.left - 8}
+          y={MOBILE_PLOT.bottom}
+          textAnchor="end"
+          className={styles.axisLabel}
+        >
+          Low
+        </text>
+        <text x={68} y={200} textAnchor="middle" className={styles.axisLabel}>
+          START
+        </text>
+        <text
+          x={178}
+          y={200}
+          textAnchor="middle"
+          className={styles.zoneLabelError}
+        >
+          MIDDLE
+        </text>
+        <text x={288} y={200} textAnchor="middle" className={styles.axisLabel}>
+          END
+        </text>
+        <text
+          x={178}
+          y={220}
+          textAnchor="middle"
+          className={styles.mobileAxisTitle}
+        >
+          CONTEXT POSITION →
+        </text>
+        <text
+          x={MOBILE_PLOT.left}
+          y={248}
+          className={styles.mobileSeverityTier}
+        >
+          <tspan fill={severity.color}>{severity.tier}</tspan>
+          <tspan dx="8" className={styles.mobileSeverityDesc}>
+            {severity.mobileDesc}
+          </tspan>
+        </text>
       </svg>
 
-      {/* Slider row */}
       <div className={styles.sliderRow}>
         <span className={styles.sliderLabel}>Context Fill</span>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={contextFill}
-          onChange={e => setContextFill(Number(e.target.value))}
-          className={styles.slider}
-          aria-label="Context fill percentage"
-          aria-valuetext={`${contextFill}%, ${severity.tier}: ${severity.desc}`}
-        />
+        <div className={styles.sliderControl}>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={contextFill}
+            onChange={(event) => setContextFill(Number(event.target.value))}
+            list={sliderMarksId}
+            className={styles.slider}
+            aria-label="Context fill percentage"
+            aria-valuetext={`${contextFill}%, ${severity.tier}: ${severity.desc}`}
+          />
+          <datalist id={sliderMarksId}>
+            <option value="0" label="0%" />
+            <option value="50" label="50%" />
+            <option value="100" label="100%" />
+          </datalist>
+          <div className={styles.sliderMarks} aria-hidden="true">
+            <span>0%</span>
+            <span>50%</span>
+            <span>100%</span>
+          </div>
+        </div>
         <span className={styles.sliderValue}>{contextFill}%</span>
       </div>
-
     </div>
   );
 }

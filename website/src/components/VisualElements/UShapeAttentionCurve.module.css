@@ -1,23 +1,18 @@
-/* ==========================================================================
+/* ===========================================================================
    UShapeAttentionCurve
-   Dot-plot U-curve with semantic zone backgrounds and continuous slider.
+   A shared normalized curve is projected into wide and compact horizontal plots.
    ========================================================================== */
 
-/* --- Container ------------------------------------------------------------ */
-
 .container {
-  container-type: inline-size;
   margin-block: var(--space-4);
   padding: var(--space-3);
   border-radius: 0;
 }
 
-/* --- SVG ------------------------------------------------------------------ */
-
 .svg {
+  display: block;
   width: 100%;
   height: auto;
-  display: block;
   margin: 0 auto var(--space-3);
 }
 
@@ -26,11 +21,22 @@
 }
 
 .mobileDiagram {
-  display: none !important;
+  display: none;
   max-width: 340px;
 }
 
-/* --- Dots ----------------------------------------------------------------- */
+.axis {
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+}
+
+.curveLine {
+  fill: none;
+  stroke: var(--border-emphasis);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 .dot {
   fill: var(--border-emphasis);
@@ -44,9 +50,9 @@
   fill: var(--visual-error);
 }
 
-/* --- Axis & zone labels --------------------------------------------------- */
-
-.axisLabel {
+.axisLabel,
+.mobileHeading,
+.mobileAxisTitle {
   font-family: var(--font-mono-keyword);
   font-size: var(--text-xs);
   fill: var(--text-muted);
@@ -64,7 +70,8 @@
   pointer-events: none;
 }
 
-.zoneAnnotationTier {
+.zoneAnnotationTier,
+.mobileSeverityTier {
   font-family: var(--font-mono-spec);
   font-size: var(--text-xs);
   font-weight: 600;
@@ -72,105 +79,85 @@
   font-feature-settings: var(--font-mono-features);
 }
 
-.zoneAnnotationDesc {
+.zoneAnnotationDesc,
+.mobileSeverityDesc {
   font-family: var(--font-body);
   font-size: var(--text-xs);
   fill: var(--text-muted);
 }
-
-.mobileZoneTitle {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  fill: var(--text-heading);
-}
-
-.mobileZoneDesc {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  fill: var(--text-muted);
-}
-
-.mobileSeverityTier {
-  font-family: var(--font-mono-spec);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  font-feature-settings: var(--font-mono-features);
-}
-
-@keyframes zoneAnnotFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes zoneAnnotFadeOut {
-  from { opacity: 1; }
-  to   { opacity: 0; }
-}
-
-.zoneAnnotationIn {
-  animation: zoneAnnotFadeIn var(--duration-moderate) var(--ease-standard) forwards;
-}
-
-.zoneAnnotationOut {
-  animation: zoneAnnotFadeOut var(--duration-moderate) var(--ease-standard) forwards;
-}
-
-/* --- Slider row ----------------------------------------------------------- */
 
 .sliderRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-2);
   margin-bottom: var(--space-2);
 }
 
-.sliderLabel {
-  font-family: var(--font-body);
+.sliderLabel,
+.sliderValue {
+  padding-top: var(--space-1);
   font-size: var(--text-sm);
-  color: var(--text-body);
+  line-height: var(--lh-sm);
   white-space: nowrap;
 }
 
+.sliderLabel {
+  font-family: var(--font-body);
+  color: var(--text-body);
+}
+
 .sliderValue {
-  font-family: var(--font-mono-keyword);
-  font-size: var(--text-sm);
-  color: var(--text-muted);
   min-width: 3ch;
+  font-family: var(--font-mono-keyword);
+  color: var(--text-muted);
   text-align: right;
   font-feature-settings: var(--font-mono-features);
 }
 
-.slider {
-  -webkit-appearance: none;
-  appearance: none;
+.sliderControl {
   flex: 1;
-  height: 8px;
-  border-radius: 0;
-  outline: none;
+  min-width: 0;
+}
+
+.slider {
+  width: 100%;
+  height: var(--target-md);
+  margin: 0;
   cursor: pointer;
+  appearance: none;
+  background: transparent;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 8px;
   background: var(--surface-muted);
+  border-radius: 0;
+}
+
+.slider::-moz-range-track {
+  height: 8px;
+  background: var(--surface-muted);
+  border-radius: 0;
 }
 
 .slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
   width: 24px;
   height: 24px;
+  margin-top: -8px;
+  cursor: pointer;
+  appearance: none;
+  border: 2px solid var(--border-emphasis);
   border-radius: 0;
   background: var(--surface-page);
-  border: 2px solid var(--border-emphasis);
-  cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
   width: 24px;
   height: 24px;
+  cursor: pointer;
+  border: 2px solid var(--border-emphasis);
   border-radius: 0;
   background: var(--surface-page);
-  border: 2px solid var(--border-emphasis);
-  cursor: pointer;
 }
 
 .slider:focus-visible {
@@ -178,18 +165,27 @@
   outline-offset: 2px;
 }
 
-@container (max-width: 560px) {
+.sliderMarks {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-feature-settings: var(--font-mono-features);
+}
+
+@media (max-width: 560px) {
   .container {
     margin-block: var(--space-2);
     padding-inline: 0;
   }
 
   .desktopDiagram {
-    display: none !important;
+    display: none;
   }
 
   .mobileDiagram {
-    display: block !important;
+    display: block;
   }
 
   .sliderRow {
@@ -207,49 +203,9 @@
     grid-column: 2;
   }
 
-  .slider {
+  .sliderControl {
     grid-column: 1 / -1;
     grid-row: 2;
     width: 100%;
-  }
-}
-
-@media (max-width: 560px) {
-  .desktopDiagram {
-    display: none !important;
-  }
-
-  .mobileDiagram {
-    display: block !important;
-  }
-
-  .sliderRow {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: var(--space-1) var(--space-2);
-  }
-
-  .sliderLabel,
-  .sliderValue {
-    grid-row: 1;
-  }
-
-  .sliderValue {
-    grid-column: 2;
-  }
-
-  .slider {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    width: 100%;
-  }
-}
-
-/* --- Reduced motion ------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .zoneAnnotationIn,
-  .zoneAnnotationOut {
-    animation: none;
   }
 }
