@@ -237,7 +237,9 @@
 }
 
 .currentOutputToken rect {
-  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--visual-violet) 40%, transparent));
+  filter: drop-shadow(
+    0 0 7px color-mix(in srgb, var(--visual-violet) 40%, transparent)
+  );
   stroke-width: 2;
 }
 

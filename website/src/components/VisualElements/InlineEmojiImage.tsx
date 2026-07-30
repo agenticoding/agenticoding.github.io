@@ -8,7 +8,11 @@ interface Props {
   className?: string;
 }
 
-export default function InlineEmojiImage({ asset, size = 32, className }: Props) {
+export default function InlineEmojiImage({
+  asset,
+  size = 32,
+  className,
+}: Props) {
   const base = useBaseUrl('/img/emoji');
   const displaySize = emojiDisplaySize(size);
   return (

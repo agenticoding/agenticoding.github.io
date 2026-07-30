@@ -1,4 +1,10 @@
-import {type ReactNode, useState, useRef, useEffect, useCallback} from 'react';
+import {
+  type ReactNode,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from 'react';
 import useIsBrowser from '@docusaurus/useIsBrowser';
 import SearchBar from '@theme/SearchBar';
 import styles from './styles.module.css';
@@ -14,7 +20,7 @@ export default function SidebarSearch(): ReactNode {
   const isBrowser = useIsBrowser();
 
   const expand = useCallback(() => {
-    setPhase(prev => {
+    setPhase((prev) => {
       if (prev === 'active' || prev === 'mounting') return prev;
       if (prev === 'collapsing') return 'active';
       return 'mounting'; // from idle
@@ -26,7 +32,7 @@ export default function SidebarSearch(): ReactNode {
       cancelAnimationFrame(rAFHandle.current);
       rAFHandle.current = null;
     }
-    setPhase(prev => {
+    setPhase((prev) => {
       if (prev === 'idle' || prev === 'collapsing') return prev;
       if (prev === 'mounting') return 'idle';
       return 'collapsing'; // from active
@@ -35,7 +41,7 @@ export default function SidebarSearch(): ReactNode {
 
   const handleTransitionEnd = useCallback((e: React.TransitionEvent) => {
     if (e.target !== e.currentTarget) return;
-    setPhase(prev => (prev === 'collapsing' ? 'idle' : prev));
+    setPhase((prev) => (prev === 'collapsing' ? 'idle' : prev));
   }, []);
 
   // Double rAF: first frame commits opacity:0 paint, second triggers transition
@@ -44,7 +50,7 @@ export default function SidebarSearch(): ReactNode {
     const raf1 = requestAnimationFrame(() => {
       const raf2 = requestAnimationFrame(() => {
         rAFHandle.current = null;
-        setPhase(prev => (prev === 'mounting' ? 'active' : prev));
+        setPhase((prev) => (prev === 'mounting' ? 'active' : prev));
       });
       rAFHandle.current = raf2;
     });
@@ -61,7 +67,7 @@ export default function SidebarSearch(): ReactNode {
   useEffect(() => {
     if (phase !== 'collapsing') return;
     const timer = setTimeout(() => {
-      setPhase(prev => (prev === 'collapsing' ? 'idle' : prev));
+      setPhase((prev) => (prev === 'collapsing' ? 'idle' : prev));
     }, 250);
     return () => clearTimeout(timer);
   }, [phase]);

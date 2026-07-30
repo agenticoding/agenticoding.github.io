@@ -1,11 +1,11 @@
-import {type ReactNode, useEffect, useRef} from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 import Desktop from '@theme-original/DocSidebar/Desktop';
 import type DesktopType from '@theme/DocSidebar/Desktop';
-import type {WrapperProps} from '@docusaurus/types';
-import {useLocation} from '@docusaurus/router';
+import type { WrapperProps } from '@docusaurus/types';
+import { useLocation } from '@docusaurus/router';
 import SidebarHeader from './SidebarHeader';
 import SidebarFooter from './SidebarFooter';
-import {getActiveIndex} from './channels';
+import { getActiveIndex } from './channels';
 import styles from './styles.module.css';
 
 type Props = WrapperProps<typeof DesktopType>;
@@ -25,20 +25,33 @@ function getLinkPath(link: HTMLAnchorElement): string {
   return new URL(link.href).pathname;
 }
 
-function getActiveChapterLink(scroller: HTMLElement, pathname: string): HTMLElement | undefined {
-  const activeLink = scroller.querySelector<HTMLAnchorElement>(ACTIVE_CHAPTER_SELECTOR);
+function getActiveChapterLink(
+  scroller: HTMLElement,
+  pathname: string
+): HTMLElement | undefined {
+  const activeLink = scroller.querySelector<HTMLAnchorElement>(
+    ACTIVE_CHAPTER_SELECTOR
+  );
   if (activeLink && getLinkPath(activeLink) === pathname) return activeLink;
 
-  return [...scroller.querySelectorAll<HTMLAnchorElement>('a.menu__link')].find(link => getLinkPath(link) === pathname);
+  return [...scroller.querySelectorAll<HTMLAnchorElement>('a.menu__link')].find(
+    (link) => getLinkPath(link) === pathname
+  );
 }
 
-function scrollActiveChapterToTop(container: HTMLDivElement, pathname: string): void {
+function scrollActiveChapterToTop(
+  container: HTMLDivElement,
+  pathname: string
+): void {
   const scroller = getSidebarScroller(container);
   const activeLink = getActiveChapterLink(scroller, pathname);
   if (!activeLink) return;
 
   // Keep the selected chapter readable before its inline TOC expands below it.
-  const top = scroller.scrollTop + activeLink.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+  const top =
+    scroller.scrollTop +
+    activeLink.getBoundingClientRect().top -
+    scroller.getBoundingClientRect().top;
   scroller.scrollTo({
     top,
     behavior: prefersReducedMotion() ? 'auto' : 'smooth',
@@ -46,13 +59,14 @@ function scrollActiveChapterToTop(container: HTMLDivElement, pathname: string): 
 }
 
 export default function DesktopWrapper(props: Props): ReactNode {
-  const {pathname} = useLocation();
+  const { pathname } = useLocation();
   const activeIndex = getActiveIndex(pathname);
   const scrollableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
-      if (scrollableRef.current) scrollActiveChapterToTop(scrollableRef.current, pathname);
+      if (scrollableRef.current)
+        scrollActiveChapterToTop(scrollableRef.current, pathname);
     }, CHAPTER_SCROLL_DELAY_MS);
 
     return () => window.clearTimeout(timeout);
@@ -61,7 +75,11 @@ export default function DesktopWrapper(props: Props): ReactNode {
   return (
     <div className={styles.sidebarContainer}>
       <SidebarHeader />
-      <div key={activeIndex} ref={scrollableRef} className={styles.sidebarScrollable}>
+      <div
+        key={activeIndex}
+        ref={scrollableRef}
+        className={styles.sidebarScrollable}
+      >
         <Desktop {...props} />
       </div>
       <SidebarFooter />

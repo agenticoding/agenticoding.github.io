@@ -1,4 +1,4 @@
-import {useEffect, useRef, type ReactNode} from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { useThemeConfig } from '@docusaurus/theme-common';
 import type { Props } from '@theme/AnnouncementBar/Content';
 import InlineEmojiImage from '@site/src/components/VisualElements/InlineEmojiImage';
@@ -18,7 +18,7 @@ export default function AnnouncementBarContent({
     const updateHeight = () => {
       document.documentElement.style.setProperty(
         '--announcement-height',
-        `${bar.getBoundingClientRect().height}px`,
+        `${bar.getBoundingClientRect().height}px`
       );
     };
 

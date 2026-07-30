@@ -87,7 +87,6 @@ export default function CompoundQualityVisualization({
       role="region"
       aria-label="Compound quality visualization showing positive and negative feedback loops"
     >
-
       <div className={styles.comparisonWrapper}>
         <svg
           viewBox={`0 0 ${width} ${height}`}
@@ -165,10 +164,7 @@ export default function CompoundQualityVisualization({
               refY="3"
               orient="auto"
             >
-              <polygon
-                points="0 0, 10 3, 0 6"
-                fill="var(--visual-success)"
-              />
+              <polygon points="0 0, 10 3, 0 6" fill="var(--visual-success)" />
             </marker>
             <marker
               id="arrowNegative"
@@ -394,7 +390,6 @@ export default function CompoundQualityVisualization({
           </div>
         </div>
       </div>
-
     </div>
   );
 }

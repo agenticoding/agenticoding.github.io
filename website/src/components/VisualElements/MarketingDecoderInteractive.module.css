@@ -442,11 +442,9 @@
     --translator-claim-block-size: calc(var(--space-9) + var(--space-8));
     --translator-output-block-size: calc(var(--space-9) + var(--space-2));
     --translator-layout-block-size: calc(
-      var(--translator-claim-block-size) +
-      var(--translator-decode-block-size) +
-      var(--translator-output-block-size) +
-      var(--translator-gap) +
-      var(--translator-gap)
+      var(--translator-claim-block-size) + var(--translator-decode-block-size) +
+        var(--translator-output-block-size) + var(--translator-gap) +
+        var(--translator-gap)
     );
 
     grid-template-columns: 1fr;

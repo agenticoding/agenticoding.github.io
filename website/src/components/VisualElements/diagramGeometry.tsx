@@ -37,7 +37,8 @@ export function ArrowMarker({
   );
 }
 
-export const DIAGRAM_ARROW_TIP_TRIM = DIAGRAM_MARKER.size * DIAGRAM_STROKE.connector;
+export const DIAGRAM_ARROW_TIP_TRIM =
+  DIAGRAM_MARKER.size * DIAGRAM_STROKE.connector;
 
 type Point = { x: number; y: number };
 
@@ -51,14 +52,25 @@ function trimPoint(end: Point, from: Point, amount: number): Point {
 }
 
 function coord(value: number) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.00$/, '');
+  return Number.isInteger(value)
+    ? String(value)
+    : value.toFixed(2).replace(/\.00$/, '');
 }
 
-export function trimPathEnd(d: string, amount: number = DIAGRAM_ARROW_TIP_TRIM) {
-  const cubic = d.match(/^(.*C\s*[-\d.]+\s+[-\d.]+,?\s*([-\d.]+)\s+([-\d.]+),?\s*)([-\d.]+)\s+([-\d.]+)$/);
+export function trimPathEnd(
+  d: string,
+  amount: number = DIAGRAM_ARROW_TIP_TRIM
+) {
+  const cubic = d.match(
+    /^(.*C\s*[-\d.]+\s+[-\d.]+,?\s*([-\d.]+)\s+([-\d.]+),?\s*)([-\d.]+)\s+([-\d.]+)$/
+  );
   if (cubic) {
     const [, prefix, cx, cy, x, y] = cubic;
-    const end = trimPoint({ x: Number(x), y: Number(y) }, { x: Number(cx), y: Number(cy) }, amount);
+    const end = trimPoint(
+      { x: Number(x), y: Number(y) },
+      { x: Number(cx), y: Number(cy) },
+      amount
+    );
     return `${prefix}${coord(end.x)} ${coord(end.y)}`;
   }
 
@@ -84,7 +96,11 @@ export function trimPathEnd(d: string, amount: number = DIAGRAM_ARROW_TIP_TRIM) 
   if (line) {
     const [, prefix, x, y] = line;
     const prior = [...d.matchAll(/[-\d.]+/g)].map((match) => Number(match[0]));
-    const end = trimPoint({ x: Number(x), y: Number(y) }, { x: prior.at(-4) ?? Number(x), y: prior.at(-3) ?? Number(y) }, amount);
+    const end = trimPoint(
+      { x: Number(x), y: Number(y) },
+      { x: prior.at(-4) ?? Number(x), y: prior.at(-3) ?? Number(y) },
+      amount
+    );
     return `${prefix}${coord(end.x)} ${coord(end.y)}`;
   }
 

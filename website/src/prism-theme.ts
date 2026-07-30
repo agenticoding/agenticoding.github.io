@@ -27,7 +27,7 @@ import type { PrismTheme } from 'prism-react-renderer';
 // ---------------------------------------------------------------------------
 export const lightTheme: PrismTheme = {
   plain: {
-    color: '#505050',        // --text-body (neutral-700)
+    color: '#505050', // --text-body (neutral-700)
     backgroundColor: '#f5f5f5', // --code-bg-light (neutral-50)
   },
   styles: [
@@ -118,7 +118,7 @@ export const lightTheme: PrismTheme = {
 // ---------------------------------------------------------------------------
 export const darkTheme: PrismTheme = {
   plain: {
-    color: '#d4d4d4',        // --text-body dark (neutral-200)
+    color: '#d4d4d4', // --text-body dark (neutral-200)
     backgroundColor: '#222222', // --neutral-950 (achromatic, not Dracula purple)
   },
   styles: [

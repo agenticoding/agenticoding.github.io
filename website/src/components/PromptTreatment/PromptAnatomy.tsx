@@ -12,8 +12,14 @@ type PromptAnatomyProps = {
   sequenced?: boolean;
 };
 
-export default function PromptAnatomy({ items, prompt, sequenced = false }: PromptAnatomyProps) {
-  const anatomyClass = sequenced ? `${styles.anatomy} ${styles.anatomySequenced}` : styles.anatomy;
+export default function PromptAnatomy({
+  items,
+  prompt,
+  sequenced = false,
+}: PromptAnatomyProps) {
+  const anatomyClass = sequenced
+    ? `${styles.anatomy} ${styles.anatomySequenced}`
+    : styles.anatomy;
 
   return (
     <div className={anatomyClass}>

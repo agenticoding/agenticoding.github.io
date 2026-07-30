@@ -1,1 +1,1 @@
-export {default} from '@theme-original/DocSidebar';
+export { default } from '@theme-original/DocSidebar';

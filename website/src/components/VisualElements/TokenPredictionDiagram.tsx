@@ -129,7 +129,11 @@ function DesktopDiagram() {
       className={clsx(styles.diagram, styles.desktopDiagram)}
     >
       <defs>
-        <ArrowMarker id={DESKTOP_ARROW_MARKER_ID} fill={FLOW_ARROW_COLOR} refX={0} />
+        <ArrowMarker
+          id={DESKTOP_ARROW_MARKER_ID}
+          fill={FLOW_ARROW_COLOR}
+          refX={0}
+        />
       </defs>
       <text
         x={PILL_X + PILL_W / 2}
@@ -317,7 +321,11 @@ function MobileDiagram() {
       className={clsx(styles.diagram, styles.mobileDiagram)}
     >
       <defs>
-        <ArrowMarker id={MOBILE_ARROW_MARKER_ID} fill={FLOW_ARROW_COLOR} refX={0} />
+        <ArrowMarker
+          id={MOBILE_ARROW_MARKER_ID}
+          fill={FLOW_ARROW_COLOR}
+          refX={0}
+        />
       </defs>
       <text
         x={MVW / 2}

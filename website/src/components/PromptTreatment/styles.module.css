@@ -72,19 +72,23 @@
 
 .explanationLens .annotation {
   opacity: 0.74;
-  animation: comparisonNoteSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonNoteSequence var(--comparison-sequence-duration) linear
+    infinite;
 }
 
 .explanationLens .annotationTitle {
-  animation: comparisonNoteTitleSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonNoteTitleSequence var(--comparison-sequence-duration)
+    linear infinite;
 }
 
 .explanationLens .annotationDetail {
-  animation: comparisonNoteDetailSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonNoteDetailSequence var(--comparison-sequence-duration)
+    linear infinite;
 }
 
 .explanationLens .marker {
-  animation: comparisonNoteMarkerSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonNoteMarkerSequence var(--comparison-sequence-duration)
+    linear infinite;
 }
 
 .comparisonWithNotes :global(.prompt-example),
@@ -105,34 +109,37 @@
   border-bottom: 1px solid transparent;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
-  animation: comparisonTokenSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonTokenSequence var(--comparison-sequence-duration) linear
+    infinite;
 }
 
 .comparisonWithNotes :global(.prompt-example .prompt-seq-1),
 .anatomySequenced :global(.prompt-example .prompt-seq-1) {
-  --prompt-seq-marker: "1";
+  --prompt-seq-marker: '1';
 }
 
 .comparisonWithNotes :global(.prompt-example .prompt-seq-2),
 .anatomySequenced :global(.prompt-example .prompt-seq-2) {
-  --prompt-seq-marker: "2";
+  --prompt-seq-marker: '2';
 }
 
 .comparisonWithNotes :global(.prompt-example .prompt-seq-3),
 .anatomySequenced :global(.prompt-example .prompt-seq-3) {
-  --prompt-seq-marker: "3";
+  --prompt-seq-marker: '3';
 }
 
 .comparisonWithNotes :global(.prompt-example .prompt-seq-4),
 .anatomySequenced :global(.prompt-example .prompt-seq-4) {
-  --prompt-seq-marker: "4";
+  --prompt-seq-marker: '4';
 }
 
 .comparisonWithNotes,
 .anatomySequenced {
   --prompt-seq-marker-size: 1.2em;
   --prompt-seq-marker-lane-gap: 0.4em;
-  --prompt-seq-marker-lane-width: calc(var(--prompt-seq-marker-size) + var(--prompt-seq-marker-lane-gap));
+  --prompt-seq-marker-lane-width: calc(
+    var(--prompt-seq-marker-size) + var(--prompt-seq-marker-lane-gap)
+  );
   --prompt-seq-marker-inline-offset: 0;
   --prompt-seq-marker-rest-block-offset: 1.08em;
   --prompt-seq-marker-active-block-offset: 0.98em;
@@ -162,14 +169,21 @@
   color: var(--comparison-note-signal);
   background: var(--comparison-note-bg);
   opacity: 0;
-  transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-rest-block-offset)) scale(0.96);
+  transform: translate(
+      var(--prompt-seq-marker-inline-offset),
+      var(--prompt-seq-marker-rest-block-offset)
+    )
+    scale(0.96);
   pointer-events: none;
-  animation: comparisonTokenMarkerSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonTokenMarkerSequence var(--comparison-sequence-duration)
+    linear infinite;
   animation-delay: inherit;
 }
 
 .anatomySequenced :global(.prompt-example .prompt-seq-anchor)::before {
-  inset-inline-start: calc(var(--space-4) - var(--prompt-seq-marker-lane-width) - 0.45em);
+  inset-inline-start: calc(
+    var(--space-4) - var(--prompt-seq-marker-lane-width) - 0.45em
+  );
 }
 
 .explanationLens .annotation:nth-child(2),
@@ -208,19 +222,23 @@
 
 .anatomySequenced .annotation {
   opacity: 0.74;
-  animation: comparisonNoteSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonNoteSequence var(--comparison-sequence-duration) linear
+    infinite;
 }
 
 .anatomySequenced .annotationTitle {
-  animation: comparisonNoteTitleSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonNoteTitleSequence var(--comparison-sequence-duration)
+    linear infinite;
 }
 
 .anatomySequenced .annotationDetail {
-  animation: comparisonNoteDetailSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonNoteDetailSequence var(--comparison-sequence-duration)
+    linear infinite;
 }
 
 .anatomySequenced .marker {
-  animation: comparisonNoteMarkerSequence var(--comparison-sequence-duration) linear infinite;
+  animation: comparisonNoteMarkerSequence var(--comparison-sequence-duration)
+    linear infinite;
 }
 
 .anatomySequenced :global(.prompt-example code) {
@@ -373,16 +391,28 @@
   0%,
   100% {
     opacity: 0;
-    transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-rest-block-offset)) scale(0.96);
+    transform: translate(
+        var(--prompt-seq-marker-inline-offset),
+        var(--prompt-seq-marker-rest-block-offset)
+      )
+      scale(0.96);
   }
   4%,
   24% {
     opacity: 1;
-    transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-active-block-offset)) scale(1);
+    transform: translate(
+        var(--prompt-seq-marker-inline-offset),
+        var(--prompt-seq-marker-active-block-offset)
+      )
+      scale(1);
   }
   28% {
     opacity: 0;
-    transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-rest-block-offset)) scale(0.96);
+    transform: translate(
+        var(--prompt-seq-marker-inline-offset),
+        var(--prompt-seq-marker-rest-block-offset)
+      )
+      scale(0.96);
   }
 }
 
@@ -408,7 +438,11 @@
   .comparisonWithNotes :global(.prompt-example .prompt-seq-anchor)::before,
   .anatomySequenced :global(.prompt-example .prompt-seq-anchor)::before {
     opacity: 0.72;
-    transform: translate(var(--prompt-seq-marker-inline-offset), var(--prompt-seq-marker-active-block-offset)) scale(1);
+    transform: translate(
+        var(--prompt-seq-marker-inline-offset),
+        var(--prompt-seq-marker-active-block-offset)
+      )
+      scale(1);
     animation: none !important;
   }
 }

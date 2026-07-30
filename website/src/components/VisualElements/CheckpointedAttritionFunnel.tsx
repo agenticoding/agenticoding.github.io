@@ -164,8 +164,14 @@ export default function CheckpointedAttritionFunnel() {
               width={stage.w}
               height={stage.h}
               rx="0"
-              fill={index < 3 ? 'var(--visual-bg-warning)' : 'var(--visual-bg-neutral)'}
-              stroke={index < 3 ? 'var(--visual-warning)' : 'var(--border-default)'}
+              fill={
+                index < 3
+                  ? 'var(--visual-bg-warning)'
+                  : 'var(--visual-bg-neutral)'
+              }
+              stroke={
+                index < 3 ? 'var(--visual-warning)' : 'var(--border-default)'
+              }
               strokeWidth="1.5"
             />
             <text

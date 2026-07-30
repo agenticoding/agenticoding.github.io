@@ -7,46 +7,46 @@
 
 :root {
   /* --- Duration tokens -------------------------------------------------- */
-  --duration-instant:           70ms;
-  --duration-fast:             110ms;
-  --duration-subtle:           150ms;
-  --duration-moderate:         240ms;
-  --duration-deliberate:       400ms;
-  --duration-ambient:          700ms;
+  --duration-instant: 70ms;
+  --duration-fast: 110ms;
+  --duration-subtle: 150ms;
+  --duration-moderate: 240ms;
+  --duration-deliberate: 400ms;
+  --duration-ambient: 700ms;
 
   /* Exit durations (shorter than enter — perception asymmetry) */
-  --duration-fast-exit:         80ms;
-  --duration-subtle-exit:      110ms;
-  --duration-moderate-exit:    180ms;
-  --duration-deliberate-exit:  300ms;
+  --duration-fast-exit: 80ms;
+  --duration-subtle-exit: 110ms;
+  --duration-moderate-exit: 180ms;
+  --duration-deliberate-exit: 300ms;
 
   /* --- Easing tokens ----------------------------------------------------- */
   /* Enter: starts fast, decelerates into resting position */
-  --ease-enter:    cubic-bezier(0.00, 0.00, 0.38, 0.9);
+  --ease-enter: cubic-bezier(0, 0, 0.38, 0.9);
   /* Exit: starts slow, accelerates out of frame */
-  --ease-exit:     cubic-bezier(0.20, 0.00, 1.00, 0.9);
+  --ease-exit: cubic-bezier(0.2, 0, 1, 0.9);
   /* Standard: enters fast, eases to rest (for in-place state changes) */
-  --ease-standard: cubic-bezier(0.20, 0.00, 0.38, 0.9);
+  --ease-standard: cubic-bezier(0.2, 0, 0.38, 0.9);
   /* Linear: constant velocity — only for continuous ambient motion */
-  --ease-linear:   linear;
+  --ease-linear: linear;
 
   /* --- Stagger tokens ---------------------------------------------------- */
-  --motion-stagger-sm:  60ms;   /* 5–8 items */
-  --motion-stagger-md:  80ms;   /* 3–4 items */
-  --motion-stagger-lg: 100ms;   /* 2 items */
+  --motion-stagger-sm: 60ms; /* 5–8 items */
+  --motion-stagger-md: 80ms; /* 3–4 items */
+  --motion-stagger-lg: 100ms; /* 2 items */
 
   /* --- Reveal offset tokens ---------------------------------------------- */
-  --motion-reveal-y-load:    -8px;   /* Page load: elements settle downward */
-  --motion-reveal-y-scroll:  12px;   /* Scroll reveal: elements rise upward */
-  --motion-reveal-scale:     0.96;   /* Modal only: slight scale expand */
+  --motion-reveal-y-load: -8px; /* Page load: elements settle downward */
+  --motion-reveal-y-scroll: 12px; /* Scroll reveal: elements rise upward */
+  --motion-reveal-scale: 0.96; /* Modal only: slight scale expand */
 
   /* --- Stroke tokens (SVG diagram animations) ---------------------------- */
-  --stroke-fine:    1px;
-  --stroke-light:   1.5px;
+  --stroke-fine: 1px;
+  --stroke-light: 1.5px;
   --stroke-default: 2px;
-  --stroke-medium:  2.5px;
-  --stroke-heavy:   3px;
-  --stroke-accent:  4px;
+  --stroke-medium: 2.5px;
+  --stroke-heavy: 3px;
+  --stroke-accent: 4px;
 }
 
 /* ==========================================================================

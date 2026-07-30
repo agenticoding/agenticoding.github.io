@@ -3,10 +3,14 @@ import styles from './ColorPaletteGenerator.module.css';
 
 type HarmonyMode = 'monochromatic' | 'analogous' | 'complementary' | 'triadic';
 
-const SHADE_NAMES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
+const SHADE_NAMES = [
+  50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
+] as const;
 
 // Non-linear lightness curve: L values for each shade stop
-const LIGHTNESS_STOPS = [0.97, 0.93, 0.87, 0.78, 0.69, 0.60, 0.51, 0.43, 0.36, 0.29, 0.25];
+const LIGHTNESS_STOPS = [
+  0.97, 0.93, 0.87, 0.78, 0.69, 0.6, 0.51, 0.43, 0.36, 0.29, 0.25,
+];
 
 const PEAK_CHROMA = 0.15;
 
@@ -33,17 +37,25 @@ function computeChroma(L: number): number {
 }
 
 /** OKLCH -> OKLab */
-function oklchToOklab(L: number, C: number, H: number): [number, number, number] {
+function oklchToOklab(
+  L: number,
+  C: number,
+  H: number
+): [number, number, number] {
   const hRad = (H * Math.PI) / 180;
   return [L, C * Math.cos(hRad), C * Math.sin(hRad)];
 }
 
 /** OKLab -> linear sRGB via LMS intermediate */
-function oklabToLinearSrgb(L: number, a: number, b: number): [number, number, number] {
+function oklabToLinearSrgb(
+  L: number,
+  a: number,
+  b: number
+): [number, number, number] {
   // OKLab -> LMS (cube root space)
   const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
   const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
-  const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+  const s_ = L - 0.0894841775 * a - 1.291485548 * b;
 
   // Cube to get LMS
   const l = l_ * l_ * l_;
@@ -53,7 +65,7 @@ function oklabToLinearSrgb(L: number, a: number, b: number): [number, number, nu
   // LMS -> linear sRGB
   const r = +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
   const g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
-  const blue = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+  const blue = -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s;
 
   return [r, g, blue];
 }
@@ -152,7 +164,7 @@ export default function ColorPaletteGenerator() {
 
   const harmonyOffsets = HARMONY_OFFSETS[harmony];
   const harmonySwatches = harmonyOffsets.map((offset) => {
-    const h = ((hue + offset) % 360 + 360) % 360;
+    const h = (((hue + offset) % 360) + 360) % 360;
     const hex = oklchToHex(shade500L, shade500C, h);
     const lum = relativeLuminance(shade500L, shade500C, h);
     const textColor = bestTextColor(lum);
@@ -216,7 +228,9 @@ export default function ColorPaletteGenerator() {
             <span className={styles.swatchHex}>{hex}</span>
             <span className={styles.swatchContrast}>
               {ratio.toFixed(1)}:1{' '}
-              <span className={`${styles.badge} ${passAA ? styles.badgePass : styles.badgeFail}`}>
+              <span
+                className={`${styles.badge} ${passAA ? styles.badgePass : styles.badgeFail}`}
+              >
                 {passAA ? 'AA' : 'Fail'}
               </span>
             </span>

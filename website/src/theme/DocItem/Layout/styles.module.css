@@ -1,6 +1,10 @@
 @keyframes pageEnter {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .docItemContainer {
@@ -20,5 +24,3 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
-
-

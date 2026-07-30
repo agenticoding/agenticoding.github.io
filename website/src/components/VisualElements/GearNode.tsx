@@ -22,7 +22,14 @@ export type GearNodeProps = {
 const GEAR_NATIVE_CX = 36;
 const GEAR_NATIVE_CY = 34.9064;
 
-export function GearNode({ x, y, size, className, spin, style }: GearNodeProps) {
+export function GearNode({
+  x,
+  y,
+  size,
+  className,
+  spin,
+  style,
+}: GearNodeProps) {
   const pivot = gearPivot(x, y, size);
 
   if (spin) {

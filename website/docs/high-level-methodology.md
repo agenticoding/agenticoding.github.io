@@ -146,14 +146,14 @@ Validation continues after release. Controlled exposure, telemetry, sampled revi
 
 Evidence should identify what to change next. Do not treat every failed check as an implementation bug: return to the phase that introduced the uncertainty.
 
-| What the evidence shows | Next action |
-| --- | --- |
-| The candidate has a local defect or misses a known edge case | Fix that bounded unit, then measure it again. |
-| The candidate relied on a missing or incorrect codebase fact, API, or constraint | Re-ground before attempting another implementation. |
-| The proposed solution or task sequence is wrong | Re-plan the work before executing again. |
-| The target is clear, but this candidate is unreliable | Generate independent candidates and compare them with independent evidence. |
-| The evidence conflicts, or accepting an error would be costly | Add a human acceptance checkpoint. |
-| Exploration or production reveals a confirmed new failure mode | Add it to the operating profile and protect it with a regression check. |
+| What the evidence shows                                                          | Next action                                                                 |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| The candidate has a local defect or misses a known edge case                     | Fix that bounded unit, then measure it again.                               |
+| The candidate relied on a missing or incorrect codebase fact, API, or constraint | Re-ground before attempting another implementation.                         |
+| The proposed solution or task sequence is wrong                                  | Re-plan the work before executing again.                                    |
+| The target is clear, but this candidate is unreliable                            | Generate independent candidates and compare them with independent evidence. |
+| The evidence conflicts, or accepting an error would be costly                    | Add a human acceptance checkpoint.                                          |
+| Exploration or production reveals a confirmed new failure mode                   | Add it to the operating profile and protect it with a regression check.     |
 
 Read [Validation](./validation.md) for the full framework: defining claims and operating profiles, calibrating deterministic checks and LLM judges, manual acceptance, exploratory discovery, and production evidence.
 

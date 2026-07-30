@@ -184,8 +184,8 @@ export default function WorkflowCircle() {
 
       {/* Text description for additional context */}
       <p className={styles.description}>
-        Each phase flows into the next in a continuous cycle. After
-        validation, iterate back to research as needed to refine and improve.
+        Each phase flows into the next in a continuous cycle. After validation,
+        iterate back to research as needed to refine and improve.
       </p>
     </div>
   );

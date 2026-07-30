@@ -32,7 +32,7 @@ export default function SpecCodeZoomDiagram() {
     startY: number,
     endX: number,
     endY: number,
-    curveX: number,
+    curveX: number
   ) => {
     const midPointY = (startY + endY) / 2;
     return `M ${startX} ${startY} Q ${curveX} ${midPointY} ${endX} ${endY}`;
@@ -44,7 +44,7 @@ export default function SpecCodeZoomDiagram() {
     specY + specBoxHeight,
     centerX - codeBoxWidth / 2 + 8,
     codeY,
-    centerX - arrowCurveOffset,
+    centerX - arrowCurveOffset
   );
 
   // Right arrow (upward, cyan) — Extract: code→spec
@@ -53,7 +53,7 @@ export default function SpecCodeZoomDiagram() {
     codeY,
     centerX + specBoxWidth / 2 - 8,
     specY + specBoxHeight,
-    centerX + arrowCurveOffset,
+    centerX + arrowCurveOffset
   );
 
   // Annotation positions
@@ -118,13 +118,7 @@ export default function SpecCodeZoomDiagram() {
           </filter>
 
           {/* Glow for AI (upward) arrows */}
-          <filter
-            id="sczdAiGlow"
-            x="-50%"
-            y="-50%"
-            width="200%"
-            height="200%"
-          >
+          <filter id="sczdAiGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="1.5" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -285,11 +279,7 @@ export default function SpecCodeZoomDiagram() {
             y2={legendY}
             className={styles.legendLineGenerate}
           />
-          <text
-            x={centerX - 120}
-            y={legendY + 4}
-            className={styles.legendText}
-          >
+          <text x={centerX - 120} y={legendY + 4} className={styles.legendText}>
             Spec sharpens through contact with implementation
           </text>
         </g>
@@ -297,8 +287,7 @@ export default function SpecCodeZoomDiagram() {
 
       {/* Description text */}
       <p className={styles.description}>
-        <strong>Spec</strong> = hypothesis.{' '}
-        <strong>Code</strong> = experiment.{' '}
+        <strong>Spec</strong> = hypothesis. <strong>Code</strong> = experiment.{' '}
         Each pass reveals what the previous spec missed.
       </p>
     </div>

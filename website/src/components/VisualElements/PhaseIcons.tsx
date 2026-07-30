@@ -15,17 +15,20 @@ const PHASES: Phase[] = [
   {
     icon: ResearchIcon,
     label: 'Grounding',
-    description: "Ground the agent in the specific task's reality before acting",
+    description:
+      "Ground the agent in the specific task's reality before acting",
   },
   {
     icon: ChecklistIcon,
     label: 'Plan',
-    description: 'Design changes strategically — explore when uncertain, be directive when clear',
+    description:
+      'Design changes strategically — explore when uncertain, be directive when clear',
   },
   {
     icon: ExecuteIcon,
     label: 'Execute',
-    description: 'Run agents supervised or autonomous based on trust and task criticality',
+    description:
+      'Run agents supervised or autonomous based on trust and task criticality',
   },
   {
     icon: ValidateIcon,
@@ -36,7 +39,11 @@ const PHASES: Phase[] = [
 
 export default function PhaseIcons() {
   return (
-    <div className={styles.grid} role="list" aria-label="Operator methodology phases">
+    <div
+      className={styles.grid}
+      role="list"
+      aria-label="Operator methodology phases"
+    >
       {PHASES.map(({ icon: Icon, label, description }) => (
         <div key={label} className={styles.card} role="listitem">
           <div className={styles.iconWrapper}>

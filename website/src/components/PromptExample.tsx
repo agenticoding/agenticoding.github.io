@@ -2,8 +2,8 @@ import React, { type ReactNode } from 'react';
 
 // Markdown structural punctuation at text-node start
 const RE_HEADING = /^(#{1,6}) /;
-const RE_UL      = /^(-) /;
-const RE_OL      = /^(\d+\.) /;
+const RE_UL = /^(-) /;
+const RE_OL = /^(\d+\.) /;
 
 /** Wrap leading markdown punctuation in a colored span. */
 function colorize(text: string): ReactNode {
@@ -32,7 +32,11 @@ function walk(children: ReactNode): ReactNode {
     // Styled code spans like <code className="mono-spec"># Task:</code> should
     // also receive cyan punctuation so heading/list markers look consistent
     // whether they appear in plain text or in a voice-typed code span.
-    return React.cloneElement(child as React.ReactElement<{ children?: ReactNode }>, {}, walk(child.props.children));
+    return React.cloneElement(
+      child as React.ReactElement<{ children?: ReactNode }>,
+      {},
+      walk(child.props.children)
+    );
   });
 }
 

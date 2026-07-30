@@ -3,7 +3,11 @@ import { EmojiImage } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
 import { DiagramArrow, DiagramArrowMarkers } from './DiagramArrow';
 import { DiagramTileSurface } from './DiagramTile';
-import { tileToneVars, voiceStyle, type DiagramTone } from './diagramTileLayout';
+import {
+  tileToneVars,
+  voiceStyle,
+  type DiagramTone,
+} from './diagramTileLayout';
 import styles from './PostTrainingTuningBoard.module.css';
 
 const VW = 640;
@@ -408,9 +412,24 @@ function BadgePill({
 }) {
   return (
     <g>
-      <DiagramTileSurface x={x} y={y} width={width} height={height} tone={color} className={styles.storyBadge} />
+      <DiagramTileSurface
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        tone={color}
+        className={styles.storyBadge}
+      />
       {BADGE_EFFECTS[label as BadgeLabel].map((effectClass) => (
-        <DiagramTileSurface key={effectClass} x={x} y={y} width={width} height={height} tone={color} className={`${styles.storyEffect} ${effectClass}`} />
+        <DiagramTileSurface
+          key={effectClass}
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          tone={color}
+          className={`${styles.storyEffect} ${effectClass}`}
+        />
       ))}
       <text
         x={x + width / 2}
@@ -444,7 +463,13 @@ function ProductProfileCard() {
   );
 }
 
-function Connector({ d, markerIdPrefix }: { d: string; markerIdPrefix: string }) {
+function Connector({
+  d,
+  markerIdPrefix,
+}: {
+  d: string;
+  markerIdPrefix: string;
+}) {
   return <DiagramArrow d={d} markerIdPrefix={markerIdPrefix} tone="model" />;
 }
 
@@ -484,7 +509,14 @@ function MobileLeverRow({ slider, y }: { slider: Slider; y: number }) {
 
   return (
     <g>
-      <DiagramTileSurface x={32} y={y} width={296} height={36} tone="neutral" stroke="var(--border-subtle)" />
+      <DiagramTileSurface
+        x={32}
+        y={y}
+        width={296}
+        height={36}
+        tone="neutral"
+        stroke="var(--border-subtle)"
+      />
       <text
         x="48"
         y={y + 13}

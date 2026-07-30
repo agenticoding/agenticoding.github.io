@@ -412,11 +412,7 @@ function ProcessTile(props: DiagramTileProps) {
         y={layout.titleY}
         lines={layout.titleLines}
         fill={color.title}
-        style={voiceStyle(
-          props.titleVoice ?? 'spec',
-          scale.titleFontSize,
-          700
-        )}
+        style={voiceStyle(props.titleVoice ?? 'spec', scale.titleFontSize, 700)}
       />
       <line
         x1={layout.textX}
@@ -484,7 +480,10 @@ function richIconSize(props: DiagramTileProps) {
 function processTileScale(props: DiagramTileProps) {
   return props.density === 'mobile'
     ? { titleFontSize: 11, detailFontSize: 9 }
-    : { titleFontSize: PROCESS_TILE_SCALE.titleFontSize, detailFontSize: PROCESS_TILE_SCALE.detailFontSize };
+    : {
+        titleFontSize: PROCESS_TILE_SCALE.titleFontSize,
+        detailFontSize: PROCESS_TILE_SCALE.detailFontSize,
+      };
 }
 
 function processLayout(
@@ -504,12 +503,7 @@ function processLayout(
     titleY: props.y + (isShortProcessTile(props) ? 24 : 25),
     dividerY: props.y + (isShortProcessTile(props) ? 38 : 40),
     detailY: props.y + 52,
-    titleLines: wrapSvgText(
-      props.title,
-      textWidth,
-      scale.titleFontSize,
-      1
-    ),
+    titleLines: wrapSvgText(props.title, textWidth, scale.titleFontSize, 1),
     detailLines: detailText(props.detail, textWidth, scale.detailFontSize, 2),
   };
 }

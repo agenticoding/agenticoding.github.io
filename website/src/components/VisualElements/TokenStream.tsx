@@ -48,7 +48,11 @@ export const OUTPUT_TOKENS = seededTokenTrain(
   8
 ) satisfies readonly TokenStreamToken[];
 
-const positionFor = (index: number, direction: 'right' | 'down', step: number) => ({
+const positionFor = (
+  index: number,
+  direction: 'right' | 'down',
+  step: number
+) => ({
   dx: direction === 'right' ? index * step : 0,
   dy: direction === 'down' ? index * step : 0,
 });

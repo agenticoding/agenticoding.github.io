@@ -63,10 +63,18 @@
 }
 
 /* Semantic top accent borders */
-.resource-magenta { border-top-color: var(--visual-magenta); }
-.resource-cyan    { border-top-color: var(--visual-cyan); }
-.resource-indigo  { border-top-color: var(--visual-indigo); }
-.resource-success { border-top-color: var(--visual-success); }
+.resource-magenta {
+  border-top-color: var(--visual-magenta);
+}
+.resource-cyan {
+  border-top-color: var(--visual-cyan);
+}
+.resource-indigo {
+  border-top-color: var(--visual-indigo);
+}
+.resource-success {
+  border-top-color: var(--visual-success);
+}
 
 .resourceIllustration {
   width: 100%;
@@ -106,10 +114,18 @@
   color: var(--text-muted);
 }
 
-.resource-magenta .resourceCount { color: var(--visual-magenta); }
-.resource-cyan    .resourceCount { color: var(--visual-cyan); }
-.resource-indigo  .resourceCount { color: var(--visual-indigo); }
-.resource-success .resourceCount { color: var(--visual-success); }
+.resource-magenta .resourceCount {
+  color: var(--visual-magenta);
+}
+.resource-cyan .resourceCount {
+  color: var(--visual-cyan);
+}
+.resource-indigo .resourceCount {
+  color: var(--visual-indigo);
+}
+.resource-success .resourceCount {
+  color: var(--visual-success);
+}
 
 .ghostLink {
   color: var(--text-body);

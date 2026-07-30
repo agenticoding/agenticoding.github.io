@@ -38,7 +38,11 @@ export default function DocItemContent({ children }: Props): ReactNode {
     <div className={clsx(ThemeClassNames.docs.docMarkdown, 'markdown')}>
       {hasHeader && (
         <header>
-          {isIntroPage ? <SiteHero /> : <Heading as="h1">{syntheticTitle}</Heading>}
+          {isIntroPage ? (
+            <SiteHero />
+          ) : (
+            <Heading as="h1">{syntheticTitle}</Heading>
+          )}
         </header>
       )}
       <MDXContent>{children}</MDXContent>

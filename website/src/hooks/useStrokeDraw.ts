@@ -20,7 +20,7 @@ export function useStrokeDraw(
   ref: RefObject<SVGGeometryElement | null>,
   phase: number,
   start: number,
-  end: number,
+  end: number
 ): number {
   const lenRef = useRef(0);
 

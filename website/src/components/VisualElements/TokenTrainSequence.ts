@@ -62,7 +62,8 @@ export function seededTokenTrain(
   palette: TokenSequence = TOKEN_TRAIN_PALETTE
 ): TokenSequence {
   if (count < 1) return [];
-  if (palette.length < 1) throw new Error('Token train palette cannot be empty.');
+  if (palette.length < 1)
+    throw new Error('Token train palette cannot be empty.');
 
   const tokens: TokenSequence[number][] = [];
   for (let cycle = 0; tokens.length < count; cycle += 1) {

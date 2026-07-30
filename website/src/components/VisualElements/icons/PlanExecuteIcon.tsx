@@ -37,7 +37,14 @@ export default function PlanExecuteIcon({ className, size = 24 }: IconProps) {
           Head top lands at parent y≈8.05; center at y≈14.5 (between rows 2 & 3).
           Row 1 check+line (y=4) sit cleanly above. Rows 2 & 3 marks are to the
           left (x≤8) — no x overlap with head (x≥11.05). */}
-      <svg x="10" y="7" width="14" height="14" viewBox="0 0 14 14" overflow="visible">
+      <svg
+        x="10"
+        y="7"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        overflow="visible"
+      >
         <AgentNode x={0} y={0} size={14} />
       </svg>
     </svg>

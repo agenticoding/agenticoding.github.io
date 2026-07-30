@@ -5,8 +5,9 @@ import { lightTheme, darkTheme } from './src/prism-theme';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const isTauri = process.env.TAURI_BUILD === '1';
-const editUrl = isTauri ? undefined :
-  'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/';
+const editUrl = isTauri
+  ? undefined
+  : 'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/';
 
 const config: Config = {
   title: 'Agentic Coding',
@@ -25,13 +26,15 @@ const config: Config = {
   baseUrl: '/',
 
   // Analytics (stripped in Tauri builds — no network assumption)
-  scripts: isTauri ? [] : [
-    {
-      src: 'https://cloud.umami.is/script.js',
-      defer: true,
-      'data-website-id': 'a4797962-f344-4828-8278-8bf6dff239bb',
-    },
-  ],
+  scripts: isTauri
+    ? []
+    : [
+        {
+          src: 'https://cloud.umami.is/script.js',
+          defer: true,
+          'data-website-id': 'a4797962-f344-4828-8278-8bf6dff239bb',
+        },
+      ],
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -177,7 +180,8 @@ const config: Config = {
           type: 'html',
           position: 'right',
           className: 'navbar-github-item',
-          value: '<a class="navbar-github-link" href="https://github.com/agenticoding/agenticoding.github.io" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><g transform="translate(1.25 1)"><path d="M14.5 17c0-1 .5-4-1.5-4 2.5 0 4-1.5 4-3.5 0-1-.5-2-1-2.5.5-1.5 0-2.5 0-2.5s-1 0-2.5 1c-1.5-.5-4-.5-5.5 0C6.5 4 5.5 4 5.5 4s-.5 1 0 2.5c-.5.5-1 1.5-1 2.5 0 2 1.5 3.5 4 3.5-1 0-1.5 1-1.5 2v3"/><path d="M9 18c-1.5.5-3 0-4-1"/></g></svg></a>',
+          value:
+            '<a class="navbar-github-link" href="https://github.com/agenticoding/agenticoding.github.io" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><g transform="translate(1.25 1)"><path d="M14.5 17c0-1 .5-4-1.5-4 2.5 0 4-1.5 4-3.5 0-1-.5-2-1-2.5.5-1.5 0-2.5 0-2.5s-1 0-2.5 1c-1.5-.5-4-.5-5.5 0C6.5 4 5.5 4 5.5 4s-.5 1 0 2.5c-.5.5-1 1.5-1 2.5 0 2 1.5 3.5 4 3.5-1 0-1.5 1-1.5 2v3"/><path d="M9 18c-1.5.5-3 0-4-1"/></g></svg></a>',
         },
       ],
     },

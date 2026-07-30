@@ -7,7 +7,9 @@ interface Props {
 // Sharp operator card path centered at (410, 148), 88×60.
 const OPERATOR_PATH = 'M366.0,118.0 L454.0,118.0 L454.0,178.0 L366.0,178.0 Z';
 
-export default function MentalModelComparison({ compact: _compact = false }: Props) {
+export default function MentalModelComparison({
+  compact: _compact = false,
+}: Props) {
   return (
     <svg
       viewBox="0 0 600 280"
@@ -57,13 +59,7 @@ export default function MentalModelComparison({ compact: _compact = false }: Pro
           ================================================================ */}
 
       {/* Header background */}
-      <rect
-        x="0"
-        y="0"
-        width="300"
-        height="32"
-        fill="var(--visual-bg-error)"
-      />
+      <rect x="0" y="0" width="300" height="32" fill="var(--visual-bg-error)" />
 
       {/* Header label */}
       <text

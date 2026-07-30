@@ -39,7 +39,9 @@ export default function DiagramFrame({
       </header>
       <div className={styles.body}>{children}</div>
       {legend?.length ? <DiagramLegend items={legend} /> : null}
-      {caption ? <figcaption className={styles.caption}>{caption}</figcaption> : null}
+      {caption ? (
+        <figcaption className={styles.caption}>{caption}</figcaption>
+      ) : null}
     </figure>
   );
 }
@@ -49,7 +51,10 @@ function DiagramLegend({ items }: { items: DiagramLegendItem[] }) {
     <ul className={styles.legend} aria-label="Diagram legend">
       {items.map((item) => (
         <li key={`${item.tone}-${item.label}`} className={styles.legendItem}>
-          <span className={clsx(styles.legendKey, styles[item.tone])} aria-hidden="true" />
+          <span
+            className={clsx(styles.legendKey, styles[item.tone])}
+            aria-hidden="true"
+          />
           <span className={styles.legendText}>
             <span>{item.label}</span>
             {item.description ? <small>{item.description}</small> : null}

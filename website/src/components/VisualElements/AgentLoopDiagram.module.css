@@ -1,7 +1,16 @@
 /* Decision labels (Yes / No) on arcs — local only; all other classes in diagram.module.css */
-.decisionLabel   { opacity: 0; }
-.decisionLabelIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+.decisionLabel {
+  opacity: 0;
+}
+.decisionLabelIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .decisionLabel, .decisionLabelIn { opacity: 1; transition: none; }
+  .decisionLabel,
+  .decisionLabelIn {
+    opacity: 1;
+    transition: none;
+  }
 }

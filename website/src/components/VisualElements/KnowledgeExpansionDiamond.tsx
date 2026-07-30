@@ -252,8 +252,6 @@ export default function KnowledgeExpansionDiamond() {
           </text>
         </g>
 
-
-
         {/* ===== LEFT ARROWS (Traditional - Purple, Downward) ===== */}
         <g className={styles.traditionalGroup}>
           <path
@@ -268,8 +266,6 @@ export default function KnowledgeExpansionDiamond() {
             markerEnd="url(#arrowTraditional)"
             fill="none"
           />
-
-
         </g>
 
         {/* ===== RIGHT ARROWS (AI - Cyan, Upward) ===== */}
@@ -288,8 +284,6 @@ export default function KnowledgeExpansionDiamond() {
             fill="none"
             filter="url(#aiGlow)"
           />
-
-
         </g>
 
         {/* ===== LEGEND ===== */}
@@ -301,11 +295,7 @@ export default function KnowledgeExpansionDiamond() {
             r={5}
             className={styles.legendDotTraditional}
           />
-          <text
-            x={centerX - 85}
-            y={legendY + 4}
-            className={styles.legendText}
-          >
+          <text x={centerX - 85} y={legendY + 4} className={styles.legendText}>
             Traditional (expansion)
           </text>
 
@@ -315,11 +305,7 @@ export default function KnowledgeExpansionDiamond() {
             r={5}
             className={styles.legendDotAI}
           />
-          <text
-            x={centerX + 75}
-            y={legendY + 4}
-            className={styles.legendText}
-          >
+          <text x={centerX + 75} y={legendY + 4} className={styles.legendText}>
             AI-Enabled (extraction)
           </text>
         </g>
@@ -329,8 +315,8 @@ export default function KnowledgeExpansionDiamond() {
       <p className={styles.description}>
         <strong>Traditional:</strong> Knowledge expands from spec to code.{' '}
         <br />
-        <strong>AI-enabled:</strong> Knowledge can now be extracted back —
-        code becomes the single source of truth.
+        <strong>AI-enabled:</strong> Knowledge can now be extracted back — code
+        becomes the single source of truth.
       </p>
     </div>
   );

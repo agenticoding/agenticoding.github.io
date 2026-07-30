@@ -1,10 +1,16 @@
 @keyframes drawThread {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes fadeNode {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .thread {
@@ -17,6 +23,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .thread { animation: none; stroke-dashoffset: 0; }
-  .node   { animation: none; opacity: 1; }
+  .thread {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .node {
+    animation: none;
+    opacity: 1;
+  }
 }

@@ -44,7 +44,10 @@ function Panel({
 
 function ExplanationLens({ notes }: { notes: ComparisonNote[] }) {
   return (
-    <aside className={styles.explanationLens} aria-label="Why the effective prompt works">
+    <aside
+      className={styles.explanationLens}
+      aria-label="Why the effective prompt works"
+    >
       {notes.map((note, index) => (
         <div className={styles.annotation} key={note.label}>
           <div className={styles.annotationHeader}>
@@ -65,11 +68,15 @@ export default function PromptComparison({
   goodLabel = 'Effective',
   goodNotes,
 }: PromptComparisonProps) {
-  const comparisonClass = goodNotes ? `${styles.comparison} ${styles.comparisonWithNotes}` : styles.comparison;
+  const comparisonClass = goodNotes
+    ? `${styles.comparison} ${styles.comparisonWithNotes}`
+    : styles.comparison;
 
   return (
     <div className={comparisonClass}>
-      <Panel tone="bad" label={badLabel}>{bad}</Panel>
+      <Panel tone="bad" label={badLabel}>
+        {bad}
+      </Panel>
       <Panel
         tone="good"
         label={goodLabel}

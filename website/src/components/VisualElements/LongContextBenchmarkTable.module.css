@@ -17,12 +17,20 @@
 
 .data {
   --signal-accent: var(--visual-indigo);
-  --signal-bg: color-mix(in srgb, var(--visual-indigo) 10%, var(--surface-page));
+  --signal-bg: color-mix(
+    in srgb,
+    var(--visual-indigo) 10%,
+    var(--surface-page)
+  );
 }
 
 .warning {
   --signal-accent: var(--visual-warning);
-  --signal-bg: color-mix(in srgb, var(--visual-warning) 10%, var(--surface-page));
+  --signal-bg: color-mix(
+    in srgb,
+    var(--visual-warning) 10%,
+    var(--surface-page)
+  );
 }
 
 .caption {

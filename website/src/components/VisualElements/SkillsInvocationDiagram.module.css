@@ -6,13 +6,17 @@
 .note {
   opacity: 0;
   transform: translateY(var(--motion-reveal-y-scroll));
-  transition: opacity var(--duration-moderate-exit) var(--ease-exit), transform var(--duration-moderate-exit) var(--ease-exit);
+  transition:
+    opacity var(--duration-moderate-exit) var(--ease-exit),
+    transform var(--duration-moderate-exit) var(--ease-exit);
 }
 
 .entered {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity var(--duration-moderate) var(--ease-enter), transform var(--duration-moderate) var(--ease-enter);
+  transition:
+    opacity var(--duration-moderate) var(--ease-enter),
+    transform var(--duration-moderate) var(--ease-enter);
 }
 
 @media (prefers-reduced-motion: reduce) {

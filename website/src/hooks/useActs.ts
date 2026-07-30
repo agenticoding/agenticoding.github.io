@@ -12,16 +12,25 @@ export type ActDef = { id: string; threshold: number };
 export function useActs(actDefs: readonly ActDef[], phase: number) {
   const sorted = useMemo(
     () => [...actDefs].sort((a, b) => a.threshold - b.threshold),
-    [actDefs],
+    [actDefs]
   );
 
   const [reachedIds, currentActId] = useMemo(() => {
     const r = sorted.filter((a) => phase >= a.threshold);
-    return [new Set(r.map((a) => a.id)), r.length ? r[r.length - 1].id : null] as const;
+    return [
+      new Set(r.map((a) => a.id)),
+      r.length ? r[r.length - 1].id : null,
+    ] as const;
   }, [sorted, phase]);
 
-  const wasReached = useCallback((id: string) => reachedIds.has(id), [reachedIds]);
-  const isCurrentAct = useCallback((id: string) => currentActId === id, [currentActId]);
+  const wasReached = useCallback(
+    (id: string) => reachedIds.has(id),
+    [reachedIds]
+  );
+  const isCurrentAct = useCallback(
+    (id: string) => currentActId === id,
+    [currentActId]
+  );
 
   return { wasReached, isCurrentAct };
 }

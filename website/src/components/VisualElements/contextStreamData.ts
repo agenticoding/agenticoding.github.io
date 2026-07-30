@@ -73,7 +73,7 @@ export const emailValidationStream: ContextEntry[] = [
     content: [
       '{ "tool_use_id": "toolu_01A" }',
       'Found in:',
-      '- src/routes/auth.ts:12: router.post(\'/register\', userHandler.register)',
+      "- src/routes/auth.ts:12: router.post('/register', userHandler.register)",
       '- src/handlers/user.ts:45: export async function register(req, res) {',
     ],
   },
@@ -106,10 +106,7 @@ export const emailValidationStream: ContextEntry[] = [
   },
   {
     role: 'tool_result',
-    content: [
-      '{ "tool_use_id": "toolu_03C" }',
-      'Edit successful',
-    ],
+    content: ['{ "tool_use_id": "toolu_03C" }', 'Edit successful'],
   },
   {
     role: 'agent',

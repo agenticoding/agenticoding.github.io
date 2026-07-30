@@ -1,9 +1,5 @@
 /* ── OperatorCycleDiagram — control-room workflow ─────────────────────────── */
 
-.vectorStroke {
-  vector-effect: non-scaling-stroke;
-}
-
 .desktopDiagram,
 .mobileDiagram {
   width: 100%;

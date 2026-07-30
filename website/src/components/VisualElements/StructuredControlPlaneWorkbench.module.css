@@ -191,7 +191,9 @@
 }
 
 @keyframes pipelineStepActive {
-  0%, 5.9%, 100% {
+  0%,
+  5.9%,
+  100% {
     transform: scale(1);
   }
 
@@ -209,7 +211,8 @@
     transform: rotate(360deg);
   }
 
-  13%, 100% {
+  13%,
+  100% {
     transform: rotate(360deg);
   }
 }

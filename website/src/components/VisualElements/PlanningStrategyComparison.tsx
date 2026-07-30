@@ -7,12 +7,14 @@ const ENTRIES = [
   {
     emoji: <CompassEmoji size={80} />,
     label: 'Exploration',
-    description: 'Use when solution is unclear — accepts higher cost for better discovery through iterative learning.',
+    description:
+      'Use when solution is unclear — accepts higher cost for better discovery through iterative learning.',
   },
   {
     emoji: <BullseyeEmoji size={80} />,
     label: 'Exact',
-    description: 'Use when solution is known — optimizes for faster execution but requires upfront certainty.',
+    description:
+      'Use when solution is known — optimizes for faster execution but requires upfront certainty.',
   },
 ] as const;
 

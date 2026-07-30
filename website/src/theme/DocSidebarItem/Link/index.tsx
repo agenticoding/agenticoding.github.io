@@ -1,17 +1,17 @@
-import React, {type ReactNode} from 'react';
+import React, { type ReactNode } from 'react';
 import clsx from 'clsx';
-import {ThemeClassNames} from '@docusaurus/theme-common';
-import {isActiveSidebarItem} from '@docusaurus/plugin-content-docs/client';
+import { ThemeClassNames } from '@docusaurus/theme-common';
+import { isActiveSidebarItem } from '@docusaurus/plugin-content-docs/client';
 import Link from '@docusaurus/Link';
 import isInternalUrl from '@docusaurus/isInternalUrl';
 import IconExternalLink from '@theme/Icon/ExternalLink';
-import type {Props} from '@theme/DocSidebarItem/Link';
+import type { Props } from '@theme/DocSidebarItem/Link';
 import SidebarTOC from '../../DocSidebar/Desktop/SidebarTOC';
 import AnimatedDisclosure from '../../shared/AnimatedDisclosure';
 
 import styles from './styles.module.css';
 
-function ChapterNumber({sectionNumber}: {sectionNumber: number}) {
+function ChapterNumber({ sectionNumber }: { sectionNumber: number }) {
   return (
     <span className={styles.chapterNumber} aria-hidden="true">
       {String(sectionNumber).padStart(2, '0')}
@@ -19,7 +19,13 @@ function ChapterNumber({sectionNumber}: {sectionNumber: number}) {
   );
 }
 
-function LinkLabel({label, sectionNumber}: {label: string; sectionNumber?: number}) {
+function LinkLabel({
+  label,
+  sectionNumber,
+}: {
+  label: string;
+  sectionNumber?: number;
+}) {
   return (
     <>
       {sectionNumber != null && <ChapterNumber sectionNumber={sectionNumber} />}
@@ -53,7 +59,8 @@ function TocDisclosure({
     <AnimatedDisclosure
       show={show}
       initialRenderAllowed={canRenderTocDisclosure(activePath)}
-      onShowCommitted={handleShowCommitted}>
+      onShowCommitted={handleShowCommitted}
+    >
       <SidebarTOC onNavigate={onNavigate} />
     </AnimatedDisclosure>
   );
@@ -67,8 +74,9 @@ export default function DocSidebarItemLink({
   index: _index,
   ...props
 }: Props): ReactNode {
-  const {href, label, className, autoAddBaseUrl, customProps} = item;
-  const sectionNumber = (customProps as {sectionNumber?: number} | undefined)?.sectionNumber;
+  const { href, label, className, autoAddBaseUrl, customProps } = item;
+  const sectionNumber = (customProps as { sectionNumber?: number } | undefined)
+    ?.sectionNumber;
   const isActive = isActiveSidebarItem(item, activePath);
   const isInternalLink = isInternalUrl(href);
   const showInlineTOC = isActive && isInternalLink;
@@ -80,16 +88,17 @@ export default function DocSidebarItemLink({
         ThemeClassNames.docs.docSidebarItemLinkLevel(level),
         'menu__list-item',
         className,
-        styles.chapterItem,
+        styles.chapterItem
       )}
-      key={label}>
+      key={label}
+    >
       <Link
         className={clsx(
           'menu__link',
           !isInternalLink && styles.menuExternalLink,
           {
             'menu__link--active': isActive,
-          },
+          }
         )}
         autoAddBaseUrl={autoAddBaseUrl}
         aria-current={isActive ? 'page' : undefined}
@@ -97,11 +106,16 @@ export default function DocSidebarItemLink({
         {...(isInternalLink && {
           onClick: handleNavigate,
         })}
-        {...props}>
+        {...props}
+      >
         <LinkLabel label={label} sectionNumber={sectionNumber} />
         {!isInternalLink && <IconExternalLink />}
       </Link>
-      <TocDisclosure show={showInlineTOC} activePath={activePath} onNavigate={handleNavigate} />
+      <TocDisclosure
+        show={showInlineTOC}
+        activePath={activePath}
+        onNavigate={handleNavigate}
+      />
     </li>
   );
 }

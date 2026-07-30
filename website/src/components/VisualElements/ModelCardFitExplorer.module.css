@@ -234,7 +234,10 @@
 
 .cardField {
   display: grid;
-  grid-template-rows: auto minmax(calc(var(--lh-lg) * 2), auto) minmax(15rem, 1fr) minmax(4.5rem, auto) minmax(4.5rem, auto);
+  grid-template-rows: auto minmax(calc(var(--lh-lg) * 2), auto) minmax(
+      15rem,
+      1fr
+    ) minmax(4.5rem, auto) minmax(4.5rem, auto);
   gap: var(--space-2);
   min-width: 0;
   min-height: 0;
@@ -351,7 +354,6 @@
   animation-delay: var(--flow-output-delay);
 }
 
-
 .priceRow span {
   color: var(--text-muted);
   font-family: var(--font-mono-spec);
@@ -413,7 +415,6 @@
   text-align: right;
 }
 
-
 .modalityGraphic {
   color: var(--visual-violet);
 }
@@ -449,7 +450,8 @@
 }
 
 .modalityToken {
-  animation: modalityTokenWake var(--flow-cycle-duration) ease-in-out infinite both;
+  animation: modalityTokenWake var(--flow-cycle-duration) ease-in-out infinite
+    both;
   transform-box: fill-box;
   transform-origin: center;
 }
@@ -720,7 +722,6 @@
   font-size: var(--text-sm);
   line-height: var(--lh-sm);
 }
-
 
 @keyframes card-forward {
   from {

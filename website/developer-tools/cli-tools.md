@@ -405,7 +405,7 @@ agent-browser --version
 Requirements: Node.js 18+ for npm installation. Chromium-based browser (bundled or system Chrome).
 
 :::tip Why Ref-Based Automation Wins
-agent-browser's ref-based approach (`@e1`, `@e2`) produces deterministic element selection that outperforms selector-based alternatives. The accessibility tree snapshot captures semantic structure, not visual layout—agents understand what elements *are* rather than where they appear on screen. This leads to more reliable automation that survives UI changes.
+agent-browser's ref-based approach (`@e1`, `@e2`) produces deterministic element selection that outperforms selector-based alternatives. The accessibility tree snapshot captures semantic structure, not visual layout—agents understand what elements _are_ rather than where they appear on screen. This leads to more reliable automation that survives UI changes.
 :::
 
 ---

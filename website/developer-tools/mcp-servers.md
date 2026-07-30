@@ -37,8 +37,6 @@ uv tool install chunkhound
 
 Requires Python 3.10+ and the uv package manager. See [ChunkHound on GitHub](https://github.com/chunkhound/chunkhound) for API key configuration and setup details.
 
-
-
 ChunkHound also handles web research — searching documentation, CVEs, changelogs, and current information beyond training data. Multi-source grounding is described in [Chapter 4](/high-level-methodology#phase-1-grounding).
 
 ## Browser Automation
@@ -48,6 +46,7 @@ Browser automation for AI agents is handled by the **agent-browser CLI**—a pur
 See [agent-browser in CLI Tools](/developer-tools/cli-tools#agent-browser) for installation and usage.
 
 **Why CLI over MCP for browser automation:**
+
 - **Better results:** Ref-based accessibility tree produces deterministic, reliable element selection
 - **Token efficient:** 500-2000 tokens per snapshot vs 5,000-15,000 for MCP DOM dumps
 - **Simpler setup:** No MCP configuration, works with any shell-capable agent

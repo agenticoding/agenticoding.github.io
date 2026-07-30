@@ -31,7 +31,7 @@ Build the profile from production traces, support incidents, and domain knowledg
 Then define the **tolerance**: how much error, delay, degradation, or manual intervention is acceptable for this claim. The fundamental tradeoff is between **throughput** and **accuracy** — most workloads fall somewhere between those poles.
 
 <DiagramFrame kicker="Calibration" title="Precision costs throughput" size="wide" caption={<>Higher accuracy costs decision time; higher speed accepts more variation. Choose the position your claim can tolerate.</>}>
-  <SpeedAccuracyTradeoff />
+<SpeedAccuracyTradeoff />
 </DiagramFrame>
 
 Even the throughput end still needs validation: a broken form, false claim, or inaccessible page is not acceptable merely because the campaign moves fast. The accuracy end demands much stronger evidence because the cost of an undetected defect is radically higher. Most workloads sit between these poles — calibrate your position by deciding how much manual intervention per artifact the claim can tolerate.
@@ -39,7 +39,7 @@ Even the throughput end still needs validation: a broken form, false claim, or i
 The throughput/accuracy tradeoff is not solely an engineering decision — it is a product and business decision that determines how the engineering system is built. A product manager owning a campaign factory will calibrate differently than one shipping industrial control software. Designers have a stake too: a high-throughput validation pipeline can only scale if the evaluation rubric captures the design qualities the team cares about. The claim, profile, and tolerance should be written into the [feature spec](./spec-driven-development.md) before any agent runs — the agent acts against what the spec already established, not a fresh interpretation per execution.
 
 <DiagramFrame kicker="Validation lifecycle" title="Turn the claim into evidence before release" size="wide" caption={<>A release claim determines the operating profile and evidence plan. Field signals update that profile rather than ending validation.</>}>
-  <ValidationEvidenceLifecycle />
+<ValidationEvidenceLifecycle />
 </DiagramFrame>
 
 ## Build a Portfolio of Complementary Evidence

@@ -56,11 +56,11 @@ From [Chapter 4](/high-level-methodology#phase-1-grounding), agents discover you
 ```typescript
 // File: services/auth.ts
 function createUser(email: string, password: string) {
-  return db.users.insert({ email, password: hashPassword(password) })
+  return db.users.insert({ email, password: hashPassword(password) });
 }
 
 // File: config/validation.ts
-const MIN_PASSWORD_LENGTH = 12  // ← Agent never searches for this file
+const MIN_PASSWORD_LENGTH = 12; // ← Agent never searches for this file
 ```
 
 **What happens:** Agent searches `Grep("createUser")` → reads `services/auth.ts` → generates code accepting 3-character passwords because it never saw `MIN_PASSWORD_LENGTH`.
@@ -69,13 +69,15 @@ const MIN_PASSWORD_LENGTH = 12  // ← Agent never searches for this file
 
 ```typescript
 // File: services/auth.ts
-const MIN_PASSWORD_LENGTH = 12  // ← Agent sees this in same file
+const MIN_PASSWORD_LENGTH = 12; // ← Agent sees this in same file
 
 function createUser(email: string, password: string) {
   if (password.length < MIN_PASSWORD_LENGTH) {
-    throw new Error(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`)
+    throw new Error(
+      `Password must be at least ${MIN_PASSWORD_LENGTH} characters`
+    );
   }
-  return db.users.insert({ email, password: hashPassword(password) })
+  return db.users.insert({ email, password: hashPassword(password) });
 }
 ```
 
@@ -88,18 +90,19 @@ When constraints must be shared across modules, create **semantic bridges**—co
 ```typescript
 // File: shared/constants.ts
 // Password strength requirements: minimum character length enforcement
-export const MIN_PASSWORD_LENGTH = 12
+export const MIN_PASSWORD_LENGTH = 12;
 
 // File: services/auth.ts
-import { MIN_PASSWORD_LENGTH } from '@/shared/constants'
+import { MIN_PASSWORD_LENGTH } from '@/shared/constants';
 
 // User credential validation: enforce security constraints
 function createUser(email: string, password: string) {
-  return db.users.insert({ email, password: hashPassword(password) })
+  return db.users.insert({ email, password: hashPassword(password) });
 }
 ```
 
 **How semantic bridges work:** Semantic search matches meaning, not exact words. Query "password validation requirements" finds BOTH files because embeddings recognize semantic similarity:
+
 - "password" ≈ "credential"
 - "requirements" ≈ "constraints"
 - "strength" ≈ "security"
@@ -122,7 +125,7 @@ When agents research your codebase ([Chapter 4](/high-level-methodology#phase-1-
 // Standard comment
 // Validates password before storing
 function createUser(password: string) {
-  return db.users.insert({ password })
+  return db.users.insert({ password });
 }
 
 // Critical section (agent barrier)
@@ -133,16 +136,16 @@ function createUser(password: string) {
 // Violations create CVE-level vulnerabilities
 function createUser(password: string) {
   if (password.length < 12) {
-    throw new Error('Password must be at least 12 characters')
+    throw new Error('Password must be at least 12 characters');
   }
-  const hashed = bcrypt.hashSync(password, 10)
-  return db.users.insert({ password: hashed })
+  const hashed = bcrypt.hashSync(password, 10);
+  return db.users.insert({ password: hashed });
 }
 ```
 
 This creates deliberate friction. An agent tasked with "add OAuth login" will work slower around password hashing code with heavy constraints—it must navigate all those NEVER/MUST directives carefully. That's the protection mechanism: forced caution for critical paths. But overuse is counterproductive. Mark too many functions as CRITICAL and agents struggle with routine work, slowing down legitimate changes as much as dangerous ones. Reserve this technique for code where accidental modification genuinely costs more than the development slowdown.
 
-These constraint IDs (C-001, I-001) originate in spec constraint tables and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the *rule* it enforces. This is what makes it safe to [delete the spec](/spec-driven-development) after implementation: the WHY has migrated into the codebase.
+These constraint IDs (C-001, I-001) originate in spec constraint tables and migrate into code during implementation. Once inlined, the code carries the constraint—not just the implementation, but the _rule_ it enforces. This is what makes it safe to [delete the spec](/spec-driven-development) after implementation: the WHY has migrated into the codebase.
 
 ## The Knowledge Cache Anti-Pattern
 

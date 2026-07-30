@@ -1,5 +1,5 @@
-import {type ReactNode} from 'react';
-import type {Props} from '@theme/Icon/LightMode';
+import { type ReactNode } from 'react';
+import type { Props } from '@theme/Icon/LightMode';
 
 // Stroked sun icon — curved geometry family (design system)
 // Circle r=5 at center (12,12). 8 rays from r=8 to r=11.
@@ -12,7 +12,8 @@ export default function IconLightMode(props: Props): ReactNode {
         stroke="currentColor"
         strokeWidth={2}
         strokeLinecap="round"
-        strokeLinejoin="round">
+        strokeLinejoin="round"
+      >
         <circle cx={12} cy={12} r={5} />
         <line x1={12} y1={1} x2={12} y2={4} />
         <line x1={12} y1={20} x2={12} y2={23} />

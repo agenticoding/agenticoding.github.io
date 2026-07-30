@@ -129,7 +129,8 @@
 }
 
 @keyframes loopGearSpin {
-  0%, 10% {
+  0%,
+  10% {
     transform: rotate(0deg);
   }
 

@@ -1,4 +1,4 @@
-import React, {type ReactNode} from 'react';
+import React, { type ReactNode } from 'react';
 import clsx from 'clsx';
 
 import styles from './styles.module.css';
@@ -26,10 +26,13 @@ function useDisclosureState({
   initialRenderAllowed: boolean;
   onShowCommitted?: () => void;
 }) {
-  const [render, setRender] = React.useState(() => show && initialRenderAllowed);
+  const [render, setRender] = React.useState(
+    () => show && initialRenderAllowed
+  );
 
   React.useEffect(() => {
-    if (show) return enterDisclosure(render, enterDelayMs, onShowCommitted, setRender);
+    if (show)
+      return enterDisclosure(render, enterDelayMs, onShowCommitted, setRender);
     if (!render) return undefined;
     return exitDisclosure(exitDelayMs, setRender);
   }, [show, render, enterDelayMs, exitDelayMs, onShowCommitted]);
@@ -41,7 +44,7 @@ function enterDisclosure(
   render: boolean,
   delayMs: number,
   onShowCommitted: (() => void) | undefined,
-  setRender: React.Dispatch<React.SetStateAction<boolean>>,
+  setRender: React.Dispatch<React.SetStateAction<boolean>>
 ): (() => void) | undefined {
   if (render) {
     onShowCommitted?.();
@@ -57,9 +60,12 @@ function enterDisclosure(
 
 function exitDisclosure(
   delayMs: number,
-  setRender: React.Dispatch<React.SetStateAction<boolean>>,
+  setRender: React.Dispatch<React.SetStateAction<boolean>>
 ): () => void {
-  const timeout = window.setTimeout(() => setRender(false), disclosureDelay(delayMs));
+  const timeout = window.setTimeout(
+    () => setRender(false),
+    disclosureDelay(delayMs)
+  );
   return () => window.clearTimeout(timeout);
 }
 
@@ -92,8 +98,16 @@ export default function AnimatedDisclosure({
   if (!render) return null;
 
   return (
-    <div className={clsx(styles.disclosure, show ? styles.disclosureEnter : styles.disclosureExit, className)}>
-      <div className={clsx(styles.disclosureInner, innerClassName)}>{children}</div>
+    <div
+      className={clsx(
+        styles.disclosure,
+        show ? styles.disclosureEnter : styles.disclosureExit,
+        className
+      )}
+    >
+      <div className={clsx(styles.disclosureInner, innerClassName)}>
+        {children}
+      </div>
     </div>
   );
 }

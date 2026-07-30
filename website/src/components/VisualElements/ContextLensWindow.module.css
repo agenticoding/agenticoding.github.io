@@ -5,8 +5,7 @@
   font-weight: 600;
 }
 
-.metricLabel,
-.zoneLabel {
+.metricLabel {
   font-family: var(--font-mono-keyword);
   font-feature-settings: var(--font-mono-features);
   font-size: var(--text-xs);

@@ -78,6 +78,10 @@
 }
 
 @media (max-width: 640px) {
-  .desktop { display: none; }
-  .mobile { display: block; }
+  .desktop {
+    display: none;
+  }
+  .mobile {
+    display: block;
+  }
 }

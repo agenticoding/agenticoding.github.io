@@ -17,7 +17,7 @@ export function usePhaseProgress(
   phase: number,
   start: number,
   end: number,
-  onProgress?: (t: number) => void,
+  onProgress?: (t: number) => void
 ): number {
   const t = Math.min(1, Math.max(0, (phase - start) / (end - start)));
 

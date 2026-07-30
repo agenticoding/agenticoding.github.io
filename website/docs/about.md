@@ -1,34 +1,45 @@
 ---
 title: About
 description: 'Ofri Wolfus — Senior Software Architect, ex-Google engineer, and creator of ChunkHound and GoatDB. Author of Agentic Coding, a technical reference for engineers on AI-assisted development.'
-keywords: [Ofri Wolfus, agentic coding, ChunkHound, GoatDB, AI-assisted development, software architect, open source, distributed systems, MCP]
+keywords:
+  [
+    Ofri Wolfus,
+    agentic coding,
+    ChunkHound,
+    GoatDB,
+    AI-assisted development,
+    software architect,
+    open source,
+    distributed systems,
+    MCP,
+  ]
 ---
 
 import SchemaMarkup from '@site/src/components/SchemaMarkup';
 
 export const personData = {
-  name: 'Ofri Wolfus',
-  jobTitle: 'Senior Software Architect',
-  worksFor: 'Applied Materials',
-  url: 'https://agenticoding.ai/about',
-  sameAs: [
-    'https://www.linkedin.com/in/ofriwolfus/',
-    'https://github.com/ofriw',
-    'https://goatdb.dev',
-    'https://github.com/goatplatform/goatdb',
-    'https://github.com/chunkhound/chunkhound',
-  ],
-  knowsAbout: [
-    'agentic coding',
-    'codebase intelligence',
-    'distributed databases',
-    'compilers',
-    'LLM applications',
-    'retrieval-augmented generation',
-    'software architecture',
-    'embedded systems',
-  ],
-  alumniOf: ['Google', 'Bar-Ilan University'],
+name: 'Ofri Wolfus',
+jobTitle: 'Senior Software Architect',
+worksFor: 'Applied Materials',
+url: 'https://agenticoding.ai/about',
+sameAs: [
+'https://www.linkedin.com/in/ofriwolfus/',
+'https://github.com/ofriw',
+'https://goatdb.dev',
+'https://github.com/goatplatform/goatdb',
+'https://github.com/chunkhound/chunkhound',
+],
+knowsAbout: [
+'agentic coding',
+'codebase intelligence',
+'distributed databases',
+'compilers',
+'LLM applications',
+'retrieval-augmented generation',
+'software architecture',
+'embedded systems',
+],
+alumniOf: ['Google', 'Bar-Ilan University'],
 };
 
 <SchemaMarkup type="person" data={personData} />

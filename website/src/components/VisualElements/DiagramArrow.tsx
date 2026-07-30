@@ -19,22 +19,52 @@ type DiagramArrowMarkersProps = {
   tones: readonly DiagramTone[];
 };
 
-export function DiagramArrowMarkers({ prefix, tones }: DiagramArrowMarkersProps) {
+export function DiagramArrowMarkers({
+  prefix,
+  tones,
+}: DiagramArrowMarkersProps) {
   return (
     <defs>
       {tones.map((tone) => (
-        <ArrowMarker key={tone} id={markerId(prefix, tone)} fill={arrowColor(tone)} refX={0} />
+        <ArrowMarker
+          key={tone}
+          id={markerId(prefix, tone)}
+          fill={arrowColor(tone)}
+          refX={0}
+        />
       ))}
     </defs>
   );
 }
 
-export function DiagramArrow({ d, markerIdPrefix, tone = 'neutral', className, label, labelClassName, labelX, labelY }: DiagramArrowProps) {
+export function DiagramArrow({
+  d,
+  markerIdPrefix,
+  tone = 'neutral',
+  className,
+  label,
+  labelClassName,
+  labelX,
+  labelY,
+}: DiagramArrowProps) {
   const stroke = arrowColor(tone);
   return (
     <g className={className}>
-      <path d={trimPathEnd(d)} fill="none" stroke={stroke} strokeWidth={DIAGRAM_STROKE.connector} strokeLinecap="butt" strokeLinejoin="miter" markerEnd={`url(#${markerId(markerIdPrefix, tone)})`} vectorEffect="non-scaling-stroke" />
-      {label && <text x={labelX} y={labelY} className={labelClassName} fill={stroke}>{label}</text>}
+      <path
+        d={trimPathEnd(d)}
+        fill="none"
+        stroke={stroke}
+        strokeWidth={DIAGRAM_STROKE.connector}
+        strokeLinecap="butt"
+        strokeLinejoin="miter"
+        markerEnd={`url(#${markerId(markerIdPrefix, tone)})`}
+        vectorEffect="non-scaling-stroke"
+      />
+      {label && (
+        <text x={labelX} y={labelY} className={labelClassName} fill={stroke}>
+          {label}
+        </text>
+      )}
     </g>
   );
 }

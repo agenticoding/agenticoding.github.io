@@ -41,7 +41,6 @@
   color: var(--text-heading);
 }
 
-
 .brandTitle {
   font-family: var(--font-display);
   font-weight: 600;
@@ -51,7 +50,9 @@
   overflow: hidden;
   white-space: nowrap;
   max-width: 160px;
-  transition: opacity 200ms ease-out, max-width 200ms ease-out;
+  transition:
+    opacity 200ms ease-out,
+    max-width 200ms ease-out;
 }
 
 .channelArea {
@@ -64,7 +65,9 @@
   opacity: 0;
   min-width: 0;
   overflow: hidden;
-  transition: flex-grow 200ms ease-out, opacity 200ms ease-out;
+  transition:
+    flex-grow 200ms ease-out,
+    opacity 200ms ease-out;
 }
 
 .searchSlot[data-search-active] {
@@ -78,22 +81,24 @@
    Specificity 0-2-0 beats plugin's module classes (0-1-0). */
 
 .searchSlot :global(.navbar__search) {
-  margin-left: 0;                        /* plugin default: 16px */
+  margin-left: 0; /* plugin default: 16px */
 }
 
 .searchSlot :global(.navbar__search-input) {
-  width: 100%;                           /* Infima default: 12.5rem (200px) */
-  padding-left: var(--space-2);          /* Infima default: 2.25rem (36px) — icon gone, reduce to component padding */
+  width: 100%; /* Infima default: 12.5rem (200px) */
+  padding-left: var(
+    --space-2
+  ); /* Infima default: 2.25rem (36px) — icon gone, reduce to component padding */
 }
 
 .searchSlot :global([class*='searchBar_']) {
-  display: block !important;             /* autocomplete.js inline style: inline-block */
+  display: block !important; /* autocomplete.js inline style: inline-block */
   width: 100% !important;
 }
 
 .searchSlot :global([class*='searchHintContainer']) {
   gap: 0;
-  right: var(--space-1);                 /* plugin default: 10px (not grid-snapped) */
+  right: var(--space-1); /* plugin default: 10px (not grid-snapped) */
 }
 
 .searchSlot :global([class*='searchHint']) {
@@ -124,8 +129,11 @@
   color: var(--text-muted);
   cursor: pointer;
   overflow: hidden;
-  transition: opacity 200ms ease-out, max-width 200ms ease-out,
-              background 0.15s ease, color 0.15s ease;
+  transition:
+    opacity 200ms ease-out,
+    max-width 200ms ease-out,
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .searchButton:hover {
@@ -192,7 +200,9 @@
   border: 1px solid transparent;
   border-radius: 0;
   color: var(--text-muted);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .githubLink svg {
@@ -246,7 +256,8 @@
 
 .tocSublink {
   min-height: var(--target-sm);
-  padding: var(--space-0h) var(--space-1) var(--space-0h) calc(var(--space-3) + var(--toc-active-rail-width));
+  padding: var(--space-0h) var(--space-1) var(--space-0h)
+    calc(var(--space-3) + var(--toc-active-rail-width));
   font-size: var(--text-xs);
 }
 
@@ -274,7 +285,10 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: calc(-1 * var(--space-2) - var(--toc-rail-width) - ((var(--toc-active-rail-width) - var(--toc-rail-width)) / 2));
+  left: calc(
+    -1 * var(--space-2) - var(--toc-rail-width) -
+      ((var(--toc-active-rail-width) - var(--toc-rail-width)) / 2)
+  );
   width: var(--toc-active-rail-width);
   background: var(--toc-rail-color);
 }
@@ -282,4 +296,3 @@
 .tocSublink.tocLinkActive {
   font-weight: 500;
 }
-

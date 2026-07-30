@@ -40,20 +40,51 @@
 }
 
 /* ── Idea lightbulb (pre-prompt state) ── */
-.ideaBulb        { opacity: 0; transition: opacity 150ms var(--ease-exit), transform 150ms var(--ease-exit); }
-.ideaBulbVisible { opacity: 1; transform: translateY(0); }
-.ideaBulbFadeOut { opacity: 0; transform: translateY(8px); pointer-events: none; }
+.ideaBulb {
+  opacity: 0;
+  transition:
+    opacity 150ms var(--ease-exit),
+    transform 150ms var(--ease-exit);
+}
+.ideaBulbVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ideaBulbFadeOut {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
 
 /* ── Reduced-motion overrides ── */
 @media (prefers-reduced-motion: reduce) {
-  .guideArc         { opacity: 0.35; stroke-dashoffset: 0 !important; }
-  .guideArc.arcDraw { animation: none; }
-  .fanArc           { opacity: 0.35; stroke-dashoffset: 0 !important; }
-  .fanArc.fanDraw   { animation: none; }
+  .guideArc {
+    opacity: 0.35;
+    stroke-dashoffset: 0 !important;
+  }
+  .guideArc.arcDraw {
+    animation: none;
+  }
+  .fanArc {
+    opacity: 0.35;
+    stroke-dashoffset: 0 !important;
+  }
+  .fanArc.fanDraw {
+    animation: none;
+  }
   .actorNode,
-  .labels           { opacity: 1; transform: none; animation: none; transition: none; }
-  .staticCard       { display: block; }
+  .labels {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
+  }
+  .staticCard {
+    display: block;
+  }
   .ideaBulb,
   .ideaBulbVisible,
-  .ideaBulbFadeOut  { opacity: 0; }  /* final settled state; static card serves as fallback */
+  .ideaBulbFadeOut {
+    opacity: 0;
+  } /* final settled state; static card serves as fallback */
 }

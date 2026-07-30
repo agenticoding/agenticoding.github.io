@@ -7,12 +7,16 @@
 .tier {
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+  transition:
+    opacity 200ms var(--ease-exit),
+    transform 200ms var(--ease-exit);
 }
 .tierIn {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+  transition:
+    opacity 250ms var(--ease-enter),
+    transform 250ms var(--ease-enter);
 }
 
 /* Override arrows between tiers — fade only */

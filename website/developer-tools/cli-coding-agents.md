@@ -208,12 +208,12 @@ npm install -g @google/gemini-cli
 
 **Pricing (token-based, effective June 2026):**
 
-| Plan               | Cost           | AI Credits (monthly) | Post-Promotion  |
-| ------------------ | -------------- | -------------------- | --------------- |
-| Pro                | $10/month      | TBD                  | TBD             |
-| Pro+               | $39/month      | TBD                  | TBD             |
-| Business           | $19/user/month | $30/user (pooled)    | $19/user        |
-| Enterprise         | $39/user/month | $70/user (pooled)    | $39/user        |
+| Plan       | Cost           | AI Credits (monthly) | Post-Promotion |
+| ---------- | -------------- | -------------------- | -------------- |
+| Pro        | $10/month      | TBD                  | TBD            |
+| Pro+       | $39/month      | TBD                  | TBD            |
+| Business   | $19/user/month | $30/user (pooled)    | $19/user       |
+| Enterprise | $39/user/month | $70/user (pooled)    | $39/user       |
 
 During a promotional period (June–August 2026), Business customers receive $30 of pooled AI credits per user, Enterprise customers receive $70. After the promotion, credits match the subscription price ($19 and $39 respectively). Individual plan pricing details were not finalized at time of writing. Model-specific token rates apply based on the backend model used.
 

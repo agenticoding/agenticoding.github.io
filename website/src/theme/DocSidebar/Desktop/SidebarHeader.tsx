@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react';
+import { type ReactNode } from 'react';
 import Link from '@docusaurus/Link';
 import ChannelSwitcher from '../../shared/ChannelSwitcher';
 import styles from './styles.module.css';

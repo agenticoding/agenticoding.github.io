@@ -1,16 +1,32 @@
 /* Ghost classes moved to diagram.module.css — only SequenceDiagram-specific styles here. */
 
 /* ── Structure — transition pair for sticky header + SVG lifelines ─────────── */
-.structure  { opacity: 0; transition: opacity 200ms var(--ease-exit); }
-.structureIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+.structure {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
+.structureIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
 
 /* ── Rows — scroll-animated with ghost placeholders ────────────────────────── */
-.row   { opacity: 0; transition: opacity 200ms var(--ease-exit); }
-.rowIn { opacity: 1; transition: opacity 250ms var(--ease-enter); }
+.row {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-exit);
+}
+.rowIn {
+  opacity: 1;
+  transition: opacity 250ms var(--ease-enter);
+}
 
 /* Structural elements — always visible once structure revealed */
-.arrowLine { stroke: var(--text-muted); } /* fill:none from CONNECTOR_STYLE; stroke kept for CSS specificity */
-.arrowHead { fill: var(--text-muted); }
+.arrowLine {
+  stroke: var(--text-muted);
+} /* fill:none from CONNECTOR_STYLE; stroke kept for CSS specificity */
+.arrowHead {
+  fill: var(--text-muted);
+}
 
 /* Sticky HTML column headers
    Requires no overflow:auto/hidden on any ancestor — such ancestors break
@@ -23,7 +39,9 @@
   background: var(--surface-page);
 }
 
-.wrapper { width: 100%; }
+.wrapper {
+  width: 100%;
+}
 
 .columnItem {
   position: absolute;
@@ -50,6 +68,14 @@
 
 /* ── Reduced-motion overrides ─────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .structure, .structureIn { opacity: 1; transition: none; }
-  .row, .rowIn             { opacity: 1; transition: none; }
+  .structure,
+  .structureIn {
+    opacity: 1;
+    transition: none;
+  }
+  .row,
+  .rowIn {
+    opacity: 1;
+    transition: none;
+  }
 }

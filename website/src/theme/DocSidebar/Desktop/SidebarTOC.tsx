@@ -1,12 +1,18 @@
 import React, { type ReactNode } from 'react';
 import clsx from 'clsx';
-import { useTreeifiedTOC, type TOCTreeNode } from '@docusaurus/theme-common/internal';
+import {
+  useTreeifiedTOC,
+  type TOCTreeNode,
+} from '@docusaurus/theme-common/internal';
 import { useSidebarTOC } from '../../tocStore';
 import AnimatedDisclosure from '../../shared/AnimatedDisclosure';
 import { resolveActiveHeading, type HeadingSnapshot } from './scrollspy';
 import styles from './styles.module.css';
 
-function useScrollspy(ids: string[]): {activeId: string; activateId: (id: string) => void} {
+function useScrollspy(ids: string[]): {
+  activeId: string;
+  activateId: (id: string) => void;
+} {
   const [activeId, setActiveId] = React.useState('');
   const idsKey = ids.join(',');
 
@@ -39,19 +45,27 @@ function useScrollspy(ids: string[]): {activeId: string; activateId: (id: string
       window.removeEventListener('resize', schedule);
       window.removeEventListener('hashchange', schedule);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idsKey]);
 
-  const activateId = React.useCallback((id: string) => {
-    if (ids.includes(id)) setActiveId(id);
-  }, [ids]);
+  const activateId = React.useCallback(
+    (id: string) => {
+      if (ids.includes(id)) setActiveId(id);
+    },
+    [ids]
+  );
 
-  return {activeId, activateId};
+  return { activeId, activateId };
 }
 
-function createScrollspyObserver(ids: readonly string[], schedule: () => void): IntersectionObserver {
+function createScrollspyObserver(
+  ids: readonly string[],
+  schedule: () => void
+): IntersectionObserver {
   const observer = new IntersectionObserver(schedule, { threshold: 0 });
-  ids.flatMap(id => document.getElementById(id) ?? []).forEach(el => observer.observe(el));
+  ids
+    .flatMap((id) => document.getElementById(id) ?? [])
+    .forEach((el) => observer.observe(el));
   return observer;
 }
 
@@ -67,7 +81,7 @@ function headingSnapshot(id: string): HeadingSnapshot[] {
   const element = document.getElementById(id);
   if (element == null) return [];
   const rect = element.getBoundingClientRect();
-  return [{id, top: rect.top, bottom: rect.bottom}];
+  return [{ id, top: rect.top, bottom: rect.bottom }];
 }
 
 function isAtPageBottom(): boolean {
@@ -79,28 +93,46 @@ function scrollToHeading(id: string): void {
   const element = document.getElementById(id);
   if (element == null) return;
   window.history.pushState(null, '', `#${id}`);
-  element.scrollIntoView({ behavior: scrollBehavior(), block: 'start', inline: 'nearest' });
+  element.scrollIntoView({
+    behavior: scrollBehavior(),
+    block: 'start',
+    inline: 'nearest',
+  });
 }
 
 function scrollBehavior(): ScrollBehavior {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ? 'auto'
+    : 'smooth';
 }
 
-function shouldHandleTocClick(event: React.MouseEvent<HTMLAnchorElement>): boolean {
-  return event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+function shouldHandleTocClick(
+  event: React.MouseEvent<HTMLAnchorElement>
+): boolean {
+  return (
+    event.button === 0 &&
+    !event.metaKey &&
+    !event.ctrlKey &&
+    !event.shiftKey &&
+    !event.altKey
+  );
 }
 
 function flatIds(nodes: readonly TOCTreeNode[]): string[] {
   const seen = new Set<string>();
-  return nodes.flatMap(h2 => [h2.id, ...h2.children.map(h3 => h3.id)]).filter(id => {
-    if (seen.has(id)) return false;
-    seen.add(id);
-    return true;
-  });
+  return nodes
+    .flatMap((h2) => [h2.id, ...h2.children.map((h3) => h3.id)])
+    .filter((id) => {
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
 }
 
 function isNodeActive(node: TOCTreeNode, activeId: string): boolean {
-  return node.id === activeId || node.children.some(child => child.id === activeId);
+  return (
+    node.id === activeId || node.children.some((child) => child.id === activeId)
+  );
 }
 
 function TocLink({
@@ -127,7 +159,10 @@ function TocLink({
   return (
     <a
       href={`#${node.id}`}
-      className={clsx(sublink ? styles.tocSublink : styles.tocLink, active && styles.tocLinkActive)}
+      className={clsx(
+        sublink ? styles.tocSublink : styles.tocLink,
+        active && styles.tocLinkActive
+      )}
       onClick={handleClick}
       // Docusaurus TOC values contain trusted heading markup.
       // eslint-disable-next-line react/no-danger
@@ -136,7 +171,13 @@ function TocLink({
   );
 }
 
-function H3Disclosure({show, children}: {show: boolean; children: ReactNode}): ReactNode {
+function H3Disclosure({
+  show,
+  children,
+}: {
+  show: boolean;
+  children: ReactNode;
+}): ReactNode {
   return (
     <AnimatedDisclosure show={show} enterDelayMs={0} exitDelayMs={1}>
       {children}
@@ -144,15 +185,19 @@ function H3Disclosure({show, children}: {show: boolean; children: ReactNode}): R
   );
 }
 
-export default function SidebarTOC({onNavigate}: {onNavigate?: () => void}): ReactNode {
+export default function SidebarTOC({
+  onNavigate,
+}: {
+  onNavigate?: () => void;
+}): ReactNode {
   const flatToc = useSidebarTOC();
   const toc = useTreeifiedTOC(flatToc as Parameters<typeof useTreeifiedTOC>[0]);
   const allIds = React.useMemo(() => flatIds(toc), [toc]);
-  const {activeId, activateId} = useScrollspy(allIds);
+  const { activeId, activateId } = useScrollspy(allIds);
 
   if (toc.length === 0) return null;
 
-  const activeH2 = toc.find(h2 => isNodeActive(h2, activeId));
+  const activeH2 = toc.find((h2) => isNodeActive(h2, activeId));
   const activeLinks = new Set<string>();
   const isActiveLink = (id: string) => {
     if (id !== activeId || activeLinks.has(id)) return false;
@@ -162,11 +207,16 @@ export default function SidebarTOC({onNavigate}: {onNavigate?: () => void}): Rea
 
   return (
     <nav className={styles.tocInline} aria-label="Current chapter contents">
-      {toc.map(h2 => (
+      {toc.map((h2) => (
         <React.Fragment key={h2.id}>
-          <TocLink node={h2} active={isActiveLink(h2.id)} onActivate={activateId} onNavigate={onNavigate} />
+          <TocLink
+            node={h2}
+            active={isActiveLink(h2.id)}
+            onActivate={activateId}
+            onNavigate={onNavigate}
+          />
           <H3Disclosure show={h2 === activeH2 && h2.children.length > 0}>
-            {h2.children.map(h3 => (
+            {h2.children.map((h3) => (
               <TocLink
                 key={h3.id}
                 node={h3}

@@ -25,9 +25,7 @@ const examples: TranslationExample[] = [
     output: (
       <>
         Larger model: slower{' '}
-        <ChapterLink href="#how-to-read-a-model-card">
-          inference
-        </ChapterLink>{' '}
+        <ChapterLink href="#how-to-read-a-model-card">inference</ChapterLink>{' '}
         and higher{' '}
         <ChapterLink href="#what-an-llm-actually-is">token cost</ChapterLink>.
       </>

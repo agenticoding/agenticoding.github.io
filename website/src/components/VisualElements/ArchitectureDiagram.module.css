@@ -30,24 +30,32 @@
 .emojiNode {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+  transition:
+    opacity 200ms var(--ease-exit),
+    transform 200ms var(--ease-exit);
 }
 .emojiNodeIn {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+  transition:
+    opacity 250ms var(--ease-enter),
+    transform 250ms var(--ease-enter);
 }
 
 /* Pipeline / exploration blocks — slide-up + fade */
 .block {
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity 200ms var(--ease-exit), transform 200ms var(--ease-exit);
+  transition:
+    opacity 200ms var(--ease-exit),
+    transform 200ms var(--ease-exit);
 }
 .blockIn {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 250ms var(--ease-enter), transform 250ms var(--ease-enter);
+  transition:
+    opacity 250ms var(--ease-enter),
+    transform 250ms var(--ease-enter);
 }
 
 /* Bottom summary labels — opacity-only */

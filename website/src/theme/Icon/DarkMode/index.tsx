@@ -1,5 +1,5 @@
-import {type ReactNode} from 'react';
-import type {Props} from '@theme/Icon/DarkMode';
+import { type ReactNode } from 'react';
+import type { Props } from '@theme/Icon/DarkMode';
 
 // Stroked crescent moon — curved geometry family (design system)
 // Standard Lucide-style moon path at 24x24 viewBox.
