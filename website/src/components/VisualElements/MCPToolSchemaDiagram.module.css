@@ -1,4 +1,8 @@
-/* One catalog slider grows the eager prefix and the task's relevant lazy schemas. */
+/* One catalog slider grows the eager prefix and the task's relevant lazy
+   schemas. Panels are ContextRegionStacks beside ContextZoneStrips (the
+   shared foundation owns tile + zone-band styles). Interactive widget:
+   motion is user-driven only — rows resize through the foundation's flex
+   transitions. No idle animation. */
 
 .container {
   display: grid;
@@ -9,108 +13,202 @@
 
 .controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
   gap: var(--space-2);
   padding: var(--space-2);
   border: 1px solid var(--border-default);
   background: var(--surface-raised);
 }
 
-.catalogControl {
-  display: grid;
-  gap: var(--space-1);
-  min-width: 0;
-  color: var(--text-body);
-  font-family: var(--font-mono-keyword);
-  font-size: var(--text-sm);
-  line-height: var(--lh-sm);
+/* Match the attention-curve control: a bounded label → range → value row. */
+.catalogControl,
+.relevanceNote {
+  width: 100%;
+  max-width: 800px;
 }
 
 .catalogControl {
-  grid-template-columns: 1fr auto;
+  margin: 0;
 }
 
-.catalogControl strong {
-  color: var(--visual-indigo);
+.catalogValue {
+  color: var(--visual-cyan);
   font-family: var(--font-mono-spec);
   font-weight: 600;
 }
 
-.catalogControl input {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-height: var(--target-sm);
-  margin: 0;
-  accent-color: var(--text-heading);
-}
-
-.catalogControl input:focus-visible {
-  outline: 2px solid var(--text-heading);
-  outline-offset: 2px;
-}
-
+/* Metadata has its own two-column reading area, rather than competing with
+   the range input for horizontal space. */
 .relevanceNote {
-  max-width: 28ch;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-sm);
+}
+
+.relevanceNote > * {
+  min-width: 0;
+}
+
+.relevanceNote strong {
+  color: var(--visual-warning);
+  font-family: var(--font-mono-spec);
+  font-weight: 600;
+}
+
+.comparisonNote {
+  color: var(--text-body);
+  font-family: var(--font-mono-spec);
+  font-weight: 600;
+}
+
+/* ── Panels: eager stack | lazy stack | catalog ────────────────────── */
+
+.panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(170px, 0.55fr);
+  gap: var(--space-2);
+  align-items: stretch;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--border-default);
+  background: var(--surface-raised);
+}
+
+.panelIntro {
+  display: grid;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.panelHeader {
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-1);
+}
+
+.mobileTitle {
+  display: none;
+}
+
+.panelTradeoff {
   margin: 0;
   color: var(--text-muted);
   font-size: var(--text-xs);
   line-height: var(--lh-sm);
 }
 
-.relevanceNote strong {
-  color: var(--visual-violet);
+.panelTradeoff strong {
+  color: var(--text-body);
   font-family: var(--font-mono-spec);
   font-weight: 600;
 }
 
-.diagram {
-  display: block;
-  width: 100%;
-  margin: 0 auto;
+/* Fixed viewport keeps every catalog state on the same token scale. */
+.stackClip {
+  position: relative;
+  --context-companion-width: 72px;
+  flex: 1;
+  min-width: 0;
+  height: 264px;
 }
 
-.desktopDiagram {
-  max-width: 600px;
+.panel .stackClip {
+  flex: none;
 }
 
-.mobileDiagram {
-  display: none;
+.zoneStrip {
+  width: 72px;
+  flex: none;
 }
 
-.contextBlock {
-  transition: transform var(--duration-moderate) var(--ease-standard);
+/* ── Catalog: ghost stay-out mass + loaded slice, piping into the lazy
+   window's middle zone. No baseline track: the dashed catalog bar itself is
+   the stay-out mass, so conservation reads geometrically — bar = loaded
+   slice + remainder. Widths are absolute-scale (share of the 40-max). ─── */
+
+.catalogPanel {
+  position: relative;
 }
 
-.lazyVisible,
-.lazyHidden {
-  transition:
-    opacity var(--duration-subtle) var(--ease-standard),
-    transform var(--duration-moderate) var(--ease-standard);
+.catalogBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  flex: 1;
 }
 
-.lazyVisible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.lazyHidden {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
-.lensTitle,
-.detailText {
-  font-family: var(--font-mono-keyword);
+.catalogCount {
+  color: var(--visual-neutral);
+  font-family: var(--font-mono-spec);
   font-size: var(--text-xs);
   font-weight: 600;
-  letter-spacing: 0.08em;
-  fill: var(--text-muted);
 }
 
-.detailText {
-  letter-spacing: 0;
-  fill: var(--text-muted);
+.meter {
+  position: relative;
+  height: 16px;
+}
+
+.meterCatalog {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  box-sizing: border-box;
+  background: var(--visual-bg-neutral);
+  border: 1px dashed var(--visual-neutral);
+  transition: width 300ms var(--ease-standard);
+}
+
+.meterLoaded {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  box-sizing: border-box;
+  background: var(--visual-bg-warning);
+  border: 1.5px solid var(--visual-warning);
+  transition: width 300ms var(--ease-standard);
+}
+
+/* Dashed connector from the catalog into lazy's middle zone. */
+.catalogPipe {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 1px);
+  width: calc(var(--space-2) * 2 + 2px);
+  border-top: 1.5px dashed var(--visual-warning);
+  opacity: 0.75;
+}
+
+.meterLabels {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.catalogLoadedLabel {
+  color: var(--visual-warning);
+  font-family: var(--font-mono-spec);
+}
+
+.catalogDeferred {
+  color: var(--text-muted);
+  font-family: var(--font-mono-spec);
 }
 
 .liveRegion {
@@ -124,16 +222,57 @@
 
 @media (max-width: 560px) {
   .controls {
+    gap: var(--space-1);
+  }
+
+  /* The shared range row normally reserves a section gap below itself. Here
+     the metadata is part of the same control, so retain only its grid gap. */
+  label.catalogControl {
+    margin-bottom: 0;
+  }
+
+  .relevanceNote {
     grid-template-columns: 1fr;
   }
 
-  .desktopDiagram {
+  /* Keep the two traces in the same reading position. Mobile readers compare
+     their aligned stacks directly instead of scrolling past eager to reach lazy. */
+  .panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panelIntro {
+    gap: 0;
+  }
+
+  .desktopTitle,
+  .panelTradeoff,
+  .zoneStrip {
     display: none;
   }
 
-  .mobileDiagram {
-    display: block;
-    max-width: 280px;
+  .mobileTitle {
+    display: inline;
+  }
+
+  .panel .stackClip {
+    --context-companion-width: 0px;
+    height: 264px;
+  }
+
+  .catalogPanel {
+    grid-column: 1 / -1;
+  }
+
+  /* The full-width catalog remains legible, while this vertical line anchors
+     its loaded slice to the lazy panel directly above. */
+  .catalogPipe {
+    top: calc(-1 * var(--space-2) - 1px);
+    right: 25%;
+    width: 0;
+    height: var(--space-2);
+    border-top: 0;
+    border-left: 1.5px dashed var(--visual-warning);
   }
 }
 
@@ -141,9 +280,5 @@
   .container * {
     transition: none !important;
     animation: none !important;
-  }
-
-  .lazyHidden {
-    display: none;
   }
 }

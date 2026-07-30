@@ -10,29 +10,59 @@ interface Props {
   ariaLabel?: string;
 }
 
-const ROLE_CONFIG: Record<Role, { label: string; color: string; contentClass: string; emoji: EmojiAsset; nudgeY?: number }> = {
-  system:      { label: 'SYSTEM',      color: 'var(--visual-cyan)',    contentClass: styles.contentSystem,     emoji: EMOJI.gear },
-  user:        { label: 'USER',        color: 'var(--visual-neutral)', contentClass: styles.contentUser,       emoji: EMOJI.operator },
-  agent:       { label: 'AGENT',       color: 'var(--visual-magenta)', contentClass: styles.contentAgent,      emoji: EMOJI.agent, nudgeY: -1 },
-  tool_result: { label: 'TOOL_RESULT', color: 'var(--visual-indigo)',  contentClass: styles.contentToolResult, emoji: EMOJI.tools },
+const ROLE_CONFIG: Record<
+  Role,
+  {
+    label: string;
+    color: string;
+    contentClass: string;
+    emoji: EmojiAsset;
+    nudgeY?: number;
+  }
+> = {
+  system: {
+    label: 'SYSTEM',
+    color: 'var(--visual-cyan)',
+    contentClass: styles.contentSystem,
+    emoji: EMOJI.gear,
+  },
+  user: {
+    label: 'USER',
+    color: 'var(--visual-neutral)',
+    contentClass: styles.contentUser,
+    emoji: EMOJI.operator,
+  },
+  agent: {
+    label: 'AGENT',
+    color: 'var(--visual-magenta)',
+    contentClass: styles.contentAgent,
+    emoji: EMOJI.agent,
+    nudgeY: -1,
+  },
+  tool_result: {
+    label: 'TOOL_RESULT',
+    color: 'var(--visual-indigo)',
+    contentClass: styles.contentToolResult,
+    emoji: EMOJI.tools,
+  },
 };
 
 // --- Inline tokenizer ---
 
 type TokenSpan = { text: string; className?: string };
 
-const RE_TOOL_SIG    = /^(- )(\w+)(\([^)]*\))(: .+)$/;
+const RE_TOOL_SIG = /^(- )(\w+)(\([^)]*\))(: .+)$/;
 const RE_TEST_STATUS = /^(PASS|FAIL) (.+)$/;
-const RE_FILE_REF    = /^(- )?([\w./][\w./-]*\.\w{1,4}(?::\d+)?)(: ?.+)?$/;
+const RE_FILE_REF = /^(- )?([\w./][\w./-]*\.\w{1,4}(?::\d+)?)(: ?.+)?$/;
 
 const PRISM_CLASS: Record<string, string> = {
-  property:    styles.jsonKey,
-  string:      styles.jsonString,
-  number:      styles.jsonNumber,
-  boolean:     styles.jsonBool,
-  null:        styles.jsonNull,
+  property: styles.jsonKey,
+  string: styles.jsonString,
+  number: styles.jsonNumber,
+  boolean: styles.jsonBool,
+  null: styles.jsonNull,
   punctuation: styles.jsonPunc,
-  operator:    styles.jsonPunc,
+  operator: styles.jsonPunc,
 };
 
 function flattenContent(content: Prism.Token['content']): string {
@@ -47,7 +77,9 @@ let _prismWarnShown = false;
 function tokenizeJson(line: string): TokenSpan[] {
   if (!Prism.languages.json) {
     if (!_prismWarnShown) {
-      console.warn('ContextStreamBlock: Prism JSON grammar not available — syntax highlighting degraded to plain text');
+      console.warn(
+        'ContextStreamBlock: Prism JSON grammar not available — syntax highlighting degraded to plain text'
+      );
       _prismWarnShown = true;
     }
     return [{ text: line }];
@@ -58,7 +90,10 @@ function tokenizeJson(line: string): TokenSpan[] {
     if (typeof token === 'string') {
       spans.push({ text: token });
     } else {
-      spans.push({ text: flattenContent(token.content), className: PRISM_CLASS[token.type] });
+      spans.push({
+        text: flattenContent(token.content),
+        className: PRISM_CLASS[token.type],
+      });
     }
   }
   return spans.length ? spans : [{ text: line }];
@@ -84,7 +119,11 @@ function tokenizeLine(line: string, role: Role): TokenSpan[] {
       return tokenizeJson(line);
     case 'tool_result': {
       const mt = line.match(RE_TEST_STATUS);
-      if (mt) return [{ text: mt[1] + ' ' }, { text: mt[2], className: styles.accentToolResult }];
+      if (mt)
+        return [
+          { text: mt[1] + ' ' },
+          { text: mt[2], className: styles.accentToolResult },
+        ];
       const m = line.match(RE_FILE_REF);
       if (m) {
         const spans: TokenSpan[] = [];
@@ -103,7 +142,10 @@ function tokenizeLine(line: string, role: Role): TokenSpan[] {
 
 // --- Component ---
 
-export default function ContextStreamBlock({ entries, ariaLabel = 'Context window stream' }: Props) {
+export default function ContextStreamBlock({
+  entries,
+  ariaLabel = 'Context window stream',
+}: Props) {
   const emojiBase = useBaseUrl('/img/emoji');
   return (
     <div className={styles.container} role="img" aria-label={ariaLabel}>
@@ -116,8 +158,17 @@ export default function ContextStreamBlock({ entries, ariaLabel = 'Context windo
             style={{ '--entry-accent': config.color } as React.CSSProperties}
           >
             <span className={styles.roleLabel} style={{ color: config.color }}>
-              <img src={emojiSrc(emojiBase, config.emoji)} alt="" width={14} height={14}
-                style={{ display: 'block', ...(config.nudgeY ? { transform: `translateY(${config.nudgeY}px)` } : {}) }}
+              <img
+                src={emojiSrc(emojiBase, config.emoji)}
+                alt=""
+                width={14}
+                height={14}
+                style={{
+                  display: 'block',
+                  ...(config.nudgeY
+                    ? { transform: `translateY(${config.nudgeY}px)` }
+                    : {}),
+                }}
               />
               {config.label}
             </span>
@@ -125,9 +176,13 @@ export default function ContextStreamBlock({ entries, ariaLabel = 'Context windo
               {entry.content.map((line, j) => (
                 <React.Fragment key={j}>
                   {tokenizeLine(line, entry.role).map((span, k) =>
-                    span.className
-                      ? <span key={k} className={span.className}>{span.text}</span>
-                      : span.text
+                    span.className ? (
+                      <span key={k} className={span.className}>
+                        {span.text}
+                      </span>
+                    ) : (
+                      span.text
+                    )
                   )}
                   {'\n'}
                 </React.Fragment>

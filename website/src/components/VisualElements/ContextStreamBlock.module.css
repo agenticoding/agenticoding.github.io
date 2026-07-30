@@ -63,17 +63,40 @@
   word-break: break-word;
 }
 
-.contentSystem    { font-family: var(--font-mono); }
-.contentUser      { font-family: var(--font-mono-human); }
-.contentAgent     { font-family: var(--font-mono-ai); }
-.contentToolResult{ font-family: var(--font-mono); }
+.contentSystem {
+  font-family: var(--font-mono);
+}
+.contentUser {
+  font-family: var(--font-mono-human);
+}
+.contentAgent {
+  font-family: var(--font-mono-ai);
+}
+.contentToolResult {
+  font-family: var(--font-mono);
+}
 
-.accentSystem     { font-family: var(--font-mono-spec); }
-.accentToolResult { font-family: var(--font-mono-keyword); }
+.accentSystem {
+  font-family: var(--font-mono-spec);
+}
+.accentToolResult {
+  font-family: var(--font-mono-keyword);
+}
 
-.jsonKey    { color: var(--visual-cyan); font-family: var(--font-mono-keyword); }
-.jsonString { color: var(--visual-indigo); }
-.jsonNumber { color: var(--visual-indigo); }
+.jsonKey {
+  color: var(--visual-cyan);
+  font-family: var(--font-mono-keyword);
+}
+.jsonString {
+  color: var(--visual-indigo);
+}
+.jsonNumber {
+  color: var(--visual-indigo);
+}
 .jsonBool,
-.jsonNull   { color: var(--visual-indigo); }
-.jsonPunc   { color: var(--text-muted); }
+.jsonNull {
+  color: var(--visual-indigo);
+}
+.jsonPunc {
+  color: var(--text-muted);
+}

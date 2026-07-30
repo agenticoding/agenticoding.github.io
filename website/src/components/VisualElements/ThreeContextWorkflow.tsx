@@ -240,8 +240,6 @@ function HorizontalLayout() {
           >
             {context.label}
           </text>
-
-
         </g>
       ))}
     </svg>

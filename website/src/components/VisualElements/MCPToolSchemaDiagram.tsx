@@ -1,293 +1,293 @@
 import { useId, useState } from 'react';
+import clsx from 'clsx';
 import styles from './MCPToolSchemaDiagram.module.css';
-import lensStyles from './ContextLensWindow.module.css';
+import rangeStyles from './RangeControl.module.css';
 import {
-  ContextLensFrame,
-  ContextLensZoneLabels,
-  toneBg,
-  toneColor,
-  type ContextLensTone,
-} from './ContextLensWindow';
-import { modelMCPToolSchema } from './MCPToolSchemaModel';
+  ContextRegionScene,
+  ContextZoneStrip,
+  type RegionTile,
+  // Explicit .tsx: on case-insensitive filesystems './ContextRegions' would
+  // resolve to the sibling model file contextRegions.ts.
+} from './ContextRegions.tsx';
+import {
+  CATALOG_LIMITS,
+  contextContentWeight,
+  eagerSchemasZone,
+  eagerRows,
+  lazyRows,
+  modelMCPToolSchema,
+  toolSearchRoundCount,
+  windowFill,
+  type AttentionZone,
+  type MCPContextRow,
+} from './MCPToolSchemaModel';
 
-const MIN_CATALOG_TOOLS = 4;
-const MAX_CATALOG_TOOLS = 40;
+// Tradeoff figure on the ContextRegions foundation + the shared attention
+// model: each panel's window FILL (content tokens over WINDOW_CAPACITY) drives
+// its zone-band shading. Tiles stay neutral; position carries attention while
+// accents distinguish payload types. The catalog slider expands both eager
+// schema breadth and the selected lazy subset. Both sides retain the same
+// ordinary task work, while lazy visibly pays Tool Search definition, full
+// search/recovery turns, and schema-expansion overhead. Wider catalogs add whole Tool Search calls plus near-match and
+// false-start artifacts, unlike eager's schema mass.
+//
+// Each panel is one contiguous accumulation: eager has the installed-schema
+// prefix; lazy has a startup Tool Search definition, prompt, search/recovery
+// turns, selected schemas, task work, final response, then headroom. Zone
+// membership derives from row weights via zoneOfRow — never placed.
+//
+// Interactive widget: motion is user-driven only. Rows resize through the
+// foundation's flex-grow transitions so slider drags animate smoothly and
+// inactive mix slots collapse in place. No idle animation.
+
 const DEFAULT_CATALOG_TOOLS = 20;
-const WINDOW = { y: 32, width: 248, height: 408 } as const;
-const BLOCK_X_OFFSET = 12;
-const BLOCK_WIDTH = 166;
-const BLOCK_HEIGHT = 18;
+const STACK_HEIGHT = 264;
 
-type BlockTone = Extract<
-  ContextLensTone,
-  'cyan' | 'indigo' | 'violet' | 'neutral'
->;
-
-type ContextBlock = {
-  label: string;
-  y: number;
-  tone: BlockTone;
-  dashed?: boolean;
-  height?: number;
-  shift?: number;
-  className?: string;
-  hidden?: boolean;
-};
-
-function Label({ x, children }: { x: number; children: string }) {
-  return (
-    <text x={x} y={16} className={styles.lensTitle}>
-      {children}
-    </text>
-  );
+// Type grammar for tile accents (tiles themselves stay neutral): cyan =
+// harness payload (core tools, startup prefix, schemas), emphasis = the
+// human prompt, indigo = tool-work data, default = the agent's response.
+function accentFor(row: MCPContextRow): string | undefined {
+  if (row.spacer) return undefined;
+  if (row.id === 'prompt') return 'var(--border-emphasis)';
+  if (row.id.startsWith('work-')) return 'var(--visual-indigo)';
+  if (row.id === 'final') return 'var(--border-default)';
+  return 'var(--visual-cyan)';
 }
 
-function Block({
-  x,
-  label,
-  y,
-  tone,
-  dashed,
-  height = BLOCK_HEIGHT,
-  shift = 0,
-  className,
-  hidden,
-}: ContextBlock & { x: number }) {
-  return (
-    <g
-      aria-hidden={hidden || undefined}
-      className={`${styles.contextBlock} ${className ?? ''}`}
-      style={{ transform: shift ? `translateY(${shift}px)` : undefined }}
-    >
-      <rect
-        x={x + BLOCK_X_OFFSET}
-        y={y}
-        width={BLOCK_WIDTH}
-        height={height}
-        rx={0}
-        fill={toneBg(tone)}
-        stroke={toneColor(tone)}
-        strokeWidth={1.5}
-        strokeDasharray={dashed ? '4 3' : undefined}
-      />
-      <text
-        x={x + BLOCK_X_OFFSET + 8}
-        y={y + 12}
-        className={lensStyles.blockLabel}
-        fill={toneColor(tone)}
-      >
-        {label}
-      </text>
-    </g>
-  );
+function toTile(row: MCPContextRow): RegionTile {
+  return {
+    ...row,
+    accent: accentFor(row),
+    labelFontFamily: 'var(--font-mono-spec)',
+  };
 }
 
-function Panel({
-  x,
+type PanelTradeoff = { label: string; detail: string };
+
+function PanelIntro({
   title,
-  blocks,
-  footer,
+  mobileTitle,
+  tradeoff,
 }: {
-  x: number;
   title: string;
-  blocks: readonly ContextBlock[];
-  footer?: string;
+  mobileTitle: string;
+  tradeoff: PanelTradeoff;
 }) {
   return (
-    <g>
-      <Label x={x}>{title}</Label>
-      <ContextLensFrame x={x} {...WINDOW} />
-      <ContextLensZoneLabels x={x} {...WINDOW} />
-      {blocks.map((block, index) => (
-        <Block key={`${block.label}-${index}`} x={x} {...block} />
-      ))}
-      {footer ? (
-        <text
-          x={x + BLOCK_X_OFFSET}
-          y={WINDOW.y + WINDOW.height + 22}
-          className={styles.detailText}
-        >
-          {footer}
-        </text>
-      ) : null}
-    </g>
+    <div className={styles.panelIntro}>
+      <div className={styles.panelHeader}>
+        <span className={styles.desktopTitle}>{title}</span>
+        <span className={styles.mobileTitle}>{mobileTitle}</span>
+      </div>
+      <p className={styles.panelTradeoff}>
+        <strong>{tradeoff.label}</strong> {tradeoff.detail}
+      </p>
+    </div>
   );
 }
 
-function eagerBlocks(catalogTools: number): ContextBlock[] {
-  const schemaHeight =
-    28 +
-    ((catalogTools - MIN_CATALOG_TOOLS) /
-      (MAX_CATALOG_TOOLS - MIN_CATALOG_TOOLS)) *
-      72;
-  const push = schemaHeight - 28;
-
-  return [
-    { label: 'core tools', y: WINDOW.y + 12, tone: 'cyan' },
-    {
-      label: `installed schemas × ${catalogTools}`,
-      y: WINDOW.y + 38,
-      height: schemaHeight,
-      tone: 'indigo',
-    },
-    {
-      label: 'USER PROMPT',
-      y: WINDOW.y + 104,
-      tone: 'neutral',
-      dashed: true,
-      shift: push,
-    },
-    { label: 'tool call', y: WINDOW.y + 132, tone: 'cyan', shift: push },
-    { label: 'tool result', y: WINDOW.y + 160, tone: 'indigo', shift: push },
-    {
-      label: 'current agent prompt',
-      y: WINDOW.y + 272,
-      tone: 'neutral',
-      dashed: true,
-      shift: push,
-    },
-  ];
-}
-
-function lazyBlocks(relevantSchemas: number): ContextBlock[] {
-  const cycles = Array.from({ length: 4 }, (_, index) => {
-    const y = WINDOW.y + 76 + index * 72;
-    const hidden = index >= relevantSchemas;
-    const className = hidden ? styles.lazyHidden : styles.lazyVisible;
-
-    return [
-      {
-        label: `Tool Search query ${index + 1}`,
-        y,
-        tone: 'violet' as const,
-        className,
-        hidden,
-      },
-      {
-        label: `loaded schema ${index + 1}`,
-        y: y + 20,
-        tone: 'violet' as const,
-        className,
-        hidden,
-      },
-      {
-        label: 'tool call + result',
-        y: y + 40,
-        tone: 'cyan' as const,
-        className,
-        hidden,
-      },
-      {
-        label: 'follow-up prompt',
-        y: y + 60,
-        tone: 'neutral' as const,
-        dashed: true,
-        className,
-        hidden,
-      },
-    ];
-  });
-
-  return [
-    { label: 'Tool Search + core tools', y: WINDOW.y + 12, tone: 'cyan' },
-    { label: 'USER PROMPT', y: WINDOW.y + 46, tone: 'neutral', dashed: true },
-    ...cycles.flat(),
-    {
-      label: 'current agent prompt',
-      y: WINDOW.y + 384,
-      tone: 'neutral',
-      dashed: true,
-    },
-  ];
-}
-
-function Diagram({
-  catalogTools,
-  relevantSchemas,
-  deferredSchemas,
-  mobile = false,
+function ContextPanel({
+  title,
+  mobileTitle,
+  tradeoff,
+  rows,
+  fillRatio,
 }: {
-  catalogTools: number;
-  relevantSchemas: number;
-  deferredSchemas: number;
-  mobile?: boolean;
+  title: string;
+  mobileTitle: string;
+  tradeoff: PanelTradeoff;
+  rows: readonly RegionTile[];
+  fillRatio: number;
 }) {
-  const label = `Eager loading puts ${catalogTools} schemas before the user prompt. Lazy Tool Search starts with the user prompt, then appends discovery, ${relevantSchemas} loaded schemas, a tool call, result, and later prompts; ${deferredSchemas} schemas remain outside the context.`;
-
   return (
-    <svg
-      className={`${styles.diagram} ${mobile ? styles.mobileDiagram : styles.desktopDiagram}`}
-      viewBox={mobile ? '0 0 280 940' : '0 0 600 480'}
-      role="img"
-      aria-label={label}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <Panel
-        x={32}
-        title="EAGER — STARTUP"
-        blocks={eagerBlocks(catalogTools)}
-      />
-      {mobile ? (
-        <g transform="translate(-304 476)">
-          <Panel
-            x={320}
-            title="LAZY TOOL SEARCH"
-            blocks={lazyBlocks(relevantSchemas)}
-            footer={`${deferredSchemas} schemas stay deferred`}
+    <section className={styles.panel}>
+      <PanelIntro title={title} mobileTitle={mobileTitle} tradeoff={tradeoff} />
+      <ContextRegionScene
+        rows={rows}
+        fallbackHeight={STACK_HEIGHT}
+        fillRatio={fillRatio}
+        className={styles.stackClip}
+        stackClassName={styles.stack}
+        companionClassName={styles.zoneStrip}
+        renderCompanion={(frame) => (
+          <ContextZoneStrip
+            fillRatio={fillRatio}
+            frame={frame}
+            ariaLabel={`Attention zones for the ${title} context`}
           />
-        </g>
-      ) : (
-        <Panel
-          x={320}
-          title="LAZY TOOL SEARCH"
-          blocks={lazyBlocks(relevantSchemas)}
-          footer={`${deferredSchemas} schemas stay deferred`}
-        />
-      )}
-    </svg>
+        )}
+      />
+    </section>
   );
+}
+
+function CatalogPanel({
+  total,
+  relevant,
+}: {
+  total: number;
+  relevant: number;
+}) {
+  return (
+    <section className={clsx(styles.panel, styles.catalogPanel)}>
+      <div className={styles.panelHeader}>installed catalog</div>
+      <div className={styles.catalogPipe} aria-hidden="true" />
+      <div className={styles.catalogBody}>
+        <div className={styles.catalogCount}>× {total} schemas</div>
+        <div className={styles.meter}>
+          <div
+            className={styles.meterCatalog}
+            style={{ width: `${(total / CATALOG_LIMITS.max) * 100}%` }}
+          />
+          <div
+            className={styles.meterLoaded}
+            style={{ width: `${(relevant / CATALOG_LIMITS.max) * 100}%` }}
+          />
+        </div>
+        <div className={styles.meterLabels}>
+          <span className={styles.catalogLoadedLabel}>
+            {relevant} in context
+          </span>
+          <span className={styles.catalogDeferred}>
+            {total - relevant} stay out
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function comparisonMessage(
+  eager: readonly MCPContextRow[],
+  lazy: readonly MCPContextRow[]
+) {
+  const difference = Math.round(
+    contextContentWeight(eager) - contextContentWeight(lazy)
+  );
+  if (difference > 0)
+    return {
+      label: `Eager +${difference} ${difference === 1 ? 'unit' : 'units'}`,
+      message: `Eager carries ${difference} more context units.`,
+    };
+  if (difference < 0)
+    return {
+      label: `Lazy +${-difference} ${difference === -1 ? 'unit' : 'units'}`,
+      message: `Lazy discovery adds ${-difference} context units.`,
+    };
+  return {
+    label: 'Equal context mass',
+    message: 'Both traces carry the same context mass.',
+  };
+}
+
+function attentionZoneDescription(zone: AttentionZone) {
+  return (
+    {
+      primacy: 'high-attention start',
+      middle: 'low-attention middle',
+      recency: 'high-attention end',
+    } satisfies Record<AttentionZone, string>
+  )[zone];
+}
+
+function countLabel(count: number, noun: string) {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`;
+}
+
+function searchRoundSummary(rounds: number) {
+  const recoveryLoops = rounds - 1;
+  return `${countLabel(rounds, 'Tool Search round')}; ${countLabel(recoveryLoops, 'recovery loop')} from near matches and false starts`;
+}
+
+function ariaSummary(
+  catalogTools: number,
+  relevant: number,
+  deferred: number,
+  schemasZone: AttentionZone,
+  searchRounds: number,
+  comparison: string
+) {
+  return `This representative task uses ${relevant} capabilities. Eager loading holds ${catalogTools} schemas between core tools and the user prompt; the definitions sit in the ${attentionZoneDescription(schemasZone)}. Lazy loading adds the Tool Search definition, then ${searchRoundSummary(searchRounds)}, before ${relevant} expanded schemas, the same ordinary tool work, and the final response; ${deferred} schemas stay outside the context window. ${comparison}`;
 }
 
 export default function MCPToolSchemaDiagram() {
   const catalogId = useId();
   const [catalogTools, setCatalogTools] = useState(DEFAULT_CATALOG_TOOLS);
   const layout = modelMCPToolSchema(catalogTools);
+  const eagerModel = eagerRows(catalogTools);
+  const lazyModel = lazyRows(catalogTools);
+  const schemasZone = eagerSchemasZone(catalogTools);
+  const searchRounds = toolSearchRoundCount(catalogTools);
+  const comparison = comparisonMessage(eagerModel, lazyModel);
+  const recoveryLoops = searchRounds - 1;
 
   return (
     <div className={styles.container}>
       <div className={styles.controls}>
-        <label className={styles.catalogControl} htmlFor={catalogId}>
-          <span>Installed MCP catalog</span>
-          <strong>{catalogTools} schemas</strong>
-          <input
-            id={catalogId}
-            type="range"
-            min={MIN_CATALOG_TOOLS}
-            max={MAX_CATALOG_TOOLS}
-            value={catalogTools}
-            onChange={(event) => setCatalogTools(Number(event.target.value))}
-          />
+        <label
+          className={`${rangeStyles.row} ${styles.catalogControl}`}
+          htmlFor={catalogId}
+        >
+          <span className={rangeStyles.label}>Installed MCP catalog</span>
+          <span className={rangeStyles.control}>
+            <input
+              id={catalogId}
+              type="range"
+              min={CATALOG_LIMITS.min}
+              max={CATALOG_LIMITS.max}
+              value={catalogTools}
+              onChange={(event) => setCatalogTools(Number(event.target.value))}
+              className={rangeStyles.slider}
+            />
+          </span>
+          <strong className={`${rangeStyles.value} ${styles.catalogValue}`}>
+            {catalogTools} schemas
+          </strong>
         </label>
-        <p className={styles.relevanceNote}>
-          <strong>{layout.lazySchemas.length} relevant schemas</strong> enter
-          after the prompt; {layout.deferredSchemas} stay out of context.
-        </p>
+        <div className={styles.relevanceNote}>
+          <strong>{layout.lazySchemas.length} task schemas</strong>
+          <span>load after Tool Search</span>
+          <span>{countLabel(searchRounds, 'Tool Search round')}</span>
+          <span>{countLabel(recoveryLoops, 'recovery loop')}</span>
+          <span>{layout.deferredSchemas} stay out</span>
+          <span className={styles.comparisonNote}>{comparison.label}</span>
+        </div>
       </div>
-      <Diagram
-        catalogTools={catalogTools}
-        relevantSchemas={layout.lazySchemas.length}
-        deferredSchemas={layout.deferredSchemas}
-      />
-      <Diagram
-        catalogTools={catalogTools}
-        relevantSchemas={layout.lazySchemas.length}
-        deferredSchemas={layout.deferredSchemas}
-        mobile
-      />
+      <div className={styles.panels}>
+        <ContextPanel
+          title="EAGER — SCHEMAS FIRST"
+          mobileTitle="EAGER"
+          tradeoff={{
+            label: 'small + hot',
+            detail: '— no discovery.',
+          }}
+          rows={eagerModel.map((row) => toTile(row))}
+          fillRatio={windowFill(eagerModel)}
+        />
+        <ContextPanel
+          title="LAZY — PROMPT FIRST"
+          mobileTitle="LAZY"
+          tradeoff={{
+            label: 'broad + sparse',
+            detail: '— defer the rest.',
+          }}
+          rows={lazyModel.map((row) => toTile(row))}
+          fillRatio={windowFill(lazyModel)}
+        />
+        <CatalogPanel
+          total={catalogTools}
+          relevant={layout.lazySchemas.length}
+        />
+      </div>
       <p className={styles.liveRegion} aria-live="polite">
-        Eager loading puts {catalogTools} schemas before the user prompt. Tool
-        Search loads {layout.lazySchemas.length} relevant schemas after it and
-        leaves {layout.deferredSchemas} deferred.
+        {ariaSummary(
+          catalogTools,
+          layout.lazySchemas.length,
+          layout.deferredSchemas,
+          schemasZone,
+          searchRounds,
+          comparison.message
+        )}
       </p>
     </div>
   );

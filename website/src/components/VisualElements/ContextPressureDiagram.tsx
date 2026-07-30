@@ -1,26 +1,36 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useMounted } from '@site/src/hooks/useMounted';
 import styles from './ContextPressureDiagram.module.css';
+import regionStyles from './contextRegions.module.css';
+import {
+  ContextRegionScene,
+  ContextZoneStrip,
+  type RegionTile,
+  type TileRenderProps,
+  // Explicit .tsx: on case-insensitive filesystems './ContextRegions' would
+  // resolve to the sibling model file contextRegions.ts.
+} from './ContextRegions.tsx';
+import {
+  CONTEXT_PRESSURE,
+  allocateTurns,
+  contextTotal,
+  drainToFit,
+  effectiveFill,
+  effectiveWindow,
+  toolDefinitionTokens,
+  taskSeverity,
+  type DrainKey,
+  type VariableTokens,
+} from './contextPressureModel';
 
-/* ── Token constants ──────────────────────────────────────────────── */
-const TOTAL_WINDOW = 200_000;
-const COMPACTION_BUFFER = 33_000;
-const BUILTIN_TOOL_COUNT = 45;
-const TOKENS_PER_BUILTIN = 365;
-const TOKENS_PER_MCP_TOOL = 700;
-const TOOLSEARCH_BASE = 200;
-const TOKENS_PER_DEFERRED_GROUP = 500;
-const TOKENS_PER_SKILL_TURN = 4000;
-const TOKENS_PER_TURN = 5000;
-
-const SYSTEM_PROMPT_TOKENS = 3100;
-const SKILLS_META_TOKENS = 500;
-const USER_TASK_TOKENS = 1500;
-const FIXED_TOTAL = SYSTEM_PROMPT_TOKENS + USER_TASK_TOKENS;
-
-/* ── Attention zone boundaries ────────────────────────────────────── */
-const PRIMACY_END = 0.25;
-const RECENCY_START = 0.75;
+const {
+  compactionBuffer: COMPACTION_BUFFER,
+  tokensPerSkillTurn: TOKENS_PER_SKILL_TURN,
+  tokensPerTurn: TOKENS_PER_TURN,
+  systemPromptTokens: SYSTEM_PROMPT_TOKENS,
+  skillsMetaTokens: SKILLS_META_TOKENS,
+  userTaskTokens: USER_TASK_TOKENS,
+} = CONTEXT_PRESSURE;
 
 /* ── Layer definitions ────────────────────────────────────────────── */
 interface Layer {
@@ -115,12 +125,12 @@ function ConfigControls(props: ConfigControlsProps) {
           checked={props.showCompaction}
           onChange={props.onCompactionToggle}
         />
-        <span>Compaction buffer (33K)</span>
+        <span>Compaction buffer (165K)</span>
       </label>
       <RangeControl
         label="Context Files"
         min={0}
-        max={20000}
+        max={250000}
         step={1000}
         value={props.contextFiles}
         display={props.ctxDisplay}
@@ -131,7 +141,7 @@ function ConfigControls(props: ConfigControlsProps) {
         <RangeControl
           label="Installed Tools"
           min={45}
-          max={200}
+          max={500}
           step={5}
           value={props.installedTools}
           display={props.toolDisplay}
@@ -150,7 +160,7 @@ function ConfigControls(props: ConfigControlsProps) {
       <RangeControl
         label="Conv. Turns"
         min={0}
-        max={20}
+        max={120}
         step={1}
         value={props.turnCount}
         display={props.convDisplay}
@@ -160,7 +170,7 @@ function ConfigControls(props: ConfigControlsProps) {
       <RangeControl
         label="Skill Turns"
         min={0}
-        max={5}
+        max={10}
         step={1}
         value={props.skillTurns}
         display={props.skillDisplay}
@@ -173,7 +183,7 @@ function ConfigControls(props: ConfigControlsProps) {
 const PRESETS: Preset[] = [
   {
     label: 'Fresh Session',
-    contextFiles: 1500,
+    contextFiles: 1_500,
     installedTools: 45,
     turnCount: 0,
     skillTurns: 0,
@@ -181,58 +191,58 @@ const PRESETS: Preset[] = [
   },
   {
     label: 'Normal Session',
-    contextFiles: 1500,
+    contextFiles: 1_500,
     installedTools: 45,
-    turnCount: 5,
+    turnCount: 20,
     skillTurns: 0,
     toolSearchEnabled: false,
   },
   {
     label: 'Heavy MCP (eager)',
-    contextFiles: 10000,
-    installedTools: 120,
-    turnCount: 14,
+    contextFiles: 40_000,
+    installedTools: 500,
+    turnCount: 75,
     skillTurns: 0,
     toolSearchEnabled: false,
   },
   {
     label: 'Heavy MCP (deferred)',
-    contextFiles: 10000,
-    installedTools: 120,
-    turnCount: 14,
+    contextFiles: 40_000,
+    installedTools: 500,
+    turnCount: 75,
     skillTurns: 0,
     toolSearchEnabled: true,
   },
   {
     label: 'Deep Conversation',
-    contextFiles: 8000,
+    contextFiles: 20_000,
     installedTools: 90,
-    turnCount: 20,
+    turnCount: 120,
     skillTurns: 0,
     toolSearchEnabled: false,
   },
   {
     label: 'Skill-Heavy',
-    contextFiles: 8000,
-    installedTools: 55,
-    turnCount: 10,
-    skillTurns: 4,
+    contextFiles: 20_000,
+    installedTools: 120,
+    turnCount: 70,
+    skillTurns: 8,
     toolSearchEnabled: false,
   },
   {
     label: 'Near Compaction',
-    contextFiles: 10000,
-    installedTools: 80,
-    turnCount: 20,
+    contextFiles: 100_000,
+    installedTools: 300,
+    turnCount: 105,
     skillTurns: 0,
     toolSearchEnabled: false,
   },
   {
     label: 'Overloaded',
-    contextFiles: 14000,
-    installedTools: 120,
-    turnCount: 20,
-    skillTurns: 3,
+    contextFiles: 200_000,
+    installedTools: 500,
+    turnCount: 120,
+    skillTurns: 5,
     toolSearchEnabled: false,
   },
 ];
@@ -254,90 +264,20 @@ const SCENARIO_DESCRIPTIONS: Record<string, string> = {
   'Normal Session':
     'Built-in tools only after a few turns. Comfortable headroom, middle-zone attention.',
   'Heavy MCP (eager)':
-    '120 eager tools consume ~69K in schemas. After 14 turns the window hits 92% — task dead-center, critical attention loss.',
+    '500 eager tools consume ~335K in schemas. After 75 turns the effective budget reaches 90% — task sits in the weak middle.',
   'Heavy MCP (deferred)':
-    'Same tools, ToolSearch defers 75 of them. ~48K saved — task stays in the safe recency zone.',
+    'Same catalog, ToolSearch keeps startup schemas near 40K. The task remains clear of the overloaded middle.',
   'Deep Conversation':
-    '90 tools plus 20 turns of history push the task toward primacy. Window at 96% — danger-zone attention.',
+    '90 tools plus 120 turns of history consume about 80% of the effective budget. The task crosses into the weak middle.',
   'Skill-Heavy':
     'Each skill expansion costs +4K extra tokens, compounding pressure on the middle zone.',
   'Near Compaction':
-    'Conversation reaches the effective window after reserving buffer space for a lossy handoff. Task is already in the danger zone.',
+    '100K of files, 300 tools, and 105 turns reach the 835K effective budget reserved for a lossy handoff.',
   Overloaded:
-    '120 tools + 14K context file + 20 turns. Task dead-center at 92% fill — critical, near-zero attention.',
+    '500 tools + 200K of files + 120 turns overflow the effective budget. Older conversation is compacted first.',
 };
 
-/* ── Attention math ───────────────────────────────────────────────── */
-function computeAttention(frac: number, fillRatio: number): number {
-  const maxDrop = fillRatio * 0.85;
-  const distFromCenter = 1 - Math.abs(frac - 0.5) * 2;
-  let drop = distFromCenter ** 2 * maxDrop;
-  const jCurveStrength = Math.max(0, fillRatio - 0.5) * 2;
-  const primacyDecay = (1 - frac) * jCurveStrength * 0.55;
-  drop = Math.min(drop + primacyDecay, 0.95);
-  return 1 - drop;
-}
-
-/* ── Attention curve SVG paths ────────────────────────────────────── */
-function buildAttentionCurve(fillRatio: number): {
-  curvePath: string;
-  fillPath: string;
-  mobileCurvePath: string;
-  mobileFillPath: string;
-  minAttention: number;
-} {
-  const samples = 100;
-  let minAttention = 1;
-  const pts: Array<{ att: number; frac: number }> = [];
-
-  for (let i = 0; i <= samples; i++) {
-    const frac = i / samples;
-    const att = computeAttention(frac, fillRatio);
-    minAttention = Math.min(minAttention, att);
-    pts.push({ att, frac });
-  }
-
-  // Desktop: x = attention (right = strong), y = frac (top = start)
-  const curvePath = pts
-    .map(
-      (p, i) =>
-        `${i === 0 ? 'M' : 'L'} ${(p.att * 100).toFixed(1)},${(p.frac * 100).toFixed(1)}`
-    )
-    .join(' ');
-  const fillPath = [
-    'M 100,0',
-    ...pts.map(
-      (p) => `L ${(p.att * 100).toFixed(1)},${(p.frac * 100).toFixed(1)}`
-    ),
-    'L 100,100',
-    'Z',
-  ].join(' ');
-
-  // Mobile: x = frac (left = start), y = 100 - attention*100 (top = strong)
-  const mobileCurvePath = pts
-    .map(
-      (p, i) =>
-        `${i === 0 ? 'M' : 'L'} ${(p.frac * 100).toFixed(1)},${(100 - p.att * 100).toFixed(1)}`
-    )
-    .join(' ');
-  const mobileFillPath = [
-    'M 0,0',
-    ...pts.map(
-      (p) => `L ${(p.frac * 100).toFixed(1)},${(100 - p.att * 100).toFixed(1)}`
-    ),
-    'L 100,0',
-    'Z',
-  ].join(' ');
-
-  return { curvePath, fillPath, mobileCurvePath, mobileFillPath, minAttention };
-}
-
-/* ── Middle zone background by fill depth ─────────────────────────── */
-function middleZoneBg(fillRatio: number): string {
-  if (fillRatio < 0.35) return 'var(--surface-muted)';
-  if (fillRatio < 0.65) return 'var(--visual-bg-warning)';
-  return 'var(--visual-bg-error)';
-}
+/* ── Attention math: shared model (attentionModel.ts) ───────────── */
 
 const VOICE_FONT: Record<Layer['voice'], string> = {
   system: 'var(--font-mono-spec)',
@@ -350,86 +290,6 @@ function formatK(tokens: number): string {
   return tokens >= 1000 ? `${Math.round(tokens / 1000)}K` : `${tokens}`;
 }
 
-/* ── Tool def token calculation ───────────────────────────────────── */
-function computeToolDefs(tools: number, tsEnabled: boolean): number {
-  const mcp = Math.max(0, tools - BUILTIN_TOOL_COUNT);
-  return tsEnabled
-    ? BUILTIN_TOOL_COUNT * TOKENS_PER_BUILTIN +
-        TOOLSEARCH_BASE +
-        Math.ceil(mcp / 10) * TOKENS_PER_DEFERRED_GROUP
-    : BUILTIN_TOOL_COUNT * TOKENS_PER_BUILTIN + mcp * TOKENS_PER_MCP_TOOL;
-}
-
-/* ── Drain-to-fit solver ──────────────────────────────────────────── */
-const DRAIN_ORDER = [
-  'conversation',
-  'contextFiles',
-  'skillsMeta',
-  'toolDefs',
-] as const;
-type DrainKey = (typeof DRAIN_ORDER)[number];
-
-interface DrainInput {
-  toolDefs: number;
-  contextFiles: number;
-  skillsMeta: number;
-  conversation: number;
-}
-
-interface DrainResult {
-  result: DrainInput;
-  headroom: number;
-  drained: Record<DrainKey, number>;
-  compactionTriggered: boolean;
-}
-
-function drainToFit(
-  requested: DrainInput,
-  fixedTotal: number,
-  effectiveWindow: number
-): DrainResult {
-  const result = { ...requested };
-  const drained: Record<DrainKey, number> = {
-    conversation: 0,
-    contextFiles: 0,
-    skillsMeta: 0,
-    toolDefs: 0,
-  };
-
-  const totalRequested =
-    result.toolDefs +
-    result.contextFiles +
-    result.skillsMeta +
-    result.conversation;
-  const available = Math.max(0, effectiveWindow - fixedTotal);
-  let excess = totalRequested - available;
-
-  if (excess <= 0) {
-    return {
-      result,
-      headroom: available - totalRequested,
-      drained,
-      compactionTriggered: false,
-    };
-  }
-
-  for (const key of DRAIN_ORDER) {
-    if (excess <= 0) break;
-    const canDrain = result[key];
-    const drain = Math.min(canDrain, excess);
-    result[key] -= drain;
-    drained[key] = drain;
-    excess -= drain;
-  }
-
-  return {
-    result,
-    headroom: 0,
-    drained,
-    compactionTriggered: drained.conversation > 0,
-  };
-}
-
 /* ── Accent color ─────────────────────────────────────────────────── */
 function accentColor(
   layer: Layer,
@@ -437,8 +297,7 @@ function accentColor(
   taskZone: string
 ): string {
   if (layer.id === 'userTask') {
-    if (taskZone === 'critical' || taskZone === 'danger')
-      return 'var(--visual-error)';
+    if (taskZone === 'critical') return 'var(--visual-error)';
     if (taskZone === 'middle') return 'var(--visual-warning)';
     if (taskZone === 'middle_safe') return 'var(--visual-success)';
     return 'var(--border-emphasis)';
@@ -453,8 +312,7 @@ function accentColor(
 
 function rowBg(layer: Layer, isDrained: boolean, taskZone: string): string {
   if (layer.id === 'userTask') {
-    if (taskZone === 'critical' || taskZone === 'danger')
-      return 'var(--visual-bg-error)';
+    if (taskZone === 'critical') return 'var(--visual-bg-error)';
     if (taskZone === 'middle') return 'var(--visual-bg-warning)';
     if (taskZone === 'middle_safe') return 'var(--visual-bg-success)';
     return 'transparent';
@@ -464,41 +322,95 @@ function rowBg(layer: Layer, isDrained: boolean, taskZone: string): string {
   return 'transparent';
 }
 
-/* ── Flex redistribution with minimum readable height ─────────────── */
-function redistributeWithMinHeight(
-  items: Array<{ id: string; tokens: number; minHeight?: number }>,
-  totalTokens: number,
-  containerHeight: number,
-  minHeight: number
-): Record<string, number> {
-  const rawHeights = items.map(
-    (i) => (i.tokens / totalTokens) * containerHeight
+/* ── Task row outline per attention zone ──────────────────────────── */
+const TASK_OUTLINE: Record<string, string> = {
+  primacy: 'var(--border-emphasis)',
+  recency: 'var(--border-emphasis)',
+  middle_safe: 'var(--visual-success)',
+  middle: 'var(--visual-warning)',
+  critical: 'var(--visual-error)',
+};
+
+/* Standard layer tile. Mirrors the foundation's DefaultTile (not exported);
+   local because compacted turns dim to 0.55 — a state DefaultTile's
+   weight-based opacity cannot express. */
+function StandardTile({
+  row,
+  layout,
+  dimmed,
+}: {
+  row: RegionTile;
+  layout: import('./ContextRegions.tsx').RegionLayout;
+  dimmed: boolean;
+}) {
+  const collapsed = layout.collapsed;
+  return (
+    <div
+      className={`${regionStyles.regionRow} ${collapsed ? regionStyles.rowCollapsed : ''}`}
+      style={{
+        height: layout.height,
+        minHeight: 0,
+        background: row.background,
+        outlineColor: row.outlineColor,
+        opacity: dimmed ? 0.55 : row.weight > 0 ? 1 : 0,
+      }}
+    >
+      <div
+        className={regionStyles.rowAccent}
+        style={{ background: row.accent }}
+      />
+      <span
+        className={regionStyles.rowLabel}
+        style={{ fontFamily: row.labelFontFamily }}
+      >
+        {row.label}
+      </span>
+      {row.badges && (
+        <span className={regionStyles.badgeGroup}>
+          {row.badges.map((badge) => (
+            <span
+              key={badge.id}
+              className={`${regionStyles.badge} ${badge.visible ? regionStyles.badgeVisible : ''}`}
+              style={{ color: badge.color }}
+            >
+              {badge.label}
+            </span>
+          ))}
+        </span>
+      )}
+      {row.meta && <span className={regionStyles.rowMeta}>{row.meta}</span>}
+    </div>
   );
-  const minimums = items.map((item) => item.minHeight ?? minHeight);
-  const belowMin = rawHeights.map((height, index) => height < minimums[index]);
+}
 
-  if (!belowMin.some(Boolean)) {
-    return Object.fromEntries(items.map((i) => [i.id, i.tokens]));
-  }
-
-  const reservedHeight = minimums.reduce(
-    (total, minimum, index) => total + (belowMin[index] ? minimum : 0),
-    0
+/* Centered-label tile for the non-voice rows (headroom, compaction buffer,
+   middle-turns group): no accent or meta slots. Collapse animates via the
+   flexGrow share like every other tile. */
+function CenteredTile({
+  row,
+  layout,
+  className,
+  labelClassName,
+  style,
+}: {
+  row: RegionTile;
+  layout: import('./ContextRegions.tsx').RegionLayout;
+  className: string;
+  labelClassName: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className={className}
+      style={{
+        height: layout.height,
+        minHeight: 0,
+        ...style,
+      }}
+    >
+      <span className={labelClassName}>{row.label}</span>
+    </div>
   );
-  const largeItems = items.filter((_, i) => !belowMin[i]);
-  const largeTotalTokens = largeItems.reduce((s, i) => s + i.tokens, 0);
-  const remainingHeight = Math.max(0, containerHeight - reservedHeight);
-
-  const result: Record<string, number> = {};
-  items.forEach((item, i) => {
-    if (belowMin[i]) {
-      result[item.id] = (minimums[i] / containerHeight) * totalTokens;
-    } else {
-      const h = (item.tokens / largeTotalTokens) * remainingHeight;
-      result[item.id] = (h / containerHeight) * totalTokens;
-    }
-  });
-  return result;
 }
 
 /* ── Component ────────────────────────────────────────────────────── */
@@ -514,17 +426,18 @@ export default function ContextPressureDiagram() {
   const [activePreset, setActivePreset] = useState<string>('Fresh Session');
 
   /* ── Effective window ────────────────────────────────────────── */
-  const effectiveWindow = showCompaction
-    ? TOTAL_WINDOW - COMPACTION_BUFFER
-    : TOTAL_WINDOW;
+  const effectiveBudget = effectiveWindow(showCompaction);
 
   /* ── Requested values ────────────────────────────────────────── */
   const clampedSkillTurns = Math.min(skillTurns, turnCount);
-  const requestedToolDefs = computeToolDefs(installedTools, toolSearchEnabled);
+  const requestedToolDefs = toolDefinitionTokens(
+    installedTools,
+    toolSearchEnabled
+  );
   const requestedConversation =
     turnCount * TOKENS_PER_TURN + clampedSkillTurns * TOKENS_PER_SKILL_TURN;
 
-  const requested: DrainInput = {
+  const requested: VariableTokens = {
     toolDefs: requestedToolDefs,
     contextFiles,
     skillsMeta: SKILLS_META_TOKENS,
@@ -532,54 +445,28 @@ export default function ContextPressureDiagram() {
   };
 
   /* ── Drain solver ────────────────────────────────────────────── */
-  const drain = drainToFit(requested, FIXED_TOTAL, effectiveWindow);
-  const { result: actual, headroom, drained, compactionTriggered } = drain;
+  const { actual, headroom, drained, compactionTriggered } = drainToFit(
+    requested,
+    effectiveBudget
+  );
 
   /* ── Turn layers ─────────────────────────────────────────────── */
-  const conversationScale =
-    requestedConversation > 0 ? actual.conversation / requestedConversation : 1;
-
-  const compactedTurnCount = compactionTriggered
-    ? Math.max(0, Math.floor(turnCount * (1 - conversationScale)))
-    : 0;
-
-  interface TurnInfo {
-    index: number;
-    isSkill: boolean;
-    tokens: number;
-    compacted: boolean;
-  }
-  const turns: TurnInfo[] = [];
-  for (let i = 0; i < turnCount; i++) {
-    const isSkill = i >= turnCount - clampedSkillTurns;
-    const baseTokens = TOKENS_PER_TURN + (isSkill ? TOKENS_PER_SKILL_TURN : 0);
-    const compacted = i < compactedTurnCount;
-    const tokens = compacted ? Math.round(baseTokens * 0.4) : baseTokens;
-    turns.push({ index: i, isSkill, tokens, compacted });
-  }
-
+  const turns = allocateTurns(
+    turnCount,
+    clampedSkillTurns,
+    actual.conversation
+  );
   const MAX_INDIVIDUAL = 6;
-  const MAX_TURNS = 20; // match slider max
-  const turnLayers: Layer[] = [];
-
-  for (let i = 0; i < MAX_TURNS; i++) {
-    const t = turns[i];
-    const active = t !== undefined;
-    turnLayers.push({
-      id: `turn-${i}`,
-      label: active ? `Turn ${t.index + 1}` : '',
-      shortLabel: active
-        ? t.isSkill
-          ? `S${t.index + 1}`
-          : `T${t.index + 1}`
-        : '',
-      voice: 'data',
-      tokens: active ? Math.round(t.tokens * conversationScale) : 0,
-      fixed: false,
-      isSkillTurn: active ? t.isSkill : false,
-      isCompacted: active ? t.compacted : false,
-    });
-  }
+  const turnLayers: Layer[] = turns.map((turn, index) => ({
+    id: `turn-${index}`,
+    label: `Turn ${index + 1}`,
+    shortLabel: turn.isSkill ? `S${index + 1}` : `T${index + 1}`,
+    voice: 'data',
+    tokens: turn.tokens,
+    fixed: false,
+    isSkillTurn: turn.isSkill,
+    isCompacted: turn.compacted,
+  }));
 
   /* ── Build layers ─────────────────────────────────────────────── */
   const layers: Layer[] = [
@@ -626,74 +513,11 @@ export default function ContextPressureDiagram() {
     ...turnLayers,
   ];
 
-  const totalTokens = layers.reduce((s, l) => s + l.tokens, 0);
-  const fillRatio = Math.min(totalTokens / TOTAL_WINDOW, 1);
+  const totalTokens = contextTotal(actual);
+  const fillRatio = effectiveFill(actual, effectiveBudget);
 
-  /* ── Stack height measurement ────────────────────────────────── */
-  const stackRef = useRef<HTMLDivElement>(null);
-  const [stackHeight, setStackHeight] = useState(560);
-
-  useEffect(() => {
-    const el = stackRef.current;
-    if (!el) return;
-    const update = () => setStackHeight(el.clientHeight);
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  /* ── Redistribute flex space with readable minimum ───────────── */
-  const MIN_ROW_HEIGHT = 24;
+  /* ── Readable floor for the compaction buffer tile ───────────── */
   const MIN_COMPACTION_HEIGHT = 32;
-
-  const adjustedFlexProps = useMemo(() => {
-    const middleTurnIds = new Set<string>();
-    const visibleTurnCount = Math.min(turnCount, MAX_TURNS);
-    for (let i = 2; i < visibleTurnCount - 3; i++) {
-      middleTurnIds.add(`turn-${i}`);
-    }
-
-    const items = [
-      ...layers
-        .filter((l) => !middleTurnIds.has(l.id))
-        .map((l) => ({ id: l.id, tokens: l.tokens })),
-      { id: 'headroom', tokens: headroom >= 6000 ? headroom : 0 },
-      {
-        id: 'compaction',
-        tokens: showCompaction ? COMPACTION_BUFFER : 0,
-        minHeight: MIN_COMPACTION_HEIGHT,
-      },
-    ].filter((i) => i.tokens > 0);
-
-    const adjusted = redistributeWithMinHeight(
-      items,
-      TOTAL_WINDOW,
-      stackHeight,
-      MIN_ROW_HEIGHT
-    );
-
-    layers
-      .filter((l) => middleTurnIds.has(l.id))
-      .forEach((l) => {
-        adjusted[l.id] = l.tokens;
-      });
-
-    return adjusted;
-  }, [layers, headroom, showCompaction, stackHeight, turnCount]);
-
-  /* ── Turn group overlay bounds (absolute, within collapsed space) ─ */
-  const turnGroupTokens = React.useMemo(() => {
-    if (turnCount <= MAX_INDIVIDUAL) return 0;
-    const visibleTurnCount = Math.min(turnCount, MAX_TURNS);
-    const collapsedStartIdx = 2;
-    const collapsedEndIdx = visibleTurnCount - 3;
-    if (collapsedEndIdx <= collapsedStartIdx) return 0;
-
-    return turnLayers
-      .slice(collapsedStartIdx, collapsedEndIdx)
-      .reduce((s, l) => s + (adjustedFlexProps[l.id] ?? l.tokens), 0);
-  }, [adjustedFlexProps, turnCount, turnLayers]);
 
   /* ── Task attention position ─────────────────────────────────── */
   const tokensBeforeTask =
@@ -704,34 +528,138 @@ export default function ContextPressureDiagram() {
   const taskMidTokens = tokensBeforeTask + USER_TASK_TOKENS / 2;
   const taskFrac =
     totalTokens > 0 ? Math.min(taskMidTokens / totalTokens, 1) : 0.5;
-  const taskAttention = computeAttention(taskFrac, fillRatio);
+  const taskZone = taskSeverity(taskFrac, fillRatio);
 
-  /* ── Attention visualization data ────────────────────────────── */
-  const { curvePath, fillPath, mobileCurvePath, mobileFillPath, minAttention } =
-    buildAttentionCurve(fillRatio);
-  const middleBg = middleZoneBg(fillRatio);
-  const maxDropPct = Math.round((1 - minAttention) * 100);
+  /* ── Region rows: layers, middle-turns group, headroom, buffer ── */
+  const visibleTurnCount = turnLayers.length;
+  const groupStart = 2;
+  const groupEnd = visibleTurnCount - 3; // exclusive
+  const grouped = turnCount > MAX_INDIVIDUAL && groupEnd > groupStart;
 
-  const taskZone =
-    taskFrac < PRIMACY_END
-      ? taskAttention >= 0.45
-        ? 'primacy'
-        : taskAttention >= 0.25
-          ? 'danger'
-          : 'critical'
-      : taskFrac > RECENCY_START
-        ? 'recency'
-        : taskAttention >= 0.45
-          ? fillRatio < 0.35
-            ? 'middle_safe'
-            : 'middle'
-          : taskAttention >= 0.25
-            ? 'danger'
-            : 'critical';
+  const drainedFor = (layer: Layer): boolean =>
+    layer.id === 'toolDefs'
+      ? drained.toolDefs > 0
+      : layer.id === 'contextFiles'
+        ? drained.contextFiles > 0
+        : layer.id === 'skillsMeta'
+          ? drained.skillsMeta > 0
+          : false;
+
+  const rows: RegionTile[] = [];
+  for (const layer of layers) {
+    const turnIdx = layer.id.startsWith('turn-')
+      ? parseInt(layer.id.slice('turn-'.length), 10)
+      : -1;
+    if (grouped && turnIdx >= groupStart && turnIdx < groupEnd) {
+      if (turnIdx === groupStart) {
+        rows.push({
+          id: 'turn-group',
+          weight: turnLayers
+            .slice(groupStart, groupEnd)
+            .reduce((sum, l) => sum + l.tokens, 0),
+          label: `Turns 3–${groupEnd}`,
+        });
+      }
+      continue;
+    }
+    const isDrained = drainedFor(layer);
+    rows.push({
+      id: layer.id,
+      weight: layer.tokens,
+      label: layer.label,
+      accent: accentColor(layer, isDrained, taskZone),
+      background: rowBg(layer, isDrained, taskZone),
+      outlineColor:
+        layer.id === 'userTask' ? TASK_OUTLINE[taskZone] : undefined,
+      labelFontFamily: VOICE_FONT[layer.voice],
+      badges: [
+        {
+          id: 'compacted',
+          label: 'compacted',
+          color: 'var(--visual-warning)',
+          visible: !!layer.isCompacted,
+        },
+        {
+          id: 'skill',
+          label: 'skill',
+          color: 'var(--visual-violet)',
+          visible: !!layer.isSkillTurn && !layer.isCompacted,
+        },
+        {
+          id: 'drained',
+          label: 'drained',
+          color: 'var(--visual-warning)',
+          visible: isDrained,
+        },
+      ],
+      meta: formatK(layer.tokens),
+      collapsed: turnIdx >= turnCount && turnIdx >= 0,
+    });
+  }
+  rows.push({
+    id: 'headroom',
+    weight: headroom >= 6000 ? headroom : 0,
+    label: `${formatK(headroom)} headroom`,
+    collapsed: headroom < 6000,
+    // Empty window, not context: excluded from the zone scale, which spans
+    // only filled context (first content tile -> last content tile).
+    spacer: true,
+  });
+  rows.push({
+    id: 'compaction',
+    weight: showCompaction ? COMPACTION_BUFFER : 0,
+    minHeight: MIN_COMPACTION_HEIGHT,
+    label: 'Buffer 165K',
+    collapsed: !showCompaction,
+    // Reserved capacity, not a context element — it gets no attention, so it
+    // stays outside the zone bands (user directive).
+    spacer: true,
+  });
+
+  /* ── Tile renderer: special rows keep their bespoke anatomy ──── */
+  const renderRow = (
+    row: RegionTile,
+    { layout }: TileRenderProps
+  ): React.ReactNode => {
+    if (row.id === 'headroom') {
+      return (
+        <CenteredTile
+          row={row}
+          layout={layout}
+          className={`${styles.headroomRow} ${row.collapsed ? '' : styles.headroomRowActive}`}
+          labelClassName={styles.headroomLabel}
+        />
+      );
+    }
+    if (row.id === 'compaction') {
+      return (
+        <CenteredTile
+          row={row}
+          layout={layout}
+          className={`${styles.compactionRow} ${row.collapsed ? '' : styles.compactionRowActive}`}
+          labelClassName={styles.compactionLabel}
+        />
+      );
+    }
+    if (row.id === 'turn-group') {
+      return (
+        <CenteredTile
+          row={row}
+          layout={layout}
+          className={regionStyles.regionRow}
+          labelClassName={styles.turnGroupLabel}
+          style={{ justifyContent: 'center' }}
+        />
+      );
+    }
+    const layer = layers.find((l) => l.id === row.id);
+    return (
+      <StandardTile row={row} layout={layout} dimmed={!!layer?.isCompacted} />
+    );
+  };
 
   /* ── Budget bar ──────────────────────────────────────────────── */
-  const effectiveFillRatio =
-    effectiveWindow > 0 ? Math.min(totalTokens / effectiveWindow, 1) : 0;
+  const effectiveFillRatio = fillRatio;
   const budgetColor =
     effectiveFillRatio < 0.6
       ? 'var(--visual-success)'
@@ -745,7 +673,6 @@ export default function ContextPressureDiagram() {
     recency: '✓ Task gets strong attention',
     middle_safe: '✓ Task in middle zone — decent attention with headroom',
     middle: '⚠ Attention reduced — task in lower-attention zone',
-    danger: '⚠ Task in forgotten zone',
     critical: '✗ Task invisible to agent',
   };
 
@@ -758,10 +685,10 @@ export default function ContextPressureDiagram() {
   const statusText =
     taskZone === 'critical'
       ? 'CRITICAL — task invisible to agent'
-      : taskZone === 'danger'
-        ? 'WARNING — task in forgotten zone'
+      : taskZone === 'middle'
+        ? 'WARNING — task in lower-attention zone'
         : compactionTriggered
-          ? `Conversation compacted by ${Math.round((1 - conversationScale) * 100)}%`
+          ? `Conversation compacted by ${Math.round((drained.conversation / requestedConversation) * 100)}%`
           : headroom > 0
             ? `Headroom: ${formatK(headroom)}`
             : 'Task receives adequate attention';
@@ -906,133 +833,24 @@ export default function ContextPressureDiagram() {
         <div className={styles.panel}>
           <div className={styles.panelHeader}>Context Window</div>
 
-          <div ref={stackRef} className={styles.stack}>
-            {layers.map((layer) => {
-              const isDrained =
-                layer.id === 'toolDefs'
-                  ? drained.toolDefs > 0
-                  : layer.id === 'contextFiles'
-                    ? drained.contextFiles > 0
-                    : layer.id === 'skillsMeta'
-                      ? drained.skillsMeta > 0
-                      : false;
-              const isTask = layer.id === 'userTask';
-              const isTurn = layer.id.startsWith('turn-');
-              const turnIdx = isTurn
-                ? parseInt(layer.id.replace('turn-', ''), 10)
-                : -1;
-              const isMiddleTurn =
-                isTurn &&
-                turnCount > MAX_INDIVIDUAL &&
-                turnIdx >= 2 &&
-                turnIdx < Math.min(turnCount, MAX_TURNS) - 3;
-              const isInactiveTurn = isTurn && turnIdx >= turnCount;
+          <ContextRegionScene
+            rows={rows}
+            fallbackHeight={400}
+            renderRow={renderRow}
+            fillRatio={fillRatio}
+            className={styles.contextScene}
+            companionClassName={styles.attentionCompanion}
+            renderCompanion={(frame) => (
+              <ContextZoneStrip
+                fillRatio={fillRatio}
+                frame={frame}
+                ariaLabel="Context attention zones"
+              />
+            )}
+          />
 
-              if (isMiddleTurn) {
-                if (turnIdx === 2) {
-                  return (
-                    <div
-                      key="turn-group"
-                      className={`${styles.stackRow} ${styles.turnGroupItem}`}
-                      style={{
-                        flexGrow: turnGroupTokens,
-                        flexBasis: 0,
-                        flexShrink: 0,
-                        minHeight: MIN_ROW_HEIGHT,
-                      }}
-                    >
-                      <span className={styles.turnGroupLabel}>
-                        {`Turns 3–${Math.min(turnCount, MAX_TURNS) - 3}`}
-                      </span>
-                    </div>
-                  );
-                }
-                return null;
-              }
-
-              const row = (
-                <div
-                  key={layer.id}
-                  className={`${styles.stackRow} ${isTask ? styles[`stackRowTask_${taskZone}`] : ''} ${isInactiveTurn ? styles.turnCollapsed : ''}`}
-                  style={{
-                    flexGrow: adjustedFlexProps[layer.id] ?? layer.tokens,
-                    flexBasis: 0,
-                    flexShrink: 0,
-                    minHeight: isInactiveTurn ? 0 : MIN_ROW_HEIGHT,
-                    background: rowBg(layer, isDrained, taskZone),
-                    opacity: layer.isCompacted
-                      ? 0.55
-                      : layer.tokens > 0
-                        ? 1
-                        : 0,
-                  }}
-                >
-                  <div
-                    className={styles.accent}
-                    style={{
-                      background: accentColor(layer, isDrained, taskZone),
-                    }}
-                  />
-                  <span
-                    className={styles.rowLabel}
-                    style={{ fontFamily: VOICE_FONT[layer.voice] }}
-                  >
-                    {layer.label}
-                  </span>
-                  <span className={styles.badgeGroup}>
-                    <span
-                      className={`${styles.compactedBadge} ${layer.isCompacted ? styles.badgeVisible : ''}`}
-                    >
-                      compacted
-                    </span>
-                    <span
-                      className={`${styles.skillBadge} ${layer.isSkillTurn && !layer.isCompacted ? styles.badgeVisible : ''}`}
-                    >
-                      skill
-                    </span>
-                    <span
-                      className={`${styles.drainBadge} ${isDrained ? styles.badgeVisible : ''}`}
-                    >
-                      drained
-                    </span>
-                  </span>
-                  <span className={styles.rowTokens}>
-                    {formatK(layer.tokens)}
-                  </span>
-                </div>
-              );
-
-              return row;
-            })}
-
-            <div
-              className={`${styles.headroomRow} ${headroom >= 6000 ? styles.headroomRowActive : ''}`}
-              style={{
-                flexGrow:
-                  adjustedFlexProps['headroom'] ??
-                  (headroom >= 6000 ? headroom : 0),
-                flexBasis: 0,
-                flexShrink: 0,
-              }}
-            >
-              <span className={styles.headroomLabel}>
-                {formatK(headroom)} headroom
-              </span>
-            </div>
-
-            <div
-              className={`${styles.compactionRow} ${showCompaction ? styles.compactionRowActive : ''}`}
-              style={{
-                flexGrow:
-                  adjustedFlexProps['compaction'] ??
-                  (showCompaction ? COMPACTION_BUFFER : 0),
-                flexBasis: 0,
-                flexShrink: 0,
-                minHeight: showCompaction ? MIN_COMPACTION_HEIGHT : 0,
-              }}
-            >
-              <span className={styles.compactionLabel}>Buffer 33K</span>
-            </div>
+          <div className={`${styles.verdict} ${styles[`verdict_${taskZone}`]}`}>
+            {verdictText}
           </div>
 
           {/* Budget bar */}
@@ -1046,110 +864,7 @@ export default function ContextPressureDiagram() {
             />
           </div>
           <div className={styles.budgetLabel}>
-            {formatK(totalTokens)} / {formatK(effectiveWindow)}
-          </div>
-        </div>
-
-        {/* ── Arrow 2 ──────────────────────────────────────────── */}
-        <div className={styles.arrow} aria-hidden="true">
-          <span className={styles.arrowGlyph}>→</span>
-          <span className={styles.arrowLabel}>model sees</span>
-        </div>
-
-        {/* ── Panel 3: Attention ───────────────────────────────── */}
-        <div className={styles.panel}>
-          <div className={styles.panelHeader}>Attention</div>
-
-          <div
-            className={styles.attentionStrip}
-            style={
-              {
-                '--task-pos': `${taskFrac * 100}%`,
-              } as React.CSSProperties
-            }
-            aria-label={`Task lands at ${Math.round(taskFrac * 100)}% of filled context. Max attention drop ${maxDropPct}%`}
-          >
-            <div
-              className={styles.zonePrimacy}
-              style={{ height: `${PRIMACY_END * 100}%` }}
-            >
-              <span className={styles.zoneLabel}>PRIMACY</span>
-              <span className={styles.zoneDesc}>strong attention</span>
-            </div>
-
-            <div
-              className={styles.zoneMiddle}
-              style={{
-                height: `${(RECENCY_START - PRIMACY_END) * 100}%`,
-                background: middleBg,
-              }}
-            >
-              <span className={styles.zoneLabel}>MIDDLE</span>
-              <span className={styles.zoneDesc}>
-                {fillRatio < 0.15
-                  ? 'attention strong'
-                  : fillRatio < 0.35
-                    ? 'attention decent'
-                    : fillRatio < 0.65
-                      ? 'attention degraded'
-                      : 'attention collapsed'}
-              </span>
-            </div>
-
-            <div
-              className={styles.zoneRecency}
-              style={{ height: `${(1 - RECENCY_START) * 100}%` }}
-            >
-              <span className={styles.zoneLabel}>RECENCY</span>
-              <span className={styles.zoneDesc}>strong attention</span>
-            </div>
-
-            {/* Desktop SVG: x = attention, y = frac */}
-            <svg
-              className={`${styles.attentionSVG} ${styles.attentionSVGDesktop}`}
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <line
-                x1="100"
-                y1="0"
-                x2="100"
-                y2="100"
-                className={styles.attentionGrid}
-              />
-              <path d={fillPath} className={styles.attentionFill} />
-              <path d={curvePath} className={styles.attentionCurve} />
-            </svg>
-
-            {/* Mobile SVG: x = frac, y = 100 - attention */}
-            <svg
-              className={`${styles.attentionSVG} ${styles.attentionSVGMobile}`}
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path d={mobileFillPath} className={styles.attentionFill} />
-              <path d={mobileCurvePath} className={styles.attentionCurve} />
-            </svg>
-
-            <div
-              className={`${styles.taskMarker} ${styles[`taskMarker_${taskZone}`]}`}
-              style={{ top: `${taskFrac * 100}%` }}
-            >
-              <div className={styles.taskMarkerLine} />
-              <span className={styles.taskMarkerLabel}>Your task</span>
-              <span className={styles.taskMarkerDot} />
-            </div>
-          </div>
-
-          <div className={`${styles.verdict} ${styles[`verdict_${taskZone}`]}`}>
-            {verdictText}
-          </div>
-          <div className={styles.maxDrop}>
-            {fillRatio > 0.15
-              ? `Middle attention drops to ${Math.round(minAttention * 100)}% at ${Math.round(fillRatio * 100)}% fill`
-              : 'Window nearly empty — full attention across all positions'}
+            {formatK(totalTokens)} / {formatK(effectiveBudget)}
           </div>
         </div>
       </div>

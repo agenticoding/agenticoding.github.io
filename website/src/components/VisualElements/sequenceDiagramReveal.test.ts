@@ -12,14 +12,32 @@ test('sequence rows stay unreached until their threshold, then reveal and hide t
   const secondRow = 1;
   const threshold = getSequenceRowThreshold(secondRow, rowCount);
 
-  assert.equal(getSequenceRowReached(false, threshold, secondRow, rowCount), false);
-  assert.equal(getSequenceMessageGhostReached(false, threshold, secondRow, rowCount), false);
+  assert.equal(
+    getSequenceRowReached(false, threshold, secondRow, rowCount),
+    false
+  );
+  assert.equal(
+    getSequenceMessageGhostReached(false, threshold, secondRow, rowCount),
+    false
+  );
 
-  assert.equal(getSequenceRowReached(true, threshold - 0.01, secondRow, rowCount), false);
-  assert.equal(getSequenceMessageGhostReached(true, threshold - 0.01, secondRow, rowCount), false);
+  assert.equal(
+    getSequenceRowReached(true, threshold - 0.01, secondRow, rowCount),
+    false
+  );
+  assert.equal(
+    getSequenceMessageGhostReached(true, threshold - 0.01, secondRow, rowCount),
+    false
+  );
 
-  assert.equal(getSequenceRowReached(true, threshold, secondRow, rowCount), true);
-  assert.equal(getSequenceMessageGhostReached(true, threshold, secondRow, rowCount), true);
+  assert.equal(
+    getSequenceRowReached(true, threshold, secondRow, rowCount),
+    true
+  );
+  assert.equal(
+    getSequenceMessageGhostReached(true, threshold, secondRow, rowCount),
+    true
+  );
 });
 
 test('sequence rows settle into the final visible output at phase 1', () => {
@@ -27,14 +45,31 @@ test('sequence rows settle into the final visible output at phase 1', () => {
 
   for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
     assert.equal(getSequenceRowReached(true, 1, rowIndex, rowCount), true);
-    assert.equal(getSequenceMessageGhostReached(true, 1, rowIndex, rowCount), true);
+    assert.equal(
+      getSequenceMessageGhostReached(true, 1, rowIndex, rowCount),
+      true
+    );
   }
 });
 
 test('single-row diagrams still reveal on the row band start', () => {
-  assert.equal(getSequenceRowThreshold(0, 1), sequenceDiagramReveal.rowBandStart);
-  assert.equal(getSequenceRowReached(true, sequenceDiagramReveal.rowBandStart - 0.01, 0, 1), false);
-  assert.equal(getSequenceRowReached(true, sequenceDiagramReveal.rowBandStart, 0, 1), true);
+  assert.equal(
+    getSequenceRowThreshold(0, 1),
+    sequenceDiagramReveal.rowBandStart
+  );
+  assert.equal(
+    getSequenceRowReached(
+      true,
+      sequenceDiagramReveal.rowBandStart - 0.01,
+      0,
+      1
+    ),
+    false
+  );
+  assert.equal(
+    getSequenceRowReached(true, sequenceDiagramReveal.rowBandStart, 0, 1),
+    true
+  );
 });
 
 test('rowCount=0 returns ROW_BAND_START (defensive)', () => {
@@ -52,7 +87,10 @@ test('rowIndex >= rowCount returns threshold beyond ROW_BAND_END', () => {
   const threshold = getSequenceRowThreshold(outOfBoundsIndex, rowCount);
   assert.ok(threshold > sequenceDiagramReveal.rowBandEnd);
   // Threshold > 1 means never reached (phase max is 1).
-  assert.equal(getSequenceRowReached(true, 1, outOfBoundsIndex, rowCount), false);
+  assert.equal(
+    getSequenceRowReached(true, 1, outOfBoundsIndex, rowCount),
+    false
+  );
 });
 
 test('rowIndex < 0 returns threshold below ROW_BAND_START', () => {

@@ -48,17 +48,17 @@ const B_Y = stackY(4);
 
 const ACTS = [
   { id: 'frameDivider', threshold: 0.04 },
-  { id: 'frameTitles', threshold: 0.10 },
+  { id: 'frameTitles', threshold: 0.1 },
   { id: 'operatorBox0', threshold: 0.18 },
   { id: 'operatorConnector0', threshold: 0.26 },
   { id: 'operatorBox1', threshold: 0.34 },
   { id: 'operatorConnector1', threshold: 0.42 },
-  { id: 'operatorBox2', threshold: 0.50 },
+  { id: 'operatorBox2', threshold: 0.5 },
   { id: 'modelBox0', threshold: 0.56 },
   { id: 'modelConnector0', threshold: 0.62 },
   { id: 'modelBox1', threshold: 0.68 },
   { id: 'modelConnector1', threshold: 0.74 },
-  { id: 'modelBox2', threshold: 0.80 },
+  { id: 'modelBox2', threshold: 0.8 },
   { id: 'modelConnector2', threshold: 0.86 },
   { id: 'modelBox3', threshold: 0.92 },
   { id: 'note0', threshold: 0.94 },
@@ -70,13 +70,30 @@ const ACTS = [
 type ActId = (typeof ACTS)[number]['id'];
 
 function stackY(count: number): number[] {
-  return Array.from({ length: count }, (_, index) => FIRST_BOX_Y + index * BOX_STEP_Y);
+  return Array.from(
+    { length: count },
+    (_, index) => FIRST_BOX_Y + index * BOX_STEP_Y
+  );
 }
 
 function Box({
-  bx, by, color, bg, label, fontFamily = 'var(--font-mono)', className, style,
+  bx,
+  by,
+  color,
+  bg,
+  label,
+  fontFamily = 'var(--font-mono)',
+  className,
+  style,
 }: {
-  bx: number; by: number; color: string; bg: string; label: string; fontFamily?: string; className?: string; style?: CSSProperties;
+  bx: number;
+  by: number;
+  color: string;
+  bg: string;
+  label: string;
+  fontFamily?: string;
+  className?: string;
+  style?: CSSProperties;
 }) {
   return (
     <g className={className} style={style}>
@@ -105,9 +122,19 @@ function Box({
 }
 
 function Connector({
-  cx, fromY, toY, markerId, className, style,
+  cx,
+  fromY,
+  toY,
+  markerId,
+  className,
+  style,
 }: {
-  cx: number; fromY: number; toY: number; markerId: string; className?: string; style?: CSSProperties;
+  cx: number;
+  fromY: number;
+  toY: number;
+  markerId: string;
+  className?: string;
+  style?: CSSProperties;
 }) {
   return (
     <line
@@ -130,10 +157,15 @@ export default function SkillsInvocationDiagram() {
   const { wasReached } = useActs(ACTS, phase);
   const markerId = useId().replace(/:/g, '');
 
-  const frameClass = (act: ActId) => clsx(styles.frame, wasReached(act) && styles.entered);
-  const flowClass = (act: ActId) => clsx(styles.flowItem, wasReached(act) && styles.entered);
-  const noteClass = (act: ActId) => clsx(styles.note, wasReached(act) && styles.entered);
-  const stagger = (index: number): CSSProperties => ({ transitionDelay: `calc(var(--motion-stagger-sm) * ${index})` });
+  const frameClass = (act: ActId) =>
+    clsx(styles.frame, wasReached(act) && styles.entered);
+  const flowClass = (act: ActId) =>
+    clsx(styles.flowItem, wasReached(act) && styles.entered);
+  const noteClass = (act: ActId) =>
+    clsx(styles.note, wasReached(act) && styles.entered);
+  const stagger = (index: number): CSSProperties => ({
+    transitionDelay: `calc(var(--motion-stagger-sm) * ${index})`,
+  });
 
   return (
     <div style={{ maxWidth: `${VW}px`, margin: '0 auto' }}>
@@ -145,236 +177,239 @@ export default function SkillsInvocationDiagram() {
         xmlns="http://www.w3.org/2000/svg"
         style={{ display: 'block', maxWidth: `${VW}px`, margin: '0 auto' }}
       >
-      <defs>
-        <marker
-          id={markerId}
-          viewBox={`0 0 ${MARKER_W} ${MARKER_H}`}
-          markerWidth={MARKER_W}
-          markerHeight={MARKER_H}
-          refX={MARKER_REF_X}
-          refY={MARKER_REF_Y}
-          orient="auto"
+        <defs>
+          <marker
+            id={markerId}
+            viewBox={`0 0 ${MARKER_W} ${MARKER_H}`}
+            markerWidth={MARKER_W}
+            markerHeight={MARKER_H}
+            refX={MARKER_REF_X}
+            refY={MARKER_REF_Y}
+            orient="auto"
+          >
+            <polygon
+              points={`0 0, ${MARKER_W} ${MARKER_H / 2}, 0 ${MARKER_H}`}
+              fill="var(--text-muted)"
+            />
+          </marker>
+        </defs>
+
+        <line
+          className={frameClass('frameDivider')}
+          style={stagger(0)}
+          x1={DIVIDER_X}
+          y1={DIVIDER_TOP}
+          x2={DIVIDER_X}
+          y2={DIVIDER_BOTTOM}
+          stroke="var(--border-default)"
+          strokeWidth={1}
+          strokeDasharray="4 3"
+        />
+
+        <text
+          className={frameClass('frameTitles')}
+          style={stagger(1)}
+          x={A_CX}
+          y={TITLE_Y}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={11}
+          fontFamily="var(--font-mono-keyword)"
+          fill="var(--text-muted)"
+          letterSpacing="0.06em"
         >
-          <polygon points={`0 0, ${MARKER_W} ${MARKER_H / 2}, 0 ${MARKER_H}`} fill="var(--text-muted)" />
-        </marker>
-      </defs>
+          OPERATOR-TRIGGERED
+        </text>
 
-      <line
-        className={frameClass('frameDivider')}
-        style={stagger(0)}
-        x1={DIVIDER_X}
-        y1={DIVIDER_TOP}
-        x2={DIVIDER_X}
-        y2={DIVIDER_BOTTOM}
-        stroke="var(--border-default)"
-        strokeWidth={1}
-        strokeDasharray="4 3"
-      />
+        <Box
+          bx={A_BX}
+          by={A_Y[0]}
+          color="var(--visual-neutral)"
+          bg="var(--visual-bg-neutral)"
+          label="Operator types /commit"
+          fontFamily="var(--font-mono-human)"
+          className={flowClass('operatorBox0')}
+          style={stagger(0)}
+        />
+        <Connector
+          cx={A_CX}
+          fromY={A_Y[0]}
+          toY={A_Y[1]}
+          markerId={markerId}
+          className={flowClass('operatorConnector0')}
+          style={stagger(1)}
+        />
 
-      <text
-        className={frameClass('frameTitles')}
-        style={stagger(1)}
-        x={A_CX}
-        y={TITLE_Y}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={11}
-        fontFamily="var(--font-mono-keyword)"
-        fill="var(--text-muted)"
-        letterSpacing="0.06em"
-      >
-        OPERATOR-TRIGGERED
-      </text>
+        <Box
+          bx={A_BX}
+          by={A_Y[1]}
+          color="var(--visual-violet)"
+          bg="var(--visual-bg-violet)"
+          label="Skill expands → context"
+          fontFamily="var(--font-mono-ai)"
+          className={flowClass('operatorBox1')}
+          style={stagger(2)}
+        />
+        <Connector
+          cx={A_CX}
+          fromY={A_Y[1]}
+          toY={A_Y[2]}
+          markerId={markerId}
+          className={flowClass('operatorConnector1')}
+          style={stagger(3)}
+        />
 
-      <Box
-        bx={A_BX}
-        by={A_Y[0]}
-        color="var(--visual-neutral)"
-        bg="var(--visual-bg-neutral)"
-        label="Operator types /commit"
-        fontFamily="var(--font-mono-human)"
-        className={flowClass('operatorBox0')}
-        style={stagger(0)}
-      />
-      <Connector
-        cx={A_CX}
-        fromY={A_Y[0]}
-        toY={A_Y[1]}
-        markerId={markerId}
-        className={flowClass('operatorConnector0')}
-        style={stagger(1)}
-      />
+        <Box
+          bx={A_BX}
+          by={A_Y[2]}
+          color="var(--visual-cyan)"
+          bg="var(--visual-bg-cyan)"
+          label="Agent executes"
+          fontFamily="var(--font-mono-ai)"
+          className={flowClass('operatorBox2')}
+          style={stagger(4)}
+        />
 
-      <Box
-        bx={A_BX}
-        by={A_Y[1]}
-        color="var(--visual-violet)"
-        bg="var(--visual-bg-violet)"
-        label="Skill expands → context"
-        fontFamily="var(--font-mono-ai)"
-        className={flowClass('operatorBox1')}
-        style={stagger(2)}
-      />
-      <Connector
-        cx={A_CX}
-        fromY={A_Y[1]}
-        toY={A_Y[2]}
-        markerId={markerId}
-        className={flowClass('operatorConnector1')}
-        style={stagger(3)}
-      />
+        <text
+          className={noteClass('note0')}
+          style={stagger(0)}
+          x={A_CX}
+          y={A_Y[2] + BOX_H + NOTE_OFFSET_Y}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={11}
+          fontFamily="var(--font-mono)"
+          fill="var(--text-muted)"
+          fontStyle="italic"
+        >
+          ✓ reliable — always works
+        </text>
+        <text
+          className={noteClass('note1')}
+          style={stagger(1)}
+          x={A_CX}
+          y={A_Y[2] + BOX_H + NOTE_OFFSET_Y + NOTE_STEP_Y}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={11}
+          fontFamily="var(--font-mono)"
+          fill="var(--text-muted)"
+          fontStyle="italic"
+        >
+          ✗ needs human to know it exists
+        </text>
 
-      <Box
-        bx={A_BX}
-        by={A_Y[2]}
-        color="var(--visual-cyan)"
-        bg="var(--visual-bg-cyan)"
-        label="Agent executes"
-        fontFamily="var(--font-mono-ai)"
-        className={flowClass('operatorBox2')}
-        style={stagger(4)}
-      />
+        <text
+          className={frameClass('frameTitles')}
+          style={stagger(1)}
+          x={B_CX}
+          y={TITLE_Y}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={11}
+          fontFamily="var(--font-mono-keyword)"
+          fill="var(--text-muted)"
+          letterSpacing="0.06em"
+        >
+          MODEL-INVOKED
+        </text>
 
-      <text
-        className={noteClass('note0')}
-        style={stagger(0)}
-        x={A_CX}
-        y={A_Y[2] + BOX_H + NOTE_OFFSET_Y}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={11}
-        fontFamily="var(--font-mono)"
-        fill="var(--text-muted)"
-        fontStyle="italic"
-      >
-        ✓ reliable — always works
-      </text>
-      <text
-        className={noteClass('note1')}
-        style={stagger(1)}
-        x={A_CX}
-        y={A_Y[2] + BOX_H + NOTE_OFFSET_Y + NOTE_STEP_Y}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={11}
-        fontFamily="var(--font-mono)"
-        fill="var(--text-muted)"
-        fontStyle="italic"
-      >
-        ✗ needs human to know it exists
-      </text>
+        <Box
+          bx={B_BX}
+          by={B_Y[0]}
+          color="var(--visual-indigo)"
+          bg="var(--visual-bg-indigo)"
+          label="Agent reads skill metadata"
+          fontFamily="var(--font-mono-ai)"
+          className={flowClass('modelBox0')}
+          style={stagger(0)}
+        />
+        <Connector
+          cx={B_CX}
+          fromY={B_Y[0]}
+          toY={B_Y[1]}
+          markerId={markerId}
+          className={flowClass('modelConnector0')}
+          style={stagger(1)}
+        />
 
-      <text
-        className={frameClass('frameTitles')}
-        style={stagger(1)}
-        x={B_CX}
-        y={TITLE_Y}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={11}
-        fontFamily="var(--font-mono-keyword)"
-        fill="var(--text-muted)"
-        letterSpacing="0.06em"
-      >
-        MODEL-INVOKED
-      </text>
+        <Box
+          bx={B_BX}
+          by={B_Y[1]}
+          color="var(--visual-indigo)"
+          bg="var(--visual-bg-indigo)"
+          label="Recognizes task match"
+          fontFamily="var(--font-mono-ai)"
+          className={flowClass('modelBox1')}
+          style={stagger(2)}
+        />
+        <Connector
+          cx={B_CX}
+          fromY={B_Y[1]}
+          toY={B_Y[2]}
+          markerId={markerId}
+          className={flowClass('modelConnector1')}
+          style={stagger(3)}
+        />
 
-      <Box
-        bx={B_BX}
-        by={B_Y[0]}
-        color="var(--visual-indigo)"
-        bg="var(--visual-bg-indigo)"
-        label="Agent reads skill metadata"
-        fontFamily="var(--font-mono-ai)"
-        className={flowClass('modelBox0')}
-        style={stagger(0)}
-      />
-      <Connector
-        cx={B_CX}
-        fromY={B_Y[0]}
-        toY={B_Y[1]}
-        markerId={markerId}
-        className={flowClass('modelConnector0')}
-        style={stagger(1)}
-      />
+        <Box
+          bx={B_BX}
+          by={B_Y[2]}
+          color="var(--visual-violet)"
+          bg="var(--visual-bg-violet)"
+          label="Auto-triggers + expands"
+          fontFamily="var(--font-mono-ai)"
+          className={flowClass('modelBox2')}
+          style={stagger(4)}
+        />
+        <Connector
+          cx={B_CX}
+          fromY={B_Y[2]}
+          toY={B_Y[3]}
+          markerId={markerId}
+          className={flowClass('modelConnector2')}
+          style={stagger(5)}
+        />
 
-      <Box
-        bx={B_BX}
-        by={B_Y[1]}
-        color="var(--visual-indigo)"
-        bg="var(--visual-bg-indigo)"
-        label="Recognizes task match"
-        fontFamily="var(--font-mono-ai)"
-        className={flowClass('modelBox1')}
-        style={stagger(2)}
-      />
-      <Connector
-        cx={B_CX}
-        fromY={B_Y[1]}
-        toY={B_Y[2]}
-        markerId={markerId}
-        className={flowClass('modelConnector1')}
-        style={stagger(3)}
-      />
+        <Box
+          bx={B_BX}
+          by={B_Y[3]}
+          color="var(--visual-cyan)"
+          bg="var(--visual-bg-cyan)"
+          label="Agent executes"
+          fontFamily="var(--font-mono-ai)"
+          className={flowClass('modelBox3')}
+          style={stagger(6)}
+        />
 
-      <Box
-        bx={B_BX}
-        by={B_Y[2]}
-        color="var(--visual-violet)"
-        bg="var(--visual-bg-violet)"
-        label="Auto-triggers + expands"
-        fontFamily="var(--font-mono-ai)"
-        className={flowClass('modelBox2')}
-        style={stagger(4)}
-      />
-      <Connector
-        cx={B_CX}
-        fromY={B_Y[2]}
-        toY={B_Y[3]}
-        markerId={markerId}
-        className={flowClass('modelConnector2')}
-        style={stagger(5)}
-      />
-
-      <Box
-        bx={B_BX}
-        by={B_Y[3]}
-        color="var(--visual-cyan)"
-        bg="var(--visual-bg-cyan)"
-        label="Agent executes"
-        fontFamily="var(--font-mono-ai)"
-        className={flowClass('modelBox3')}
-        style={stagger(6)}
-      />
-
-      <text
-        className={noteClass('note2')}
-        style={stagger(2)}
-        x={B_CX}
-        y={B_Y[3] + BOX_H + NOTE_OFFSET_Y}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={11}
-        fontFamily="var(--font-mono)"
-        fill="var(--text-muted)"
-        fontStyle="italic"
-      >
-        ✓ zero friction — auto-matches
-      </text>
-      <text
-        className={noteClass('note3')}
-        style={stagger(3)}
-        x={B_CX}
-        y={B_Y[3] + BOX_H + NOTE_OFFSET_Y + NOTE_STEP_Y}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={11}
-        fontFamily="var(--font-mono)"
-        fill="var(--text-muted)"
-        fontStyle="italic"
-      >
-        ✗ may pick wrong skill
-      </text>
+        <text
+          className={noteClass('note2')}
+          style={stagger(2)}
+          x={B_CX}
+          y={B_Y[3] + BOX_H + NOTE_OFFSET_Y}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={11}
+          fontFamily="var(--font-mono)"
+          fill="var(--text-muted)"
+          fontStyle="italic"
+        >
+          ✓ zero friction — auto-matches
+        </text>
+        <text
+          className={noteClass('note3')}
+          style={stagger(3)}
+          x={B_CX}
+          y={B_Y[3] + BOX_H + NOTE_OFFSET_Y + NOTE_STEP_Y}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={11}
+          fontFamily="var(--font-mono)"
+          fill="var(--text-muted)"
+          fontStyle="italic"
+        >
+          ✗ may pick wrong skill
+        </text>
       </svg>
     </div>
   );

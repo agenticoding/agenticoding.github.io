@@ -1,24 +1,29 @@
 import styles from './ContextMechanismMap.module.css';
 import {
   ContextLensMetrics,
-  ContextLensSubAgent,
-  ContextLensWindow,
   type ContextLensBlock,
   type ContextLensMetric,
   type ContextLensMetricValue,
   type ContextLensTone,
   type ContextLensZone,
 } from './ContextLensWindow';
+import {
+  CONTEXT_MECHANISM_LAYOUT,
+  CONTEXT_MECHANISM_VISUAL,
+  contextMechanismCardX,
+  contextMechanismGeometry,
+  contextMechanismTileY,
+} from './contextMechanismMapModel';
 
-const VIEW_W = 960;
 const VIEW_H = 392;
 const CARD_Y = 24;
-const CARD_W = 148;
 const CARD_H = 344;
-const CARD_GAP = 8;
-const CARD_X0 = 24;
-const CARD_INSET = 16;
-const CARD_CONTENT_W = CARD_W - CARD_INSET * 2;
+const {
+  viewWidth: VIEW_W,
+  cardWidth: CARD_W,
+  cardInset: CARD_INSET,
+} = CONTEXT_MECHANISM_LAYOUT;
+const { contextWidth: CARD_CONTENT_W } = contextMechanismGeometry;
 
 const LENS_Y = CARD_Y + 56;
 const ROW_START_Y = CARD_Y + 160;
@@ -35,9 +40,24 @@ type Card = {
   mobileLoads: string;
   mobileLands: string;
   mobileZone: ContextLensZone | 'separate';
-  shape: 'window' | 'subagents';
+  separateWindow?: boolean;
   blocks: readonly ContextLensBlock[];
 };
+
+type MechanismTileLayout = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+function mechanismColor(tone: ContextLensTone) {
+  return `var(--visual-${tone})`;
+}
+
+function mechanismBg(tone: ContextLensTone) {
+  return `var(--visual-bg-${tone})`;
+}
 
 const CARDS: readonly Card[] = [
   {
@@ -51,7 +71,6 @@ const CARDS: readonly Card[] = [
     mobileLoads: 'Always',
     mobileLands: 'Primacy',
     mobileZone: 'primacy',
-    shape: 'window',
     blocks: [{ zone: 'primacy', label: 'rules', tone: 'cyan' }],
   },
   {
@@ -65,7 +84,6 @@ const CARDS: readonly Card[] = [
     mobileLoads: 'Start / deferred',
     mobileLands: 'Tools',
     mobileZone: 'middle',
-    shape: 'window',
     blocks: [{ zone: 'middle', label: 'schemas', tone: 'cyan' }],
   },
   {
@@ -79,7 +97,6 @@ const CARDS: readonly Card[] = [
     mobileLoads: 'On demand',
     mobileLands: 'Recency',
     mobileZone: 'recency',
-    shape: 'window',
     blocks: [{ zone: 'recency', label: 'skill', tone: 'violet' }],
   },
   {
@@ -93,7 +110,6 @@ const CARDS: readonly Card[] = [
     mobileLoads: 'At boundary',
     mobileLands: 'State',
     mobileZone: 'middle',
-    shape: 'window',
     blocks: [
       { zone: 'middle', label: 'summary', tone: 'neutral', dashed: true },
     ],
@@ -109,8 +125,8 @@ const CARDS: readonly Card[] = [
     mobileLoads: 'Forked task',
     mobileLands: 'Separate',
     mobileZone: 'separate',
-    shape: 'subagents',
-    blocks: [],
+    separateWindow: true,
+    blocks: [{ zone: 'primacy', label: 'forked task', tone: 'magenta' }],
   },
   {
     id: 'retrieval',
@@ -123,39 +139,158 @@ const CARDS: readonly Card[] = [
     mobileLoads: 'On demand',
     mobileLands: 'Conversation',
     mobileZone: 'primacy',
-    shape: 'window',
     blocks: [
-      { zone: 'primacy', label: 'harness RAG', tone: 'indigo', width: 70 },
-      { zone: 'recency', label: 'search', tone: 'indigo', width: 70 },
+      { zone: 'primacy', label: 'harness RAG', tone: 'indigo' },
+      { zone: 'recency', label: 'search', tone: 'indigo' },
     ],
   },
 ] as const;
 
-function cardX(index: number) {
-  return CARD_X0 + index * (CARD_W + CARD_GAP);
+function MechanismZoneBands({ x }: { x: number }) {
+  return contextMechanismGeometry.zones.map((band) => (
+    <rect
+      key={band.zone}
+      x={x}
+      y={LENS_Y + band.y}
+      width={CARD_CONTENT_W}
+      height={band.height}
+      rx={0}
+      fill={CONTEXT_MECHANISM_VISUAL.zoneFill[band.zone]}
+      opacity={CONTEXT_MECHANISM_VISUAL.zoneOpacity[band.zone]}
+    />
+  ));
+}
+
+function MechanismZoneSeparators({ x }: { x: number }) {
+  return contextMechanismGeometry.zones
+    .slice(1)
+    .map((band) => (
+      <line
+        key={band.zone}
+        x1={x}
+        y1={LENS_Y + band.y}
+        x2={x + CARD_CONTENT_W}
+        y2={LENS_Y + band.y}
+        stroke={CONTEXT_MECHANISM_VISUAL.separatorStroke}
+        strokeWidth={1}
+      />
+    ));
+}
+
+function MechanismFrameOutline({ card, x }: { card: Card; x: number }) {
+  const stroke = card.separateWindow
+    ? mechanismColor(card.tone)
+    : 'var(--border-default)';
+  return (
+    <rect
+      x={x}
+      y={LENS_Y}
+      width={CARD_CONTENT_W}
+      height={CONTEXT_MECHANISM_LAYOUT.lensHeight}
+      rx={0}
+      fill="none"
+      stroke={stroke}
+      strokeWidth={1}
+      strokeDasharray={card.separateWindow ? '4 3' : undefined}
+    />
+  );
+}
+
+function MechanismFrame({ card, x }: { card: Card; x: number }) {
+  return (
+    <>
+      <MechanismZoneBands x={x} />
+      <MechanismZoneSeparators x={x} />
+      <MechanismFrameOutline card={card} x={x} />
+    </>
+  );
+}
+
+function mechanismTileLayout(block: ContextLensBlock, x: number) {
+  return {
+    x: x + CONTEXT_MECHANISM_LAYOUT.tileInset,
+    y: LENS_Y + contextMechanismTileY(block.zone),
+    width: contextMechanismGeometry.tileWidth,
+    height: CONTEXT_MECHANISM_LAYOUT.tileHeight,
+  };
+}
+
+function MechanismTileRect({
+  block,
+  color,
+  layout,
+}: {
+  block: ContextLensBlock;
+  color: string;
+  layout: MechanismTileLayout;
+}) {
+  return (
+    <rect
+      {...layout}
+      rx={0}
+      fill="var(--surface-page)"
+      stroke={color}
+      strokeWidth={1.5}
+      strokeDasharray={block.dashed ? '4 3' : undefined}
+    />
+  );
+}
+
+function MechanismTileLabel({
+  block,
+  color,
+  layout,
+}: {
+  block: ContextLensBlock;
+  color: string;
+  layout: MechanismTileLayout;
+}) {
+  return (
+    <text
+      x={layout.x + layout.width / 2}
+      y={layout.y + layout.height / 2 + 3}
+      textAnchor="middle"
+      className={styles.blockLabel}
+      fill={color}
+    >
+      {block.label}
+    </text>
+  );
+}
+
+function MechanismTile({
+  block,
+  fallbackTone,
+  x,
+}: {
+  block: ContextLensBlock;
+  fallbackTone: ContextLensTone;
+  x: number;
+}) {
+  const color = mechanismColor(block.tone ?? fallbackTone);
+  const layout = mechanismTileLayout(block, x);
+  return (
+    <g>
+      <MechanismTileRect block={block} color={color} layout={layout} />
+      <MechanismTileLabel block={block} color={color} layout={layout} />
+    </g>
+  );
 }
 
 function LensShape({ card, x }: { card: Card; x: number }) {
-  if (card.shape === 'subagents') {
-    return (
-      <ContextLensSubAgent
-        x={x + CARD_INSET}
-        y={LENS_Y}
-        width={CARD_CONTENT_W}
-        tone={card.tone}
-      />
-    );
-  }
-
+  const lensX = x + CARD_INSET;
   return (
-    <ContextLensWindow
-      x={x + CARD_INSET}
-      y={LENS_Y}
-      width={CARD_CONTENT_W}
-      height={88}
-      tone={card.tone}
-      blocks={card.blocks}
-    />
+    <g aria-hidden="true">
+      <MechanismFrame card={card} x={lensX} />
+      {card.blocks.map((block, index) => (
+        <MechanismTile
+          key={`${block.zone}-${index}`}
+          block={block}
+          fallbackTone={card.tone}
+          x={lensX}
+        />
+      ))}
+    </g>
   );
 }
 
@@ -211,8 +346,8 @@ function SeparateWindowMarker({
 }
 
 function LandingMarker({ card, x, y }: { card: Card; x: number; y: number }) {
-  const color = `var(--visual-${card.tone})`;
-  const bg = `var(--visual-bg-${card.tone})`;
+  const color = mechanismColor(card.tone);
+  const bg = mechanismBg(card.tone);
 
   if (card.mobileZone === 'separate')
     return <SeparateWindowMarker x={x} y={y} color={color} bg={bg} />;
@@ -274,7 +409,7 @@ function MobileMetric({
 
 function MobileMechanismRow({ card, index }: { card: Card; index: number }) {
   const y = 32 + index * 72;
-  const color = `var(--visual-${card.tone})`;
+  const color = mechanismColor(card.tone);
 
   return (
     <g>
@@ -337,9 +472,9 @@ function metricRows(card: Card): ContextLensMetric[] {
 }
 
 function MechanismCard({ card, index }: { card: Card; index: number }) {
-  const x = cardX(index);
-  const color = `var(--visual-${card.tone})`;
-  const bg = `var(--visual-bg-${card.tone})`;
+  const x = contextMechanismCardX(index);
+  const color = mechanismColor(card.tone);
+  const bg = mechanismBg(card.tone);
 
   return (
     <g>

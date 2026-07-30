@@ -55,7 +55,8 @@ const ARROW_GAP = 8; // Gap between box edges and arrow start/end
 // Terminal (checkmark circle)
 const TERMINAL_CIRCLE_OFFSET = 85;
 const TERMINAL_CIRCLE_RADIUS = 22;
-const TERMINAL_ARROW_END = TERMINAL_CIRCLE_OFFSET - TERMINAL_CIRCLE_RADIUS - ARROW_GAP; // 55
+const TERMINAL_ARROW_END =
+  TERMINAL_CIRCLE_OFFSET - TERMINAL_CIRCLE_RADIUS - ARROW_GAP; // 55
 
 // Box styling
 const CHECKMARK_Y_OFFSET = 7;
@@ -117,31 +118,52 @@ export default function SystemFlowDiagram({
 
   // Helper: Horizontal arrow line
   const HorizontalArrow = ({
-    x1, x2, y, className, hasArrowhead = true
+    x1,
+    x2,
+    y,
+    className,
+    hasArrowhead = true,
   }: {
-    x1: number; x2: number; y: number; className: string; hasArrowhead?: boolean
+    x1: number;
+    x2: number;
+    y: number;
+    className: string;
+    hasArrowhead?: boolean;
   }) => (
     <line
-      x1={x1} y1={y} x2={x2} y2={y}
+      x1={x1}
+      y1={y}
+      x2={x2}
+      y2={y}
       className={className}
-      markerEnd={hasArrowhead ? "url(#arrowhead-flow)" : undefined}
+      markerEnd={hasArrowhead ? 'url(#arrowhead-flow)' : undefined}
     />
   );
 
   // Helper: Vertical spine line
   const VerticalSpine = ({
-    x, minY, maxY, className
+    x,
+    minY,
+    maxY,
+    className,
   }: {
-    x: number; minY: number; maxY: number; className: string
-  }) => (
-    <line x1={x} y1={minY} x2={x} y2={maxY} className={className} />
-  );
+    x: number;
+    minY: number;
+    maxY: number;
+    className: string;
+  }) => <line x1={x} y1={minY} x2={x} y2={maxY} className={className} />;
 
   // Helper: Multiple arrows from spine to targets (fork pattern)
   const ForkArrows = ({
-    spineX, targetX, phase, keyPrefix = 'fork'
+    spineX,
+    targetX,
+    phase,
+    keyPrefix = 'fork',
   }: {
-    spineX: number; targetX: number; phase: FlowPhase; keyPrefix?: string
+    spineX: number;
+    targetX: number;
+    phase: FlowPhase;
+    keyPrefix?: string;
   }) => (
     <>
       {phase.steps.map((_, i) => (
@@ -158,9 +180,15 @@ export default function SystemFlowDiagram({
 
   // Helper: Multiple arrows from sources to spine (join pattern)
   const JoinArrows = ({
-    sourceX, spineX, phase, keyPrefix = 'join'
+    sourceX,
+    spineX,
+    phase,
+    keyPrefix = 'join',
   }: {
-    sourceX: number; spineX: number; phase: FlowPhase; keyPrefix?: string
+    sourceX: number;
+    spineX: number;
+    phase: FlowPhase;
+    keyPrefix?: string;
   }) => (
     <>
       {phase.steps.map((_, i) => (
@@ -238,7 +266,12 @@ export default function SystemFlowDiagram({
                   hasArrowhead={false}
                 />
                 {/* Vertical fork spine */}
-                <VerticalSpine x={forkX} minY={minY} maxY={maxY} className={styles.forkPath} />
+                <VerticalSpine
+                  x={forkX}
+                  minY={minY}
+                  maxY={maxY}
+                  className={styles.forkPath}
+                />
                 {/* Horizontal lines to each concurrent step */}
                 <ForkArrows spineX={forkX} targetX={gapEnd} phase={nextPhase} />
               </g>
@@ -257,7 +290,12 @@ export default function SystemFlowDiagram({
                 {/* Horizontal lines from each concurrent step */}
                 <JoinArrows sourceX={gapStart} spineX={joinX} phase={phase} />
                 {/* Vertical join spine */}
-                <VerticalSpine x={joinX} minY={minY} maxY={maxY} className={styles.joinPath} />
+                <VerticalSpine
+                  x={joinX}
+                  minY={minY}
+                  maxY={maxY}
+                  className={styles.joinPath}
+                />
                 {/* Line from join point to next phase */}
                 <HorizontalArrow
                   x1={joinX + HALF_STROKE}
@@ -281,9 +319,18 @@ export default function SystemFlowDiagram({
           return (
             <g key={`arrow-${phase.id}`}>
               {/* Horizontal lines from current phase steps */}
-              <JoinArrows sourceX={gapStart} spineX={joinSpineX} phase={phase} />
+              <JoinArrows
+                sourceX={gapStart}
+                spineX={joinSpineX}
+                phase={phase}
+              />
               {/* Vertical join spine */}
-              <VerticalSpine x={joinSpineX} minY={currentRange.minY} maxY={currentRange.maxY} className={styles.joinPath} />
+              <VerticalSpine
+                x={joinSpineX}
+                minY={currentRange.minY}
+                maxY={currentRange.maxY}
+                className={styles.joinPath}
+              />
               {/* Center connection - between spine edges */}
               <HorizontalArrow
                 x1={joinSpineX + HALF_STROKE}
@@ -293,51 +340,71 @@ export default function SystemFlowDiagram({
                 hasArrowhead={false}
               />
               {/* Vertical fork spine */}
-              <VerticalSpine x={forkSpineX} minY={nextRange.minY} maxY={nextRange.maxY} className={styles.forkPath} />
+              <VerticalSpine
+                x={forkSpineX}
+                minY={nextRange.minY}
+                maxY={nextRange.maxY}
+                className={styles.forkPath}
+              />
               {/* Horizontal lines to next phase steps */}
-              <ForkArrows spineX={forkSpineX} targetX={gapEnd} phase={nextPhase} />
+              <ForkArrows
+                spineX={forkSpineX}
+                targetX={gapEnd}
+                phase={nextPhase}
+              />
             </g>
           );
         })}
 
         {/* Arrow to success terminal */}
-        {phases.length > 0 && (() => {
-          const lastPhase = phases[phases.length - 1];
-          const isConcurrent = lastPhase.steps.length > 1;
-          const gapStart = lastPhase.x + BOX_WIDTH;
-          // Position join spine 1/3 of the way to terminal (consistent with other join spines)
-          const joinX = gapStart + TERMINAL_CIRCLE_OFFSET / 3;
-          const terminalArrowEnd = gapStart + TERMINAL_ARROW_END;
+        {phases.length > 0 &&
+          (() => {
+            const lastPhase = phases[phases.length - 1];
+            const isConcurrent = lastPhase.steps.length > 1;
+            const gapStart = lastPhase.x + BOX_WIDTH;
+            // Position join spine 1/3 of the way to terminal (consistent with other join spines)
+            const joinX = gapStart + TERMINAL_CIRCLE_OFFSET / 3;
+            const terminalArrowEnd = gapStart + TERMINAL_ARROW_END;
 
-          if (!isConcurrent) {
+            if (!isConcurrent) {
+              return (
+                <HorizontalArrow
+                  x1={gapStart + ARROW_GAP}
+                  x2={terminalArrowEnd}
+                  y={CENTER_Y}
+                  className={styles.mainArrow}
+                />
+              );
+            }
+
+            // Join from concurrent final phase
+            const { minY, maxY } = getPhaseYRange(lastPhase);
             return (
-              <HorizontalArrow
-                x1={gapStart + ARROW_GAP}
-                x2={terminalArrowEnd}
-                y={CENTER_Y}
-                className={styles.mainArrow}
-              />
+              <g>
+                {/* Horizontal lines from each step */}
+                <JoinArrows
+                  sourceX={gapStart}
+                  spineX={joinX}
+                  phase={lastPhase}
+                  keyPrefix="final-join"
+                />
+                {/* Vertical join spine */}
+                <VerticalSpine
+                  x={joinX}
+                  minY={minY}
+                  maxY={maxY}
+                  className={styles.joinPath}
+                />
+                {/* Arrow to terminal */}
+                <HorizontalArrow
+                  x1={joinX + HALF_STROKE}
+                  x2={terminalArrowEnd}
+                  y={CENTER_Y}
+                  className={styles.mainArrow}
+                />
+              </g>
             );
-          }
-
-          // Join from concurrent final phase
-          const { minY, maxY } = getPhaseYRange(lastPhase);
-          return (
-            <g>
-              {/* Horizontal lines from each step */}
-              <JoinArrows sourceX={gapStart} spineX={joinX} phase={lastPhase} keyPrefix="final-join" />
-              {/* Vertical join spine */}
-              <VerticalSpine x={joinX} minY={minY} maxY={maxY} className={styles.joinPath} />
-              {/* Arrow to terminal */}
-              <HorizontalArrow
-                x1={joinX + HALF_STROKE}
-                x2={terminalArrowEnd}
-                y={CENTER_Y}
-                className={styles.mainArrow}
-              />
-            </g>
-          );
-        })()}
+          })()}
 
         {/* Success terminal (checkmark circle) */}
         {phases.length > 0 && (
@@ -346,13 +413,17 @@ export default function SystemFlowDiagram({
             style={{ animationDelay: `${phases.length * 0.12}s` }}
           >
             <circle
-              cx={phases[phases.length - 1].x + BOX_WIDTH + TERMINAL_CIRCLE_OFFSET}
+              cx={
+                phases[phases.length - 1].x + BOX_WIDTH + TERMINAL_CIRCLE_OFFSET
+              }
               cy={CENTER_Y}
               r={TERMINAL_CIRCLE_RADIUS}
               className={styles.successTerminal}
             />
             <text
-              x={phases[phases.length - 1].x + BOX_WIDTH + TERMINAL_CIRCLE_OFFSET}
+              x={
+                phases[phases.length - 1].x + BOX_WIDTH + TERMINAL_CIRCLE_OFFSET
+              }
               y={CENTER_Y + CHECKMARK_Y_OFFSET}
               className={styles.checkmark}
               textAnchor="middle"
@@ -408,8 +479,12 @@ export default function SystemFlowDiagram({
 
           // For concurrent phases, exit from bottom of group; otherwise from step bottom
           const exitStartY = isConcurrent
-            ? getPhaseYRange(location.phase).maxY + BOX_HEIGHT / 2 + EXIT_START_PADDING
-            : getStepY(location.phase, location.stepIndex) + BOX_HEIGHT / 2 + EXIT_START_PADDING;
+            ? getPhaseYRange(location.phase).maxY +
+              BOX_HEIGHT / 2 +
+              EXIT_START_PADDING
+            : getStepY(location.phase, location.stepIndex) +
+              BOX_HEIGHT / 2 +
+              EXIT_START_PADDING;
 
           // Center exit marker directly below the phase
           const finalExitX = exitX;

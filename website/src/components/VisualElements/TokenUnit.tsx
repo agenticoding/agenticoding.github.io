@@ -67,11 +67,7 @@ function ImageUnit(props: ShapeProps) {
   const box = visibleBox(props);
   const radius = minDimension(box) / 2;
   return (
-    <circle
-      cx={box.x + box.width / 2}
-      cy={box.y + box.height / 2}
-      r={radius}
-    />
+    <circle cx={box.x + box.width / 2} cy={box.y + box.height / 2} r={radius} />
   );
 }
 
@@ -112,11 +108,7 @@ function CodeUnit(props: ShapeProps) {
   const midY = box.y + box.height * 0.5;
   const bottom = box.y + box.height * 0.7;
   return (
-    <g
-      fill="none"
-      strokeLinecap="round"
-      strokeWidth={codeGlyphStrokeWidth()}
-    >
+    <g fill="none" strokeLinecap="round" strokeWidth={codeGlyphStrokeWidth()}>
       <path d={`M ${left} ${top} L ${midX} ${midY} L ${left} ${bottom}`} />
       <path d={`M ${cursorStart} ${bottom} H ${cursorEnd}`} />
     </g>
@@ -176,7 +168,8 @@ function showsCompressedOverlay(
   modality: TokenUnitModality
 ) {
   return (
-    signal === 'compressed' && !['audio', 'video', 'code', 'image'].includes(modality)
+    signal === 'compressed' &&
+    !['audio', 'video', 'code', 'image'].includes(modality)
   );
 }
 

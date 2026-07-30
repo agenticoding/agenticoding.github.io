@@ -1,133 +1,164 @@
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import styles from './ContextSqueezeDiagram.module.css';
-import lensStyles from './ContextLensWindow.module.css';
-import { ContextLensFrame, ContextLensRegionNotes, toneBg, toneColor, type ContextLensTone } from './ContextLensWindow';
+import {
+  ContextRegionScene,
+  ContextZoneStrip,
+  type RegionTile,
+  // Explicit .tsx: on case-insensitive filesystems './ContextRegions' would
+  // resolve to the sibling model file contextRegions.ts.
+} from './ContextRegions.tsx';
+import {
+  BIG_FILE_WEIGHT,
+  LOOP_TICKS,
+  SMALL_FILE_WEIGHT,
+  TURN_COUNT,
+  TURN_INTERVAL_MS,
+  squeezeRows,
+  turnsAtTick,
+  windowFill,
+  type SqueezeContextRow,
+} from './contextSqueezeModel';
 
-// ViewBox 560×300 — The Fixed Prefix Stack.
-// The ghost prompt marks the primacy start; inserted rules occupy that space and
-// force the live prompt into the middle zone before any agent work begins.
+// Context Squeeze — where the user prompt LANDS as conversation context
+// builds after it, as a function of context-file size (user directive). Two
+// panels play one shared conversation timeline in sync; only the startup
+// file differs. The prompt starts at the recency edge in both. As turns
+// append below it, the prompt travels up the stack: with a small file the
+// turns outweigh the prefix and the prompt settles at the primacy edge;
+// with a big file the fat prefix pins it in the dead middle — the valley.
+//
+// Built on the ContextRegions foundation (the MCP figure idiom): each tick
+// is a discrete row-state change on an interval and the foundation's flex
+// transitions animate the pushing/resizing; the measured zone backdrop
+// tracks the content extent automatically. Tiles stay NEUTRAL — the colored
+// zone bands carry the attention story (fillRatio shades them via the shared
+// attention model); only the accent encodes type. The prompt keeps a
+// persistent outline so it stays findable while traveling.
+//
+// Idle loop, no interaction: startup hold → append TURN_COUNT turns → hold
+// the outcome (verdict lines fade in) → reset. Reduced motion renders the
+// complete end-state statically: the initial tick IS the end of the loop
+// and no interval ever starts.
 
-const WINDOW = { x: 54, y: 24, width: 270, height: 264 } as const;
-const BLOCK_X = WINDOW.x + 18;
-const BLOCK_W = WINDOW.width - 36;
-const BLOCK_H = 24;
-const TASK_LEAN_Y = 84;
-const LABEL_OFFSET = 16;
+const STACK_HEIGHT = 440;
 
-const PREFIX_BLOCKS = [
-  { label: 'System', y: 32, tone: 'neutral' },
-  { label: 'Tools', y: 58, tone: 'neutral' },
-  { label: 'AGENTS.md', y: 86, tone: 'cyan', className: styles.ruleOne },
-  { label: 'Repo rules', y: 114, tone: 'cyan', className: styles.ruleTwo },
-] as const;
+// Accent-only type grammar (tiles themselves neutral): cyan = harness
+// payload (system/tools/file), emphasis = the human prompt, indigo = turn
+// data appended by the conversation.
+function accentFor(row: SqueezeContextRow): string | undefined {
+  if (row.spacer) return undefined;
+  if (row.id === 'prompt') return 'var(--border-emphasis)';
+  if (row.id.startsWith('turn-')) return 'var(--visual-indigo)';
+  return 'var(--visual-cyan)';
+}
 
-const PANEL = { x: 360, y: 24, width: 188, height: 264 } as const;
-const STEP_NUMBER_X = PANEL.x + 20;
-const STEP_TEXT_X = PANEL.x + 44;
-const STEP_YS = [85, 133, 177] as const;
-const STEPS = [
-  { n: '1', label: 'Prefix loads first', className: styles.stepOne },
-  { n: '2', label: ['Rules insert', 'above prompt'], className: styles.stepTwo },
-  { n: '3', label: ['Prompt leaves', 'primacy'], className: styles.stepThree },
-] as const;
+function toTile(row: SqueezeContextRow): RegionTile {
+  return {
+    ...row,
+    accent: accentFor(row),
+    // The prompt travels the whole stack — the outline keeps it findable.
+    outlineColor: row.id === 'prompt' ? 'var(--border-emphasis)' : undefined,
+    labelFontFamily: 'var(--font-mono-spec)',
+  };
+}
 
-type PrefixBlockProps = {
-  label: string;
-  y: number;
-  tone: ContextLensTone;
-  className?: string;
+type PanelSpec = {
+  id: string;
+  title: string;
+  fileWeight: number;
+  verdict: string;
+  tone: 'success' | 'error';
 };
 
-function PrefixBlock({ label, y, tone, className }: PrefixBlockProps) {
-  return (
-    <g className={clsx(styles.prefixBlock, className)}>
-      <rect x={BLOCK_X} y={y} width={BLOCK_W} height={BLOCK_H} rx={0} fill={toneBg(tone)} stroke={toneColor(tone)} strokeWidth={1.5} />
-      <text x={BLOCK_X + 12} y={y + LABEL_OFFSET} className={lensStyles.blockLabel} fill={toneColor(tone)}>
-        {label}
-      </text>
-    </g>
-  );
+const PANELS: readonly PanelSpec[] = [
+  {
+    id: 'small',
+    title: 'SMALL FILE — AGENTS.md · 2K',
+    fileWeight: SMALL_FILE_WEIGHT,
+    verdict: 'prompt keeps the primacy edge',
+    tone: 'success',
+  },
+  {
+    id: 'big',
+    title: 'BIG FILE — AGENTS.md · 20K',
+    fileWeight: BIG_FILE_WEIGHT,
+    verdict: 'prompt buried in the dead middle',
+    tone: 'error',
+  },
+];
+
+// One loop clock for both panels — the turns append in sync by construction.
+// Starts at the END of the loop: SSR and reduced-motion render the complete
+// end-state (all turns present, verdicts visible); the effect rewinds to
+// startup only when motion is allowed.
+function useSqueezeTick(): number {
+  const [tick, setTick] = useState(LOOP_TICKS - 1);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    setTick(0);
+    const interval = window.setInterval(
+      () => setTick((current) => (current + 1) % LOOP_TICKS),
+      TURN_INTERVAL_MS
+    );
+    return () => window.clearInterval(interval);
+  }, []);
+  return tick;
 }
 
-function TaskBlock() {
-  return (
-    <g>
-      <g className={styles.taskShift}>
-        <rect className={styles.taskRect} x={BLOCK_X} y={TASK_LEAN_Y} width={BLOCK_W} height={BLOCK_H} rx={0} strokeWidth={2} />
-        <text x={BLOCK_X + 12} y={TASK_LEAN_Y + LABEL_OFFSET} className={lensStyles.blockLabel} fill="var(--text-body)">
-          User Prompt
-        </text>
-      </g>
-    </g>
-  );
-}
-
-function LensFrame() {
-  return (
-    <g>
-      <ContextLensFrame {...WINDOW} />
-      <ContextLensRegionNotes {...WINDOW} side="left" notes={{ primacy: 'top', middle: 'middle', recency: 'latest' }} />
-      <text x={WINDOW.x} y={18} className={styles.windowLabel} fill="var(--text-muted)">
-        REQUEST CONTEXT
-      </text>
-    </g>
-  );
-}
-
-function PushIndicators() {
-  return (
-    <g aria-hidden="true">
-      <path className={styles.pushOne} d="M 188 92 v 18 m -6 -6 l 6 6 6 -6" />
-      <path className={styles.pushTwo} d="M 188 122 v 18 m -6 -6 l 6 6 6 -6" />
-    </g>
-  );
-}
-
-function StepRow({ n, label, y, className }: { n: string; label: string | readonly string[]; y: number; className: string }) {
-  const lines = Array.isArray(label) ? label : [label];
+function SqueezePanel({ spec, turns }: { spec: PanelSpec; turns: number }) {
+  const rows = squeezeRows(spec.fileWeight, turns);
+  const fill = windowFill(rows);
+  const outcome = turns === TURN_COUNT;
 
   return (
-    <g className={clsx(styles.stepRow, className)}>
-      <rect className={styles.stepBox} x={STEP_NUMBER_X - 9} y={y - 13} width={18} height={18} rx={0} />
-      <text x={STEP_NUMBER_X} y={y} textAnchor="middle" className={styles.stepNumber}>{n}</text>
-      <text x={STEP_TEXT_X} y={y} className={styles.stepText}>
-        {lines.map((line, index) => <tspan key={line} x={STEP_TEXT_X} dy={index === 0 ? 0 : 14}>{line}</tspan>)}
-      </text>
-    </g>
-  );
-}
-
-function RightColumn() {
-  return (
-    <g className={styles.rightColumn}>
-      <rect x={PANEL.x} y={PANEL.y} width={PANEL.width} height={PANEL.height} rx={0} fill="var(--surface-page)" stroke="var(--border-subtle)" />
-      <text x={PANEL.x + 20} y={49} className={styles.panelTitle} fill="var(--text-muted)">STARTUP ORDER</text>
-      {STEPS.map((step, index) => <StepRow key={step.n} {...step} y={STEP_YS[index]} />)}
-      <path d={`M ${PANEL.x + 20} 209 H ${PANEL.x + PANEL.width - 20}`} stroke="var(--border-subtle)" />
-      <text x={PANEL.x + 20} y={231} className={styles.panelTitle} fill="var(--text-muted)">RESULT</text>
-      <text x={PANEL.x + 20} y={253} className={styles.warningText} fill="var(--visual-warning)">
-        <tspan x={PANEL.x + 20}>task enters</tspan>
-        <tspan x={PANEL.x + 20} dy={18}>middle zone</tspan>
-      </text>
-    </g>
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>{spec.title}</div>
+      <ContextRegionScene
+        rows={rows.map(toTile)}
+        fallbackHeight={STACK_HEIGHT}
+        fillRatio={fill}
+        className={styles.stackClip}
+        companionClassName={styles.zoneStrip}
+        renderCompanion={(frame) => (
+          <ContextZoneStrip
+            fillRatio={fill}
+            frame={frame}
+            ariaLabel={`Attention zones for the ${spec.title} context`}
+          />
+        )}
+      />
+      <div
+        className={clsx(
+          styles.verdict,
+          spec.tone === 'success' ? styles.verdictSuccess : styles.verdictError,
+          outcome && styles.verdictVisible
+        )}
+      >
+        {spec.verdict}
+      </div>
+    </section>
   );
 }
 
 export default function ContextSqueezeDiagram() {
+  const tick = useSqueezeTick();
+  const turns = turnsAtTick(tick);
+
   return (
-    <svg
-      viewBox="0 0 560 300"
-      width="100%"
-      role="img"
-      aria-label="Context files load before the user prompt as part of the fixed prefix. New rules occupy the prompt's primacy-zone starting slot and push the live prompt into the middle zone, where it receives weaker attention."
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ display: 'block', maxWidth: '560px', margin: '0 auto' }}
-    >
-      <LensFrame />
-      {PREFIX_BLOCKS.map((block) => <PrefixBlock key={block.label} {...block} />)}
-      <TaskBlock />
-      <PushIndicators />
-      <RightColumn />
-    </svg>
+    <div className={styles.container}>
+      <div className={styles.panels}>
+        {PANELS.map((spec) => (
+          <SqueezePanel key={spec.id} spec={spec} turns={turns} />
+        ))}
+      </div>
+      <p className={styles.liveRegion} aria-live="polite">
+        Both panels start identically: system prompt, tools, a context file, and
+        the user prompt at the recency edge. The same eight turns then append
+        below the prompt. With the small file the prompt travels up to the
+        primacy edge and keeps strong attention; with the big file it stays
+        pinned in the middle zone, where attention collapses.
+      </p>
+    </div>
   );
 }

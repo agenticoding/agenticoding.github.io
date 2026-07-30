@@ -1,14 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {
-  seededTokenTrain,
-  TOKEN_TRAIN_PALETTE,
-} from './TokenTrainSequence.ts';
-const VALID_SIGNALS = new Set([
-  'ordinary',
-  'salient',
-  'compressed',
-]);
+import { seededTokenTrain, TOKEN_TRAIN_PALETTE } from './TokenTrainSequence.ts';
+const VALID_SIGNALS = new Set(['ordinary', 'salient', 'compressed']);
 
 test('seeded token trains are deterministic for a seed', () => {
   assert.deepEqual(
@@ -31,7 +24,10 @@ test('seeded token trains cover the full modality palette at palette length', ()
     )
   );
 
-  assert.deepEqual(modalities, new Set(TOKEN_TRAIN_PALETTE.map((t) => t.modality)));
+  assert.deepEqual(
+    modalities,
+    new Set(TOKEN_TRAIN_PALETTE.map((t) => t.modality))
+  );
 });
 
 test('token train palette uses only canonical modalities', () => {

@@ -159,7 +159,7 @@ const CARDS: readonly ModelCard[] = [
         },
         implication:
           'The score is comparable across the cards and provides a broad instruction-following signal.',
-        boundary: 'It does not replace an inbox-specific evaluation.'
+        boundary: 'It does not replace an inbox-specific evaluation.',
       },
     ],
   },
@@ -217,7 +217,8 @@ const CARDS: readonly ModelCard[] = [
         },
         implication:
           'The score measures explicit constraint adherence, not the quality of the extracted todo list.',
-        boundary: 'The email-to-todo workflow still requires a local evaluation.'
+        boundary:
+          'The email-to-todo workflow still requires a local evaluation.',
       },
     ],
   },
@@ -283,7 +284,7 @@ const CARDS: readonly ModelCard[] = [
         implication:
           'The score measures instruction adherence; API tool and structured-output support are separate capabilities.',
         boundary:
-          'Published benchmark results do not replace an inbox-specific test set.'
+          'Published benchmark results do not replace an inbox-specific test set.',
       },
     ],
   },
@@ -542,17 +543,18 @@ function FieldGraphic({
   field: CardField;
   benchmarkRow: BenchmarkRow;
 }) {
-  const graphic = field.label === 'Context vs. recall' ? (
-    <BenchmarkRecallGraphic row={benchmarkRow} />
-  ) : field.publishedBenchmark ? (
-    <PublishedBenchmarkGraphic benchmark={field.publishedBenchmark} />
-  ) : field.price ? (
-    <PriceGraphic profile={field.price} />
-  ) : field.modality ? (
-    <ModalityGraphic profile={field.modality} />
-  ) : (
-    <RecallGraphic value={field.value} />
-  );
+  const graphic =
+    field.label === 'Context vs. recall' ? (
+      <BenchmarkRecallGraphic row={benchmarkRow} />
+    ) : field.publishedBenchmark ? (
+      <PublishedBenchmarkGraphic benchmark={field.publishedBenchmark} />
+    ) : field.price ? (
+      <PriceGraphic profile={field.price} />
+    ) : field.modality ? (
+      <ModalityGraphic profile={field.modality} />
+    ) : (
+      <RecallGraphic value={field.value} />
+    );
   return <div className={styles.fieldGraphic}>{graphic}</div>;
 }
 
@@ -690,7 +692,12 @@ function BenchmarkRecallGraphic({ row }: { row: BenchmarkRow }) {
       />
       <div className={styles.benchmarkMeta}>
         <span>{row.benchmark}</span>
-        <span>{row.mode} · {row.curveDensity === 'full' ? 'full reported curve' : 'sparse reported points'}</span>
+        <span>
+          {row.mode} ·{' '}
+          {row.curveDensity === 'full'
+            ? 'full reported curve'
+            : 'sparse reported points'}
+        </span>
         <a href={row.source}>Benchmark source ↗</a>
       </div>
     </div>
@@ -726,7 +733,10 @@ function PublishedBenchmarkGraphic({
 }) {
   return (
     <div className={styles.benchmarkGraphic}>
-      <div className={styles.scoreHero} aria-label={`${benchmark.name}: ${benchmark.score}`}>
+      <div
+        className={styles.scoreHero}
+        aria-label={`${benchmark.name}: ${benchmark.score}`}
+      >
         <span>{benchmark.name}</span>
         <strong>{benchmark.score}</strong>
       </div>
@@ -754,7 +764,8 @@ function ModelCardView({
   direction: SlideDirection;
 }) {
   const benchmarkRow = benchmarkRows.find((row) => row.id === card.benchmarkId);
-  if (!benchmarkRow) throw new Error(`Missing benchmark row: ${card.benchmarkId}`);
+  if (!benchmarkRow)
+    throw new Error(`Missing benchmark row: ${card.benchmarkId}`);
   return (
     <section
       id={`model-card-panel-${card.id}`}

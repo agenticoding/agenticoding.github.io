@@ -1,0 +1,25 @@
+/* Shared push-cue base: geometry stroke only. Tone and visibility motion are
+   owned by the consuming figure. */
+
+.pushCue {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+}
+
+.warning {
+  stroke: var(--visual-warning);
+}
+
+.success {
+  stroke: var(--visual-success);
+}
+
+.cyan {
+  stroke: var(--visual-cyan);
+}
+
+.neutral {
+  stroke: var(--visual-neutral);
+}

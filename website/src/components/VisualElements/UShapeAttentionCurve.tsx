@@ -1,5 +1,6 @@
 import React, { useId, useState } from 'react';
 import styles from './UShapeAttentionCurve.module.css';
+import rangeStyles from './RangeControl.module.css';
 import {
   createAttentionCurve,
   curvePoints,
@@ -7,7 +8,9 @@ import {
   type AttentionCurve,
   type PlotBounds,
   type ProjectedCurvePoint,
-} from './UShapeAttentionCurveGeometry';
+} from './attentionModel';
+import regionStyles from './contextRegions.module.css';
+import { ZONE_FRACTIONS, ZONE_LABELS, ZONE_LABEL_FILLS } from './contextZones';
 
 interface UShapeAttentionCurveProps {
   initialContextFill?: number;
@@ -15,8 +18,8 @@ interface UShapeAttentionCurveProps {
 
 const DESKTOP_PLOT: PlotBounds = { left: 60, right: 760, top: 30, bottom: 260 };
 const MOBILE_PLOT: PlotBounds = { left: 40, right: 316, top: 40, bottom: 176 };
-const PRIMACY_END = 0.2;
-const RECENCY_START = 0.8;
+const PRIMACY_END = ZONE_FRACTIONS.primacyEnd;
+const RECENCY_START = ZONE_FRACTIONS.recencyStart;
 
 function getSeverity(contextFill: number) {
   if (contextFill <= 20) {
@@ -131,6 +134,7 @@ export default function UShapeAttentionCurve({
     <div className={styles.container}>
       <svg
         className={`${styles.svg} ${styles.desktopDiagram}`}
+        style={{ display: 'block' }}
         viewBox="0 0 800 320"
         preserveAspectRatio="xMidYMid meet"
         role="img"
@@ -174,28 +178,37 @@ export default function UShapeAttentionCurve({
           Low
         </text>
         <text
-          x={130}
+          x={
+            DESKTOP_PLOT.left +
+            (PRIMACY_END / 2) * (DESKTOP_PLOT.right - DESKTOP_PLOT.left)
+          }
           y={DESKTOP_PLOT.bottom + 22}
           textAnchor="middle"
-          className={styles.axisLabel}
+          className={regionStyles.zoneLabel}
+          fill={ZONE_LABEL_FILLS.primacy}
         >
-          PRIMACY
+          {ZONE_LABELS.primacy}
         </text>
         <text
           x={410}
           y={DESKTOP_PLOT.bottom + 22}
           textAnchor="middle"
-          className={styles.zoneLabelError}
+          className={regionStyles.zoneLabel}
+          fill={ZONE_LABEL_FILLS.middle}
         >
-          LOST IN MIDDLE
+          {ZONE_LABELS.middle}
         </text>
         <text
-          x={690}
+          x={
+            DESKTOP_PLOT.left +
+            ((1 + RECENCY_START) / 2) * (DESKTOP_PLOT.right - DESKTOP_PLOT.left)
+          }
           y={DESKTOP_PLOT.bottom + 22}
           textAnchor="middle"
-          className={styles.axisLabel}
+          className={regionStyles.zoneLabel}
+          fill={ZONE_LABEL_FILLS.recency}
         >
-          RECENCY
+          {ZONE_LABELS.recency}
         </text>
 
         {desktopAnnotationVisible && (
@@ -223,6 +236,7 @@ export default function UShapeAttentionCurve({
 
       <svg
         className={`${styles.svg} ${styles.mobileDiagram}`}
+        style={{ display: 'none' }}
         viewBox="0 0 340 288"
         preserveAspectRatio="xMidYMid meet"
         role="img"
@@ -276,19 +290,38 @@ export default function UShapeAttentionCurve({
         >
           Low
         </text>
-        <text x={68} y={200} textAnchor="middle" className={styles.axisLabel}>
-          START
+        <text
+          x={
+            MOBILE_PLOT.left +
+            (PRIMACY_END / 2) * (MOBILE_PLOT.right - MOBILE_PLOT.left)
+          }
+          y={200}
+          textAnchor="middle"
+          className={regionStyles.zoneLabel}
+          fill={ZONE_LABEL_FILLS.primacy}
+        >
+          {ZONE_LABELS.primacy}
         </text>
         <text
           x={178}
           y={200}
           textAnchor="middle"
-          className={styles.zoneLabelError}
+          className={regionStyles.zoneLabel}
+          fill={ZONE_LABEL_FILLS.middle}
         >
-          MIDDLE
+          {ZONE_LABELS.middle}
         </text>
-        <text x={288} y={200} textAnchor="middle" className={styles.axisLabel}>
-          END
+        <text
+          x={
+            MOBILE_PLOT.left +
+            ((1 + RECENCY_START) / 2) * (MOBILE_PLOT.right - MOBILE_PLOT.left)
+          }
+          y={200}
+          textAnchor="middle"
+          className={regionStyles.zoneLabel}
+          fill={ZONE_LABEL_FILLS.recency}
+        >
+          {ZONE_LABELS.recency}
         </text>
         <text
           x={178}
@@ -310,9 +343,9 @@ export default function UShapeAttentionCurve({
         </text>
       </svg>
 
-      <div className={styles.sliderRow}>
-        <span className={styles.sliderLabel}>Context Fill</span>
-        <div className={styles.sliderControl}>
+      <div className={rangeStyles.row}>
+        <span className={rangeStyles.label}>Context Fill</span>
+        <div className={rangeStyles.control}>
           <input
             type="range"
             min={0}
@@ -320,7 +353,7 @@ export default function UShapeAttentionCurve({
             value={contextFill}
             onChange={(event) => setContextFill(Number(event.target.value))}
             list={sliderMarksId}
-            className={styles.slider}
+            className={rangeStyles.slider}
             aria-label="Context fill percentage"
             aria-valuetext={`${contextFill}%, ${severity.tier}: ${severity.desc}`}
           />
@@ -329,13 +362,13 @@ export default function UShapeAttentionCurve({
             <option value="50" label="50%" />
             <option value="100" label="100%" />
           </datalist>
-          <div className={styles.sliderMarks} aria-hidden="true">
+          <div className={rangeStyles.marks} aria-hidden="true">
             <span>0%</span>
             <span>50%</span>
             <span>100%</span>
           </div>
         </div>
-        <span className={styles.sliderValue}>{contextFill}%</span>
+        <span className={rangeStyles.value}>{contextFill}%</span>
       </div>
     </div>
   );

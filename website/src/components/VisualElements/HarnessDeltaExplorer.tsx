@@ -57,7 +57,8 @@ const scoreMax = 90;
 const harnessColors: Record<string, ColorPair> = {
   'Claude Code': {
     bg: 'color-mix(in srgb, var(--visual-warning) 14%, transparent)',
-    color: 'color-mix(in srgb, var(--visual-warning) 68%, var(--visual-neutral))',
+    color:
+      'color-mix(in srgb, var(--visual-warning) 68%, var(--visual-neutral))',
   },
   'Codex CLI': colorPair('indigo'),
   OpenCode: colorPair('success'),
@@ -78,15 +79,43 @@ const series: ModelSeries[] = [
     id: 'opus-46',
     label: 'Claude Opus 4.6',
     points: rows([
-      row('Meta-Harness', 'Claude Opus 4.6', '2026-05-14', 'Stanford IRIS', 76.4, 2.4),
+      row(
+        'Meta-Harness',
+        'Claude Opus 4.6',
+        '2026-05-14',
+        'Stanford IRIS',
+        76.4,
+        2.4
+      ),
       row('Capy', 'Claude Opus 4.6', '2026-03-12', 'Capy', 75.3, 2.4),
-      row('Terminus-KIRA', 'Claude Opus 4.6', '2026-02-22', 'KRAFTON AI', 74.7, 2.6),
+      row(
+        'Terminus-KIRA',
+        'Claude Opus 4.6',
+        '2026-02-22',
+        'KRAFTON AI',
+        74.7,
+        2.6
+      ),
       row('TongAgents', 'Claude Opus 4.6', '2026-02-22', 'Bigai', 71.9, 2.7),
       row('Droid', 'Claude Opus 4.6', '2026-02-05', 'Factory', 69.9, 2.5),
       row('Crux', 'Claude Opus 4.6', '2026-02-23', 'Roam', 66.9),
       row('Mux', 'Claude Opus 4.6', '2026-02-13', 'Coder', 66.5, 2.5),
-      row('Terminus 2', 'Claude Opus 4.6', '2026-02-06', 'Terminal-Bench', 62.9, 2.7),
-      row('Claude Code', 'Claude Opus 4.6', '2026-02-07', 'Anthropic', 58.0, 2.9),
+      row(
+        'Terminus 2',
+        'Claude Opus 4.6',
+        '2026-02-06',
+        'Terminal-Bench',
+        62.9,
+        2.7
+      ),
+      row(
+        'Claude Code',
+        'Claude Opus 4.6',
+        '2026-02-07',
+        'Anthropic',
+        58.0,
+        2.9
+      ),
     ]),
   },
   {
@@ -96,11 +125,31 @@ const series: ModelSeries[] = [
       row('Droid', 'Claude Opus 4.5', '2025-12-11', 'Factory', 63.1, 2.7),
       row('Letta Code', 'Claude Opus 4.5', '2025-12-17', 'Letta', 59.1, 2.4),
       row('Mux', 'Claude Opus 4.5', '2026-01-17', 'Coder', 58.4),
-      row('Terminus 2', 'Claude Opus 4.5', '2025-11-22', 'Terminal-Bench', 57.8, 2.5),
+      row(
+        'Terminus 2',
+        'Claude Opus 4.5',
+        '2025-11-22',
+        'Terminal-Bench',
+        57.8,
+        2.5
+      ),
       row('Goose', 'Claude Opus 4.5', '2025-12-11', 'Block', 54.3, 2.6),
-      row('Claude Code', 'Claude Opus 4.5', '2025-12-18', 'Anthropic', 52.1, 2.5),
+      row(
+        'Claude Code',
+        'Claude Opus 4.5',
+        '2025-12-18',
+        'Anthropic',
+        52.1,
+        2.5
+      ),
       row('OpenHands', 'Claude Opus 4.5', '2026-01-04', 'OpenHands', 51.9, 2.9),
-      row('OpenCode', 'Claude Opus 4.5', '2026-01-12', 'Anomaly Innovations', 51.7),
+      row(
+        'OpenCode',
+        'Claude Opus 4.5',
+        '2026-01-12',
+        'Anomaly Innovations',
+        51.7
+      ),
     ]),
   },
   {
@@ -109,10 +158,31 @@ const series: ModelSeries[] = [
     points: rows([
       row('Ante', 'Gemini 3 Pro', '2026-01-06', 'Antigma Labs', 69.4, 2.1),
       row('SageAgent', 'Gemini 3 Pro', '2026-02-23', 'OpenSage', 65.2, 2.1),
-      row('CodeBrain-1.5', 'Gemini 3 Pro', '2026-02-05', 'Feeling AI', 62.2, 2.6),
-      row('II-Agent', 'Gemini 3 Pro', '2025-12-23', 'Intelligent Internet', 61.8, 2.8),
+      row(
+        'CodeBrain-1.5',
+        'Gemini 3 Pro',
+        '2026-02-05',
+        'Feeling AI',
+        62.2,
+        2.6
+      ),
+      row(
+        'II-Agent',
+        'Gemini 3 Pro',
+        '2025-12-23',
+        'Intelligent Internet',
+        61.8,
+        2.8
+      ),
       row('Droid', 'Gemini 3 Pro', '2025-12-24', 'Factory', 61.1, 2.8),
-      row('Terminus 2', 'Gemini 3 Pro', '2025-11-21', 'Terminal-Bench', 56.9, 2.5),
+      row(
+        'Terminus 2',
+        'Gemini 3 Pro',
+        '2025-11-21',
+        'Terminal-Bench',
+        56.9,
+        2.5
+      ),
       row('Letta Code', 'Gemini 3 Pro', '2025-12-17', 'Letta', 56.0, 3.0),
     ]),
   },
@@ -125,7 +195,7 @@ function row(
   date: string,
   org: string,
   score: number,
-  ci?: number,
+  ci?: number
 ) {
   return { harness, model, date, org, score, ci };
 }
@@ -237,7 +307,12 @@ function HarnessChart({
       <desc id={descId}>{chartDescription(activeSeries)}</desc>
       <ChartFrame chart={chart} count={stableRowCount} />
       {activeSeries.points.map((point, index) => (
-        <Bar key={point.harness} chart={chart} point={point} index={index + rowOffset} />
+        <Bar
+          key={point.harness}
+          chart={chart}
+          point={point}
+          index={index + rowOffset}
+        />
       ))}
     </svg>
   );
@@ -271,7 +346,12 @@ function XTick({
   return (
     <g>
       <line x1={x} x2={x} y1={chart.topY - 10} y2={bottomY} />
-      <text className={styles.tickLabel} x={x} y={bottomY + 18} textAnchor="middle">
+      <text
+        className={styles.tickLabel}
+        x={x}
+        y={bottomY + 18}
+        textAnchor="middle"
+      >
         {tick}%
       </text>
     </g>
@@ -294,7 +374,12 @@ function Bar({
     scoreLabelX = scoreInside ? x - 8 : x + 8;
   return (
     <g className={styles.barGroup} style={harnessColorStyle(point.harness)}>
-      <text className={styles.harnessLabel} x={startX - 10} y={y + 4} textAnchor="end">
+      <text
+        className={styles.harnessLabel}
+        x={startX - 10}
+        y={y + 4}
+        textAnchor="end"
+      >
         {point.harness}
       </text>
       <rect
@@ -344,7 +429,10 @@ function ErrorBar({
 
 function SourceDataTable({ activeSeries }: { activeSeries: ModelSeries }) {
   return (
-    <table className={styles.sourceTable} aria-label="Plotted Terminal-Bench harness rows">
+    <table
+      className={styles.sourceTable}
+      aria-label="Plotted Terminal-Bench harness rows"
+    >
       <thead>
         <tr>
           <th scope="col">Model</th>
@@ -396,7 +484,8 @@ function ScreenSummary({ activeSeries }: { activeSeries: ModelSeries }) {
   return (
     <p className={styles.screenSummary}>
       {activeSeries.label} ranges from {worst.score.toFixed(1)}% on{' '}
-      {worst.harness} to {best.score.toFixed(1)}% on {best.harness} on {benchmark}.
+      {worst.harness} to {best.score.toFixed(1)}% on {best.harness} on{' '}
+      {benchmark}.
     </p>
   );
 }

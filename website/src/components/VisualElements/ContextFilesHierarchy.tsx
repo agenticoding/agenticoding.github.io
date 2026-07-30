@@ -15,12 +15,12 @@ import { Ghost } from './Ghost';
 const TIER_X = 80;
 const TIER_W = 320;
 const TIER_H = 36;
-const TIER_GAP = 20;           // vertical gap between tiers
-const TIER_TOP = 40;           // y of first tier (below title)
-const ACCENT_W = 3;            // left accent strip width
+const TIER_GAP = 20; // vertical gap between tiers
+const TIER_TOP = 40; // y of first tier (below title)
+const ACCENT_W = 3; // left accent strip width
 
 // Arrow geometry (positioned between tiers)
-const ARROW_X = TIER_X + TIER_W / 2;  // centered horizontally
+const ARROW_X = TIER_X + TIER_W / 2; // centered horizontally
 
 // Bracket geometry
 const BRACKET_X = 420;
@@ -76,10 +76,10 @@ const ARROW_ACTS = [
 
 const ACTS = [
   { id: 'enterprise', threshold: 0.05 },
-  { id: 'project',    threshold: 0.22 },
-  { id: 'rules',      threshold: 0.40 },
-  { id: 'user',       threshold: 0.58 },
-  { id: 'local',      threshold: 0.76 },
+  { id: 'project', threshold: 0.22 },
+  { id: 'rules', threshold: 0.4 },
+  { id: 'user', threshold: 0.58 },
+  { id: 'local', threshold: 0.76 },
   ...ARROW_ACTS,
 ] as const;
 
@@ -107,7 +107,8 @@ export default function ContextFilesHierarchy() {
     >
       {/* ── Title ─────────────────────────────────────────────────────────── */}
       <text
-        x={TIER_X + TIER_W / 2} y={24}
+        x={TIER_X + TIER_W / 2}
+        y={24}
         className={clsx(styles.meta, metaVisible && styles.metaIn)}
         fill="var(--text-muted)"
         textAnchor="middle"
@@ -122,22 +123,28 @@ export default function ContextFilesHierarchy() {
       <g className={clsx(styles.meta, metaVisible && styles.metaIn)}>
         {/* Vertical line */}
         <line
-          x1={BRACKET_X} y1={BRACKET_Y_TOP}
-          x2={BRACKET_X} y2={BRACKET_Y_BOT}
+          x1={BRACKET_X}
+          y1={BRACKET_Y_TOP}
+          x2={BRACKET_X}
+          y2={BRACKET_Y_BOT}
           stroke="var(--text-muted)"
           strokeWidth={1}
         />
         {/* Top horizontal tick */}
         <line
-          x1={BRACKET_X} y1={BRACKET_Y_TOP}
-          x2={BRACKET_X - BRACKET_W} y2={BRACKET_Y_TOP}
+          x1={BRACKET_X}
+          y1={BRACKET_Y_TOP}
+          x2={BRACKET_X - BRACKET_W}
+          y2={BRACKET_Y_TOP}
           stroke="var(--text-muted)"
           strokeWidth={1}
         />
         {/* Bottom horizontal tick */}
         <line
-          x1={BRACKET_X} y1={BRACKET_Y_BOT}
-          x2={BRACKET_X - BRACKET_W} y2={BRACKET_Y_BOT}
+          x1={BRACKET_X}
+          y1={BRACKET_Y_BOT}
+          x2={BRACKET_X - BRACKET_W}
+          y2={BRACKET_Y_BOT}
           stroke="var(--text-muted)"
           strokeWidth={1}
         />
@@ -166,24 +173,37 @@ export default function ContextFilesHierarchy() {
           <g key={tier.id}>
             {/* Ghost placeholder */}
             <Ghost
-              x={TIER_X} y={y} width={TIER_W} height={TIER_H} rx={0}
+              x={TIER_X}
+              y={y}
+              width={TIER_W}
+              height={TIER_H}
+              rx={0}
               fill={bgVar}
               stroke={colorVar}
-              mounted={mounted} reached={isReached}
+              mounted={mounted}
+              reached={isReached}
             />
 
             {/* Tier group (appears on reach) */}
             <g className={clsx(styles.tier, isReached && styles.tierIn)}>
               {/* Background */}
               <rect
-                x={TIER_X} y={y} width={TIER_W} height={TIER_H} rx={0}
+                x={TIER_X}
+                y={y}
+                width={TIER_W}
+                height={TIER_H}
+                rx={0}
                 fill={bgVar}
                 stroke={colorVar}
                 strokeWidth={1.5}
               />
               {/* Left accent strip */}
               <rect
-                x={TIER_X} y={y} width={ACCENT_W} height={TIER_H} rx={0}
+                x={TIER_X}
+                y={y}
+                width={ACCENT_W}
+                height={TIER_H}
+                rx={0}
                 fill={colorVar}
               />
               {/* Label */}
@@ -226,8 +246,10 @@ export default function ContextFilesHierarchy() {
           >
             {/* Shaft */}
             <line
-              x1={ARROW_X} y1={arrowY1 + 2}
-              x2={ARROW_X} y2={arrowY2 - 6}
+              x1={ARROW_X}
+              y1={arrowY1 + 2}
+              x2={ARROW_X}
+              y2={arrowY2 - 6}
               stroke="var(--text-muted)"
               strokeWidth={1}
             />

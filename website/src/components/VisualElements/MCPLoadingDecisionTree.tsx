@@ -3,7 +3,14 @@ import styles from './MCPLoadingDecisionTree.module.css';
 const W = 720;
 const H = 296;
 
-function Label({ x, y, text, className, fill = 'var(--text-body)', anchor = 'middle' }: {
+function Label({
+  x,
+  y,
+  text,
+  className,
+  fill = 'var(--text-body)',
+  anchor = 'middle',
+}: {
   x: number;
   y: number;
   text: string;
@@ -12,13 +19,28 @@ function Label({ x, y, text, className, fill = 'var(--text-body)', anchor = 'mid
   anchor?: 'start' | 'middle' | 'end';
 }) {
   return (
-    <text x={x} y={y} textAnchor={anchor} dominantBaseline="middle" className={className} fill={fill}>
+    <text
+      x={x}
+      y={y}
+      textAnchor={anchor}
+      dominantBaseline="middle"
+      className={className}
+      fill={fill}
+    >
       {text}
     </text>
   );
 }
 
-function MultilineLabel({ x, y, lines, className, fill = 'var(--text-body)', anchor = 'middle', lineGap = 18 }: {
+function MultilineLabel({
+  x,
+  y,
+  lines,
+  className,
+  fill = 'var(--text-body)',
+  anchor = 'middle',
+  lineGap = 18,
+}: {
   x: number;
   y: number;
   lines: string[];
@@ -28,7 +50,14 @@ function MultilineLabel({ x, y, lines, className, fill = 'var(--text-body)', anc
   lineGap?: number;
 }) {
   return (
-    <text x={x} y={y} textAnchor={anchor} dominantBaseline="middle" className={className} fill={fill}>
+    <text
+      x={x}
+      y={y}
+      textAnchor={anchor}
+      dominantBaseline="middle"
+      className={className}
+      fill={fill}
+    >
       {lines.map((line, index) => (
         <tspan key={line} x={x} dy={index === 0 ? 0 : lineGap}>
           {line}
@@ -38,7 +67,14 @@ function MultilineLabel({ x, y, lines, className, fill = 'var(--text-body)', anc
   );
 }
 
-function Node({ x, y, w, h, lines, semantic = false }: {
+function Node({
+  x,
+  y,
+  w,
+  h,
+  lines,
+  semantic = false,
+}: {
   x: number;
   y: number;
   w: number;
@@ -83,31 +119,129 @@ export default function MCPLoadingDecisionTree() {
       style={{ maxWidth: `${W}px` }}
     >
       <defs>
-        <marker id="mcp-tree-arrow" viewBox="0 0 6 6" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
+        <marker
+          id="mcp-tree-arrow"
+          viewBox="0 0 6 6"
+          markerWidth="6"
+          markerHeight="6"
+          refX="6"
+          refY="3"
+          orient="auto"
+        >
           <polygon points="0 0, 6 3, 0 6" fill="var(--text-muted)" />
         </marker>
       </defs>
 
-      <Label x={W / 2} y={24} text="Choose the loading mode by catalog shape" className={styles.title} fill="var(--text-heading)" />
+      <Label
+        x={W / 2}
+        y={24}
+        text="Choose the loading mode by catalog shape"
+        className={styles.title}
+        fill="var(--text-heading)"
+      />
 
-      <Node x={240} y={56} w={240} h={48} lines={["How big is the", "tool catalog?"]} />
+      <Node
+        x={240}
+        y={56}
+        w={240}
+        h={48}
+        lines={['How big is the', 'tool catalog?']}
+      />
 
-      <path d="M 360 104 C 360 128, 216 128, 216 152" fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeLinecap="butt" markerEnd="url(#mcp-tree-arrow)" />
-      <path d="M 360 104 C 360 128, 504 128, 504 152" fill="none" stroke="var(--text-muted)" strokeWidth={1.5} strokeLinecap="butt" markerEnd="url(#mcp-tree-arrow)" />
+      <path
+        d="M 360 104 C 360 128, 216 128, 216 152"
+        fill="none"
+        stroke="var(--text-muted)"
+        strokeWidth={1.5}
+        strokeLinecap="butt"
+        markerEnd="url(#mcp-tree-arrow)"
+      />
+      <path
+        d="M 360 104 C 360 128, 504 128, 504 152"
+        fill="none"
+        stroke="var(--text-muted)"
+        strokeWidth={1.5}
+        strokeLinecap="butt"
+        markerEnd="url(#mcp-tree-arrow)"
+      />
       <Label x={248} y={128} text="few tools" className={styles.edgeLabel} />
-      <Label x={472} y={128} text="many tools / many servers" className={styles.edgeLabel} />
+      <Label
+        x={472}
+        y={128}
+        text="many tools / many servers"
+        className={styles.edgeLabel}
+      />
 
-      <Node x={104} y={152} w={224} h={48} lines={["Use eager loading"]} semantic />
-      <Node x={392} y={152} w={224} h={48} lines={["Use deferred loading"]} semantic />
+      <Node
+        x={104}
+        y={152}
+        w={224}
+        h={48}
+        lines={['Use eager loading']}
+        semantic
+      />
+      <Node
+        x={392}
+        y={152}
+        w={224}
+        h={48}
+        lines={['Use deferred loading']}
+        semantic
+      />
 
-      <MultilineLabel x={216} y={222} lines={["Schemas stay resident;", "calls stay simple."]} className={styles.note} lineGap={16} />
-      <MultilineLabel x={504} y={216} lines={["Protect the task from", "schema pressure."]} className={styles.note} lineGap={16} />
-      <MultilineLabel x={504} y={248} lines={["Search and load only", "when needed."]} className={styles.note} lineGap={16} />
+      <MultilineLabel
+        x={216}
+        y={222}
+        lines={['Schemas stay resident;', 'calls stay simple.']}
+        className={styles.note}
+        lineGap={16}
+      />
+      <MultilineLabel
+        x={504}
+        y={216}
+        lines={['Protect the task from', 'schema pressure.']}
+        className={styles.note}
+        lineGap={16}
+      />
+      <MultilineLabel
+        x={504}
+        y={248}
+        lines={['Search and load only', 'when needed.']}
+        className={styles.note}
+        lineGap={16}
+      />
 
-      <path d="M 504 200 L 504 256" fill="none" stroke="var(--visual-cyan)" strokeWidth={1.5} strokeDasharray="4 4" />
-      <path d="M 504 256 C 504 272, 360 272, 360 272" fill="none" stroke="var(--visual-cyan)" strokeWidth={1.5} strokeDasharray="4 4" markerEnd="url(#mcp-tree-arrow)" />
-      <Label x={104} y={272} text="Large catalog, but only a few actions are hot?" className={styles.edgeLabel} anchor="start" fill="var(--visual-cyan)" />
-      <Label x={104} y={288} text="Expose a thin wrapper eagerly; defer the rest." className={styles.note} anchor="start" fill="var(--visual-cyan)" />
+      <path
+        d="M 504 200 L 504 256"
+        fill="none"
+        stroke="var(--visual-cyan)"
+        strokeWidth={1.5}
+        strokeDasharray="4 4"
+      />
+      <path
+        d="M 504 256 C 504 272, 360 272, 360 272"
+        fill="none"
+        stroke="var(--visual-cyan)"
+        strokeWidth={1.5}
+        strokeDasharray="4 4"
+        markerEnd="url(#mcp-tree-arrow)"
+      />
+      <Label
+        x={104}
+        y={272}
+        text="Large catalog, but only a few actions are hot?"
+        className={styles.edgeLabel}
+        anchor="start"
+        fill="var(--visual-cyan)"
+      />
+      <Label
+        x={104}
+        y={288}
+        text="Expose a thin wrapper eagerly; defer the rest."
+        className={styles.note}
+        anchor="start"
+        fill="var(--visual-cyan)"
+      />
     </svg>
   );
 }

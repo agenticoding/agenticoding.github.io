@@ -1,0 +1,53 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  max-width: 760px;
+  margin-inline: auto;
+  padding-block-end: var(--space-1);
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.desktopDiagram {
+  max-width: 760px;
+}
+
+.mobileDiagram {
+  display: none;
+  max-width: 340px;
+}
+
+.connector {
+  vector-effect: non-scaling-stroke;
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+.flowLabel {
+  font-family: var(--font-mono-keyword);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+@container (max-width: 40rem) {
+  .desktopDiagram {
+    display: none;
+  }
+
+  .mobileDiagram {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .specFlow :global(g[aria-hidden='true']) {
+    display: none;
+  }
+}

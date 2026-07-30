@@ -12,9 +12,9 @@ import { useMounted } from '../../hooks/useMounted';
 // Total band height: 213px
 // Bottom annotation: y=270
 
-const VW  = 620;
-const VH  = 295;
-const PW  = 155; // panel width
+const VW = 620;
+const VH = 295;
+const PW = 155; // panel width
 
 // Panel left edges
 const PA_X = 16;
@@ -26,57 +26,149 @@ const AB_CX = 188; // midpoint of 171–204 gap
 const BC_CX = 376; // midpoint of 359–392 gap
 
 // Band area
-const BAND_Y0  = 35;  // first band top
-const BAND_Y1  = 248; // last band bottom
+const BAND_Y0 = 35; // first band top
+const BAND_Y1 = 248; // last band bottom
 
 // ── Band definitions ─────────────────────────────────────────────────────────
 // Heights are proportional; must sum to BAND_TOT.
 // "headroom" bands use a dashed stroke pattern.
 
 interface Band {
-  label:    string;
-  h:        number;
-  color:    string;
-  bg:       string;
-  dashed?:  boolean;
-  note?:    string;  // small annotation below band
+  label: string;
+  h: number;
+  color: string;
+  bg: string;
+  dashed?: boolean;
+  note?: string; // small annotation below band
 }
 
 // Panel A — Before (total 213px)
 const BANDS_A: Band[] = [
-  { label: 'System Prompt', h: 22,  color: 'var(--visual-neutral)', bg: 'var(--visual-bg-neutral)' },
-  { label: 'Context Files', h: 38,  color: 'var(--visual-cyan)',    bg: 'var(--visual-bg-cyan)' },
-  { label: 'Tool Defs',     h: 32,  color: 'var(--visual-indigo)',  bg: 'var(--visual-bg-indigo)' },
-  { label: 'Turn 1',        h: 22,  color: 'var(--visual-neutral)', bg: 'var(--visual-bg-neutral)' },
-  { label: 'Turn 2',        h: 22,  color: 'var(--visual-neutral)', bg: 'var(--visual-bg-neutral)' },
-  { label: 'Turn 3',        h: 22,  color: 'var(--visual-neutral)', bg: 'var(--visual-bg-neutral)' },
-  { label: 'Turn 4',        h: 22,  color: 'var(--visual-neutral)', bg: 'var(--visual-bg-neutral)' },
-  { label: 'User Task',     h: 20,  color: 'var(--border-emphasis)', bg: 'transparent' },
-  { label: 'headroom',      h: 13,  color: 'var(--border-default)', bg: 'transparent', dashed: true },
+  {
+    label: 'System Prompt',
+    h: 22,
+    color: 'var(--visual-neutral)',
+    bg: 'var(--visual-bg-neutral)',
+  },
+  {
+    label: 'Context Files',
+    h: 38,
+    color: 'var(--visual-cyan)',
+    bg: 'var(--visual-bg-cyan)',
+  },
+  {
+    label: 'Tool Defs',
+    h: 32,
+    color: 'var(--visual-indigo)',
+    bg: 'var(--visual-bg-indigo)',
+  },
+  {
+    label: 'Turn 1',
+    h: 22,
+    color: 'var(--visual-neutral)',
+    bg: 'var(--visual-bg-neutral)',
+  },
+  {
+    label: 'Turn 2',
+    h: 22,
+    color: 'var(--visual-neutral)',
+    bg: 'var(--visual-bg-neutral)',
+  },
+  {
+    label: 'Turn 3',
+    h: 22,
+    color: 'var(--visual-neutral)',
+    bg: 'var(--visual-bg-neutral)',
+  },
+  {
+    label: 'Turn 4',
+    h: 22,
+    color: 'var(--visual-neutral)',
+    bg: 'var(--visual-bg-neutral)',
+  },
+  {
+    label: 'User Task',
+    h: 20,
+    color: 'var(--border-emphasis)',
+    bg: 'transparent',
+  },
+  {
+    label: 'headroom',
+    h: 13,
+    color: 'var(--border-default)',
+    bg: 'transparent',
+    dashed: true,
+  },
 ];
 // Sum: 22+38+32+22+22+22+22+20+13 = 213 ✓
 
 // Panel B — After /compact (total 213px)
 const BANDS_B: Band[] = [
-  { label: 'System Prompt', h: 22,  color: 'var(--visual-neutral)',  bg: 'var(--visual-bg-neutral)' },
-  { label: 'Context Files', h: 38,  color: 'var(--visual-cyan)',     bg: 'var(--visual-bg-cyan)' },
-  { label: 'Tool Defs',     h: 32,  color: 'var(--visual-indigo)',   bg: 'var(--visual-bg-indigo)' },
-  { label: 'Summary',       h: 52,  color: 'var(--visual-magenta)',  bg: 'var(--visual-bg-magenta)',
-    note: 'summary at primacy' },
-  { label: 'User Task',     h: 20,  color: 'var(--border-emphasis)', bg: 'transparent' },
-  { label: 'headroom',      h: 49,  color: 'var(--border-default)',  bg: 'transparent', dashed: true },
+  {
+    label: 'System Prompt',
+    h: 22,
+    color: 'var(--visual-neutral)',
+    bg: 'var(--visual-bg-neutral)',
+  },
+  {
+    label: 'Context Files',
+    h: 38,
+    color: 'var(--visual-cyan)',
+    bg: 'var(--visual-bg-cyan)',
+  },
+  {
+    label: 'Tool Defs',
+    h: 32,
+    color: 'var(--visual-indigo)',
+    bg: 'var(--visual-bg-indigo)',
+  },
+  {
+    label: 'Summary',
+    h: 52,
+    color: 'var(--visual-magenta)',
+    bg: 'var(--visual-bg-magenta)',
+    note: 'summary at primacy',
+  },
+  {
+    label: 'User Task',
+    h: 20,
+    color: 'var(--border-emphasis)',
+    bg: 'transparent',
+  },
+  {
+    label: 'headroom',
+    h: 49,
+    color: 'var(--border-default)',
+    bg: 'transparent',
+    dashed: true,
+  },
 ];
 // Sum: 22+38+32+52+20+49 = 213 ✓
 
 // Panel C — After /clear (total 213px)
 const BANDS_C: Band[] = [
-  { label: 'System Prompt', h: 22,  color: 'var(--visual-neutral)', bg: 'var(--visual-bg-neutral)' },
-  { label: 'empty',         h: 191, color: 'var(--border-default)', bg: 'transparent', dashed: true },
+  {
+    label: 'System Prompt',
+    h: 22,
+    color: 'var(--visual-neutral)',
+    bg: 'var(--visual-bg-neutral)',
+  },
+  {
+    label: 'empty',
+    h: 191,
+    color: 'var(--border-default)',
+    bg: 'transparent',
+    dashed: true,
+  },
 ];
 // Sum: 22+191 = 213 ✓
 
 // ── Band renderer ─────────────────────────────────────────────────────────────
-function renderBands(bands: Band[], px: number, startY: number): React.ReactNode[] {
+function renderBands(
+  bands: Band[],
+  px: number,
+  startY: number
+): React.ReactNode[] {
   let cy = startY;
   const nodes: React.ReactNode[] = [];
 
@@ -197,7 +289,8 @@ export default function CompactClearDiagram() {
     >
       {/* ── Panel titles ─────────────────────────────────────────────────────── */}
       <text
-        x={PA_X + PW / 2} y={titleY}
+        x={PA_X + PW / 2}
+        y={titleY}
         textAnchor="middle"
         fontSize={10}
         fontFamily="var(--font-mono-keyword)"
@@ -207,7 +300,8 @@ export default function CompactClearDiagram() {
         BEFORE
       </text>
       <text
-        x={PB_X + PW / 2} y={titleY}
+        x={PB_X + PW / 2}
+        y={titleY}
         textAnchor="middle"
         fontSize={10}
         fontFamily="var(--font-mono-keyword)"
@@ -217,7 +311,8 @@ export default function CompactClearDiagram() {
         AFTER /compact
       </text>
       <text
-        x={PC_X + PW / 2} y={titleY}
+        x={PC_X + PW / 2}
+        y={titleY}
         textAnchor="middle"
         fontSize={10}
         fontFamily="var(--font-mono-keyword)"
@@ -232,7 +327,8 @@ export default function CompactClearDiagram() {
 
       {/* ── Arrow A→B ────────────────────────────────────────────────────────── */}
       <text
-        x={AB_CX} y={(BAND_Y0 + BAND_Y1) / 2 - 6}
+        x={AB_CX}
+        y={(BAND_Y0 + BAND_Y1) / 2 - 6}
         textAnchor="middle"
         fontSize={12}
         fill="var(--visual-violet)"
@@ -242,7 +338,8 @@ export default function CompactClearDiagram() {
         →
       </text>
       <text
-        x={AB_CX} y={(BAND_Y0 + BAND_Y1) / 2 + 8}
+        x={AB_CX}
+        y={(BAND_Y0 + BAND_Y1) / 2 + 8}
         textAnchor="middle"
         fontSize={9}
         fontFamily="var(--font-mono-keyword)"
@@ -270,7 +367,8 @@ export default function CompactClearDiagram() {
 
       {/* ── Arrow B→C ────────────────────────────────────────────────────────── */}
       <text
-        x={BC_CX} y={(BAND_Y0 + BAND_Y1) / 2 - 6}
+        x={BC_CX}
+        y={(BAND_Y0 + BAND_Y1) / 2 - 6}
         textAnchor="middle"
         fontSize={12}
         fill="var(--visual-error)"
@@ -280,7 +378,8 @@ export default function CompactClearDiagram() {
         →
       </text>
       <text
-        x={BC_CX} y={(BAND_Y0 + BAND_Y1) / 2 + 8}
+        x={BC_CX}
+        y={(BAND_Y0 + BAND_Y1) / 2 + 8}
         textAnchor="middle"
         fontSize={9}
         fontFamily="var(--font-mono-keyword)"
@@ -295,7 +394,8 @@ export default function CompactClearDiagram() {
 
       {/* ── Bottom annotation ────────────────────────────────────────────────── */}
       <text
-        x={VW / 2} y={270}
+        x={VW / 2}
+        y={270}
         textAnchor="middle"
         fontSize={10}
         fontFamily="var(--font-mono)"
@@ -304,7 +404,8 @@ export default function CompactClearDiagram() {
         Both commands reduce token pressure —
       </text>
       <text
-        x={VW / 2} y={283}
+        x={VW / 2}
+        y={283}
         textAnchor="middle"
         fontSize={10}
         fontFamily="var(--font-mono)"
