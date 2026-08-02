@@ -8,5 +8,8 @@
       "idleTimeout": 12000,
       "requestTimeoutMs": 12000000
     }
+  },
+  "settings": {
+    "outputGuard": false
   }
 }
