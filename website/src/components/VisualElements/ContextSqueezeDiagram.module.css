@@ -47,7 +47,7 @@
 
 .stackClip {
   position: relative;
-  --context-companion-width: 72px;
+  --context-companion-width: 80px;
   flex: 1;
   min-width: 0;
   height: 440px;
@@ -60,7 +60,7 @@
 }
 
 .zoneStrip {
-  width: 72px;
+  width: 80px;
   flex: none;
 }
 

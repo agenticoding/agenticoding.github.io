@@ -196,6 +196,8 @@
   font-feature-settings: var(--font-mono-features);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow-wrap: normal;
   display: block;
 }
 

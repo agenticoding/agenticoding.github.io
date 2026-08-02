@@ -353,12 +353,12 @@
 /* --- Attention companion -------------------------------------------------- */
 
 .contextScene {
-  --context-companion-width: 72px;
+  --context-companion-width: 80px;
   min-height: 0;
 }
 
 .attentionCompanion {
-  width: 72px;
+  width: 80px;
   flex: none;
 }
 

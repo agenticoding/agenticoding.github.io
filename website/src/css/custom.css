@@ -1164,6 +1164,12 @@ article a {
   border-radius: 0;
 }
 
+/* Spec examples are review artifacts, so prose flows at the available width. */
+.spec-review-examples .theme-code-block code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 /* Inline <code> — badge-scale radius, not container-scale */
 :not(pre) > code {
   border-radius: 0; /* 4px — badge/input token */
