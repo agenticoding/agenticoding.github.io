@@ -7,7 +7,7 @@ import ContextStreamBlock from '@site/src/components/VisualElements/ContextStrea
 import { contextManagementStream } from '@site/src/components/VisualElements/contextStreamData';
 import ContextMechanismMap from '@site/src/components/VisualElements/ContextMechanismMap';
 import SkillsInvocationDiagram from '@site/src/components/VisualElements/SkillsInvocationDiagram';
-import SubAgentDiagram from '@site/src/components/VisualElements/SubAgentDiagram';
+import SubAgentFanoutDiagram from '@site/src/components/VisualElements/SubAgentFanoutDiagram';
 import ContextSqueezeDiagram from '@site/src/components/VisualElements/ContextSqueezeDiagram';
 import MCPToolSchemaDiagram from '@site/src/components/VisualElements/MCPToolSchemaDiagram';
 import ArchitectureDiagram from '@site/src/components/VisualElements/ArchitectureDiagram';
@@ -223,7 +223,7 @@ Think of a sub-agent like a function call for agents. The prompt is the paramete
     'Sub-agent context isolation: research consumed internally, compact synthesis returned.'
   }
 >
-  <SubAgentDiagram />
+  <SubAgentFanoutDiagram />
 </DiagramFrame>
 
 The tradeoffs:

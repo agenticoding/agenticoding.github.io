@@ -1,0 +1,334 @@
+/* The root-owned timeline supplies the only temporal geometry. Workers sit in
+   unframed outer rails so they read as actors, not additional context windows. */
+.container {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-2) auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.scheduleKey,
+.costSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: var(--lh-sm);
+}
+
+.scheduleKey strong {
+  color: var(--text-body);
+  letter-spacing: 0.08em;
+}
+
+.costSummary {
+  display: block;
+}
+
+.panels,
+.panel {
+  min-width: 0;
+}
+
+.panel {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.panelHeader {
+  color: var(--text-muted);
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: var(--lh-sm);
+}
+
+.stackClip {
+  --root-inset: 28%;
+  --rail-width: 20%;
+  position: relative;
+  display: block;
+  height: 320px;
+  min-width: 0;
+}
+
+.rootStack {
+  position: absolute;
+  inset: 0 var(--root-inset);
+  min-width: 0;
+}
+
+.fanoutOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.flowLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: visible;
+}
+
+.dispatchPath {
+  stroke: var(--visual-indigo);
+  opacity: 0.85;
+}
+
+.returnPath {
+  stroke: var(--visual-violet);
+  opacity: 0.85;
+}
+
+/* Paths meet the root-facing side of each robot. Separate elbow columns keep
+   a request and its synthesis from reading as a shared rail or hierarchy. */
+.worker {
+  --worker-label-offset: var(--space-3);
+  position: absolute;
+  z-index: 1;
+  width: var(--rail-width);
+  height: 32px;
+  transform: translateY(-50%);
+}
+
+.leftWorker {
+  left: 0;
+}
+
+.rightWorker {
+  right: 0;
+}
+
+.workerActor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  line-height: 0;
+  transform: translate(-50%, -50%);
+}
+
+.workerIdentity {
+  display: grid;
+  gap: 0;
+  color: var(--text-muted);
+  font-family: var(--font-mono-keyword);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: var(--lh-sm);
+}
+
+.workerIdentity > span {
+  white-space: nowrap;
+}
+
+.workerIdentity strong {
+  color: var(--text-body);
+  font-family: var(--font-mono-ai);
+  font-weight: 500;
+}
+
+.worker .workerIdentity {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.leftWorker .workerActor {
+  left: 75%;
+}
+
+.rightWorker .workerActor {
+  left: 25%;
+}
+
+.leftWorker .workerIdentity {
+  right: calc(25% + var(--worker-label-offset));
+  width: calc(75% - var(--worker-label-offset));
+  text-align: right;
+}
+
+.rightWorker .workerIdentity {
+  left: calc(25% + var(--worker-label-offset));
+  width: calc(75% - var(--worker-label-offset));
+  text-align: left;
+}
+
+.scheduleTile {
+  position: relative;
+  height: 100%;
+}
+
+.scheduleTile::after {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  border: 2px solid transparent;
+  content: '';
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* The loop confirms the fixed causal schedule; paths and labels explain it
+   completely without motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .dispatchOne::after,
+  .dispatchTwo::after,
+  .dispatchPair::after {
+    border-color: var(--visual-indigo);
+    animation: dispatchPulse 11000ms var(--ease-standard) infinite;
+  }
+
+  .returnOne::after,
+  .returnTwo::after,
+  .returnPair::after {
+    border-color: var(--visual-violet);
+    animation: returnPulse 11000ms var(--ease-standard) infinite;
+  }
+
+  .satelliteOne .workerActor,
+  .satelliteTwo .workerActor,
+  .satellitePair .workerActor {
+    animation: workPulse 11000ms var(--ease-standard) infinite;
+  }
+
+  .dispatchOne::after {
+    animation-delay: 0ms;
+  }
+
+  .satelliteOne .workerActor {
+    animation-delay: -10050ms;
+  }
+
+  .returnOne::after {
+    animation-delay: -9100ms;
+  }
+
+  .dispatchTwo::after {
+    animation-delay: -8000ms;
+  }
+
+  .satelliteTwo .workerActor {
+    animation-delay: -7050ms;
+  }
+
+  .returnTwo::after {
+    animation-delay: -6100ms;
+  }
+
+  .dispatchPair::after {
+    animation-delay: -5000ms;
+  }
+
+  .satellitePair .workerActor {
+    animation-delay: -4050ms;
+  }
+
+  .returnPair::after {
+    animation-delay: -3100ms;
+  }
+}
+
+@keyframes dispatchPulse {
+  0%,
+  6% {
+    opacity: 1;
+    transform: translateX(-2px);
+  }
+  8%,
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+@keyframes returnPulse {
+  0%,
+  6% {
+    opacity: 1;
+    transform: translateX(-2px);
+  }
+  8%,
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+@keyframes workPulse {
+  0%,
+  6% {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  8%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.mobileSatellites {
+  display: none;
+}
+
+.mobileWorker {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.screenReaderSummary {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Below this width, path angles and worker labels would collide. Keep the
+   root-first causal sequence and identify workers without physical links. */
+@media (max-width: 1215px) {
+  .stackClip {
+    --root-inset: 0%;
+    height: 320px;
+  }
+
+  .rootStack {
+    inset: 0;
+  }
+
+  .fanoutOverlay {
+    display: none;
+  }
+
+  .mobileSatellites {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+}
+
+@media (max-width: 440px) {
+  .mobileSatellites {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .container * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .staticTokenTrain {
+    opacity: 0.8;
+  }
+}
