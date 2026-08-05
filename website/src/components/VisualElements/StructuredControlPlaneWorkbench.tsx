@@ -19,7 +19,7 @@ import type { DiagramTone, DiagramVoice } from './diagramTileLayout';
 import styles from './StructuredControlPlaneWorkbench.module.css';
 
 const ARIA_LABEL =
-  'Structured control-plane pipeline: a trigger enters a code-owned orchestrator, deterministic workflow steps do most of the work, three small bounded LLM calls happen at specific junctions, and code validates the result before commit.';
+  'Deterministic control plane: a trigger enters a code orchestrator; a code-owned workflow contains three bounded LLM calls for intent, answer, and citations; and an approval gate validates the result before commit.';
 
 type Tone = Extract<
   DiagramTone,
@@ -33,7 +33,8 @@ type CardProps = {
   width: number;
   height: number;
   tone: Tone;
-  icon: EmojiAsset;
+  icon?: EmojiAsset;
+  systemIcon?: 'code';
   eyebrow: string;
   title: string;
   detail: string;
@@ -59,7 +60,7 @@ const WORKFLOW_STEPS = [
 ] as const;
 const DESKTOP_STEP_X = 293;
 const DESKTOP_STEP_Y = 310;
-const DESKTOP_STEP_GAP = 72;
+const DESKTOP_STEP_GAP = 80;
 const MOBILE_STEP_X = 76;
 const MOBILE_STEP_Y = 410;
 const MOBILE_STEP_GAP = 66;
@@ -323,11 +324,11 @@ function DesktopNodes() {
         width={248}
         height={112}
         tone="system"
-        icon={EMOJI.agent}
-        eyebrow="AGENT CONTROL"
-        title="orchestrator"
+        systemIcon="code"
+        eyebrow="DETERMINISTIC CODE"
+        title="code orchestrator"
         detail="state · routing · budget"
-        voice="ai"
+        voice="spec"
         step={2}
         weight={1.5}
       />
@@ -377,7 +378,7 @@ function WorkflowSurface() {
         width={464}
         height={192}
         tabLabel="DETERMINISTIC WORKFLOW"
-        tabIcon={EMOJI.agent}
+        tabSystemIcon="code"
         fill="var(--visual-bg-cyan)"
         stroke="var(--visual-cyan)"
         rectClassName={styles.vectorStroke}
@@ -484,7 +485,7 @@ function LlmSlot({
           className={styles.ticketDetail}
           fill="var(--visual-violet)"
         >
-          {context}
+          {label}
         </text>
         <GearNode
           x={
@@ -516,8 +517,10 @@ function LlmSlot({
           textAnchor="middle"
           className={styles.ticketTitle}
           fill="var(--text-heading)"
+          textLength={context === 'citations' ? 68 : undefined}
+          lengthAdjust="spacingAndGlyphs"
         >
-          {label}
+          {`LLM · ${context}`}
         </text>
       </g>
     </Flow>
@@ -664,11 +667,11 @@ function MobileNodes() {
         width={WORKBENCH_SCALE.mobileRichCard.width}
         height={WORKBENCH_SCALE.mobileRichCard.height}
         tone="system"
-        icon={EMOJI.agent}
-        eyebrow="AGENT CONTROL"
-        title="orchestrator"
+        systemIcon="code"
+        eyebrow="DETERMINISTIC CODE"
+        title="code orchestrator"
         detail="state · routing · budget"
-        voice="ai"
+        voice="spec"
         step={2}
         weight={1.5}
       />
@@ -693,7 +696,7 @@ function MobileWorkflowSurface() {
         width={236}
         height={388}
         tabLabel="DETERMINISTIC WORKFLOW"
-        tabIcon={EMOJI.agent}
+        tabSystemIcon="code"
         fill="var(--visual-bg-cyan)"
         stroke="var(--visual-cyan)"
         tabWidth={228}

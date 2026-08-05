@@ -36,7 +36,7 @@ export const WORKBENCH_SCALE = {
   chip: { width: 62, height: 28 },
   mobileRichCard: RICH_TILE_SCALE.mobileCard,
   llmSlot: {
-    width: 64,
+    width: 72,
     height: DIAGRAM_GRID * 8,
     gearSize: DIAGRAM_ICON_SIZE.actor,
     topOffset: 36,

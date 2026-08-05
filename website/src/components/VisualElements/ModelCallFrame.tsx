@@ -1,6 +1,7 @@
 import React from 'react';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
+import { CodeSystemIcon } from './CodeSystemIcon';
 import {
   type ModelCallFrameBounds,
   type ModelCallFrameTabAlign,
@@ -36,6 +37,7 @@ const {
 export type ModelCallFrameProps = ModelCallFrameBounds & {
   tabLabel: string;
   tabIcon?: EmojiAsset;
+  tabSystemIcon?: 'code';
   className?: string;
   rectClassName?: string;
   title?: string;
@@ -59,6 +61,7 @@ export function ModelCallFrame({
   detail,
   subtitle,
   tabIcon = EMOJI.gear,
+  tabSystemIcon,
   subtitleX,
   subtitleY,
   className,
@@ -97,12 +100,20 @@ export function ModelCallFrame({
         className={rectClassName}
         vectorEffect="non-scaling-stroke"
       />
-      <EmojiImage
-        asset={tabIcon}
-        x={tab.x + TAB_PADDING_X}
-        y={tab.y + TILE_GRID / 2}
-        size={TAB_ICON_SIZE}
-      />
+      {tabSystemIcon === 'code' ? (
+        <CodeSystemIcon
+          x={tab.x + TAB_PADDING_X}
+          y={tab.y + TILE_GRID / 2}
+          size={TAB_ICON_SIZE}
+        />
+      ) : (
+        <EmojiImage
+          asset={tabIcon}
+          x={tab.x + TAB_PADDING_X}
+          y={tab.y + TILE_GRID / 2}
+          size={TAB_ICON_SIZE}
+        />
+      )}
       <text
         x={tab.x + TAB_PADDING_X + TAB_ICON_SIZE + TAB_GAP}
         y={tab.y + 21}

@@ -7,6 +7,7 @@ import {
   OPENMOJI_VIEWBOX_SIZE,
   type EmojiAsset,
 } from './emojiAssets';
+import { CodeSystemIcon } from './CodeSystemIcon';
 import {
   TILE_LAYOUT,
   tileToneVars,
@@ -53,6 +54,7 @@ type DiagramTileProps = {
   eyebrow?: string;
   icon?: EmojiAsset;
   iconClassName?: string;
+  systemIcon?: 'code';
   labelAlign?: 'start' | 'center';
   labelClassName?: string;
   labelIconSize?: number;
@@ -179,14 +181,22 @@ function RichTile(props: DiagramTileProps) {
           {props.stepLabel}
         </text>
       )}
-      {props.icon && (
-        <EmojiImage
-          asset={props.icon}
+      {props.systemIcon === 'code' ? (
+        <CodeSystemIcon
           x={props.x + TILE_LAYOUT.padding}
           y={layout.iconY}
           size={layout.iconSize}
-          className={props.iconClassName}
         />
+      ) : (
+        props.icon && (
+          <EmojiImage
+            asset={props.icon}
+            x={props.x + TILE_LAYOUT.padding}
+            y={layout.iconY}
+            size={layout.iconSize}
+            className={props.iconClassName}
+          />
+        )
       )}
       <TextLines
         x={layout.textX}
