@@ -31,6 +31,7 @@ node_modules/
 # AI Tools
 .chunkhound/
 .chunkhound.json
+.pi/
 
 # Generated content
 scripts/output/
