@@ -10,15 +10,25 @@
 // the schemas expanded by the successful result. This makes discovery visible
 // instead of assuming equal traces.
 
-import {
-  fractionOfRow,
-  zoneOfRow,
-  type ContextRegionRow,
-} from './contextRegions.ts';
+import { zoneOfRow } from './contextRegions.ts';
 import type { AttentionZone } from './contextZones.ts';
-import { attentionAt } from './attentionModel.ts';
+import {
+  BLOCK_WEIGHT,
+  MIX_ROW_WEIGHT,
+  block,
+  contextContentWeight,
+  mixRow,
+  tileAttention as sharedTileAttention,
+  windowFill as sharedWindowFill,
+  withHeadroom,
+  type WeightContextRow,
+} from './contextWeightRows.ts';
 
 export type { AttentionZone };
+
+// Shared row primitives (contextWeightRows.ts); re-exported to keep this
+// model's public API unchanged.
+export { BLOCK_WEIGHT, MIX_ROW_WEIGHT, contextContentWeight };
 
 export const SCHEMA_CAPABILITIES = [
   'repository search',
@@ -52,10 +62,7 @@ export const CATALOG_LIMITS = { min: 4, max: 40 } as const;
 // broadest catalog adds two complete recovery loops.
 export const WINDOW_CAPACITY = 260;
 
-// Full-size blocks make shared task work legible. Compact rows represent
-// individual runtime messages or expanded schemas.
-export const BLOCK_WEIGHT = 18;
-export const MIX_ROW_WEIGHT = 12;
+// Shared block/mix weights come from contextWeightRows.ts.
 export const SCHEMA_WEIGHT = { min: 28, max: 180 } as const;
 export const TOOL_SEARCH_DEFINITION_WEIGHT = 10;
 export const TOOL_SEARCH_TURN_WEIGHT = MIX_ROW_WEIGHT;
@@ -70,13 +77,10 @@ export const TOOL_SEARCH_ROUNDS = { max: 3, catalogStep: 16 } as const;
 // Search definition. That additional definition is a strategy-specific cost.
 export const LAZY_STARTUP_WEIGHT = BLOCK_WEIGHT + TOOL_SEARCH_DEFINITION_WEIGHT;
 
-const BLOCK_MIN_HEIGHT = 18;
-const MIX_MIN_HEIGHT = 16;
-
 export const PROMPT_LABEL = 'USER PROMPT';
 export const FINAL_RESPONSE_LABEL = 'final agent response';
 
-export type MCPContextRow = ContextRegionRow & { label: string };
+export type MCPContextRow = WeightContextRow;
 
 function relevantSchemaCount(catalogTools: number) {
   return Math.min(
@@ -120,43 +124,11 @@ export function toolSearchRoundCount(catalogTools: number) {
   );
 }
 
-function block(
-  id: string,
-  label: string,
-  weight = BLOCK_WEIGHT
-): MCPContextRow {
-  return { id, label, weight, minHeight: BLOCK_MIN_HEIGHT };
-}
-
 function taskTurns() {
   return TASK_WORK_CAPABILITIES.map((_, index) => ({
     id: `work-${index}`,
     label: 'tool call + result',
   }));
-}
-
-function mixRow(
-  id: string,
-  label: string,
-  weight = MIX_ROW_WEIGHT
-): MCPContextRow {
-  return { id, label, weight, minHeight: MIX_MIN_HEIGHT };
-}
-
-export function contextContentWeight(rows: readonly MCPContextRow[]) {
-  return rows
-    .filter((row) => !row.collapsed && row.weight > 0 && !row.spacer)
-    .reduce((sum, row) => sum + row.weight, 0);
-}
-
-function headroom(content: number): MCPContextRow {
-  return {
-    id: 'headroom',
-    label: '',
-    weight: Math.max(0, WINDOW_CAPACITY - content),
-    minHeight: 0,
-    spacer: true,
-  };
 }
 
 export function eagerRows(catalogTools: number): MCPContextRow[] {
@@ -169,7 +141,7 @@ export function eagerRows(catalogTools: number): MCPContextRow[] {
     ...turns.map((turn) => mixRow(turn.id, turn.label)),
     block('final', FINAL_RESPONSE_LABEL),
   ];
-  return [...rows, headroom(contextContentWeight(rows))];
+  return withHeadroom(rows, WINDOW_CAPACITY);
 }
 
 function recoveryRows(index: number): MCPContextRow[] {
@@ -209,18 +181,18 @@ export function lazyRows(catalogTools: number): MCPContextRow[] {
     ...taskTurns().map((turn) => mixRow(turn.id, turn.label)),
     block('final', FINAL_RESPONSE_LABEL),
   ];
-  return [...rows, headroom(contextContentWeight(rows))];
+  return withHeadroom(rows, WINDOW_CAPACITY);
 }
 
 export function windowFill(rows: readonly MCPContextRow[]): number {
-  return contextContentWeight(rows) / WINDOW_CAPACITY;
+  return sharedWindowFill(rows, WINDOW_CAPACITY);
 }
 
 export function tileAttention(
   rowId: string,
   rows: readonly MCPContextRow[]
 ): number {
-  return attentionAt(fractionOfRow(rowId, rows), windowFill(rows));
+  return sharedTileAttention(rowId, rows, WINDOW_CAPACITY);
 }
 
 export function eagerSchemasZone(catalogTools: number): AttentionZone {
