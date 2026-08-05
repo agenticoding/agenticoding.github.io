@@ -8,40 +8,16 @@ import {
   voiceStyle,
   type DiagramTone,
 } from './diagramTileLayout';
+import {
+  horizontalConnector,
+  verticalConnector,
+} from './PostTrainingTuningBoardGeometry';
 import styles from './PostTrainingTuningBoard.module.css';
 
 const VW = 640;
 const VH = 384;
 const MOBILE_VW = 360;
 const MOBILE_VH = 660;
-const CONNECTOR_TARGET_GAP = 8;
-
-type Box = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-function coord(value: number) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(1);
-}
-
-function horizontalConnector(from: Box, to: Box) {
-  const startX = from.x + from.width;
-  const endX = to.x - CONNECTOR_TARGET_GAP;
-  const y = from.y + from.height / 2;
-  const controlOffset = Math.max(8, (endX - startX) / 3);
-  return `M ${coord(startX)} ${coord(y)} C ${coord(startX + controlOffset)} ${coord(y)}, ${coord(endX - controlOffset)} ${coord(y)}, ${coord(endX)} ${coord(y)}`;
-}
-
-function verticalConnector(from: Box, to: Box) {
-  const startY = from.y + from.height;
-  const endY = to.y - CONNECTOR_TARGET_GAP;
-  const x = from.x + from.width / 2;
-  const controlOffset = Math.max(6, (endY - startY) / 3);
-  return `M ${coord(x)} ${coord(startY)} C ${coord(x)} ${coord(startY + controlOffset)}, ${coord(x)} ${coord(endY - controlOffset)}, ${coord(x)} ${coord(endY)}`;
-}
 
 const SLIDERS = [
   {
