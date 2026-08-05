@@ -35,14 +35,18 @@ dependency.
 
 A Large Language Model is a statistical pattern engine built on [transformer architecture](<https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)>). At inference time, it repeatedly runs one loop:
 
-1. Encode the input as tokens
+1. Encode the input as model-specific tokens
 2. Use attention to read relationships across the current context
 3. Estimate likely next tokens
 4. Sample or select one token
 5. Append it to the context
 6. Repeat
 
-Tokens are the units. Attention is how the model relates those units inside the current context. The output is one predicted next token, which immediately becomes part of the next context. This loop is the core mechanism behind every fluent paragraph, code patch, tool call, or reasoning trace the model emits.
+Here, **context** is everything currently available to the model: instructions, input, tool results, and output generated so far. Tokens are the units in that sequence.
+
+Inside the model, each token becomes numbers the model can work with, along with information about its order. Attention uses the surrounding tokens to interpret each one—`bank` carries different information beside `river` than beside `account`.
+
+The output is one predicted next token, which immediately becomes part of the next context. This loop is the core mechanism behind every fluent paragraph, code patch, tool call, or reasoning trace the model emits.
 
 That works for engineering because most software work is already token-shaped: code, diffs, logs, shell commands, tickets, docs, test failures, review comments, and tool schemas. Multimodal models extend the same mechanism by encoding screenshots, diagrams, audio, PDFs, and charts into token streams the model can condition on.
 
@@ -52,8 +56,8 @@ That works for engineering because most software work is already token-shaped: c
   size="standard"
   caption={
     <>
-      Each predicted token is conditioned on the full context that came before
-      it. Generation advances by extending that context one token at a time.
+      The selected token is appended to the context, then the same loop runs
+      again to produce the next token.
     </>
   }
 >
@@ -67,10 +71,10 @@ That works for engineering because most software work is already token-shaped: c
 
 Tokens define the model's input/output budget: providers bill by token, the context window is measured in tokens, and more tokens means higher cost and latency. Output tokens are priced 4–8× higher than input tokens ([morphllm](https://www.morphllm.com/ai-coding-costs)), but for coding workloads the volume ratio flips the cost: feeding 50,000 tokens of context for a 200-token edit means [input accounts for 70–85% of the bill](https://www.morphllm.com/llm-cost-calculator).
 
-**Sampling** controls how the next token is selected. Temperature 0 (greedy) always picks the highest-probability token — deterministic and reproducible, which is the default for agent tool calls and evals. Temperature > 0 samples from the distribution, introducing variance useful for drafting and brainstorming. Top-p and top-k further restrict the candidate set.
+**Sampling** controls how the next token is selected. Temperature 0 (greedy) picks the highest-probability token and removes sampling randomness, which is useful for evals and structured tool calls. It does not guarantee correctness or identical runs across the serving stack. Temperature > 0 samples from the distribution, introducing variance useful for drafting and brainstorming. Top-p and top-k further restrict the candidate set.
 :::
 
-Attention is not memory, search, awareness, or focus. It is relevance-weighted context mixing inside the model. More context gives the model more tokens to mix, but it does not guarantee the right tokens receive enough weight. The architecture section below explains why that matters for cost, latency, and long-context reliability.
+Attention relates tokens inside the current context; it is not persistent memory or search. More context gives the model more material to relate, but it does not guarantee the right evidence will influence the answer. That matters for cost, latency, and long-context reliability.
 
 The model has no consciousness, intent, or feelings. It does not "want" to solve your task. It produces continuations that are likely under its training and instruction context.
 
@@ -200,36 +204,26 @@ This is the fundamental limitation: probability can imitate correctness, but it 
 
 So an LLM response should be treated as a candidate artifact, not as a verified answer. First judge whether it has the right shape. Then validate whether it is actually correct: run the tests, check the citation, inspect the API, verify the constraint, reproduce the result.
 
-### Human Errors Have Reasons; LLM Errors Don't
+### Human and LLM Errors Leave Different Clues
 
-When a human makes a mistake, there is always a reason: they don't understand the domain, they're tired, they skimmed the input, their agenda pulls a different direction, or a cognitive bias distorts their judgment. Every human error has a causal story. Those reasons create **predictable error funnels** — you know where to look. A junior engineer struggles with distributed systems. A tired reviewer misses subtle bugs. Competence boundaries are learnable, and trust builds along them.
+Human mistakes often leave useful clues: a knowledge gap, fatigue, a skimmed requirement, an incentive, or a cognitive bias. Those clues create **predictable error funnels**. A junior engineer may struggle with distributed systems; a tired reviewer may miss subtle bugs. Over time, those patterns help teams calibrate review.
 
-An LLM has no such reasons. The model that just produced a flawless architecture analysis can, in the next sentence, add 2+2 and get 5. There is no "why" — no misunderstanding, no distraction, no fatigue, no misaligned incentive. The model took a statistically plausible wrong turn in a probability landscape. That is the entire explanation.
+An LLM does not expose an equivalent human-style account. The model that just produced a flawless architecture analysis can, in the next sentence, add 2+2 and get 5. The failure may correlate with training coverage, task shape, context quality, or inference setup, but the individual answer often does not tell you which factor mattered.
 
 <DiagramFrame
   kicker="Error structure"
-  title="Human mistakes reveal a cause; LLM mistakes reveal a probability shift"
+  title="Human and LLM mistakes leave different clues"
   size="wide"
   caption={
     <>
-      Human errors cluster around causal factors that guide review. An LLM can
-      produce a locally plausible wrong answer without an equivalent causal
-      story, so each output still needs external verification.
+      Human errors often expose factors that guide review. An LLM can produce a
+      locally plausible wrong answer without an equivalent causal account, so
+      trust still needs external evidence.
     </>
   }
 >
   <ErrorReasonComparisonDiagram />
 </DiagramFrame>
-
-Research confirms this structural difference. LLM errors superficially resemble human errors — models pick the same wrong answers students do[^arxiv-distractors] — but the mechanism is fundamentally different. Human cognitive biases are stable and rooted in evolved heuristics; LLM biases are learned from training data. Scaling and instruction tuning can shift the error distribution — reducing some error types while making others more systematic — but they cannot eliminate errors. The model is a probabilistic local minimum in a high-dimensional weight space, not a reasoning system. Error is mathematically irreducible: hallucination is provably unavoidable,[^arxiv-limits] and even temperature zero does not guarantee deterministic output.[^temp-zero]
-
-| | Human mistakes | LLM mistakes |
-|---|---|---|
-| **Cause** | Always a reason (fatigue, knowledge gap, bias, agenda) | No reason — statistical fluctuation |
-| **Distribution** | Concentrated in predictable funnels (expertise gaps, cognitive biases, fatigue) | Driven by step count (p^n), training coverage, and architecture fit. |
-| **Difficulty correlation** | Error rate rises with cognitive difficulty | Error rate depends on step depth, training coverage, and architecture fit — not cognitive difficulty.[^pattern-difficulty] |
-| **Predictability** | Competence boundaries are learnable | Predictable only along the three axes: more steps = less reliable, sparse patterns = less reliable, poor fit = less reliable. Instance-level failure remains unpredictable. |
-| **Self-awareness** | Can catch and correct own errors | Cannot introspect, cannot learn — stateless and fixed. Each error is a fresh event. |
 
 :::tip[Why letter counting and basic math mislead]
 
@@ -238,7 +232,7 @@ Letter counting and arithmetic are common "LLM tests" but they test the wrong th
 These tests measure tool-use orchestration reliability, not understanding. A model that fails at counting the number of r's in "strawberry" can still reason correctly about architecture trade-offs.
 :::
 
-The operational implication: **you cannot trust an LLM based on human notions of task difficulty.** A brilliant design analysis does not make the next token — a trivial constraint check — safe. Reliability follows probability depth: each step multiplies the space, so longer chains decay exponentially regardless of how "easy" each step looks.[^step-decay] Validate at phase boundaries, where unverified state would propagate.
+The operational implication: **do not trust an LLM based on human notions of task difficulty.** A brilliant design analysis does not make the next step—a trivial constraint check—safe. Longer chains create more opportunities for an unchecked mistake to influence later work. Validate at phase boundaries, before unverified state can propagate.
 
 This also explains why more context does not remove the problem. More context gives the model more material to condition on, but it does not turn probability into logic. The model can still weight the wrong evidence, miss a constraint, or continue from a locally plausible pattern instead of the globally correct one.
 
@@ -261,18 +255,11 @@ The previous framing — probability imitates logic but does not guarantee it �
   <LocalPredictionConsequenceDiagram />
 </DiagramFrame>
 
-A wrong token early in a response does not stay local. It becomes part of the context for every prediction that follows, shifting what looks probable next. The model [was trained on clean human-written text](https://link.springer.com/article/10.1007/s00521-025-11162-0), so when its own output goes off track, recovery is unreliable. Post-training via RLHF [partially mitigates this](https://halil7hatun.medium.com/so-your-llm-falls-apart-after-20-tokens-yeah-thats-exposure-bias-a6511b31c734) by training on flawed outputs, not just clean text — but prompting the model to ["check your work"](https://aclanthology.org/2024.tacl-1.78.pdf) does not reliably fix errors. Recovery needs external feedback: tool calls, code execution, tests.
+A wrong token early in a response does not stay local. It becomes part of the context for every prediction that follows, shifting what looks probable next. The model may recover, but asking it to check its own work is still another model generation. Recovery becomes more reliable when the loop receives external feedback: tool results, code execution, tests, or retrieved sources.
 
-One visible side effect is **probability wells** — a black hole in the model's probability space. Once the model crosses the threshold — repeating a token, doubling down on a reasoning direction, committing to a wrong fact — the self-reinforcement dynamic takes over. Each token deepens the well by making the same path more probable. The most extreme case is [repetition loops](https://sebastianraschka.com/faq/docs/repetition-loops-generation.html): a pattern like `ab ab ab` becomes inescapable because the context now predicts `ab` with near-certainty. Under greedy decoding (temperature 0), escape is mathematically impossible once the loop forms — the expected escape time is infinite.[^deterministic-loops] The only reliable way out is external: a context reset that collapses the well by removing the self-reinforcing context. The rare non-deterministic floating-point flips in the inference stack can break a near-tie before the well sets, but once locked in, the model stays trapped until `max_tokens` or a reset intervenes.
+Generated output can also become self-reinforcing. A repeated phrase, false premise, or malformed plan becomes evidence for the next prediction, making the same direction easier to continue. When a run starts repeating or defending bad state, stop it. Remove the problematic context, restate the verified state, and resume from that boundary.
 
-This is the fingerprint of a system with frozen weights — a local minimum found during training, locked at inference. The probability landscape is fixed for the session. Every well that exists in that landscape is permanent. The model cannot adapt its way out, cannot learn mid-conversation, cannot dynamically reshape the terrain. It can only continue generating through the static landscape it was given. Context resets work because they change the input, not the weights — collapsing the well by removing the self-reinforcing context.
-
-:::tip[Lookahead: advanced well mitigation]
-
-Production systems reduce probability well traps with **lookahead techniques** (Lookahead Decoding, n-gram speculation). Instead of generating one token at a time, the model drafts multiple future tokens in parallel using n-gram caches and mask-predict, then verifies them in a single pass. By considering several future positions at once, lookahead can "see past" an incipient well and accept a token that breaks the cycle — like jumping over a pothole instead of stepping into it.
-
-Lookahead can cut well frequency 3–4× on repetitive workloads without changing the output distribution, but because the landscape is structurally fixed (frozen weights), it cannot eliminate wells entirely. A model already locked in a deep well still needs a context reset.
-:::
+During normal inference, the model's weights remain fixed. A context reset works because it changes the input available to the model, not because the model learned from the failed run.
 
 ## Context Under Pressure
 
@@ -294,13 +281,13 @@ For model selection, compare degradation curves, not just maximum window size. [
 
 ### Long-Context Benchmarks Show the Tradeoff
 
-Long-context benchmarks are not coding benchmarks, but they isolate the model-selection question: as context rises, does retrieval stay precise, degrade gradually, or collapse?
+Long-context benchmarks are not coding benchmarks, but they isolate one model-selection question: as context grows, can the model still recover the requested evidence?
 
-MRCR means **Multi-Round Co-reference Resolution**. The model gets a long prompt with multiple target facts buried inside distractor text, then answers questions that refer to those facts indirectly. The **8-needle** variant plants eight facts, so the model has to keep several references straight instead of matching one obvious phrase.
+[MRCR v2](https://arxiv.org/html/2409.12640v2) gives the model a long synthetic conversation containing similar requests and responses. The **8-needle** variant includes eight relevant request-response pairs among distractors, then asks the model to reproduce one requested earlier response.
 
-Current long-context results show the pattern: models cluster more tightly at moderate context, then diverge near the advertised maximum. Some products have full published curves; others only publish sparse points.
+Its [default score](https://github.com/google-deepmind/eval_hub/tree/master/eval_hub/mrcr_v2) is mean approximate similarity to the target response. A score of 76% does not mean the model found 76% of the facts.
 
-The benchmark figure plots vendor-reported benchmark points; the table below lists the exact values, mode, evidence density, and source for each selected product.
+Current results show the pattern: models cluster more tightly at moderate context, then diverge near the advertised maximum. Some products publish full curves; others publish only sparse points. The figure and table preserve that distinction and list the exact values, modes, and sources.
 
 <DiagramFrame kicker="LLM mechanics" title="Effective context is smaller than advertised context" size="full">
 
@@ -313,7 +300,7 @@ The figure tells three stories:
 2. **Moderate context is not the main problem.** Many models look strong before the window is saturated.
 3. **The degradation curve matters more than the headline number.** If your workload routinely reaches 500K–1M tokens, benchmark shape matters more than maximum capacity.
 
-The verified rows make that distinction immediate. Claude Opus 4.6 reports 76% on the 1M-token MRCR v2 8-needle benchmark, while Claude Sonnet 4.6 reports 65.1% at 1M in the published comparison. GPT-5.4 falls to 36.6% in the 512K–1M bucket, and DeepSeek V4 Pro reaches 59% at 1M. These results come from different providers, modes, and reporting formats; they are workload evidence, not an overall ranking.
+The verified rows make that distinction immediate. Claude Opus 4.6 reports 78.3% at 1M, while Claude Sonnet 4.6 reports 65.1% at 1M in the published comparison. GPT-5.4 falls to 36.6% in the 512K–1M bucket, and DeepSeek V4 Pro reaches 59% at 1M. These results come from different providers, modes, and reporting formats; they are workload evidence, not an overall ranking.
 
 :::tip[First-pass takeaway]
 Every model has an effective context limit. Some decline gradually, some fall off a cliff, and some recover only with expensive reasoning modes. None make context management obsolete.
@@ -323,7 +310,7 @@ Every model has an effective context limit. Some decline gradually, some fall of
 
 Model releases move along a Pareto frontier. A vendor can improve coding, tool use, vision, latency, safety, or instruction following while making long-context retrieval worse.
 
-Claude Opus 4.6 is a useful example: Anthropic reported **[76% on the 8-needle 1M MRCR v2 benchmark](https://www.anthropic.com/news/claude-opus-4-6)**, a strong long-context retrieval result for an Opus-class model. Opus 4.7 then improved across agentic coding, visual acuity, tool use, self-verification, instruction following, and long-running task behavior, according to Anthropic's [Opus 4.7 release notes](https://www.anthropic.com/news/claude-opus-4-7). But the long-context retrieval line regressed sharply in the benchmark data above.
+Claude Opus is a useful example. The plotted [Opus 4.6 system-card result](https://www.anthropic.com/claude-opus-4-6-system-card) reports 78.3% at 1M. Opus 4.7 then improved across agentic coding, visual acuity, tool use, self-verification, instruction following, and long-running task behavior, according to Anthropic's [Opus 4.7 release notes](https://www.anthropic.com/news/claude-opus-4-7). But the long-context retrieval line regressed sharply in the benchmark data above.
 
 That is not a contradiction. It is the point: **"better model" is not a scalar property.** A model can become better for autonomous coding while becoming worse at needle-in-a-haystack retrieval. Another can improve long-context recall by spending more reasoning tokens, raising cost and latency. A smaller model can be preferable when verification is strong and the loop needs speed.
 
@@ -393,22 +380,6 @@ The useful abstraction is:
 > A probabilistic engine inside a deterministic control plane.
 
 The next chapter covers that control plane: how agents wrap the LLM brain with software that can plan, use tools, observe results, and continue the loop.
-
----
-
-[^arxiv-distractors]: arXiv 2502.15140 — LLM distractor selection aligns with common student errors across model sizes; Pearson correlations of 0.28–0.37 between LLM probabilities and human distractor frequency. [Read the paper](https://arxiv.org/abs/2502.15140)
-
-[^nature-biases]: Nature Communications (2024) — GPT-3 exhibits human-like reasoning biases (conjunction fallacy, CRT), while GPT-4 mostly overcomes them. Unlike stable human cognitive biases, LLM bias profiles shift with scale — but error never disappears. [Read the paper](https://www.nature.com/articles/s44271-024-00091-8)
-
-[^arxiv-limits]: arXiv 2511.12869 — Formal proof that hallucination is mathematically inevitable for any computable LLM: diagonalization guarantees adversarial inputs for every model, undecidable problems force infinite failure sets, and finite capacity cannot compress infinite complexity. [Read the paper](https://arxiv.org/abs/2511.12869)
-
-[^temp-zero]: Temperature zero only makes the token-sampling step deterministic. The inference stack — floating-point arithmetic, batch composition, GPU hardware, MoE routing — introduces run-to-run variability even under identical prompts. This non-determinism has a silver lining: without it, every near-tie would lock into a repetition loop. [Why LLMs Are Not Deterministic](https://mbrenndoerfer.com/writing/why-llms-are-not-deterministic)
-
-[^deterministic-loops]: Under pure greedy decoding, the expected escape time from a probability well is infinite. The self-reinforcement mechanism monotonically increases repetition probability, and with deterministic argmax selection there is no escape. [arXiv 2512.04419](https://arxiv.org/abs/2512.04419)
-
-[^pattern-difficulty]: LLM success rate is governed by surface pattern frequency in training data, not cognitive difficulty. Models show flat accuracy across Putnam difficulty levels while human accuracy drops sharply. [ACL 2026](https://aclanthology.org/2026.acl-srw.85.pdf)
-
-[^step-decay]: Agent reliability follows P = p^n for n sequential steps. With correlated errors the decay is even faster. This is the mathematical foundation of the orchestration and retry levers in [Chapter 7: Reliability Levers](./reliability-levers.md). [Reliability Science Framework](https://arxiv.org/abs/2603.29231)
 
 ---
 
