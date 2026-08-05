@@ -25,6 +25,7 @@ type TokenTrainPathProps = {
   laneOffsetPx?: number;
   laneOrientation?: TokenTrainOrientation;
   className?: string;
+  staticClassName?: string;
   pathClassName?: string;
   label?: ReactNode;
   labelX?: number;
@@ -162,6 +163,7 @@ function TokenTraveler(props: TokenTrainPathProps) {
       tone={props.tone ?? 'violet'}
       laneOffsetPx={tokenLaneOffset(size, strokeWidth, props.laneOffsetPx)}
       laneOrientation={props.laneOrientation ?? 'above'}
+      staticClassName={props.staticClassName}
     />
   );
 }
@@ -178,6 +180,7 @@ function EmojiTraveler(props: EmojiTrainPathProps) {
       size={size}
       laneOffsetPx={tokenLaneOffset(size, strokeWidth, props.laneOffsetPx)}
       laneOrientation={props.laneOrientation ?? 'above'}
+      staticClassName={props.staticClassName}
     />
   );
 }

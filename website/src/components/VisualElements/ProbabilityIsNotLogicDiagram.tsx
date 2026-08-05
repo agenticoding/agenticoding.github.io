@@ -6,7 +6,7 @@ import { DIAGRAM_STROKE } from './diagramScale';
 import { DiagramTile } from './DiagramTile';
 import { tileToneVars, type DiagramTone } from './diagramTileLayout';
 import { TokenArrowTrain } from './TokenArrowTrain';
-import { seededTokenDrift, seededTokenTrain } from './TokenTrainSequence';
+import { seededTokenTrain, seededZigzagPath } from './TokenTrainSequence';
 import styles from './ProbabilityIsNotLogicDiagram.module.css';
 
 const DESKTOP_ARROW_ID = 'probability-logic-desktop-arrow';
@@ -109,31 +109,6 @@ function Arrow({
   );
 }
 
-function zigzagPoints(start: Point, end: Point, axis: Axis, seed: string) {
-  const offsets = seededTokenDrift(seed, ZIGZAG_BENDS, {
-    minOffsetPx: 8,
-    maxOffsetPx: 16,
-  });
-  const bends = offsets.map((offset, index) => {
-    const t = (index + 1) / (ZIGZAG_BENDS + 1);
-    const x = start.x + (end.x - start.x) * t;
-    const y = start.y + (end.y - start.y) * t;
-    return axis === 'horizontal' ? { x, y: y + offset } : { x: x + offset, y };
-  });
-  return [start, ...bends, end];
-}
-
-function pathD(points: readonly Point[]) {
-  const [start, ...rest] = points;
-  const lineCommands = rest.map(
-    ({ x, y }) => `L ${x.toFixed(1)} ${y.toFixed(1)}`
-  );
-  return [
-    `M ${start.x.toFixed(1)} ${start.y.toFixed(1)}`,
-    ...lineCommands,
-  ].join(' ');
-}
-
 function probabilityTokens(seed: string) {
   return seededTokenTrain(seed, TOKEN_COUNT).map((token, index) => ({
     ...token,
@@ -152,7 +127,7 @@ function ProbabilityTokenTrain({
   axis: Axis;
   seed: string;
 }) {
-  const visiblePathD = pathD(zigzagPoints(start, end, axis, seed));
+  const visiblePathD = seededZigzagPath(start, end, axis, seed, ZIGZAG_BENDS);
   return (
     <TokenArrowTrain
       d={visiblePathD}

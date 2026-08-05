@@ -12,8 +12,7 @@ export type TokenExample = {
   label: string;
 };
 
-// All chips use violet tone — consistent with TokenPredictionDiagram. Shapes
-// (modality) provide the visual distinction; color carries no per-modality meaning here.
+// One tone keeps color semantically neutral; modality shape carries the distinction.
 const TONE = 'violet' as const;
 
 const TOKEN_EXAMPLES: TokenExample[] = [

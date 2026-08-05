@@ -18,6 +18,7 @@ export type TokenUnitTone =
   | 'cyan'
   | 'magenta'
   | 'warning'
+  | 'error'
   | 'success';
 
 export type TokenUnitModality =

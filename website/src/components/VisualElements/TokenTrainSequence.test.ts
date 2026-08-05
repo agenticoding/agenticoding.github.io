@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { seededTokenTrain, TOKEN_TRAIN_PALETTE } from './TokenTrainSequence.ts';
+import {
+  seededTokenTrain,
+  seededZigzagPath,
+  TOKEN_TRAIN_PALETTE,
+} from './TokenTrainSequence.ts';
 const VALID_SIGNALS = new Set(['ordinary', 'salient', 'compressed']);
 
 test('seeded token trains are deterministic for a seed', () => {
@@ -51,5 +55,36 @@ test('seeded token trains avoid adjacent duplicate tokens when possible', () => 
 
   for (let index = 1; index < tokens.length; index += 1) {
     assert.notDeepEqual(tokens[index], tokens[index - 1]);
+  }
+});
+
+test('seeded zigzag paths preserve endpoints and alternate bends', () => {
+  const path = seededZigzagPath(
+    { x: 0, y: 0 },
+    { x: 0, y: 40 },
+    'vertical',
+    'probability',
+    3
+  );
+  const points = [...path.matchAll(/(-?\d+\.\d+) (-?\d+\.\d+)/g)].map(
+    ([, x, y]) => ({ x: Number(x), y: Number(y) })
+  );
+  const bends = points.slice(1, -1);
+
+  assert.equal(
+    path,
+    seededZigzagPath(
+      { x: 0, y: 0 },
+      { x: 0, y: 40 },
+      'vertical',
+      'probability',
+      3
+    )
+  );
+  assert.deepEqual(points.at(0), { x: 0, y: 0 });
+  assert.deepEqual(points.at(-1), { x: 0, y: 40 });
+  assert.equal(bends.length, 3);
+  for (let index = 1; index < bends.length; index += 1) {
+    assert.equal(bends[index - 1].x * bends[index].x < 0, true);
   }
 });

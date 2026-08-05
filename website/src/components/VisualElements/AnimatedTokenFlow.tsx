@@ -82,6 +82,7 @@ type AnimatedPathTravelerProps<Item> = {
   laneOffsetPx?: number;
   laneOrientation?: TokenTrainOrientation;
   className?: string;
+  staticClassName?: string;
   renderItem: (item: Item, center: PathPoint) => ReactNode;
   renderStaticItems?: boolean;
 };
@@ -638,6 +639,7 @@ export function AnimatedPathTraveler<Item>({
   laneOffsetPx = 0,
   laneOrientation = 'above',
   className,
+  staticClassName,
   renderItem,
   renderStaticItems = true,
 }: AnimatedPathTravelerProps<Item>) {
@@ -664,7 +666,10 @@ export function AnimatedPathTraveler<Item>({
         ))}
       </g>
       {renderStaticItems && (
-        <g className={styles.tokenTrainStatic} transform={lane}>
+        <g
+          className={clsx(styles.tokenTrainStatic, staticClassName)}
+          transform={lane}
+        >
           {entries.map(({ item, index }) => {
             const point = pathPointAt(
               segments,

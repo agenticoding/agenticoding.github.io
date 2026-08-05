@@ -81,6 +81,9 @@ export type TokenDriftOptions = {
   maxOffsetPx?: number;
 };
 
+export type TokenPathPoint = { x: number; y: number };
+export type TokenPathAxis = 'horizontal' | 'vertical';
+
 function seededUnits(seed: string, count: number) {
   let state = seedState(seed);
   return Array.from({ length: count }, () => {
@@ -103,4 +106,53 @@ export function seededTokenDrift(
     const amplitude = minOffsetPx + unit * (maxOffsetPx - minOffsetPx);
     return Math.round(amplitude * driftSign(seed, index));
   });
+}
+
+export function seededZigzagPath(
+  start: TokenPathPoint,
+  end: TokenPathPoint,
+  axis: TokenPathAxis,
+  seed: string,
+  bends: number
+) {
+  const points = zigzagPoints(start, end, axis, seed, bends);
+  return points
+    .map(
+      ({ x, y }, index) =>
+        `${index === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`
+    )
+    .join(' ');
+}
+
+function zigzagPoints(
+  start: TokenPathPoint,
+  end: TokenPathPoint,
+  axis: TokenPathAxis,
+  seed: string,
+  bends: number
+) {
+  return [
+    start,
+    ...seededTokenDrift(seed, bends, {
+      minOffsetPx: 8,
+      maxOffsetPx: 16,
+    }).map((offset, index) =>
+      zigzagBend(start, end, axis, offset, index, bends)
+    ),
+    end,
+  ];
+}
+
+function zigzagBend(
+  start: TokenPathPoint,
+  end: TokenPathPoint,
+  axis: TokenPathAxis,
+  offset: number,
+  index: number,
+  bends: number
+) {
+  const t = (index + 1) / (bends + 1);
+  const x = start.x + (end.x - start.x) * t;
+  const y = start.y + (end.y - start.y) * t;
+  return axis === 'horizontal' ? { x, y: y + offset } : { x: x + offset, y };
 }

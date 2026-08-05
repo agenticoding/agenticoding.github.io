@@ -1,20 +1,21 @@
 import React from 'react';
 import clsx from 'clsx';
 
+import { AnimatedPathTraveler } from './AnimatedTokenFlow';
 import { EmojiImage } from './ActorNodes';
 import { ArrowMarker, trimPathEnd } from './diagramGeometry';
 import { DIAGRAM_STROKE } from './diagramScale';
 import { DiagramTile } from './DiagramTile';
 import { tileToneVars, type DiagramTone } from './diagramTileLayout';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
+import { TokenArrowTrain } from './TokenArrowTrain';
+import { seededTokenTrain, seededZigzagPath } from './TokenTrainSequence';
+import type { TokenUnitTone } from './TokenUnit';
+import type { TokenTrainTiming } from './TokenTrainTiming';
 import styles from './ErrorReasonComparisonDiagram.module.css';
 
 const DESKTOP_HUMAN_ARROW_ID = 'error-reason-comparison-desktop-human-arrow';
-const DESKTOP_LLM_ARROW_ID = 'error-reason-comparison-desktop-llm-arrow';
-const DESKTOP_ERROR_ARROW_ID = 'error-reason-comparison-desktop-error-arrow';
 const MOBILE_HUMAN_ARROW_ID = 'error-reason-comparison-mobile-human-arrow';
-const MOBILE_LLM_ARROW_ID = 'error-reason-comparison-mobile-llm-arrow';
-const MOBILE_ERROR_ARROW_ID = 'error-reason-comparison-mobile-error-arrow';
 const HUMAN = tileToneVars('neutral').accent;
 const LLM = tileToneVars('model').accent;
 const ERROR = 'var(--visual-error)';
@@ -22,27 +23,86 @@ const ARIA_LABEL =
   'Comparison of human and LLM errors. Human causes such as a knowledge gap, fatigue, and bias converge into a predictable error funnel that supports targeted review. An LLM can move from a flawless analysis through a plausible continuation to a wrong prediction, ending in a statistical fluctuation from a probability distribution.';
 
 const DESKTOP = {
-  canvas: { width: 760, height: 424 },
+  canvas: { width: 760, height: 456 },
   human: { x: 16, y: 24, width: 352 },
   llm: { x: 392, y: 24, width: 352 },
   cause: { start: 44, width: 88, gap: 16 },
 } as const;
 const MOBILE = {
-  canvas: { width: 320, height: 808 },
+  canvas: { width: 320, height: 840 },
   human: { x: 16, y: 16, width: 288 },
   llm: { x: 16, y: 408, width: 288 },
   cause: { start: 32, width: 80, gap: 8 },
 } as const;
-const PANEL_HEIGHT = 376;
+const HUMAN_PANEL_HEIGHT = 376;
+const LLM_PANEL_HEIGHT = 416;
 const TILE_HEIGHT = 48;
 const SOURCE_OFFSET_Y = 64;
 const FUNNEL_OFFSET_Y = 144;
 const STORY_OFFSET_Y = 224;
 const REVIEW_OFFSET_Y = 304;
-const CONTINUATION_OFFSET_Y = FUNNEL_OFFSET_Y;
-const ANSWER_OFFSET_Y = STORY_OFFSET_Y;
-const NO_CAUSE_OFFSET_Y = REVIEW_OFFSET_Y;
+const CONTINUATION_OFFSET_Y = 160;
+const ANSWER_OFFSET_Y = 256;
+const NO_CAUSE_OFFSET_Y = 352;
+const FLOW_STAGGER = { mode: 'fixedStep', stepMs: 0 } as const;
+const PROBABILITY_TRAIN_STAGGER = {
+  mode: 'pathSpacing',
+  spacingPx: 24,
+} as const;
+const TOKEN_COUNT = 3;
+const TOKEN_SIZE = 16;
+const ZIGZAG_BENDS = 2;
+const HUMAN_CAUSE_TIMING = {
+  cycleMs: 7200,
+  travelMs: 1400,
+  fadeMs: 240,
+  repeat: 'loop',
+} as const satisfies TokenTrainTiming;
+const HUMAN_STORY_TIMING = {
+  startDelayMs: 1500,
+  cycleMs: 7200,
+  travelMs: 650,
+  fadeMs: 180,
+  repeat: 'loop',
+} as const satisfies TokenTrainTiming;
+const HUMAN_REVIEW_TIMING = {
+  startDelayMs: 2350,
+  cycleMs: 7200,
+  travelMs: 650,
+  fadeMs: 180,
+  repeat: 'loop',
+} as const satisfies TokenTrainTiming;
+const LLM_CONTINUATION_TIMING = {
+  startDelayMs: 400,
+  cycleMs: 7200,
+  travelMs: 1200,
+  fadeMs: 200,
+  repeat: 'loop',
+} as const satisfies TokenTrainTiming;
+const LLM_ERROR_TIMING = {
+  startDelayMs: 2800,
+  cycleMs: 7200,
+  travelMs: 1200,
+  fadeMs: 200,
+  repeat: 'loop',
+} as const satisfies TokenTrainTiming;
+const LLM_DISTRIBUTION_TIMING = {
+  startDelayMs: 5200,
+  cycleMs: 7200,
+  travelMs: 1200,
+  fadeMs: 200,
+  repeat: 'loop',
+} as const satisfies TokenTrainTiming;
 
+/**
+ * Motion spec
+ * Story loop: singular causes converge into review; token trains reach error.
+ * Meaning: neutral diamond = causal signal; violet train = model continuation.
+ * Benefit: motion contrasts diagnosis with a probability-driven wrong turn.
+ * Fallback: static connectors and labels remain complete without motion.
+ * Coherence: LLM trains run sequentially; error paths follow continuation.
+ * Rejection: signals trace real paths rather than decorate the panels.
+ */
 type PanelLayout = { x: number; y: number; width: number };
 type CauseLayout = { start: number; width: number; gap: number };
 type TileProps = {
@@ -89,13 +149,104 @@ function Arrow({
   );
 }
 
+function Signal({
+  d,
+  timing,
+  color,
+}: {
+  d: string;
+  timing: TokenTrainTiming;
+  color: string;
+}) {
+  return (
+    <AnimatedPathTraveler
+      pathD={d}
+      items={[color]}
+      timing={timing}
+      stagger={FLOW_STAGGER}
+      renderStaticItems={false}
+      renderItem={(fill, { x, y }) => (
+        <rect
+          x={x - 3}
+          y={y - 3}
+          width="6"
+          height="6"
+          transform={`rotate(45 ${x} ${y})`}
+          fill={fill}
+        />
+      )}
+    />
+  );
+}
+
+function DeterministicFlow({
+  d,
+  markerId,
+  stroke,
+  timing,
+}: {
+  d: string;
+  markerId: string;
+  stroke: string;
+  timing: TokenTrainTiming;
+}) {
+  return (
+    <>
+      <Arrow d={d} markerId={markerId} stroke={stroke} />
+      <Signal d={d} timing={timing} color={stroke} />
+    </>
+  );
+}
+
+function probabilityTokens(seed: string) {
+  return seededTokenTrain(seed, TOKEN_COUNT).map((token, index) => ({
+    ...token,
+    signal: index === TOKEN_COUNT - 1 ? 'salient' : token.signal,
+  }));
+}
+
+function ProbabilisticFlow({
+  start,
+  end,
+  stroke,
+  tone,
+  timing,
+  seed,
+}: {
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+  stroke: string;
+  tone: TokenUnitTone;
+  timing: TokenTrainTiming;
+  seed: string;
+}) {
+  const d = seededZigzagPath(start, end, 'vertical', seed, ZIGZAG_BENDS);
+  return (
+    <TokenArrowTrain
+      d={d}
+      tokens={probabilityTokens(seed)}
+      stroke={stroke}
+      tone={tone}
+      timing={timing}
+      stagger={PROBABILITY_TRAIN_STAGGER}
+      size={TOKEN_SIZE}
+      laneOffsetPx={0}
+      strokeWidth={DIAGRAM_STROKE.connector}
+      strokeLinecap="butt"
+      strokeLinejoin="miter"
+    />
+  );
+}
+
 function Panel({
   layout,
+  height,
   title,
   tone,
   actor,
 }: {
   layout: PanelLayout;
+  height: number;
   title: string;
   tone: string;
   actor: EmojiAsset;
@@ -106,7 +257,7 @@ function Panel({
         x={layout.x}
         y={layout.y}
         width={layout.width}
-        height={PANEL_HEIGHT}
+        height={height}
         fill="transparent"
         stroke="var(--border-subtle)"
         strokeWidth={DIAGRAM_STROKE.thin}
@@ -159,6 +310,7 @@ function HumanFlow({
     <g>
       <Panel
         layout={layout}
+        height={HUMAN_PANEL_HEIGHT}
         title="HUMAN MISTAKE"
         tone={HUMAN}
         actor={EMOJI.operator}
@@ -166,6 +318,7 @@ function HumanFlow({
       {causes.map((causeTile, index) => {
         const x = cause.start + index * (cause.width + cause.gap);
         const funnelX = center + (index - 1) * 48;
+        const causePath = `M ${x + cause.width / 2} ${causeY + TILE_HEIGHT} L ${funnelX} ${funnelY}`;
         return (
           <g key={causeTile.title}>
             <Tile
@@ -175,10 +328,11 @@ function HumanFlow({
               height={TILE_HEIGHT}
               {...causeTile}
             />
-            <Arrow
-              d={`M ${x + cause.width / 2} ${causeY + TILE_HEIGHT} L ${funnelX} ${funnelY}`}
+            <DeterministicFlow
+              d={causePath}
               markerId={markerId}
               stroke={HUMAN}
+              timing={HUMAN_CAUSE_TIMING}
             />
           </g>
         );
@@ -210,10 +364,11 @@ function HumanFlow({
       >
         error funnel
       </text>
-      <Arrow
+      <DeterministicFlow
         d={`M ${center} ${funnelY + 40} V ${storyY}`}
         markerId={markerId}
         stroke={HUMAN}
+        timing={HUMAN_STORY_TIMING}
       />
       <FlowEmoji asset={EMOJI.brain} x={center - 120} y={storyY + 12} />
       <Tile
@@ -224,10 +379,11 @@ function HumanFlow({
         title="Causal story"
         detail="why it happened"
       />
-      <Arrow
+      <DeterministicFlow
         d={`M ${center} ${storyY + TILE_HEIGHT} V ${reviewY}`}
         markerId={markerId}
         stroke={HUMAN}
+        timing={HUMAN_REVIEW_TIMING}
       />
       <FlowEmoji asset={EMOJI.magnify} x={center - 120} y={reviewY + 12} />
       <Tile
@@ -257,12 +413,10 @@ function FlowEmoji({
 
 function LlmFlow({
   layout,
-  markerId,
-  errorMarkerId,
+  seedPrefix,
 }: {
   layout: PanelLayout;
-  markerId: string;
-  errorMarkerId: string;
+  seedPrefix: string;
 }) {
   const center = layout.x + layout.width / 2;
   const sourceY = layout.y + SOURCE_OFFSET_Y;
@@ -272,6 +426,7 @@ function LlmFlow({
     <g>
       <Panel
         layout={layout}
+        height={LLM_PANEL_HEIGHT}
         title="LLM MISTAKE"
         tone={LLM}
         actor={EMOJI.agent}
@@ -285,10 +440,13 @@ function LlmFlow({
         detail="correct output"
         tone="model"
       />
-      <Arrow
-        d={`M ${center} ${sourceY + TILE_HEIGHT} V ${continuationY}`}
-        markerId={markerId}
+      <ProbabilisticFlow
+        start={{ x: center, y: sourceY + TILE_HEIGHT }}
+        end={{ x: center, y: continuationY }}
         stroke={LLM}
+        tone="violet"
+        timing={LLM_CONTINUATION_TIMING}
+        seed={`${seedPrefix}-continuation`}
       />
       <Tile
         x={center - 76}
@@ -299,10 +457,13 @@ function LlmFlow({
         detail="continuation"
         tone="model"
       />
-      <Arrow
-        d={`M ${center} ${continuationY + TILE_HEIGHT} V ${answerY}`}
-        markerId={errorMarkerId}
+      <ProbabilisticFlow
+        start={{ x: center, y: continuationY + TILE_HEIGHT }}
+        end={{ x: center, y: answerY }}
         stroke={ERROR}
+        tone="error"
+        timing={LLM_ERROR_TIMING}
+        seed={`${seedPrefix}-wrong-prediction`}
       />
       <FlowEmoji asset={EMOJI.gear} x={center - 112} y={answerY + 12} />
       <Tile
@@ -314,10 +475,13 @@ function LlmFlow({
         detail="wrong prediction"
         tone="warning"
       />
-      <Arrow
-        d={`M ${center} ${answerY + TILE_HEIGHT} V ${layout.y + NO_CAUSE_OFFSET_Y}`}
-        markerId={errorMarkerId}
+      <ProbabilisticFlow
+        start={{ x: center, y: answerY + TILE_HEIGHT }}
+        end={{ x: center, y: layout.y + NO_CAUSE_OFFSET_Y }}
         stroke={ERROR}
+        tone="error"
+        timing={LLM_DISTRIBUTION_TIMING}
+        seed={`${seedPrefix}-distribution`}
       />
       <FlowEmoji
         asset={EMOJI.dice}
@@ -339,17 +503,7 @@ function LlmFlow({
 
 function Diagram({ mobile = false }: { mobile?: boolean }) {
   const layout = mobile ? MOBILE : DESKTOP;
-  const ids = mobile
-    ? {
-        human: MOBILE_HUMAN_ARROW_ID,
-        llm: MOBILE_LLM_ARROW_ID,
-        error: MOBILE_ERROR_ARROW_ID,
-      }
-    : {
-        human: DESKTOP_HUMAN_ARROW_ID,
-        llm: DESKTOP_LLM_ARROW_ID,
-        error: DESKTOP_ERROR_ARROW_ID,
-      };
+  const humanMarkerId = mobile ? MOBILE_HUMAN_ARROW_ID : DESKTOP_HUMAN_ARROW_ID;
   return (
     <svg
       viewBox={`0 0 ${layout.canvas.width} ${layout.canvas.height}`}
@@ -362,19 +516,16 @@ function Diagram({ mobile = false }: { mobile?: boolean }) {
       )}
     >
       <defs>
-        <ArrowMarker id={ids.human} fill={HUMAN} refX={0} />
-        <ArrowMarker id={ids.llm} fill={LLM} refX={0} />
-        <ArrowMarker id={ids.error} fill={ERROR} refX={0} />
+        <ArrowMarker id={humanMarkerId} fill={HUMAN} refX={0} />
       </defs>
       <HumanFlow
         layout={layout.human}
         cause={layout.cause}
-        markerId={ids.human}
+        markerId={humanMarkerId}
       />
       <LlmFlow
         layout={layout.llm}
-        markerId={ids.llm}
-        errorMarkerId={ids.error}
+        seedPrefix={`error-reason-comparison-${mobile ? 'mobile' : 'desktop'}`}
       />
     </svg>
   );
