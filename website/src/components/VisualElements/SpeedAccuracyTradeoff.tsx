@@ -2,6 +2,7 @@ import React from 'react';
 
 import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './SpeedAccuracyTradeoff.module.css';
 
 const LABEL_STYLE = { fontFamily: 'var(--font-body)' };
@@ -54,10 +55,14 @@ const MOBILE: Layout = {
 
 export default function SpeedAccuracyTradeoff() {
   return (
-    <div className={styles.container}>
-      <TradeoffDiagram className={styles.desktop} layout={DESKTOP} />
-      <TradeoffDiagram className={styles.mobile} layout={MOBILE} />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="640px"
+      mode="viewport"
+      ariaLabel="A continuous calibration rail runs from the throughput pole to the accuracy pole."
+      desktop={<TradeoffDiagram className={styles.desktop} layout={DESKTOP} />}
+      mobile={<TradeoffDiagram className={styles.mobile} layout={MOBILE} />}
+    />
   );
 }
 

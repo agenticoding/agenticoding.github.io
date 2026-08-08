@@ -6,7 +6,6 @@
 }
 
 .diagram {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -14,7 +13,6 @@
 }
 
 .mobileDiagram {
-  display: none;
   max-width: 320px;
 }
 
@@ -37,14 +35,4 @@
 
 .funnelDetail {
   font-family: var(--font-mono-keyword);
-}
-
-@container (max-width: 520px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
 }

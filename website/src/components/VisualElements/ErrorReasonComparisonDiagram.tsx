@@ -12,6 +12,7 @@ import { TokenArrowTrain } from './TokenArrowTrain';
 import { seededTokenTrain, seededZigzagPath } from './TokenTrainSequence';
 import type { TokenUnitTone } from './TokenUnit';
 import type { TokenTrainTiming } from './TokenTrainTiming';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ErrorReasonComparisonDiagram.module.css';
 
 const DESKTOP_HUMAN_ARROW_ID = 'error-reason-comparison-desktop-human-arrow';
@@ -533,9 +534,13 @@ function Diagram({ mobile = false }: { mobile?: boolean }) {
 
 export default function ErrorReasonComparisonDiagram() {
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <Diagram />
-      <Diagram mobile />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="520px"
+      mode="container"
+      ariaLabel={ARIA_LABEL}
+      desktop={<Diagram />}
+      mobile={<Diagram mobile />}
+    />
   );
 }

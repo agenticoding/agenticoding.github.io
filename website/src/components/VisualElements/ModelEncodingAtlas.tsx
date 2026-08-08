@@ -3,6 +3,7 @@ import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import { ModelCallFrame, modelCallFrameVisualBounds } from './ModelCallFrame';
 import { DIAGRAM_STROKE } from './diagramScale';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ModelEncodingAtlas.module.css';
 
 const MAX_ACTIVE_PULSES = 10;
@@ -1513,28 +1514,32 @@ export default function ModelEncodingAtlas() {
     []
   );
 
-  const containerClassName = styles.container;
   return (
-    <div
-      className={containerClassName}
-      role="img"
-      aria-label={STORY_COPY.label}
-    >
-      <AtlasSvg
-        spec={DESKTOP_SPEC}
-        className={styles.desktopDiagram}
-        viewport="desktop"
-        pulses={activePulses}
-        onDone={removePulse}
-      />
-      <AtlasSvg
-        spec={MOBILE_SPEC}
-        className={styles.mobileDiagram}
-        viewport="mobile"
-        pulses={activePulses.slice(-MOBILE_ACTIVE_PULSES)}
-        onDone={removePulse}
-      />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="520px"
+      mode="container"
+      fallbackBreakpoint="520px"
+      ariaLabel={STORY_COPY.label}
+      desktop={
+        <AtlasSvg
+          spec={DESKTOP_SPEC}
+          className={styles.desktopDiagram}
+          viewport="desktop"
+          pulses={activePulses}
+          onDone={removePulse}
+        />
+      }
+      mobile={
+        <AtlasSvg
+          spec={MOBILE_SPEC}
+          className={styles.mobileDiagram}
+          viewport="mobile"
+          pulses={activePulses.slice(-MOBILE_ACTIVE_PULSES)}
+          onDone={removePulse}
+        />
+      }
+    />
   );
 }
 

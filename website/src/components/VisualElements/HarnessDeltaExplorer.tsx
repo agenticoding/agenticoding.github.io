@@ -1,4 +1,5 @@
 import React, { type CSSProperties, useState } from 'react';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './HarnessDeltaExplorer.module.css';
 
 type HarnessPoint = {
@@ -221,18 +222,26 @@ function ChartStage({
 
 function HarnessChartFigure({ activeSeries }: { activeSeries: ModelSeries }) {
   return (
-    <div className={styles.chartFigure}>
-      <HarnessChart
-        activeSeries={activeSeries}
-        chart={desktopChart}
-        variant="desktop"
-      />
-      <HarnessChart
-        activeSeries={activeSeries}
-        chart={mobileChart}
-        variant="mobile"
-      />
-    </div>
+    <ResponsiveDiagram
+      className={styles.chartFigure}
+      breakpoint="768px"
+      mode="viewport"
+      ariaLabel="Harness benchmark scores compared across model series and harnesses."
+      desktop={
+        <HarnessChart
+          activeSeries={activeSeries}
+          chart={desktopChart}
+          variant="desktop"
+        />
+      }
+      mobile={
+        <HarnessChart
+          activeSeries={activeSeries}
+          chart={mobileChart}
+          variant="mobile"
+        />
+      }
+    />
   );
 }
 

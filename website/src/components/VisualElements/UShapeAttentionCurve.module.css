@@ -21,7 +21,6 @@
 }
 
 .mobileDiagram {
-  display: none;
   max-width: 340px;
 }
 
@@ -83,13 +82,5 @@
   .container {
     margin-block: var(--space-2);
     padding-inline: 0;
-  }
-
-  .desktopDiagram {
-    display: none !important;
-  }
-
-  .mobileDiagram {
-    display: block !important;
   }
 }

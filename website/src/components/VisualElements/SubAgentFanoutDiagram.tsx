@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { AgentNode } from './ActorNodes.tsx';
+import { DiagramArrow, DiagramArrowMarkers } from './DiagramArrow';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './SubAgentFanoutDiagram.module.css';
 import {
   ContextRegionScene,
@@ -11,6 +13,7 @@ import {
 } from './ContextRegions.tsx';
 import {
   ROOT_AGENT_COUNT,
+  ROOT_SCHEDULE,
   SUB_AGENT_PROFILES,
   compressionRatio,
   internalUnits,
@@ -22,6 +25,7 @@ import {
 import { TokenArrowTrain } from './TokenArrowTrain';
 import type { TokenSequence } from './AnimatedTokenFlow';
 import { DIAGRAM_STROKE } from './diagramScale';
+import type { DiagramTone } from './diagramTileLayout';
 import type { TokenTrainTiming } from './TokenTrainTiming';
 
 // The static structure is the complete explanation. The CSS loop below only
@@ -31,6 +35,13 @@ const PARENT_HEIGHT = 320;
 const LOOP_MS = 11000;
 const FLOW_STAGGER = { mode: 'pathSpacing', spacingPx: 24 } as const;
 const FANOUT_FLOW_TOKEN_SIZE = 12;
+const MOBILE_VIEW = { width: 340, height: 356 } as const;
+const MOBILE_ROOT = { x: 86, y: 8, width: 168, height: 36 } as const;
+const MOBILE_CARD_HEIGHT = 60;
+const MOBILE_ARROW_TONES = [
+  'indigo',
+  'violet',
+] as const satisfies readonly DiagramTone[];
 const DISPATCH_TOKENS = [
   { modality: 'code', signal: 'salient' },
   { modality: 'text' },
@@ -124,18 +135,6 @@ function WorkerIdentity({ index }: { index: number }) {
       <span>SUB-AGENT {index + 1}</span>
       <strong>{SUB_AGENT_PROFILES[index].task}</strong>
     </span>
-  );
-}
-
-function MobileWorker({ index }: { index: number }) {
-  return (
-    <section
-      className={styles.mobileWorker}
-      aria-label={`Direct root call ${index + 1}: ${SUB_AGENT_PROFILES[index].task}`}
-    >
-      <AgentNode x={0} y={0} size={32} />
-      <WorkerIdentity index={index} />
-    </section>
   );
 }
 
@@ -309,7 +308,7 @@ function FanoutRails({ frame }: { frame: ContextSceneFrame }) {
   );
 }
 
-function ParentPanel() {
+function DesktopPanel() {
   const modelRows = parentRows();
   const rows = modelRows.map(parentTile);
   return (
@@ -333,13 +332,141 @@ function ParentPanel() {
   );
 }
 
-function MobileSatellites() {
+type MobileCard = { x: number; y: number; width: number };
+
+function mobileCard(stageIndex: number, position: number): MobileCard {
+  const paired = ROOT_SCHEDULE[stageIndex].length > 1;
+  return {
+    x: paired ? 12 + position * 164 : 70,
+    y: 76 + stageIndex * 98,
+    width: paired ? 152 : 200,
+  };
+}
+
+function mobileDispatchPath(card: MobileCard) {
+  const left = card.x < MOBILE_VIEW.width / 2;
+  const rootX = MOBILE_ROOT.x + (left ? 42 : MOBILE_ROOT.width - 42);
+  const targetX = left ? card.x : card.x + card.width / 2;
+  const railX = left ? card.x - 28 : targetX;
+  const targetY = left ? card.y + MOBILE_CARD_HEIGHT / 2 : card.y;
+  return `M ${rootX} 44 H ${railX} V ${targetY} H ${targetX}`;
+}
+
+function mobileReturnPath(card: MobileCard) {
+  const rootY = MOBILE_ROOT.y + MOBILE_ROOT.height + 8;
+  const railX = Math.min(MOBILE_VIEW.width - 8, card.x + card.width + 18);
+  return `M ${card.x + card.width} ${card.y + MOBILE_CARD_HEIGHT / 2} H ${railX} V ${rootY} H ${MOBILE_ROOT.x + MOBILE_ROOT.width}`;
+}
+
+function MobileAgentCard({ index, card }: { index: number; card: MobileCard }) {
+  const profile = SUB_AGENT_PROFILES[index];
   return (
-    <div className={styles.mobileSatellites}>
-      {SUB_AGENT_PROFILES.map((_, index) => (
-        <MobileWorker key={index} index={index} />
+    <g className={styles.mobileAgent}>
+      <rect
+        x={card.x}
+        y={card.y}
+        width={card.width}
+        height={MOBILE_CARD_HEIGHT}
+      />
+      <AgentNode x={card.x + 25} y={card.y + 25} size={24} />
+      <text x={card.x + 46} y={card.y + 22}>
+        SUB-AGENT {index + 1}
+      </text>
+      <text x={card.x + 46} y={card.y + 35} className={styles.mobileTask}>
+        {profile.task}
+      </text>
+      <text x={card.x + 12} y={card.y + 52} className={styles.mobileContract}>
+        ← DISPATCH · SYNTHESIS →
+      </text>
+    </g>
+  );
+}
+
+function MobileAgentRoute({
+  index,
+  card,
+}: {
+  index: number;
+  card: MobileCard;
+}) {
+  return (
+    <g>
+      <DiagramArrow
+        d={mobileDispatchPath(card)}
+        markerIdPrefix="fanout-mobile"
+        tone="indigo"
+      />
+      <DiagramArrow
+        d={mobileReturnPath(card)}
+        markerIdPrefix="fanout-mobile"
+        tone="violet"
+      />
+      <MobileAgentCard index={index} card={card} />
+    </g>
+  );
+}
+
+function MobileStage({
+  stage,
+  stageIndex,
+}: {
+  stage: readonly number[];
+  stageIndex: number;
+}) {
+  const priorStage = ROOT_SCHEDULE[stageIndex - 1];
+  const label =
+    stage.length > 1
+      ? `STAGE ${stageIndex + 1} · CONCURRENT`
+      : priorStage
+        ? `STAGE ${stageIndex + 1} · AFTER ${priorStage.map((index) => index + 1).join(' + ')} SYNTHESIS`
+        : 'STAGE 1 · ROOT DISPATCH';
+  return (
+    <g>
+      <text
+        x="12"
+        y={mobileCard(stageIndex, 0).y - 8}
+        className={styles.mobileStage}
+      >
+        {label}
+      </text>
+      {stage.map((index, position) => (
+        <MobileAgentRoute
+          key={index}
+          index={index}
+          card={mobileCard(stageIndex, position)}
+        />
       ))}
-    </div>
+    </g>
+  );
+}
+
+function MobileDiagram() {
+  return (
+    <svg
+      viewBox={`0 0 ${MOBILE_VIEW.width} ${MOBILE_VIEW.height}`}
+      className={styles.mobileDiagram}
+      aria-hidden="true"
+    >
+      <DiagramArrowMarkers prefix="fanout-mobile" tones={MOBILE_ARROW_TONES} />
+      <g className={styles.mobileRoot}>
+        <rect
+          x={MOBILE_ROOT.x}
+          y={MOBILE_ROOT.y}
+          width={MOBILE_ROOT.width}
+          height={MOBILE_ROOT.height}
+        />
+        <AgentNode x={MOBILE_ROOT.x + 24} y={MOBILE_ROOT.y + 18} size={24} />
+        <text x={MOBILE_ROOT.x + 44} y={MOBILE_ROOT.y + 17}>
+          ROOT ORCHESTRATOR
+        </text>
+        <text x={MOBILE_ROOT.x + 44} y={MOBILE_ROOT.y + 29}>
+          direct calls only
+        </text>
+      </g>
+      {ROOT_SCHEDULE.map((stage, stageIndex) => (
+        <MobileStage key={stageIndex} stage={stage} stageIndex={stageIndex} />
+      ))}
+    </svg>
   );
 }
 
@@ -368,10 +495,14 @@ export default function SubAgentFanoutDiagram() {
   return (
     <div className={styles.container}>
       <ScheduleKey />
-      <div className={styles.panels}>
-        <ParentPanel />
-        <MobileSatellites />
-      </div>
+      <ResponsiveDiagram
+        className={styles.panels}
+        breakpoint="704px"
+        mode="container"
+        ariaLabel="A root orchestrator dispatches work to four sub-agents and receives compact synthesis results."
+        desktop={<DesktopPanel />}
+        mobile={<MobileDiagram />}
+      />
       <CostSummary />
       <p className={styles.screenReaderSummary}>
         One root orchestrator directly calls four sub-agents. Agent 1 returns

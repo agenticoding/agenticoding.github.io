@@ -9,6 +9,7 @@ import { TokenArrowTrain } from './TokenArrowTrain';
 import type { TokenSequence } from './AnimatedTokenFlow';
 import type { TokenTrainTiming } from './TokenTrainTiming';
 import type { WorkingAgentActivation } from './WorkingAgentNode';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './PlanningContractCheckpointDiagram.module.css';
 
 const ARIA_LABEL =
@@ -53,10 +54,13 @@ type FlowTone = 'indigo' | 'warning' | 'success';
 
 export default function PlanningContractCheckpointDiagram() {
   return (
-    <div className={styles.container}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="768px"
+      mode="viewport"
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }
 

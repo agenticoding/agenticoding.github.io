@@ -14,33 +14,8 @@
   margin-inline: auto;
 }
 
-.diagram.desktopDiagram {
-  display: block;
-}
-
 .diagram.mobileDiagram {
-  display: none;
   max-width: 360px;
-}
-
-@container (max-width: 520px) {
-  .diagram.desktopDiagram {
-    display: none;
-  }
-
-  .diagram.mobileDiagram {
-    display: block;
-  }
-}
-
-@media (max-width: 520px) {
-  .diagram.desktopDiagram {
-    display: none;
-  }
-
-  .diagram.mobileDiagram {
-    display: block;
-  }
 }
 
 .storyKnob {

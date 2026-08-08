@@ -10,12 +10,10 @@
 }
 
 .desktopDiagram {
-  display: block;
   max-width: 720px;
 }
 
 .mobileDiagram {
-  display: none !important;
   max-width: 360px;
 }
 
@@ -128,16 +126,6 @@
   }
   6% {
     transform: scale(1.03);
-  }
-}
-
-@media (max-width: 640px) {
-  .desktopDiagram {
-    display: none !important;
-  }
-
-  .mobileDiagram {
-    display: block !important;
   }
 }
 

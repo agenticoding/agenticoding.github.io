@@ -1,4 +1,5 @@
 import React, { useId, useState } from 'react';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './UShapeAttentionCurve.module.css';
 import rangeStyles from './RangeControl.module.css';
 import {
@@ -132,216 +133,227 @@ export default function UShapeAttentionCurve({
 
   return (
     <div className={styles.container}>
-      <svg
-        className={`${styles.svg} ${styles.desktopDiagram}`}
-        style={{ display: 'block' }}
-        viewBox="0 0 800 320"
-        preserveAspectRatio="xMidYMid meet"
-        role="img"
-        aria-label="Attention curve showing high attention at the start and end of a context window and lower attention in the middle"
-      >
-        <ZoneBackground curve={curve} plot={DESKTOP_PLOT} />
-        <line
-          x1={DESKTOP_PLOT.left}
-          y1={DESKTOP_PLOT.top}
-          x2={DESKTOP_PLOT.left}
-          y2={DESKTOP_PLOT.bottom}
-          className={styles.axis}
-        />
-        <line
-          x1={DESKTOP_PLOT.left}
-          y1={DESKTOP_PLOT.bottom}
-          x2={DESKTOP_PLOT.right}
-          y2={DESKTOP_PLOT.bottom}
-          className={styles.axis}
-        />
-        <polyline
-          points={curvePoints(desktopPoints)}
-          className={styles.curveLine}
-        />
-        <CurveDots points={desktopPoints} size={10} />
-
-        <text
-          x={DESKTOP_PLOT.left - 8}
-          y={DESKTOP_PLOT.top + 4}
-          textAnchor="end"
-          className={styles.axisLabel}
-        >
-          High
-        </text>
-        <text
-          x={DESKTOP_PLOT.left - 8}
-          y={DESKTOP_PLOT.bottom}
-          textAnchor="end"
-          className={styles.axisLabel}
-        >
-          Low
-        </text>
-        <text
-          x={
-            DESKTOP_PLOT.left +
-            (PRIMACY_END / 2) * (DESKTOP_PLOT.right - DESKTOP_PLOT.left)
-          }
-          y={DESKTOP_PLOT.bottom + 22}
-          textAnchor="middle"
-          className={regionStyles.zoneLabel}
-          fill={ZONE_LABEL_FILLS.primacy}
-        >
-          {ZONE_LABELS.primacy}
-        </text>
-        <text
-          x={410}
-          y={DESKTOP_PLOT.bottom + 22}
-          textAnchor="middle"
-          className={regionStyles.zoneLabel}
-          fill={ZONE_LABEL_FILLS.middle}
-        >
-          {ZONE_LABELS.middle}
-        </text>
-        <text
-          x={
-            DESKTOP_PLOT.left +
-            ((1 + RECENCY_START) / 2) * (DESKTOP_PLOT.right - DESKTOP_PLOT.left)
-          }
-          y={DESKTOP_PLOT.bottom + 22}
-          textAnchor="middle"
-          className={regionStyles.zoneLabel}
-          fill={ZONE_LABEL_FILLS.recency}
-        >
-          {ZONE_LABELS.recency}
-        </text>
-
-        {desktopAnnotationVisible && (
-          <text
-            x={desktopZoneCenter}
-            y={DESKTOP_PLOT.top + 16}
-            textAnchor="middle"
-            className={styles.zoneAnnotation}
+      <ResponsiveDiagram
+        breakpoint="560px"
+        mode="viewport"
+        ariaLabel="Attention curve showing high attention at the start and end of a context window and lower attention in the middle"
+        desktop={
+          <svg
+            className={`${styles.svg} ${styles.desktopDiagram}`}
+            viewBox="0 0 800 320"
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+            aria-label="Attention curve showing high attention at the start and end of a context window and lower attention in the middle"
           >
-            <tspan fill={severity.color} className={styles.zoneAnnotationTier}>
-              {severity.tier}
-            </tspan>
-            {desktopDescriptionVisible && (
-              <tspan
+            <ZoneBackground curve={curve} plot={DESKTOP_PLOT} />
+            <line
+              x1={DESKTOP_PLOT.left}
+              y1={DESKTOP_PLOT.top}
+              x2={DESKTOP_PLOT.left}
+              y2={DESKTOP_PLOT.bottom}
+              className={styles.axis}
+            />
+            <line
+              x1={DESKTOP_PLOT.left}
+              y1={DESKTOP_PLOT.bottom}
+              x2={DESKTOP_PLOT.right}
+              y2={DESKTOP_PLOT.bottom}
+              className={styles.axis}
+            />
+            <polyline
+              points={curvePoints(desktopPoints)}
+              className={styles.curveLine}
+            />
+            <CurveDots points={desktopPoints} size={10} />
+
+            <text
+              x={DESKTOP_PLOT.left - 8}
+              y={DESKTOP_PLOT.top + 4}
+              textAnchor="end"
+              className={styles.axisLabel}
+            >
+              High
+            </text>
+            <text
+              x={DESKTOP_PLOT.left - 8}
+              y={DESKTOP_PLOT.bottom}
+              textAnchor="end"
+              className={styles.axisLabel}
+            >
+              Low
+            </text>
+            <text
+              x={
+                DESKTOP_PLOT.left +
+                (PRIMACY_END / 2) * (DESKTOP_PLOT.right - DESKTOP_PLOT.left)
+              }
+              y={DESKTOP_PLOT.bottom + 22}
+              textAnchor="middle"
+              className={regionStyles.zoneLabel}
+              fill={ZONE_LABEL_FILLS.primacy}
+            >
+              {ZONE_LABELS.primacy}
+            </text>
+            <text
+              x={410}
+              y={DESKTOP_PLOT.bottom + 22}
+              textAnchor="middle"
+              className={regionStyles.zoneLabel}
+              fill={ZONE_LABEL_FILLS.middle}
+            >
+              {ZONE_LABELS.middle}
+            </text>
+            <text
+              x={
+                DESKTOP_PLOT.left +
+                ((1 + RECENCY_START) / 2) *
+                  (DESKTOP_PLOT.right - DESKTOP_PLOT.left)
+              }
+              y={DESKTOP_PLOT.bottom + 22}
+              textAnchor="middle"
+              className={regionStyles.zoneLabel}
+              fill={ZONE_LABEL_FILLS.recency}
+            >
+              {ZONE_LABELS.recency}
+            </text>
+
+            {desktopAnnotationVisible && (
+              <text
                 x={desktopZoneCenter}
-                dy="14"
-                className={styles.zoneAnnotationDesc}
+                y={DESKTOP_PLOT.top + 16}
+                textAnchor="middle"
+                className={styles.zoneAnnotation}
               >
-                {severity.desc}
-              </tspan>
+                <tspan
+                  fill={severity.color}
+                  className={styles.zoneAnnotationTier}
+                >
+                  {severity.tier}
+                </tspan>
+                {desktopDescriptionVisible && (
+                  <tspan
+                    x={desktopZoneCenter}
+                    dy="14"
+                    className={styles.zoneAnnotationDesc}
+                  >
+                    {severity.desc}
+                  </tspan>
+                )}
+              </text>
             )}
-          </text>
-        )}
-      </svg>
+          </svg>
+        }
+        mobile={
+          <svg
+            className={`${styles.svg} ${styles.mobileDiagram}`}
+            viewBox="0 0 340 288"
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+            aria-label={`Attention curve from context start to end: ${severity.tier.toLowerCase()}, ${severity.mobileDesc}`}
+          >
+            <text x={MOBILE_PLOT.left} y={18} className={styles.mobileHeading}>
+              ATTENTION
+            </text>
+            <text
+              x={MOBILE_PLOT.right}
+              y={18}
+              textAnchor="end"
+              className={styles.axisLabel}
+            >
+              HIGH → LOW
+            </text>
+            <ZoneBackground curve={curve} plot={MOBILE_PLOT} />
+            <line
+              x1={MOBILE_PLOT.left}
+              y1={MOBILE_PLOT.top}
+              x2={MOBILE_PLOT.left}
+              y2={MOBILE_PLOT.bottom}
+              className={styles.axis}
+            />
+            <line
+              x1={MOBILE_PLOT.left}
+              y1={MOBILE_PLOT.bottom}
+              x2={MOBILE_PLOT.right}
+              y2={MOBILE_PLOT.bottom}
+              className={styles.axis}
+            />
+            <polyline
+              points={curvePoints(mobilePoints)}
+              className={styles.curveLine}
+            />
+            <CurveDots points={mobilePoints} size={8} />
 
-      <svg
-        className={`${styles.svg} ${styles.mobileDiagram}`}
-        style={{ display: 'none' }}
-        viewBox="0 0 340 288"
-        preserveAspectRatio="xMidYMid meet"
-        role="img"
-        aria-label={`Attention curve from context start to end: ${severity.tier.toLowerCase()}, ${severity.mobileDesc}`}
-      >
-        <text x={MOBILE_PLOT.left} y={18} className={styles.mobileHeading}>
-          ATTENTION
-        </text>
-        <text
-          x={MOBILE_PLOT.right}
-          y={18}
-          textAnchor="end"
-          className={styles.axisLabel}
-        >
-          HIGH → LOW
-        </text>
-        <ZoneBackground curve={curve} plot={MOBILE_PLOT} />
-        <line
-          x1={MOBILE_PLOT.left}
-          y1={MOBILE_PLOT.top}
-          x2={MOBILE_PLOT.left}
-          y2={MOBILE_PLOT.bottom}
-          className={styles.axis}
-        />
-        <line
-          x1={MOBILE_PLOT.left}
-          y1={MOBILE_PLOT.bottom}
-          x2={MOBILE_PLOT.right}
-          y2={MOBILE_PLOT.bottom}
-          className={styles.axis}
-        />
-        <polyline
-          points={curvePoints(mobilePoints)}
-          className={styles.curveLine}
-        />
-        <CurveDots points={mobilePoints} size={8} />
-
-        <text
-          x={MOBILE_PLOT.left - 8}
-          y={MOBILE_PLOT.top + 4}
-          textAnchor="end"
-          className={styles.axisLabel}
-        >
-          High
-        </text>
-        <text
-          x={MOBILE_PLOT.left - 8}
-          y={MOBILE_PLOT.bottom}
-          textAnchor="end"
-          className={styles.axisLabel}
-        >
-          Low
-        </text>
-        <text
-          x={
-            MOBILE_PLOT.left +
-            (PRIMACY_END / 2) * (MOBILE_PLOT.right - MOBILE_PLOT.left)
-          }
-          y={200}
-          textAnchor="middle"
-          className={regionStyles.zoneLabel}
-          fill={ZONE_LABEL_FILLS.primacy}
-        >
-          {ZONE_LABELS.primacy}
-        </text>
-        <text
-          x={178}
-          y={200}
-          textAnchor="middle"
-          className={regionStyles.zoneLabel}
-          fill={ZONE_LABEL_FILLS.middle}
-        >
-          {ZONE_LABELS.middle}
-        </text>
-        <text
-          x={
-            MOBILE_PLOT.left +
-            ((1 + RECENCY_START) / 2) * (MOBILE_PLOT.right - MOBILE_PLOT.left)
-          }
-          y={200}
-          textAnchor="middle"
-          className={regionStyles.zoneLabel}
-          fill={ZONE_LABEL_FILLS.recency}
-        >
-          {ZONE_LABELS.recency}
-        </text>
-        <text
-          x={178}
-          y={220}
-          textAnchor="middle"
-          className={styles.mobileAxisTitle}
-        >
-          CONTEXT POSITION →
-        </text>
-        <text
-          x={MOBILE_PLOT.left}
-          y={248}
-          className={styles.mobileSeverityTier}
-        >
-          <tspan fill={severity.color}>{severity.tier}</tspan>
-          <tspan dx="8" className={styles.mobileSeverityDesc}>
-            {severity.mobileDesc}
-          </tspan>
-        </text>
-      </svg>
+            <text
+              x={MOBILE_PLOT.left - 8}
+              y={MOBILE_PLOT.top + 4}
+              textAnchor="end"
+              className={styles.axisLabel}
+            >
+              High
+            </text>
+            <text
+              x={MOBILE_PLOT.left - 8}
+              y={MOBILE_PLOT.bottom}
+              textAnchor="end"
+              className={styles.axisLabel}
+            >
+              Low
+            </text>
+            <text
+              x={
+                MOBILE_PLOT.left +
+                (PRIMACY_END / 2) * (MOBILE_PLOT.right - MOBILE_PLOT.left)
+              }
+              y={200}
+              textAnchor="middle"
+              className={regionStyles.zoneLabel}
+              fill={ZONE_LABEL_FILLS.primacy}
+            >
+              {ZONE_LABELS.primacy}
+            </text>
+            <text
+              x={178}
+              y={200}
+              textAnchor="middle"
+              className={regionStyles.zoneLabel}
+              fill={ZONE_LABEL_FILLS.middle}
+            >
+              {ZONE_LABELS.middle}
+            </text>
+            <text
+              x={
+                MOBILE_PLOT.left +
+                ((1 + RECENCY_START) / 2) *
+                  (MOBILE_PLOT.right - MOBILE_PLOT.left)
+              }
+              y={200}
+              textAnchor="middle"
+              className={regionStyles.zoneLabel}
+              fill={ZONE_LABEL_FILLS.recency}
+            >
+              {ZONE_LABELS.recency}
+            </text>
+            <text
+              x={178}
+              y={220}
+              textAnchor="middle"
+              className={styles.mobileAxisTitle}
+            >
+              CONTEXT POSITION →
+            </text>
+            <text
+              x={MOBILE_PLOT.left}
+              y={248}
+              className={styles.mobileSeverityTier}
+            >
+              <tspan fill={severity.color}>{severity.tier}</tspan>
+              <tspan dx="8" className={styles.mobileSeverityDesc}>
+                {severity.mobileDesc}
+              </tspan>
+            </text>
+          </svg>
+        }
+      />
 
       <div className={rangeStyles.row}>
         <span className={rangeStyles.label}>Context Fill</span>

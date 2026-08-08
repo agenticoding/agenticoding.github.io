@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './LivingContextWindowStream.module.css';
 import { EMOJI } from './emojiAssets';
 import { DiagramTile } from './DiagramTile';
@@ -509,9 +510,13 @@ function MobileDiagram() {
 
 export default function LivingContextWindowStream() {
   return (
-    <div className={styles.container}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="640px"
+      mode="container"
+      fallbackBreakpoint="640px"
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }

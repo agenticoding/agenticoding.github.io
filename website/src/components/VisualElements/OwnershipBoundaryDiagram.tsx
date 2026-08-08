@@ -2,6 +2,7 @@ import React, { type ReactNode, useId } from 'react';
 
 import { AgentNode, OperatorNode } from './ActorNodes';
 import { ArrowMarker } from './diagramGeometry';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './OwnershipBoundaryDiagram.module.css';
 
 const DESKTOP = { w: 720, h: 384, cardW: 144, cardH: 104 } as const;
@@ -406,10 +407,14 @@ function MobileDiagram({ markerId }: { markerId: string }) {
 export default function OwnershipBoundaryDiagram() {
   const markerId = useId().replace(/:/g, '');
   return (
-    <div className={styles.diagram}>
-      <DesktopDiagram markerId={markerId} />
-      <MobileDiagram markerId={markerId} />
-    </div>
+    <ResponsiveDiagram
+      className={styles.diagram}
+      breakpoint="640px"
+      mode="viewport"
+      ariaLabel="An operator-owned workflow contains a human responsibility lane and an LLM execution lane."
+      desktop={<DesktopDiagram markerId={markerId} />}
+      mobile={<MobileDiagram markerId={markerId} />}
+    />
   );
 }
 

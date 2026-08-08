@@ -1,4 +1,5 @@
 import React from 'react';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './OperatorCycleDiagram.module.css';
 import { OperatorNode } from './ActorNodes';
 import { emojiDisplaySize } from './emojiAssets';
@@ -172,8 +173,13 @@ function MobileDiagram() {
 export default function OperatorCycleDiagram() {
   return (
     <div>
-      <DesktopDiagram />
-      <MobileDiagram />
+      <ResponsiveDiagram
+        breakpoint="40rem"
+        mode="container"
+        ariaLabel="An operator moves between Grounding, Plan, Execute, and a Validation Gate while token streams move between each step."
+        desktop={<DesktopDiagram />}
+        mobile={<MobileDiagram />}
+      />
       <div className={styles.descGrid}>{TILES.map(renderCard)}</div>
     </div>
   );

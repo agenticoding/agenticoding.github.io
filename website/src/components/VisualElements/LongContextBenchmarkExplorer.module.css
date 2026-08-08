@@ -162,12 +162,8 @@
   overflow: visible;
 }
 
-.chartFigure .mobileChart,
 .mobileCurveSummary {
-  display: none;
-}
-
-.mobileCurveSummary {
+  display: grid;
   gap: var(--space-1);
   margin: var(--space-1) 0 0;
   padding: 0;
@@ -839,18 +835,6 @@
 @media (max-width: 48rem) {
   .container {
     padding: var(--space-2);
-  }
-
-  .chartFigure .desktopChart {
-    display: none;
-  }
-
-  .chartFigure .mobileChart {
-    display: block;
-  }
-
-  .mobileCurveSummary {
-    display: grid;
   }
 
   .chartFigure svg {

@@ -36,23 +36,8 @@
 
 .desktop,
 .mobile {
-  display: block;
   width: 100%;
   height: auto;
-}
-
-.mobile {
-  display: none;
-}
-
-@media (max-width: 640px) {
-  .desktop {
-    display: none;
-  }
-
-  .mobile {
-    display: block;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

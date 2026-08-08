@@ -14,12 +14,7 @@
   margin-inline: auto;
 }
 
-.diagram.desktopDiagram {
-  display: block;
-}
-
 .diagram.mobileDiagram {
-  display: none;
   max-width: 360px;
 }
 
@@ -27,26 +22,6 @@
   fill: var(--surface-raised);
   stroke: var(--border-default);
   stroke-width: 1.5;
-}
-
-@container (max-width: 520px) {
-  .diagram.desktopDiagram {
-    display: none;
-  }
-
-  .diagram.mobileDiagram {
-    display: block;
-  }
-}
-
-@media (max-width: 520px) {
-  .diagram.desktopDiagram {
-    display: none;
-  }
-
-  .diagram.mobileDiagram {
-    display: block;
-  }
 }
 
 .meshEdge {

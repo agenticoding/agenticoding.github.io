@@ -1,4 +1,5 @@
 import React from 'react';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './OperatorTransformationDiagram.module.css';
 import {
   agentIconSize,
@@ -578,13 +579,14 @@ function MobileDiagram() {
 
 export default function OperatorTransformationDiagram() {
   return (
-    <div
+    <ResponsiveDiagram
       className={styles.container}
-      role="img"
-      aria-label="A developer moves from asking an agent for a one-shot guess to directing bounded work that builds context and returns a candidate to a human decision gate."
-    >
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+      breakpoint="720px"
+      mode="container"
+      fallbackBreakpoint="768px"
+      ariaLabel="A developer moves from asking an agent for a one-shot guess to directing bounded work that builds context and returns a candidate to a human decision gate."
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }

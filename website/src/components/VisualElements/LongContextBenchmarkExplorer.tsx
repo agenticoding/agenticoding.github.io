@@ -18,6 +18,7 @@ import {
   type CurveLabelLayout,
   type RenderedCurveLabel,
 } from './LongContextBenchmarkChart';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './LongContextBenchmarkExplorer.module.css';
 
 const defaultSelectedIds = [
@@ -80,26 +81,36 @@ function EvidenceChart({
   );
   const labels = useRenderedCurveLabels(labelLayout);
   return (
-    <div className={styles.chartFigure}>
-      <BenchmarkChartSvg
-        chart={desktopChart}
-        ticks={desktopXTicks}
-        rows={benchmarkRows}
-        selectedIds={selectedIds}
-        labels={labels}
-        onToggle={onToggle}
-        variant="desktop"
-      />
-      <BenchmarkChartSvg
-        chart={mobileChart}
-        ticks={mobileXTicks}
-        rows={benchmarkRows}
-        selectedIds={selectedIds}
-        onToggle={onToggle}
-        variant="mobile"
-      />
-      <MobileCurveSummary rows={selectedRows} />
-    </div>
+    <ResponsiveDiagram
+      className={styles.chartFigure}
+      breakpoint="768px"
+      mode="viewport"
+      ariaLabel="Long-context benchmark curves plotted across context lengths."
+      desktop={
+        <BenchmarkChartSvg
+          chart={desktopChart}
+          ticks={desktopXTicks}
+          rows={benchmarkRows}
+          selectedIds={selectedIds}
+          labels={labels}
+          onToggle={onToggle}
+          variant="desktop"
+        />
+      }
+      mobile={
+        <>
+          <BenchmarkChartSvg
+            chart={mobileChart}
+            ticks={mobileXTicks}
+            rows={benchmarkRows}
+            selectedIds={selectedIds}
+            onToggle={onToggle}
+            variant="mobile"
+          />
+          <MobileCurveSummary rows={selectedRows} />
+        </>
+      }
+    />
   );
 }
 

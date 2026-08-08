@@ -12,6 +12,7 @@ import {
   horizontalConnector,
   verticalConnector,
 } from './PostTrainingTuningBoardGeometry';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './PostTrainingTuningBoard.module.css';
 
 const VW = 640;
@@ -608,9 +609,14 @@ function MobileBoard() {
 
 export default function PostTrainingTuningBoard() {
   return (
-    <div className={styles.container}>
-      <DesktopBoard />
-      <MobileBoard />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="520px"
+      mode="container"
+      fallbackBreakpoint="520px"
+      ariaLabel="Post-training tunes a base model into shaped product behavior"
+      desktop={<DesktopBoard />}
+      mobile={<MobileBoard />}
+    />
   );
 }

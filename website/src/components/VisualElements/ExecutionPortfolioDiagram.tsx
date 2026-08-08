@@ -2,6 +2,7 @@ import React from 'react';
 import { OperatorNode } from './ActorNodes';
 import { AgentTile, agentIconSize } from './AgentTile';
 import type { WorkingAgentActivation } from './WorkingAgentNode';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ExecutionPortfolioDiagram.module.css';
 
 const ARIA_LABEL =
@@ -67,10 +68,14 @@ const MOBILE_CARDS = STAGES.map((stage, index) => ({
 
 export default function ExecutionPortfolioDiagram() {
   return (
-    <div className={styles.container}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="640px"
+      mode="viewport"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }
 

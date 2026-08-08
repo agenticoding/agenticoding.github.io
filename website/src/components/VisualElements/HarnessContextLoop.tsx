@@ -5,6 +5,7 @@ import { DiagramTile } from './DiagramTile';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import { PROCESS_TILE_SCALE } from './diagramScale';
 import type { DiagramTone } from './diagramTileLayout';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './HarnessContextLoop.module.css';
 
 const ARIA_LABEL =
@@ -273,9 +274,14 @@ function MobileDiagram() {
 
 export default function HarnessContextLoop() {
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="560px"
+      mode="container"
+      fallbackBreakpoint="580px"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }

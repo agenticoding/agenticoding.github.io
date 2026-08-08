@@ -8,7 +8,6 @@
 
 .desktop,
 .mobile {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -16,7 +15,6 @@
 }
 
 .mobile {
-  display: none;
   max-width: 340px;
 }
 
@@ -200,15 +198,5 @@ marker path[data-tone='warning'] {
 @media (prefers-reduced-motion: reduce) {
   .stabilizerMotion {
     display: none;
-  }
-}
-
-@container (max-width: 36rem) {
-  .desktop {
-    display: none;
-  }
-
-  .mobile {
-    display: block;
   }
 }

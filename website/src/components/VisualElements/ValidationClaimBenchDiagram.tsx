@@ -12,6 +12,7 @@ import {
 } from './emojiAssets';
 import { EmojiArrowTrain, EmojiPathTrain } from './TokenArrowTrain';
 import { validationClaimBenchSchedule } from './ValidationClaimBenchSchedule';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ValidationClaimBenchDiagram.module.css';
 
 const ARIA_LABEL =
@@ -33,10 +34,14 @@ type Density = 'desktop' | 'mobile';
 
 export default function ValidationClaimBenchDiagram() {
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="768px"
+      mode="viewport"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }
 

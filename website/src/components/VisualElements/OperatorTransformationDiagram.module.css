@@ -9,7 +9,6 @@
 
 .operatorDesktop,
 .operatorMobile {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -21,7 +20,6 @@
 }
 
 .operatorMobile {
-  display: none !important;
   max-width: 340px;
 }
 
@@ -146,26 +144,6 @@
 @media (prefers-reduced-motion: reduce) {
   .container * {
     animation: none !important;
-  }
-}
-
-@container (max-width: 720px) {
-  .operatorDesktop {
-    display: none !important;
-  }
-
-  .operatorMobile {
-    display: block !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .operatorDesktop {
-    display: none !important;
-  }
-
-  .operatorMobile {
-    display: block !important;
   }
 }
 

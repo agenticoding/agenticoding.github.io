@@ -76,10 +76,6 @@
   background: var(--surface-page);
 }
 
-.chartFigure .mobileChart {
-  display: none;
-}
-
 .chartFrame line {
   stroke: var(--border-subtle);
   stroke-width: 1;
@@ -274,14 +270,6 @@
 @media (max-width: 48rem) {
   .container {
     padding: var(--space-2);
-  }
-
-  .chartFigure .desktopChart {
-    display: none;
-  }
-
-  .chartFigure .mobileChart {
-    display: block;
   }
 
   .modelChip {

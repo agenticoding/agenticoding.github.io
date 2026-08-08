@@ -7,6 +7,7 @@ import { DiagramTile } from './DiagramTile';
 import { tileToneVars, type DiagramTone } from './diagramTileLayout';
 import { TokenArrowTrain } from './TokenArrowTrain';
 import { seededTokenTrain, seededZigzagPath } from './TokenTrainSequence';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ProbabilityIsNotLogicDiagram.module.css';
 
 const DESKTOP_ARROW_ID = 'probability-logic-desktop-arrow';
@@ -424,9 +425,14 @@ function MobileDiagram() {
 
 export default function ProbabilityIsNotLogicDiagram() {
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="520px"
+      mode="container"
+      fallbackBreakpoint="560px"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }

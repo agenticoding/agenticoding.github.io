@@ -1,3 +1,4 @@
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ContextMechanismMap.module.css';
 import {
   ContextLensMetrics,
@@ -523,18 +524,24 @@ const ARIA_LABEL =
 
 export default function ContextMechanismMap() {
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <svg
-        className={`${styles.diagram} ${styles.desktopDiagram}`}
-        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {CARDS.map((card, index) => (
-          <MechanismCard key={card.id} card={card} index={index} />
-        ))}
-      </svg>
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="560px"
+      mode="container"
+      ariaLabel={ARIA_LABEL}
+      desktop={
+        <svg
+          className={`${styles.diagram} ${styles.desktopDiagram}`}
+          viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {CARDS.map((card, index) => (
+            <MechanismCard key={card.id} card={card} index={index} />
+          ))}
+        </svg>
+      }
+      mobile={<MobileDiagram />}
+    />
   );
 }

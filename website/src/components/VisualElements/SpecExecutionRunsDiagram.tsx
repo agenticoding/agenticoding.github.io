@@ -9,6 +9,7 @@ import {
   WORKFLOW_TOKEN_STAGGER,
   WorkflowLoopGraphic,
 } from './WorkflowLoopGraphic';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './SpecExecutionRunsDiagram.module.css';
 
 const ARIA_LABEL =
@@ -22,10 +23,13 @@ type Layout = { x: number; y: number; width: number; height: number };
 
 export default function SpecExecutionRunsDiagram() {
   return (
-    <div className={styles.container}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="40rem"
+      mode="container"
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }
 

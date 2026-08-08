@@ -8,6 +8,7 @@ import {
   getRoleCycleMs,
   roleBoundaryTiming,
 } from './InstructionLayerAuthorityTiming';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './InstructionLayerAuthority.module.css';
 
 type Tone = 'cyan' | 'indigo' | 'neutral';
@@ -391,8 +392,14 @@ export default function InstructionLayerAuthority() {
   return (
     <>
       <TimingStyles />
-      <DesktopDiagram />
-      <MobileDiagram />
+      <ResponsiveDiagram
+        className={styles.container}
+        breakpoint="700px"
+        mode="viewport"
+        ariaLabel="The same instruction text enters different source roles before the LLM predicts different behavior."
+        desktop={<DesktopDiagram />}
+        mobile={<MobileDiagram />}
+      />
     </>
   );
 }

@@ -3,6 +3,7 @@ import clsx from 'clsx';
 
 import { DiagramTile } from './DiagramTile';
 import { EMOJI } from './emojiAssets';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './LocalChoicesGlobalCoherenceDiagram.module.css';
 
 const ARIA_LABEL =
@@ -634,22 +635,27 @@ function MobileDiagram({
 export default function LocalChoicesGlobalCoherenceDiagram() {
   const { run, activeStep, outcomeVisible } = usePlayback();
   return (
-    <div
+    <ResponsiveDiagram
       className={styles.container}
-      role="img"
-      aria-label={ARIA_LABEL}
+      breakpoint="520px"
+      mode="container"
+      fallbackBreakpoint="560px"
+      ariaLabel={ARIA_LABEL}
       style={TIMING_STYLE}
-    >
-      <DesktopDiagram
-        run={run}
-        activeStep={activeStep}
-        outcomeVisible={outcomeVisible}
-      />
-      <MobileDiagram
-        run={run}
-        activeStep={activeStep}
-        outcomeVisible={outcomeVisible}
-      />
-    </div>
+      desktop={
+        <DesktopDiagram
+          run={run}
+          activeStep={activeStep}
+          outcomeVisible={outcomeVisible}
+        />
+      }
+      mobile={
+        <MobileDiagram
+          run={run}
+          activeStep={activeStep}
+          outcomeVisible={outcomeVisible}
+        />
+      }
+    />
   );
 }

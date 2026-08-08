@@ -7,7 +7,6 @@
 }
 
 .diagram {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -18,7 +17,6 @@
 }
 
 .mobileDiagram {
-  display: none;
   max-width: 340px;
 }
 
@@ -160,26 +158,6 @@
 
   100% {
     transform: rotate(1440deg);
-  }
-}
-
-@container (max-width: 560px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
-}
-
-@media (max-width: 580px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
   }
 }
 

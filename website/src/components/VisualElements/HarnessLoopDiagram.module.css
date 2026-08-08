@@ -6,7 +6,6 @@
 }
 
 .diagram {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -17,7 +16,6 @@
 }
 
 .mobileDiagram {
-  display: none;
   max-width: 320px;
 }
 
@@ -59,26 +57,6 @@
   font-family: var(--font-mono-spec);
   font-size: 9px;
   font-feature-settings: var(--font-mono-features);
-}
-
-@container (max-width: 480px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
-}
-
-@media (max-width: 500px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -4,6 +4,7 @@ import { GearNode } from './GearNode';
 import { TokenUnit } from './TokenUnit';
 import { ArrowMarker, trimPathEnd } from './diagramGeometry';
 import { DIAGRAM_STROKE } from './diagramScale';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './TokenPredictionDiagram.module.css';
 
 const CONTEXT_TOKENS = ['The', 'cat', 'sat', 'on', 'the'] as const;
@@ -437,9 +438,14 @@ function MobileDiagram() {
 
 export default function TokenPredictionDiagram() {
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="420px"
+      mode="container"
+      fallbackBreakpoint="430px"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }

@@ -6,7 +6,6 @@
 }
 
 .diagram {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -17,7 +16,6 @@
 }
 
 .mobileDiagram {
-  display: none;
   max-width: 320px;
 }
 
@@ -66,26 +64,6 @@
   7% {
     opacity: 0.82;
     transform: scale(1.03);
-  }
-}
-
-@container (max-width: 560px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
-}
-
-@media (max-width: 580px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
   }
 }
 

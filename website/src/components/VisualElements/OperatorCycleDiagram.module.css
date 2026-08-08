@@ -8,12 +8,10 @@
 }
 
 .desktopDiagram {
-  display: block;
   max-width: 760px;
 }
 
 .mobileDiagram {
-  display: none;
   max-width: 360px;
 }
 
@@ -113,16 +111,6 @@
   color: var(--text-muted);
   font-size: var(--text-sm);
   line-height: var(--lh-sm);
-}
-
-@container (max-width: 40rem) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
 }
 
 @media (max-width: 799px) {

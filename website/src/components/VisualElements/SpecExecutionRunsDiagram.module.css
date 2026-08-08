@@ -7,7 +7,6 @@
 }
 
 .diagram {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -19,7 +18,6 @@
 }
 
 .mobileDiagram {
-  display: none;
   max-width: 340px;
 }
 
@@ -34,16 +32,6 @@
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.06em;
-}
-
-@container (max-width: 40rem) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

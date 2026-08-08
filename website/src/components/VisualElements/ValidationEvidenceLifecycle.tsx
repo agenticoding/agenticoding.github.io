@@ -2,6 +2,7 @@ import React, { useId } from 'react';
 
 import { DiagramArrow, DiagramArrowMarkers } from './DiagramArrow';
 import { DiagramTile } from './DiagramTile';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ValidationEvidenceLifecycle.module.css';
 
 const DESKTOP_STEPS = [
@@ -75,10 +76,14 @@ const MOBILE_STEPS = [
 export default function ValidationEvidenceLifecycle() {
   const markerPrefix = `validation-${useId().replace(/:/g, '')}`;
   return (
-    <div className={styles.container}>
-      <DesktopDiagram markerPrefix={markerPrefix} />
-      <MobileDiagram markerPrefix={markerPrefix} />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="640px"
+      mode="viewport"
+      ariaLabel="Validation lifecycle from a product claim through representative operating conditions, correlated evidence, retesting, bounded release, and field signals that update the profile."
+      desktop={<DesktopDiagram markerPrefix={markerPrefix} />}
+      mobile={<MobileDiagram markerPrefix={markerPrefix} />}
+    />
   );
 }
 

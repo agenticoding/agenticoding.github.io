@@ -19,6 +19,7 @@ import {
 } from './TokenArrowTrain';
 import type { TokenUnitTone } from './TokenUnit';
 import type { WorkingAgentActivation } from './WorkingAgentNode';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './GroundingDistillationDiagram.module.css';
 
 const ARIA_LABEL =
@@ -113,10 +114,14 @@ const FLOW_STYLES = {
 
 export default function GroundingDistillationDiagram() {
   return (
-    <div className={styles.container}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="768px"
+      mode="viewport"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }
 

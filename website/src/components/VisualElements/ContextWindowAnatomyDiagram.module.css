@@ -1,5 +1,4 @@
 .diagram {
-  display: block;
   width: 100%;
   max-width: 820px;
   height: auto;
@@ -7,7 +6,6 @@
 }
 
 .mobile {
-  display: none;
   max-width: 360px;
 }
 
@@ -75,13 +73,4 @@
   stroke-width: 1.5;
   stroke-dasharray: 4 4;
   fill: none;
-}
-
-@media (max-width: 640px) {
-  .desktop {
-    display: none;
-  }
-  .mobile {
-    display: block;
-  }
 }

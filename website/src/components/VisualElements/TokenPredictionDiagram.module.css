@@ -12,7 +12,6 @@
 }
 
 .diagram {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -23,31 +22,10 @@
 }
 
 .mobileDiagram {
-  display: none;
   max-width: 320px;
 }
 
 .gear {
   transform-box: fill-box;
   transform-origin: center;
-}
-
-@container (max-width: 420px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
-}
-
-@media (max-width: 430px) {
-  .desktopDiagram {
-    display: none;
-  }
-
-  .mobileDiagram {
-    display: block;
-  }
 }

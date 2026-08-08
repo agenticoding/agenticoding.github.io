@@ -4,21 +4,6 @@
 
 .validationDesktop,
 .validationMobile {
-  display: block;
   width: 100%;
   height: auto;
-}
-
-.container .validationMobile {
-  display: none;
-}
-
-@media (max-width: 640px) {
-  .container .validationDesktop {
-    display: none;
-  }
-
-  .container .validationMobile {
-    display: block;
-  }
 }

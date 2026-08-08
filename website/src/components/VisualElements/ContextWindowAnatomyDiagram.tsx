@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ContextWindowAnatomyDiagram.module.css';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI } from './emojiAssets';
@@ -335,9 +336,12 @@ function MobileDiagram() {
 
 export default function ContextWindowAnatomyDiagram() {
   return (
-    <>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </>
+    <ResponsiveDiagram
+      breakpoint="640px"
+      mode="viewport"
+      ariaLabel="Context window anatomy shown as a single ordered column of request layers."
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }

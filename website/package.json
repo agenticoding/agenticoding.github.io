@@ -8,6 +8,8 @@
     "build": "docusaurus build",
     "test": "find src -name '*.test.ts' -print0 | xargs -0 node --test",
     "audit:breakpoints": "node ../scripts/audit-breakpoints.cjs",
+    "audit:responsive-diagrams": "node ../scripts/audit-responsive-diagrams.cjs",
+    "test:responsive-diagrams:browser": "node ../scripts/test-responsive-diagrams.cjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

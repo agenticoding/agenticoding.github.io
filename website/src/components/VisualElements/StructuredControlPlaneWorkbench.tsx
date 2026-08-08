@@ -16,6 +16,7 @@ import {
   WORKBENCH_SCALE,
 } from './diagramScale';
 import type { DiagramTone, DiagramVoice } from './diagramTileLayout';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './StructuredControlPlaneWorkbench.module.css';
 
 const ARIA_LABEL =
@@ -797,9 +798,14 @@ function MobileLlmCallArrows({ y, step }: { y: number; step: FlowStep }) {
 
 export default function StructuredControlPlaneWorkbench() {
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="560px"
+      mode="container"
+      fallbackBreakpoint="580px"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }

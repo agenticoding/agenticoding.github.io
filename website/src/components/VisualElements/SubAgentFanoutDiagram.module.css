@@ -1,6 +1,7 @@
 /* The root-owned timeline supplies the only temporal geometry. Workers sit in
    unframed outer rails so they read as actors, not additional context windows. */
 .container {
+  container-type: inline-size;
   display: grid;
   gap: var(--space-2);
   margin: var(--space-2) auto;
@@ -272,15 +273,69 @@
   }
 }
 
-.mobileSatellites {
-  display: none;
+.mobileDiagram {
+  width: 100%;
+  height: auto;
+  max-width: 340px;
+  margin-inline: auto;
 }
 
-.mobileWorker {
-  display: grid;
-  grid-template-columns: 32px minmax(0, 1fr);
-  align-items: center;
-  gap: var(--space-1);
+.mobileRoot rect,
+.mobileAgent rect {
+  stroke-width: var(--diagram-stroke, 2px);
+  vector-effect: non-scaling-stroke;
+}
+
+.mobileRoot rect {
+  fill: var(--surface-raised);
+  stroke: var(--border-emphasis);
+}
+
+.mobileRoot text,
+.mobileAgent text,
+.mobileStage {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.mobileRoot text,
+.mobileAgent > text:first-of-type {
+  fill: var(--text-body);
+  font-family: var(--font-mono-keyword);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.mobileRoot text:last-of-type,
+.mobileStage {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.mobileContract {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-spec);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.mobileAgent rect {
+  fill: var(--visual-bg-cyan);
+  stroke: var(--visual-cyan);
+}
+
+.mobileTask {
+  fill: var(--text-body);
+  font-family: var(--font-mono-ai);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.mobileStage {
+  font-size: 9px;
 }
 
 .screenReaderSummary {
@@ -292,36 +347,8 @@
   white-space: nowrap;
 }
 
-/* Below this width, path angles and worker labels would collide. Keep the
-   root-first causal sequence and identify workers without physical links. */
-@media (max-width: 1215px) {
-  .stackClip {
-    --root-inset: 0%;
-    height: 320px;
-  }
-
-  .rootStack {
-    inset: 0;
-  }
-
-  .fanoutOverlay {
-    display: none;
-  }
-
-  .mobileSatellites {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-2);
-    margin-top: var(--space-3);
-  }
-}
-
-@media (max-width: 440px) {
-  .mobileSatellites {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* The compact composition preserves every root-to-agent request and return
+   when the desktop rails no longer have room for legible labels. */
 @media (prefers-reduced-motion: reduce) {
   .container * {
     transition: none !important;

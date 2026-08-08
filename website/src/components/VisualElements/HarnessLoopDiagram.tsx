@@ -4,6 +4,7 @@ import { useStaticAnimationPhase } from '../../hooks/useStaticAnimationPhase';
 import { useActs } from '../../hooks/useActs';
 import { useMounted } from '../../hooks/useMounted';
 import { DiagramTile } from './DiagramTile';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './HarnessLoopDiagram.module.css';
 
 const ACTS = [
@@ -434,9 +435,14 @@ export default function HarnessLoopDiagram() {
   ) as Visibility;
 
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <DesktopDiagram visible={visible} />
-      <MobileDiagram visible={visible} />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="480px"
+      mode="container"
+      fallbackBreakpoint="500px"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram visible={visible} />}
+      mobile={<MobileDiagram visible={visible} />}
+    />
   );
 }

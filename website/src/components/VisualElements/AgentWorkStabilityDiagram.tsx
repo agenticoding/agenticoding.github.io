@@ -10,6 +10,7 @@ import {
 } from './ModelCallFrame';
 import { TILE_GRID } from './diagramTileLayout';
 import { seededTokenTrain } from './TokenTrainSequence';
+import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './AgentWorkStabilityDiagram.module.css';
 
 type Tone = 'violet' | 'indigo' | 'cyan' | 'warning' | 'success';
@@ -85,10 +86,14 @@ function workFrameGeometry(
 
 export default function AgentWorkStabilityDiagram() {
   return (
-    <div className={styles.container} role="img" aria-label={ARIA_LABEL}>
-      <DesktopDiagram />
-      <MobileDiagram />
-    </div>
+    <ResponsiveDiagram
+      className={styles.container}
+      breakpoint="36rem"
+      mode="container"
+      ariaLabel={ARIA_LABEL}
+      desktop={<DesktopDiagram />}
+      mobile={<MobileDiagram />}
+    />
   );
 }
 

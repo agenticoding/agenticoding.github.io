@@ -1,0 +1,328 @@
+.container {
+  container-type: inline-size;
+}
+
+.desktopVariant,
+.mobileVariant {
+  width: 100%;
+  min-width: 0;
+}
+
+/* SVG roots need block layout so their auto margins center inside the shell. */
+.desktopVariant > :global(svg),
+.mobileVariant > :global(svg) {
+  display: block;
+}
+
+.desktopVariant {
+  display: block;
+}
+
+.mobileVariant {
+  display: none;
+}
+
+/* Variant wrappers own visibility; child diagram styles only own geometry. */
+@container (max-width: 36rem) {
+  .container[data-responsive-breakpoint='36rem'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='36rem'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 40rem) {
+  .container[data-responsive-breakpoint='40rem'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='40rem'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 420px) {
+  .container[data-responsive-breakpoint='420px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='420px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 480px) {
+  .container[data-responsive-breakpoint='480px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='480px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 500px) {
+  .container[data-responsive-breakpoint='500px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='500px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 520px) {
+  .container[data-responsive-breakpoint='520px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='520px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 560px) {
+  .container[data-responsive-breakpoint='560px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='560px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 640px) {
+  .container[data-responsive-breakpoint='640px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='640px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 700px) {
+  .container[data-responsive-breakpoint='700px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='700px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 704px) {
+  .container[data-responsive-breakpoint='704px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='704px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 720px) {
+  .container[data-responsive-breakpoint='720px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='720px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@container (max-width: 768px) {
+  .container[data-responsive-breakpoint='768px'][data-responsive-mode='container']
+    > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='768px'][data-responsive-mode='container']
+    > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 430px) {
+  .container[data-responsive-fallback='430px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-fallback='430px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 420px) {
+  .container[data-responsive-breakpoint='420px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='420px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='420px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='420px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .container[data-responsive-breakpoint='480px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='480px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='480px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='480px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 500px) {
+  .container[data-responsive-breakpoint='500px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='500px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='500px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='500px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 520px) {
+  .container[data-responsive-breakpoint='520px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='520px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='520px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='520px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 560px) {
+  .container[data-responsive-breakpoint='560px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='560px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='560px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='560px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 580px) {
+  .container[data-responsive-fallback='580px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-fallback='580px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .container[data-responsive-breakpoint='640px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='640px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='640px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='640px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 700px) {
+  .container[data-responsive-breakpoint='700px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='700px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='700px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='700px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 704px) {
+  .container[data-responsive-breakpoint='704px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='704px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='704px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='704px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 720px) {
+  .container[data-responsive-breakpoint='720px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='720px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='720px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='720px'] > .mobileVariant {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .container[data-responsive-breakpoint='768px'][data-responsive-mode='viewport']
+    > .desktopVariant,
+  .container[data-responsive-fallback='768px'] > .desktopVariant {
+    display: none;
+  }
+
+  .container[data-responsive-breakpoint='768px'][data-responsive-mode='viewport']
+    > .mobileVariant,
+  .container[data-responsive-fallback='768px'] > .mobileVariant {
+    display: block;
+  }
+}

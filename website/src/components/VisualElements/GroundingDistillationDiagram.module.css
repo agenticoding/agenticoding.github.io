@@ -6,7 +6,6 @@
 }
 
 .diagram {
-  display: block;
   width: 100%;
   height: auto;
   margin-inline: auto;
@@ -18,7 +17,6 @@
 }
 
 .mobileDiagram {
-  display: none !important;
   max-width: 340px;
 }
 
@@ -150,14 +148,6 @@
 @media (max-width: 768px) {
   .container {
     max-width: 340px;
-  }
-
-  .desktopDiagram {
-    display: none !important;
-  }
-
-  .mobileDiagram {
-    display: block !important;
   }
 }
 
