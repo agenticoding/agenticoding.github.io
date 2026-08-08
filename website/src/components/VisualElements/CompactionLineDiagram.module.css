@@ -1,0 +1,57 @@
+/* Compaction Line story classes. Keyframes are injected by the TSX (inline
+   names bypass CSS Modules renaming); these classes only attach timing. Every
+   story element loops the shared --cycle-ms schedule set on the root svg. */
+.collapse,
+.slide,
+.shrink,
+.threadLabel,
+.eject,
+.survivor,
+.summary,
+.headroom,
+.legend {
+  animation-duration: var(--cycle-ms);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* SVG transforms need a local box or scaleY collapses toward the svg origin. */
+.collapse {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Shrink keeps the top edge fixed: the tile compresses toward its Σ slot. */
+.shrink {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+}
+
+.summary,
+.headroom {
+  opacity: 0; /* placeholder until its act arrives */
+}
+
+/* Static fallback is authoritative: motion disabled = the complete figure.
+   The animated scene swaps for a still of the compacted stack plus the
+   ledger of what was freed (AnimatedTokenFlow dual-render precedent). */
+.staticScene {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animatedScene {
+    display: none;
+  }
+
+  .staticScene {
+    display: initial;
+  }
+
+  .legend {
+    animation: none;
+    opacity: 1;
+  }
+}
