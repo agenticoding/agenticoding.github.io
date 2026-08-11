@@ -8,28 +8,6 @@
   font-feature-settings: var(--font-mono-features);
 }
 
-.scheduleKey,
-.costSummary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-2);
-  margin: 0;
-  color: var(--text-muted);
-  font-family: var(--font-mono-spec);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  line-height: var(--lh-sm);
-}
-
-.scheduleKey strong {
-  color: var(--text-body);
-  letter-spacing: 0.08em;
-}
-
-.costSummary {
-  display: block;
-}
-
 .panels,
 .panel {
   min-width: 0;
@@ -79,12 +57,10 @@
 
 .dispatchPath {
   stroke: var(--visual-indigo);
-  opacity: 0.85;
 }
 
 .returnPath {
   stroke: var(--visual-violet);
-  opacity: 0.85;
 }
 
 /* Paths meet the root-facing side of each robot. Separate elbow columns keep
@@ -273,71 +249,6 @@
   }
 }
 
-.mobileDiagram {
-  width: 100%;
-  height: auto;
-  max-width: 340px;
-  margin-inline: auto;
-}
-
-.mobileRoot rect,
-.mobileAgent rect {
-  stroke-width: var(--diagram-stroke, 2px);
-  vector-effect: non-scaling-stroke;
-}
-
-.mobileRoot rect {
-  fill: var(--surface-raised);
-  stroke: var(--border-emphasis);
-}
-
-.mobileRoot text,
-.mobileAgent text,
-.mobileStage {
-  font-feature-settings: var(--font-mono-features);
-}
-
-.mobileRoot text,
-.mobileAgent > text:first-of-type {
-  fill: var(--text-body);
-  font-family: var(--font-mono-keyword);
-  font-size: 10px;
-  font-weight: 600;
-}
-
-.mobileRoot text:last-of-type,
-.mobileStage {
-  fill: var(--text-muted);
-  font-family: var(--font-mono-spec);
-  font-size: 8px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-}
-
-.mobileContract {
-  fill: var(--text-muted);
-  font-family: var(--font-mono-spec);
-  font-size: 7px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-}
-
-.mobileAgent rect {
-  fill: var(--visual-bg-cyan);
-  stroke: var(--visual-cyan);
-}
-
-.mobileTask {
-  fill: var(--text-body);
-  font-family: var(--font-mono-ai);
-  font-size: 10px;
-  font-weight: 500;
-}
-
-.mobileStage {
-  font-size: 9px;
-}
-
 .screenReaderSummary {
   position: absolute;
   width: 1px;
@@ -347,8 +258,88 @@
   white-space: nowrap;
 }
 
-/* The compact composition preserves every root-to-agent request and return
-   when the desktop rails no longer have room for legible labels. */
+/* The mobile form folds desktop's outer rails into one delegate rail. The
+   root window remains the only framed timeline and every path returns to it. */
+.mobileDiagram {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.mobileStackClip {
+  position: relative;
+  display: block;
+  height: 560px;
+  min-width: 0;
+}
+
+.mobileRootStack {
+  position: absolute;
+  inset: 0 30% 0 0;
+  min-width: 0;
+}
+
+.mobileDelegateRail,
+.mobileFlowLayer {
+  position: absolute;
+  inset: 0;
+}
+
+.mobileDelegateRail {
+  pointer-events: none;
+}
+
+.mobileFlowLayer {
+  z-index: 0;
+  overflow: visible;
+}
+
+.mobileRailLabel,
+.mobileParallelLabel {
+  position: absolute;
+  z-index: 2;
+  color: var(--text-muted);
+  font-family: var(--font-mono-keyword);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: var(--lh-sm);
+}
+
+.mobileRailLabel {
+  top: 0;
+  left: 72%;
+}
+
+.mobileParallelLabel {
+  left: 72%;
+  width: 26%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mobileWorker {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 24%;
+  color: var(--text-body);
+  font-family: var(--font-mono-ai);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: var(--lh-sm);
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+
+.mobileWorker svg {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .container * {
     transition: none !important;

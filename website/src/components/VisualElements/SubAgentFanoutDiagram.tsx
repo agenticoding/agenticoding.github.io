@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { AgentNode } from './ActorNodes.tsx';
-import { DiagramArrow, DiagramArrowMarkers } from './DiagramArrow';
 import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './SubAgentFanoutDiagram.module.css';
 import {
@@ -12,20 +11,15 @@ import {
   type TileRenderProps,
 } from './ContextRegions.tsx';
 import {
-  ROOT_AGENT_COUNT,
   ROOT_SCHEDULE,
   SUB_AGENT_PROFILES,
-  compressionRatio,
-  internalUnits,
   parentRows,
-  synthesisUnits,
   windowFill,
   type SubAgentContextRow,
 } from './SubAgentFanoutModel';
 import { TokenArrowTrain } from './TokenArrowTrain';
 import type { TokenSequence } from './AnimatedTokenFlow';
 import { DIAGRAM_STROKE } from './diagramScale';
-import type { DiagramTone } from './diagramTileLayout';
 import type { TokenTrainTiming } from './TokenTrainTiming';
 
 // The static structure is the complete explanation. The CSS loop below only
@@ -35,13 +29,9 @@ const PARENT_HEIGHT = 320;
 const LOOP_MS = 11000;
 const FLOW_STAGGER = { mode: 'pathSpacing', spacingPx: 24 } as const;
 const FANOUT_FLOW_TOKEN_SIZE = 12;
-const MOBILE_VIEW = { width: 340, height: 356 } as const;
-const MOBILE_ROOT = { x: 86, y: 8, width: 168, height: 36 } as const;
-const MOBILE_CARD_HEIGHT = 60;
-const MOBILE_ARROW_TONES = [
-  'indigo',
-  'violet',
-] as const satisfies readonly DiagramTone[];
+const MOBILE_AGENT_SIZE = 32;
+const MOBILE_ROW_MIN_HEIGHT = 40;
+const MOBILE_STACK_HEIGHT = 560;
 const DISPATCH_TOKENS = [
   { modality: 'code', signal: 'salient' },
   { modality: 'text' },
@@ -97,6 +87,13 @@ function parentTile(row: SubAgentContextRow): RegionTile {
     tile.accent = 'var(--visual-violet)';
   else tile.accent = 'var(--visual-cyan)';
   return tile;
+}
+
+function mobileParentTile(row: SubAgentContextRow): RegionTile {
+  return {
+    ...parentTile(row),
+    minHeight: row.spacer ? undefined : MOBILE_ROW_MIN_HEIGHT,
+  };
 }
 
 function AnimatedParentRow({
@@ -332,169 +329,150 @@ function DesktopPanel() {
   );
 }
 
-type MobileCard = { x: number; y: number; width: number };
-
-function mobileCard(stageIndex: number, position: number): MobileCard {
-  const paired = ROOT_SCHEDULE[stageIndex].length > 1;
-  return {
-    x: paired ? 12 + position * 164 : 70,
-    y: 76 + stageIndex * 98,
-    width: paired ? 152 : 200,
-  };
-}
-
-function mobileDispatchPath(card: MobileCard) {
-  const left = card.x < MOBILE_VIEW.width / 2;
-  const rootX = MOBILE_ROOT.x + (left ? 42 : MOBILE_ROOT.width - 42);
-  const targetX = left ? card.x : card.x + card.width / 2;
-  const railX = left ? card.x - 28 : targetX;
-  const targetY = left ? card.y + MOBILE_CARD_HEIGHT / 2 : card.y;
-  return `M ${rootX} 44 H ${railX} V ${targetY} H ${targetX}`;
-}
-
-function mobileReturnPath(card: MobileCard) {
-  const rootY = MOBILE_ROOT.y + MOBILE_ROOT.height + 8;
-  const railX = Math.min(MOBILE_VIEW.width - 8, card.x + card.width + 18);
-  return `M ${card.x + card.width} ${card.y + MOBILE_CARD_HEIGHT / 2} H ${railX} V ${rootY} H ${MOBILE_ROOT.x + MOBILE_ROOT.width}`;
-}
-
-function MobileAgentCard({ index, card }: { index: number; card: MobileCard }) {
-  const profile = SUB_AGENT_PROFILES[index];
-  return (
-    <g className={styles.mobileAgent}>
-      <rect
-        x={card.x}
-        y={card.y}
-        width={card.width}
-        height={MOBILE_CARD_HEIGHT}
-      />
-      <AgentNode x={card.x + 25} y={card.y + 25} size={24} />
-      <text x={card.x + 46} y={card.y + 22}>
-        SUB-AGENT {index + 1}
-      </text>
-      <text x={card.x + 46} y={card.y + 35} className={styles.mobileTask}>
-        {profile.task}
-      </text>
-      <text x={card.x + 12} y={card.y + 52} className={styles.mobileContract}>
-        ← DISPATCH · SYNTHESIS →
-      </text>
-    </g>
+function mobileStage(index: number) {
+  const stage = ROOT_SCHEDULE.find((candidate) =>
+    candidate.some((agentIndex) => agentIndex === index)
   );
+  if (!stage)
+    throw new RangeError(`no mobile stage for sub-agent ${index + 1}`);
+  return stage;
 }
 
-function MobileAgentRoute({
+function mobileWorkerCenter(index: number, frame: ContextSceneFrame) {
+  const stage = mobileStage(index);
+  if (stage.length === 1) return workerCenter(frame, index);
+  const stageCenter =
+    stage
+      .flatMap((agentIndex) => [
+        rowCenter(frame, `dispatch-${agentIndex}`),
+        rowCenter(frame, `synthesis-${agentIndex}`),
+      ])
+      .reduce((total, landing) => total + landing, 0) /
+    (stage.length * 2);
+  return stageCenter + (index === stage[0] ? -32 : 32);
+}
+
+function mobileWorkerX(width: number) {
+  return width * 0.85;
+}
+
+function mobileWorkerAnchorX(width: number) {
+  return mobileWorkerX(width) - MOBILE_AGENT_SIZE / 2;
+}
+
+function mobilePath(
+  index: number,
+  frame: ContextSceneFrame,
+  width: number,
+  tone: FlowTone
+) {
+  const dispatch = tone === 'dispatch';
+  const rootY = rowCenter(
+    frame,
+    `${dispatch ? 'dispatch' : 'synthesis'}-${index}`
+  );
+  const workerX = mobileWorkerAnchorX(width);
+  const workerY = mobileWorkerCenter(index, frame);
+  const elbowX = width * (index === 3 ? 0.77 : 0.76);
+  return dispatch
+    ? orthogonalPath(width * 0.7, rootY, elbowX, workerX, workerY)
+    : orthogonalPath(workerX, workerY, elbowX, width * 0.7, rootY);
+}
+
+function MobileWorker({
   index,
-  card,
+  frame,
+  width,
 }: {
   index: number;
-  card: MobileCard;
+  frame: ContextSceneFrame;
+  width: number;
 }) {
   return (
-    <g>
-      <DiagramArrow
-        d={mobileDispatchPath(card)}
-        markerIdPrefix="fanout-mobile"
-        tone="indigo"
-      />
-      <DiagramArrow
-        d={mobileReturnPath(card)}
-        markerIdPrefix="fanout-mobile"
-        tone="violet"
-      />
-      <MobileAgentCard index={index} card={card} />
-    </g>
+    <div
+      className={styles.mobileWorker}
+      style={{
+        left: mobileWorkerX(width),
+        top: mobileWorkerCenter(index, frame),
+      }}
+    >
+      <svg
+        viewBox={`0 0 ${MOBILE_AGENT_SIZE} ${MOBILE_AGENT_SIZE}`}
+        aria-hidden="true"
+      >
+        <AgentNode x={0} y={0} size={MOBILE_AGENT_SIZE} />
+      </svg>
+      <span>{`AGENT ${index + 1}`}</span>
+    </div>
   );
 }
 
-function MobileStage({
-  stage,
-  stageIndex,
-}: {
-  stage: readonly number[];
-  stageIndex: number;
-}) {
-  const priorStage = ROOT_SCHEDULE[stageIndex - 1];
-  const label =
-    stage.length > 1
-      ? `STAGE ${stageIndex + 1} · CONCURRENT`
-      : priorStage
-        ? `STAGE ${stageIndex + 1} · AFTER ${priorStage.map((index) => index + 1).join(' + ')} SYNTHESIS`
-        : 'STAGE 1 · ROOT DISPATCH';
+function MobileDelegateRail({ frame }: { frame: ContextSceneFrame }) {
+  const { ref, width } = useOverlayWidth();
   return (
-    <g>
-      <text
-        x="12"
-        y={mobileCard(stageIndex, 0).y - 8}
-        className={styles.mobileStage}
+    <div ref={ref} className={styles.mobileDelegateRail}>
+      {width > 0 && (
+        <svg
+          className={styles.mobileFlowLayer}
+          width={width}
+          height={frame.height}
+          aria-hidden="true"
+        >
+          {(['return', 'dispatch'] as const).flatMap((tone) =>
+            SUB_AGENT_PROFILES.map((_, index) => (
+              <FlowTrain
+                key={`${tone}-${index}`}
+                d={mobilePath(index, frame, width, tone)}
+                tone={tone}
+                startDelayMs={
+                  tone === 'dispatch'
+                    ? FLOW_DELAYS.dispatch[index]
+                    : FLOW_DELAYS.synthesis[index]
+                }
+              />
+            ))
+          )}
+        </svg>
+      )}
+      <span className={styles.mobileRailLabel}>DIRECT CALLS</span>
+      <span
+        className={styles.mobileParallelLabel}
+        style={{ top: mobileWorkerCenter(3, frame) + MOBILE_AGENT_SIZE }}
       >
-        {label}
-      </text>
-      {stage.map((index, position) => (
-        <MobileAgentRoute
-          key={index}
-          index={index}
-          card={mobileCard(stageIndex, position)}
-        />
-      ))}
-    </g>
+        3+4 PARALLEL
+      </span>
+      {width > 0 &&
+        SUB_AGENT_PROFILES.map((_, index) => (
+          <MobileWorker key={index} index={index} frame={frame} width={width} />
+        ))}
+    </div>
   );
 }
 
 function MobileDiagram() {
+  const modelRows = parentRows();
+  const rows = modelRows.map(mobileParentTile);
   return (
-    <svg
-      viewBox={`0 0 ${MOBILE_VIEW.width} ${MOBILE_VIEW.height}`}
-      className={styles.mobileDiagram}
-      aria-hidden="true"
-    >
-      <DiagramArrowMarkers prefix="fanout-mobile" tones={MOBILE_ARROW_TONES} />
-      <g className={styles.mobileRoot}>
-        <rect
-          x={MOBILE_ROOT.x}
-          y={MOBILE_ROOT.y}
-          width={MOBILE_ROOT.width}
-          height={MOBILE_ROOT.height}
-        />
-        <AgentNode x={MOBILE_ROOT.x + 24} y={MOBILE_ROOT.y + 18} size={24} />
-        <text x={MOBILE_ROOT.x + 44} y={MOBILE_ROOT.y + 17}>
-          ROOT ORCHESTRATOR
-        </text>
-        <text x={MOBILE_ROOT.x + 44} y={MOBILE_ROOT.y + 29}>
-          direct calls only
-        </text>
-      </g>
-      {ROOT_SCHEDULE.map((stage, stageIndex) => (
-        <MobileStage key={stageIndex} stage={stage} stageIndex={stageIndex} />
-      ))}
-    </svg>
-  );
-}
-
-function ScheduleKey() {
-  return (
-    <p className={styles.scheduleKey}>
-      <strong>ROOT-ONLY CALL ORDER</strong>
-      <span>1 → 2 → 3 + 4</span>
-      <span>+ = concurrent</span>
-    </p>
-  );
-}
-
-function CostSummary() {
-  const ratio = Math.round(compressionRatio() * 10) / 10;
-  return (
-    <p className={styles.costSummary}>
-      {ROOT_AGENT_COUNT} isolated windows burn {internalUnits()} units; only{' '}
-      {synthesisUnits()} synthesis units return to the root (~{ratio}:1
-      compression). This schedule peaks at 2 concurrent calls.
-    </p>
+    <section className={styles.mobileDiagram} aria-hidden="true">
+      <ContextRegionScene
+        rows={rows}
+        fallbackHeight={MOBILE_STACK_HEIGHT}
+        fillRatio={windowFill(modelRows)}
+        className={styles.mobileStackClip}
+        stackClassName={styles.mobileRootStack}
+        companionClassName={styles.mobileDelegateRail}
+        renderRow={(row, { layout }) => (
+          <AnimatedParentRow row={row} layout={layout} />
+        )}
+        renderCompanion={(frame) => <MobileDelegateRail frame={frame} />}
+      />
+    </section>
   );
 }
 
 export default function SubAgentFanoutDiagram() {
   return (
     <div className={styles.container}>
-      <ScheduleKey />
       <ResponsiveDiagram
         className={styles.panels}
         breakpoint="704px"
@@ -503,7 +481,6 @@ export default function SubAgentFanoutDiagram() {
         desktop={<DesktopPanel />}
         mobile={<MobileDiagram />}
       />
-      <CostSummary />
       <p className={styles.screenReaderSummary}>
         One root orchestrator directly calls four sub-agents. Agent 1 returns
         before agent 2 starts. Agents 3 and 4 run concurrently. Each isolated
