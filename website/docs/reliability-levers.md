@@ -114,7 +114,7 @@ unnecessary dependent transformations and handoffs.
 <OrchestrationLeverDiagram />
 </DiagramFrame>
 
-Orchestration also removes dependencies. Run independent research in parallel sub-agents rather than one long serial thread. Separate implementation from review when they need different judgment. Stop before code turns a human decision into structure. [Sub-agents](./context-engineering.mdx#sub-agents) are useful because they isolate noisy work and return compact results.
+Orchestration also removes dependencies. Run independent research in parallel sub-agents rather than one long serial thread. Separate implementation from review when they need different judgment. Stop before code turns a human decision into structure. [Sub-agents](./context-engineering.mdx#sub-agents) change orchestration by letting a single task be decomposed across multiple specialized agents — each running on the LLM and system prompt optimized for its slice — rather than overloading one context, isolating noisy work and reducing dependency length in the parent chain.
 
 This lever does not fix missing facts or an unclear success condition. Better shape only helps when each unit is grounded and judgeable.
 
