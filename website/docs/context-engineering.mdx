@@ -308,34 +308,6 @@ For retrieval tasks (summarization, document review), the surcharge buys tokens 
 
 ---
 
-## Key Takeaways
-
-**Context files: guaranteed delivery creates fixed pressure**
-Every token in AGENTS.md enlarges the prefix on every call and pushes the user task toward the weak middle. Keep operational instructions minimal; leave on-demand project knowledge in referenced documentation.
-
-**MCP tools: schema exposure trades immediate visibility for prefix cost**
-Eager loading is simple but charges the full catalog to every request. Deferred loading adds discovery steps, then exposes only relevant schemas. Catalog breadth, schema size, and task breadth determine the crossover.
-
-**Skills: procedure content arrives only when activated**
-A lightweight catalog supports discovery; the selected workflow enters near the active turn. Manual activation favors reliability, while model activation favors convenience.
-
-**Sub-Agents: delegation via isolated windows with per-agent optimization**
-A sub-agent can consume 150K tokens internally while returning only a small synthesis. Use delegation to assign sub-tasks to agents optimized per slice — the right LLM and system prompt for each work item — while the orchestrator stays focused on coordination.
-
-**Compaction: working room is recovered by losing detail**
-A summary replaces accumulated history, so facts needed later may disappear. External checkpoint files provide exact recall; a fresh context restores inference quality.
-
-**Retrieval: relevant evidence still consumes attention**
-Harness-level retrieval competes for primacy space; tool-driven retrieval enters with recency and drifts inward. Optimize placement and context injection alongside retrieval quality.
-
-**The U-curve is the constraint**
-Position matters. Put critical instructions at the edges — primacy (start) and recency (end). Keep supporting evidence in the middle summarized and referenced, not pasted wholesale. Start a fresh phase when the middle becomes crowded.
-
-**Choose the mechanism by the required context effect**
-Always needed? → Context file. Callable capability? → MCP tool. Reusable workflow? → Skill or prompt template. Heavy research? → Sub-agent. Accumulated history? → External checkpoint and fresh phase, or compaction when necessary. Domain knowledge or project evidence? → Retrieval.
-
----
-
 [^attention-sinks]: Xiao et al. (2023), [_Efficient Streaming Language Models with Attention Sinks_](https://arxiv.org/abs/2309.17453).
 
 [^lost-in-middle]: Liu et al. (2023), [_Lost in the Middle: How Language Models Use Long Contexts_](https://arxiv.org/abs/2307.03172).
