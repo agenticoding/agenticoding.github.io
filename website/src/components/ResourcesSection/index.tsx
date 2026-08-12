@@ -248,7 +248,7 @@ export default function ResourcesSection() {
               AI-first development
             </p>
             <div className={styles.resourceFooter}>
-              <span className={styles.resourceCount}>4 guides</span>
+              <span className={styles.resourceCount}>3 guides</span>
               <span className={styles.ghostLink}>Explore Tools &rarr;</span>
             </div>
           </Link>

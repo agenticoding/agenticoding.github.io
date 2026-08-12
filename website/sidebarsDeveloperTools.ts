@@ -9,7 +9,6 @@ import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   developerToolsSidebar: [
     'cli-coding-agents',
-    'plans-comparison',
     'terminals',
     'cli-tools',
     'mcp-servers',
