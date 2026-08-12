@@ -3,6 +3,8 @@ title: Terminals
 sidebar_position: 2
 ---
 
+import ToolMark from '@site/src/components/VisualElements/ToolMark';
+
 # Modern Terminals for Multi-Agent Workflows
 
 **Invest in customizing and tailoring your terminal environment just like you would with your IDE.** Multi-agent workflows mean managing multiple concurrent sessions, context-switching between agent instances, and monitoring long-running processes. Your terminal becomes mission-critical infrastructure, not just a command prompt.
@@ -13,11 +15,7 @@ The terminal is the foundation—pairing it with [modern CLI tools](/developer-t
 
 Modern terminals offer IDE-level features—GPU acceleration, programmable layouts, rich scripting, and extensive customization—that legacy terminals can't match. For multi-agent workflows, these capabilities translate directly to productivity: smooth handling of rapid output streams, programmable session management, and visual customization for tracking different contexts.
 
-:::tip Research Customization
-Use ChunkHound's web research to research best practices for your chosen terminal—session management, keybindings, and visual indicators for different agent contexts.
-:::
-
-## Ghostty
+## <ToolMark src="/img/terminal-logos/ghostty.svg" luminance /> Ghostty {#ghostty}
 
 [**Ghostty**](https://ghostty.org) is a native, GPU-accelerated terminal written in Zig by Mitchell Hashimoto (HashiCorp co-founder), publicly released in December 2024. It follows a "zero configuration philosophy" while providing extensive customization through simple key-value config files.
 
@@ -27,7 +25,7 @@ Use ChunkHound's web research to research best practices for your chosen termina
 
 **Trade-offs:** Newer project (December 2024 public release) with growing community adoption—particularly strong on macOS—but smaller ecosystem than established terminals. Limited Windows support. Optimized for common workloads (scrolling plaintext, low style variation)—may perform poorly on synthetic stress tests with rapid style changes.
 
-## Kitty
+## <ToolMark src="/img/terminal-logos/kitty.svg" mode="image" darkImageTone="lift" /> Kitty {#kitty}
 
 [**Kitty**](https://sw.kovidgoyal.net/kitty/) is a GPU-accelerated terminal created by Kovid Goyal (Calibre creator) that pioneered its own graphics protocol for rendering images and animations directly in the terminal. Cross-platform (Linux, macOS, BSD) with extensive feature set.
 
@@ -37,7 +35,7 @@ Use ChunkHound's web research to research best practices for your chosen termina
 
 **Trade-offs:** Higher input latency compared to Alacritty and other minimalist terminals. Feature complexity can be overwhelming for minimalist preferences. Established project (2017) with active development and substantial community adoption.
 
-## WezTerm
+## <ToolMark src="/img/terminal-logos/wezterm.svg" mode="image" imageTone="foreground" /> WezTerm {#wezterm}
 
 [**WezTerm**](https://wezterm.org) is a GPU-accelerated, cross-platform terminal and multiplexer implemented in Rust. Configured entirely through Lua scripting for maximum programmability.
 
@@ -47,7 +45,7 @@ Use ChunkHound's web research to research best practices for your chosen termina
 
 **Trade-offs:** Lua learning curve for advanced customization. Session persistence not as robust as tmux's automatic restore. Actively maintained with steady development and dedicated cross-platform user base.
 
-## Alacritty
+## <ToolMark src="/img/terminal-logos/alacritty.svg" mode="image" /> Alacritty {#alacritty}
 
 [**Alacritty**](https://alacritty.org) is a minimalist, OpenGL-accelerated terminal written in Rust with a "performance first" philosophy. Intentionally feature-minimal.
 
@@ -57,7 +55,7 @@ Use ChunkHound's web research to research best practices for your chosen termina
 
 **Trade-offs:** No built-in tabs, splits, or multiplexing—requires external tools. No inline image support or graphics protocol. Configuration limited to text files (no scripting). Minimalism means more manual setup for advanced workflows. Widely adopted as the performance benchmark among modern terminals, with mature ecosystem (2017) and active maintenance.
 
-## iTerm2
+## <ToolMark src="/img/terminal-logos/iterm2.png" mode="image" imageTone="foreground" imageFrame /> iTerm2 {#iterm2}
 
 [**iTerm2**](https://iterm2.com) is a feature-rich terminal emulator for macOS, widely regarded as the most popular third-party terminal on the platform. While not GPU-accelerated, it offers extensive functionality that has made it the default choice for macOS developers for over a decade.
 
@@ -67,7 +65,7 @@ Use ChunkHound's web research to research best practices for your chosen termina
 
 **Trade-offs:** macOS-only—no Linux or Windows support. Not GPU-accelerated, though performance is adequate for most workflows. Larger resource footprint than minimalist terminals like Alacritty. Mature project (2006) with extensive community adoption and active development.
 
-## Warp
+## <ToolMark src="/img/terminal-logos/warp.svg" /> Warp {#warp}
 
 [**Warp**](https://www.warp.dev) is a Rust-based, GPU-accelerated terminal with native AI integration. Built for modern development workflows with built-in collaboration features and AI-powered assistance. Cross-platform (macOS, Windows, Linux).
 
@@ -77,7 +75,7 @@ Use ChunkHound's web research to research best practices for your chosen termina
 
 **Trade-offs:** Freemium/commercial model—free tier limited to 75 AI credits/month; paid plans start at $20/month (Build: 1,500 credits) scaling to $50+/user/month for Business/Enterprise features. Closed source—proprietary codebase; company stated "likely never be open source" (2025). Cannot audit security or self-patch. Privacy concerns—optional telemetry and cloud storage for AI features; terminal content, AI inputs/outputs may be stored on GCP servers when using cloud features (SOC 2 compliant with encryption at rest/transit). Login optional as of November 2024, but required for cloud features (AI, Drive, history sync). Internet dependency for AI features—limited offline functionality compared to traditional terminals. Active development with growing community adoption, particularly among developers integrating AI into workflows.
 
-## Windows Terminal
+## <ToolMark src="/img/terminal-logos/windows-terminal.svg" mode="image" /> Windows Terminal {#windows-terminal}
 
 [**Windows Terminal**](https://aka.ms/terminal) is Microsoft's modern, GPU-accelerated terminal application for Windows. Pre-installed on Windows 11 and Windows Server 2025, it serves as the default modern terminal experience for the Windows ecosystem.
 
@@ -87,7 +85,7 @@ Use ChunkHound's web research to research best practices for your chosen termina
 
 **Trade-offs:** Windows-only—no macOS or Linux support. Fewer advanced features than cross-platform alternatives (no built-in multiplexing beyond tabs). Update cycle tied to Windows releases, though available via Microsoft Store. Mature project with active development and extensive adoption as the standard Windows terminal.
 
-## Wave Terminal
+## <ToolMark src="/img/terminal-logos/wave-terminal.svg" /> Wave Terminal {#wave-terminal}
 
 [**Wave Terminal**](https://www.waveterm.dev) is an open-source, AI-native terminal emulator with GPU acceleration. Cross-platform (macOS, Windows, Linux), it offers AI-powered features without the privacy trade-offs of closed-source alternatives.
 
@@ -96,10 +94,3 @@ Use ChunkHound's web research to research best practices for your chosen termina
 **Best suited for:** Developers wanting AI-native workflows without Warp's closed-source and privacy concerns. Teams requiring open-source tooling for compliance or auditability. Engineers who prefer bringing their own API keys rather than subscription models.
 
 **Trade-offs:** Newer project (2024) with smaller community than established terminals. AI features require external API keys and associated costs. More complex interface than traditional terminals—steeper learning curve. Active development with growing adoption among privacy-conscious developers.
-
----
-
-**Related:**
-
-- [Developer Tools: Modern CLI Tools](/developer-tools/cli-tools) - The ecosystem that completes your terminal-based development environment
-- [Chapter 7: Reliability Levers](/reliability-levers) - Multi-worktree workflows leveraging modern terminals
