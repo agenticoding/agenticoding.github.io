@@ -378,7 +378,7 @@ sudo pacman -S zellij       # Arch
 
 **Key differentiators:** Ref-based accessibility tree system returns compact snapshots with deterministic element references (`@e1`, `@e2`)—agents click by ref instead of fragile CSS selectors or XPath. Token-efficient output (200-400 tokens per snapshot vs 5,000-15,000 for full DOM) preserves agent context window. 50+ commands cover navigation, forms, screenshots, network inspection, and storage. Session support enables multiple isolated browser instances with separate authentication states. Native Rust CLI provides instant command parsing without Node.js or Python runtime overhead.
 
-**Best suited for:** AI-assisted workflows where agents need to interact with web UIs—testing changes in browser, filling forms, extracting data, validating deployments. Engineers using CLI-based agents (Claude Code, Cursor, Copilot) who need browser automation without MCP server setup. Developers wanting deterministic element selection over screenshot-based visual parsing or brittle selector strategies.
+**Best suited for:** AI-assisted workflows where agents need to interact with web UIs—testing changes in browser, filling forms, extracting data, validating deployments. Engineers using CLI-based agents (Claude Code, Cursor CLI, Copilot CLI) who need browser automation without MCP server setup. Developers wanting deterministic element selection over screenshot-based visual parsing or brittle selector strategies.
 
 **Trade-offs:** Ref-based selection requires snapshot before interaction (two commands minimum). Relies on accessibility tree, which may miss dynamically rendered content without proper ARIA attributes—ensure target applications have semantic markup.
 

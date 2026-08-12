@@ -5,7 +5,7 @@ sidebar_position: 4
 
 # MCP Servers
 
-The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) extends CLI agents with specialized capabilities—code research, web grounding, browser automation. While IDE-based assistants (Cursor, Windsurf) often include these features built-in, CLI agents (Claude Code, Copilot CLI, Aider) rely on MCP servers to add functionality beyond basic file operations.
+The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) extends CLI agents with specialized capabilities—code research, web grounding, browser automation. While IDE-based assistants (Copilot's agent mode in VS Code, Zed, Cursor) increasingly ship these capabilities, CLI agents (Claude Code, Copilot CLI, Aider) rely on MCP servers to add functionality beyond basic file operations — MCP is now the shared extension standard across both surfaces.
 
 These MCP servers address the critical gaps in AI-assisted development workflows.
 
