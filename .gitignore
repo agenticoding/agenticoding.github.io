@@ -44,6 +44,7 @@ scripts/.noto-cache/
 *.jpg
 *.jpeg
 !src-tauri/icons/*.png
+!website/static/img/**/*.png
 /package-lock.json
 
 # Tauri
