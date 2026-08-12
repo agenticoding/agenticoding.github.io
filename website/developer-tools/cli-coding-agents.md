@@ -7,7 +7,7 @@ import ToolMark from '@site/src/components/VisualElements/ToolMark';
 
 # CLI Coding Agents
 
-**CLI coding agents are the orchestration layer for agentic development.** They read and change files, run commands, and work naturally with terminals, SSH, worktrees, and scripts. They are distinct from IDE-bound assistants — today led by GitHub Copilot's agent mode in VS Code and Zed's agent panel, alongside Cursor and Windsurf — though the boundary keeps blurring: Copilot and Cursor ship their own CLIs, and Zed hosts CLI agents like Claude Code via ACP and terminal threads.
+**CLI coding agents are the orchestration layer for agentic development.** [How agents work](/how-agents-work) explains the harness loop behind that orchestration. CLI agents read and change files, run commands, and work naturally with terminals, SSH, worktrees, and scripts. They are distinct from IDE-bound assistants — today led by GitHub Copilot's agent mode in VS Code and Zed's agent panel, alongside Cursor and Windsurf — though the boundary keeps blurring: Copilot and Cursor ship their own CLIs, and Zed hosts CLI agents like Claude Code via ACP and terminal threads.
 
 This is an opinionated shortlist for serious engineering work, ordered by recommendation. The practical differences are model choice, subscription economics, and how much of the workflow the tool imposes on you.
 
