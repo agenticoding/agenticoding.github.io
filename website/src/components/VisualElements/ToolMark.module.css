@@ -1,0 +1,68 @@
+.frame {
+  display: inline-grid;
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+  margin-inline-end: var(--space-1);
+  vertical-align: middle;
+  place-items: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+}
+
+.mark {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  background: var(--text-heading);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.image,
+.darkImage {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  object-fit: contain;
+  /* Preserve source layers while removing non-semantic brand color. */
+  filter: grayscale(1) contrast(1.25);
+}
+
+.imageForeground {
+  /* Lift bright prompt glyphs above dark official terminal backgrounds. */
+  filter: grayscale(1) brightness(2) contrast(1.2);
+}
+
+.imageFrame {
+  border-radius: 30%;
+}
+
+:global([data-theme='dark']) .imageFrame {
+  box-sizing: border-box;
+  border: 1px solid var(--text-heading);
+}
+
+.darkImage {
+  display: none;
+}
+
+/* Dark official artwork disappears against the dark raised tile (#161b22);
+   lift mid-tone bodies so the composition keeps its internal layers. */
+:global([data-theme='dark']) .imageDarkLift {
+  filter: grayscale(1) brightness(2.1) contrast(1.15);
+}
+
+:global([data-theme='dark']) .withDarkImage .image {
+  display: none;
+}
+
+:global([data-theme='dark']) .withDarkImage .darkImage {
+  display: block;
+}
+
+.luminance {
+  -webkit-mask-mode: luminance;
+  mask-mode: luminance;
+}

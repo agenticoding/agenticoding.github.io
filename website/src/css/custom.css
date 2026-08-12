@@ -588,6 +588,39 @@ article h1 {
 }
 
 /* ========================================================================
+   RANKED TOOL LIST — leaderboard metadata on cli-coding-agents.md
+   ======================================================================== */
+
+/* Ordinal in tool headings: metadata level, never semantic color — rank is
+   order, not status. */
+.rank-numeral {
+  color: var(--text-muted);
+  margin-right: var(--space-2); /* 16px — within-group step: rank and mark
+                                   are separate elements of the heading group */
+}
+
+/* Ordinal period: 01. 02. … — sharp editorial ordinal, no decorative dot. */
+.rank-numeral::after {
+  content: ".";
+}
+
+/* Baseline alignment leaves the 48px tool mark floating against heading
+   text; flex puts rank, mark, name, and hash-link on one optical center. */
+article h2:has(> .rank-numeral) {
+  display: flex;
+  align-items: center;
+}
+
+/* One-line verdict under ranked tool headings. Tight to the heading (8px,
+   proximity: it belongs to the heading), 16px before body prose. */
+article .tool-verdict {
+  margin: var(--space-1) 0 var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm); /* 13px */
+  line-height: var(--lh-sm); /* 24px */
+}
+
+/* ========================================================================
    TABLE OF CONTENTS — Right sidebar, design system alignment
    ======================================================================== */
 
