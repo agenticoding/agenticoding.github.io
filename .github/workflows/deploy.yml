@@ -53,6 +53,13 @@ jobs:
       - name: Build website
         run: npm run build
 
+      # Chrome cannot build its sandbox on ubuntu-24.04 (AppArmor restricts
+      # unprivileged user namespaces for Puppeteer's downloaded Chrome for
+      # Testing). Ephemeral root-accessible CI VMs are the sanctioned case for
+      # disabling this knob — see chromium docs apparmor-userns-restrictions.md.
+      - name: Allow Chrome sandbox (AppArmor userns restriction on ubuntu-24.04)
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
       - name: Run browser contract tests against the built site
         run: npm run test:browser-contracts
         env:
