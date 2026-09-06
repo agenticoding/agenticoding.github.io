@@ -66,7 +66,7 @@ This book and its tools are open-source community projects. There's no company, 
 
 ChunkHound started as a personal experiment: build a production-grade RAG system for a massive monorepo without writing a single line of code by hand. That constraint forced me to learn how to operate AI agents well — how to ground them, plan with them, verify their work, and manage context at scale.
 
-This book distills patterns from multiple production systems built that way, plus what I've learned from hundreds of different engineers using modern AI tools — their workflows, their failures, their breakthroughs. The grounding patterns in Chapter 4 are ChunkHound's research pipeline. The context engineering principles in Chapter 5 are what I learned scaling across codebases of hundreds of millions of lines. These aren't theoretical — they're MIT-licensed, and you can read the code. See [MCP Servers](/developer-tools/mcp-servers) for architecture deep-dives on ChunkHound.
+This book distills patterns from multiple production systems built that way, plus what I've learned from hundreds of different engineers using modern AI tools — their workflows, their failures, their breakthroughs. The grounding patterns are ChunkHound's research pipeline. The context engineering principles are what I learned scaling across codebases of hundreds of millions of lines. These aren't theoretical — they're MIT-licensed, and you can read the code. See [MCP Servers](/developer-tools/mcp-servers) for architecture deep-dives on ChunkHound.
 
 ## Built With
 
