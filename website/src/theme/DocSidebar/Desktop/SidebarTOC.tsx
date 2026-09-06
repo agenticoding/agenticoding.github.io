@@ -135,6 +135,17 @@ function isNodeActive(node: TOCTreeNode, activeId: string): boolean {
   );
 }
 
+function tocLabelHtml(value: string): string {
+  // MDX serializes visual heading components as empty custom elements in the TOC.
+  // Remove the absent mark and its adjacent whitespace so labels stay contiguous.
+  // Matches both paired (<toolmark></toolmark>) and self-closing (<toolmark />)
+  // serialization so a future MDX change cannot leak raw markup into the TOC.
+  return value.replace(
+    /\s*<toolmark\b[^>]*?\/?>(?:\s*<\/toolmark>)?\s*/gi,
+    ' '
+  );
+}
+
 function TocLink({
   node,
   active,
@@ -166,7 +177,7 @@ function TocLink({
       onClick={handleClick}
       // Docusaurus TOC values contain trusted heading markup.
       // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: node.value }}
+      dangerouslySetInnerHTML={{ __html: tocLabelHtml(node.value) }}
     />
   );
 }

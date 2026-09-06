@@ -7,7 +7,7 @@
   height: 100%;
 }
 
-/* Sticky header: brand + channel switcher */
+/* Sticky header: brand + search */
 .sidebarHeader {
   flex-shrink: 0;
   padding: var(--space-2) var(--space-2) 0;
@@ -53,10 +53,6 @@
   transition:
     opacity 200ms ease-out,
     max-width 200ms ease-out;
-}
-
-.channelArea {
-  margin-top: var(--space-1);
 }
 
 /* Search slot — grows when active */
@@ -157,21 +153,6 @@
   .searchButton {
     transition-duration: 0s !important;
   }
-  .sidebarScrollable {
-    animation: none !important;
-  }
-}
-
-/* Channel entrance animation */
-@keyframes channelEnter {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Scrollable middle area: sidebar items */
@@ -179,7 +160,6 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  animation: channelEnter 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Sticky footer: theme toggle + GitHub icon */
@@ -295,4 +275,9 @@
 
 .tocSublink.tocLinkActive {
   font-weight: 500;
+}
+
+/* Rank labels use article-scale separation; the TOC retains only its text space. */
+.tocInline :global(.rank-numeral) {
+  margin-right: 0;
 }
