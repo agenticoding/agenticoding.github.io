@@ -9,6 +9,21 @@ const puppeteer = require(
   path.resolve(__dirname, "..", "website", "node_modules", "puppeteer"),
 );
 
+// Spawned directly via node instead of `npm run serve`: the npm/sh wrapper
+// layers swallow SIGTERM on Linux CI (ubuntu dash), orphaning the server while
+// it keeps our stdio pipes open — Node's child `close` event (exit + stdio EOF)
+// never fires and teardown hangs forever. See npm/rfcs#829.
+const docusaurusBin = path.resolve(
+  __dirname,
+  "..",
+  "website",
+  "node_modules",
+  "@docusaurus",
+  "core",
+  "bin",
+  "docusaurus.mjs",
+);
+
 // Labels below must stay in sync with website/chapters.ts (chapterGroups[].label
 // and standaloneChapters). Centralized here so renames cause a single-point
 // update rather than scattered string literals.
@@ -34,10 +49,22 @@ const docusaurusCache = path.join(websiteDir, ".docusaurus");
 const hadDocusaurusCache = fs.existsSync(docusaurusCache);
 
 let server;
+let serverClosed;
 let browser;
 
 function fail(message) {
   throw new Error(message);
+}
+
+// Bounded wait: teardown must never hang the CI step on a process that won't die.
+function withTimeout(promise, ms, label) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    }),
+  ]).finally(() => clearTimeout(timer));
 }
 
 async function captureFailure(page, name) {
@@ -101,27 +128,27 @@ function reservePort() {
   });
 }
 
-function serveArgs(port) {
-  return [
-    "run",
-    "serve",
-    "--",
-    "--dir",
-    buildDir,
-    "--port",
-    String(port),
-    "--host",
-    "127.0.0.1",
-    "--no-open",
-  ];
-}
-
 function startServer(port) {
   const output = [];
-  server = spawn("npm", serveArgs(port), {
-    cwd: websiteDir,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
+  // detached: true gives the server its own process group (PGID == PID) so
+  // stopServer can signal the whole tree; killing a lone PID is what lets
+  // grandchildren survive as orphans holding our stdio pipes.
+  server = spawn(
+    process.execPath,
+    [
+      docusaurusBin,
+      "serve",
+      "--dir",
+      buildDir,
+      "--port",
+      String(port),
+      "--host",
+      "127.0.0.1",
+      "--no-open",
+    ],
+    { cwd: websiteDir, stdio: ["ignore", "pipe", "pipe"], detached: true },
+  );
+  serverClosed = new Promise((resolve) => server.once("close", resolve));
   for (const stream of [server.stdout, server.stderr]) {
     stream.on("data", (chunk) => {
       output.push(String(chunk));
@@ -144,6 +171,30 @@ function checkServer(port) {
     request.on("error", () => resolve(false));
     request.on("timeout", () => request.destroy());
   });
+}
+
+// Signals the server's whole process group; safe to call when already gone.
+function signalServerGroup(signal) {
+  if (!server || server.pid === undefined) return;
+  try {
+    process.kill(-server.pid, signal);
+  } catch {} // process group already gone
+}
+
+async function stopServer() {
+  if (!server) return;
+  signalServerGroup("SIGTERM");
+  try {
+    await withTimeout(serverClosed, 5000, "static server shutdown");
+  } catch {
+    console.warn("[cleanup] static server ignored SIGTERM; sending SIGKILL");
+    signalServerGroup("SIGKILL");
+    try {
+      await withTimeout(serverClosed, 5000, "static server SIGKILL");
+    } catch {
+      console.warn("[cleanup] static server survived SIGKILL; exiting anyway");
+    }
+  }
 }
 
 async function waitForServer(port) {
@@ -638,11 +689,14 @@ async function main() {
 }
 
 async function cleanup() {
-  if (browser) await browser.close().catch(() => {});
-  if (server && server.exitCode === null) {
-    server.kill("SIGTERM");
-    await new Promise((resolve) => server.once("close", resolve));
+  if (browser) {
+    try {
+      await withTimeout(browser.close(), 5000, "browser.close()");
+    } catch (error) {
+      console.warn(`[cleanup] ${error.message}`);
+    }
   }
+  await stopServer();
   // Only remove what this script created: tempRoot when self-built, and the
   // .docusaurus cache when the self-build was the first thing to create it.
   // TRACE_DIR is intentionally preserved for CI artifact upload on failure.
@@ -650,6 +704,9 @@ async function cleanup() {
   if (!hadDocusaurusCache && !providedBuildDir) {
     fs.rmSync(docusaurusCache, { recursive: true, force: true });
   }
+  // Belt-and-braces: teardown must never hang the CI step. If any handle is
+  // still keeping the event loop alive, leave explicitly with the test result.
+  process.exit(process.exitCode ?? 0);
 }
 
 main()

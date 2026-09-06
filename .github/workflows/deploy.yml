@@ -18,6 +18,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Healthy runtime ~9min; bounded so a hang fails fast instead of sitting
+    # out the 360min platform default.
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: ./website
@@ -62,6 +65,9 @@ jobs:
 
       - name: Run browser contract tests against the built site
         run: npm run test:browser-contracts
+        # Healthy runtime ~2-4min; the suite hangs if teardown fails, so this
+        # step must have its own bound tighter than the job's.
+        timeout-minutes: 15
         env:
           BROWSER_TEST_BUILD_DIR: ./build
 
