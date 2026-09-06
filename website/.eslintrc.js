@@ -27,7 +27,10 @@ module.exports = {
   },
   rules: {
     'react/react-in-jsx-scope': 'off', // Not needed in modern React
-    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+    ],
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-require-imports': 'off', // Docusaurus uses require for static assets
   },

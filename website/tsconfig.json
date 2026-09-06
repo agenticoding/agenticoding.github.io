@@ -5,7 +5,13 @@
     "baseUrl": ".",
     "jsx": "react-jsx",
     "allowImportingTsExtensions": true,
-    "types": ["@docusaurus/module-type-aliases", "@docusaurus/types"]
+    "types": [
+      "@docusaurus/module-type-aliases",
+      "@docusaurus/types",
+      // Ambient @theme/* declarations (swizzled component Props) ship with
+      // theme-classic; without this entry tsc cannot resolve @theme imports.
+      "@docusaurus/theme-classic"
+    ]
   },
   "include": ["src/**/*", "docs/**/*", "*.ts"],
   "exclude": [".docusaurus", "build", "node_modules"]

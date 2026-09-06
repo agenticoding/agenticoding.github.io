@@ -27,16 +27,15 @@ function walk(children: ReactNode): ReactNode {
     if (typeof child === 'string') return colorize(child);
     if (!React.isValidElement(child)) return child;
     // Leaf elements like <br /> — pass through
-    if (!child.props.children) return child;
+    // isValidElement narrows to ReactElement<unknown>; cast once so the
+    // children reads below stay typed.
+    const element = child as React.ReactElement<{ children?: ReactNode }>;
+    if (!element.props.children) return child;
     // Recurse into all children, including <code> elements — intentional.
     // Styled code spans like <code className="mono-spec"># Task:</code> should
     // also receive cyan punctuation so heading/list markers look consistent
     // whether they appear in plain text or in a voice-typed code span.
-    return React.cloneElement(
-      child as React.ReactElement<{ children?: ReactNode }>,
-      {},
-      walk(child.props.children)
-    );
+    return React.cloneElement(element, {}, walk(element.props.children));
   });
 }
 

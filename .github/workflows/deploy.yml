@@ -30,15 +30,41 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
           cache-dependency-path: ./website/package-lock.json
+
+      - name: Cache Puppeteer Chromium
+        uses: actions/cache@v4
+        with:
+          # Keyed on the lockfile so a puppeteer version bump invalidates it.
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('website/package-lock.json') }}
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Run tests
+        run: npm test
+
+      - name: Run typecheck
+        run: npm run typecheck
+
       - name: Build website
         run: npm run build
+
+      - name: Run browser contract tests against the built site
+        run: npm run test:browser-contracts
+        env:
+          BROWSER_TEST_BUILD_DIR: ./build
+
+      - name: Upload browser failure traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-contracts-traces
+          path: website/browser-contracts-traces
+          if-no-files-found: ignore
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

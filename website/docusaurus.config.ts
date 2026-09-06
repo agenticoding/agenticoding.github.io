@@ -44,6 +44,9 @@ const config: Config = {
   trailingSlash: false,
 
   onBrokenLinks: 'throw',
+  // Route-style /page#anchor links fail CI too; markdown.hooks below covers
+  // relative .md/.mdx links, onBrokenAnchors the resolved page anchors.
+  onBrokenAnchors: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -90,6 +93,10 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    // Fail CI on broken anchors too — silent warn lets stale cross-references ship.
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
   },
 
   presets: [
