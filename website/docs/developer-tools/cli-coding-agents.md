@@ -1,6 +1,5 @@
 ---
 title: CLI Coding Agents
-sidebar_position: 1
 ---
 
 import ToolMark from '@site/src/components/VisualElements/ToolMark';
@@ -15,7 +14,7 @@ This is an opinionated shortlist for serious engineering work, ordered by recomm
 
 Every harness spends a finite budget — tokens, context, attention — on operating itself: system prompts, tool definitions, MCP servers, permission flows, and feature surface. **The more a harness invests in polish, features, and DX, the less of that budget is left for the work itself.** The leaner the harness, the more of the model's capacity goes to your task — but the less it steers the model.
 
-That steering is the other side of the axis. A harness that controls the model heavily shields you from its raw behavior; a lean one exposes it. That is not a defect: LLMs do not reason linearly, and a model can appear to "think wrong" — wander, hedge, revisit — while still converging on the right solution, because its reasoning is probability imitating logic rather than logic itself ([how LLMs work](/how-llms-work#probability-is-not-logic)). The more you let the harness go, the more of that behavior you see.
+That steering is the other side of the axis. A harness that controls the model heavily shields you from its raw behavior; a lean one exposes it. That is not a defect: LLMs do not reason linearly, and a model can appear to "think wrong" — wander, hedge, revisit — while still converging on the right solution, because its reasoning is probability imitating logic rather than logic itself ([why LLMs fail](/llm-reliability-limits#probability-is-not-logic)). The more you let the harness go, the more of that behavior you see.
 
 ## <span className="rank-numeral">01</span> <ToolMark src="/img/cli-agent-logos/pi.svg" /> pi {#pi}
 

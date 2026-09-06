@@ -1,6 +1,5 @@
 ---
 title: Terminals
-sidebar_position: 2
 ---
 
 import ToolMark from '@site/src/components/VisualElements/ToolMark';

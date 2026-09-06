@@ -1,6 +1,5 @@
 ---
 title: MCP Servers
-sidebar_position: 4
 ---
 
 # MCP Servers
@@ -37,7 +36,7 @@ uv tool install chunkhound
 
 Requires Python 3.10+ and the uv package manager. See [ChunkHound on GitHub](https://github.com/chunkhound/chunkhound) for API key configuration and setup details.
 
-ChunkHound also handles web research — searching documentation, CVEs, changelogs, and current information beyond training data. Multi-source grounding is described in [Chapter 4](/high-level-methodology#phase-1-grounding).
+ChunkHound also handles web research — searching documentation, CVEs, changelogs, and current information beyond training data. Multi-source grounding is described in [Grounding](/workflow-grounding#phase-1-grounding).
 
 ## Browser Automation
 
@@ -60,4 +59,4 @@ Previous recommendations included Playwright MCP and Chrome DevTools MCP. These 
 
 **Related Course Content:**
 
-- [Chapter 6: Reliability Levers](/reliability-levers) - Multi-agent workflows that leverage MCP capabilities
+- [Reliability Levers](/reliability-levers) - Multi-agent workflows that leverage MCP capabilities
