@@ -1,0 +1,62 @@
+---
+title: 'Grounded, Safe Instructions'
+---
+
+import PromptExample from '@site/src/components/PromptExample';
+import { PromptComparison } from '@site/src/components/PromptTreatment';
+
+## Require Evidence for Claims {#require-evidence-to-force-retrieval}
+
+Evidence requirements control what the model can claim. When the agent explains a plan, discrepancy, or bug, require file paths, line numbers, concrete values, exact error messages, cited sources, metric names, timestamps, or customer quotes.
+
+<PromptComparison
+  badLabel="Weak claim—pattern completion"
+  goodLabel="Grounded claim—retrieval with evidence"
+  bad={
+    <PromptExample>
+      The onboarding redesign probably failed because inviting teammates too early added friction.
+    </PromptExample>
+  }
+  good={
+    <PromptExample>
+      The largest drop is at <code>workspace_invite_shown → first_dashboard_view</code>: 62% to 41% in <code>activation_funnel_enterprise</code> for May 14–21. Three support tickets quote confusion about mandatory invites, and the redesign spec lists teammate invitation before dashboard preview.
+    </PromptExample>
+  }
+/>
+
+The second claim is verifiable. If the metric, date range, quote, or spec reference is wrong, you spot the drift immediately. Evidence requirements do not make the model deterministic; they make unsupported claims visible.
+
+## Replace Negation With Positive Instructions
+
+Negation is a weak control surface because the model is not applying symbolic rules. It predicts continuations from the whole context, and the forbidden concept is still part of that context. Use "do not" to mark the boundary, then immediately specify the desired behavior in positive, concrete terms.
+
+<PromptComparison
+  badLabel="Risky"
+  goodLabel="Better—positive target plus boundary"
+  goodNotes={[
+    { label: 'Negation', detail: 'Names the unsafe product outcome explicitly.' },
+    { label: 'Positive opposite', detail: 'Replaces vague avoidance with a concrete flow principle.' },
+    { label: 'Mechanism', detail: 'Names sequencing rules that preserve the intended experience.' },
+  ]}
+  bad={
+    <PromptExample>
+      Improve onboarding.<br />
+      <code className="mono-spec">Do NOT</code> make the flow confusing.
+    </PromptExample>
+  }
+  good={
+    <PromptExample>
+      Improve first-run onboarding.<br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-1"><code className="mono-spec">Do NOT</code> introduce steps that make activation feel blocked.</span><br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-2"><code className="mono-spec">Instead</code>, keep the first-run path linear and value-first.</span><br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-3">Ask for workspace name before teammate invites; show optional setup after dashboard preview; label optional steps as skippable.</span>
+    </PromptExample>
+  }
+/>
+
+The safer pattern states the forbidden outcome, immediately supplies the desired experience, then names the sequencing mechanism. It gives the model a concrete continuation to follow instead of leaving the forbidden concept as the strongest signal.
+
+---
+
+**Next:** [Executable Validation](./prompting-executable-validation.mdx)

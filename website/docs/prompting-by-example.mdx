@@ -1,0 +1,89 @@
+---
+title: 'Prompting by Example'
+---
+
+import PromptExample from '@site/src/components/PromptExample';
+import { PromptAnatomy, PromptComparison } from '@site/src/components/PromptTreatment';
+
+## Use Examples When Rules Are Hard to Describe
+
+Few-shot prompting gives the model input/output examples before the real task. Instead of describing every rule, you show the pattern you want completed.
+
+<PromptComparison
+  badLabel="No examples"
+  goodLabel="Few-shot"
+  goodNotes={[
+    { label: 'Pattern', detail: 'Examples define the input and output shape the model should continue.' },
+    { label: 'Boundaries', detail: 'Categories show fuzzy product judgment better than prose alone.' },
+    { label: 'Continuation', detail: 'The final unfinished Output starts the exact completion pattern.' },
+  ]}
+  bad={
+    <PromptExample>
+      Classify this onboarding complaint:<br />
+      <br />
+      "I wanted to try the dashboard, but it asked me to invite teammates before I knew what the product did."
+    </PromptExample>
+  }
+  good={
+    <PromptExample>
+      Classify onboarding friction reports into one primary category: Copy, Flow, Permissions, Data model, Reliability.<br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-1">Examples:</span><br />
+      <span className="prompt-seq-token prompt-seq-1">Input:</span> "I don't understand what a workspace is."<br />
+      <span className="prompt-seq-token prompt-seq-1">Output:</span> <span className="prompt-seq-token prompt-seq-anchor prompt-seq-2">Copy</span> — terminology blocks comprehension.<br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-1">Input:</span> "It asks me to invite teammates before I see value."<br />
+      <span className="prompt-seq-token prompt-seq-1">Output:</span> <span className="prompt-seq-token prompt-seq-2">Flow</span> — sequence creates premature commitment.<br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-1">Input:</span> "I can't connect the billing data source without admin access."<br />
+      <span className="prompt-seq-token prompt-seq-1">Output:</span> <span className="prompt-seq-token prompt-seq-2">Permissions</span> — access boundary blocks activation.<br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-3">Now classify:</span><br />
+      Input: "I wanted to try the dashboard, but it asked me to invite teammates before I knew what the product did."<br />
+      <span className="prompt-seq-token prompt-seq-3">Output:</span>
+    </PromptExample>
+  }
+/>
+
+Start with one example when the pattern is simple. Add more only when the output stays inconsistent, and prefer diverse examples that cover real boundary cases.
+
+## Reverse Prompt From an Ideal Output
+
+When you already have an ideal output, don't guess the prompt from scratch. Give that output to the model and ask it to infer the instructions, constraints, structure, and validation criteria that would reproduce it.
+
+<PromptAnatomy
+  sequenced
+  items={[
+    { label: 'Ideal output', detail: 'Anchors the model on the target artifact before asking it to infer anything.' },
+    { label: 'Inference', detail: 'Extracts the audience, sections, evidence rules, tone, and operating constraints behind the artifact.' },
+    { label: 'Template', detail: 'Converts the inferred pattern into a reusable forward prompt with variables.' },
+    { label: 'Validation', detail: 'Closes the loop by testing whether the new prompt reproduces the target style.' },
+  ]}
+  prompt={
+    <PromptExample>
+      Here is an example of the <code className="prompt-seq-token prompt-seq-anchor prompt-seq-1">architecture decision record</code> I want from an AI coding assistant:<br />
+      <br />
+      [Paste one complete <span className="prompt-seq-token prompt-seq-1">decision record</span> whose structure and quality you want to reuse.]<br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-2">Reverse-engineer</span> the prompt that would produce this kind of decision record.<br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-2">Infer</span>:<br />
+      - intended audience and decision scope<br />
+      - required sections<br />
+      - <span className="prompt-seq-token prompt-seq-2">evidence requirements</span><br />
+      - expected trade-off language<br />
+      - <span className="prompt-seq-token prompt-seq-2">constraints</span> the reviewer must preserve<br />
+      <br />
+      Return:<br />
+      <span className="prompt-line-number">1.</span> A <span className="prompt-seq-token prompt-seq-anchor prompt-seq-3">reusable prompt template</span><br />
+      <span className="prompt-line-number">2.</span> The <span className="prompt-seq-token prompt-seq-3">variables</span> I should fill in for each decision<br />
+      <span className="prompt-line-number">3.</span> A <span className="prompt-seq-token prompt-seq-anchor prompt-seq-4">validation checklist</span> for testing whether the prompt reproduces this decision quality
+    </PromptExample>
+  }
+/>
+
+Use multiple examples when the target output is complex. A single example helps you move fast, but several examples make the shared structure clearer and reduce invented constraints.
+
+---
+
+**Next:** [Steering Retrieval and Multistep Work](./steering-retrieval-and-multistep-work.mdx)

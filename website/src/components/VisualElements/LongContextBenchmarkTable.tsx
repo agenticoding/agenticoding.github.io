@@ -46,7 +46,10 @@ export const conceptLinks = {
   reliability: { label: 'reliability', href: '#reliability' },
   speed: { label: 'speed', href: '#speed' },
   cost: { label: 'cost', href: '#cost' },
-  best: { label: 'no best model', href: '#there-is-no-best-llm' },
+  best: {
+    label: 'no best model',
+    href: '/selecting-production-llms#there-is-no-best-llm',
+  },
   benchmarks: {
     label: 'benchmarks as evidence',
     href: '#benchmarks-are-evidence-not-truth',

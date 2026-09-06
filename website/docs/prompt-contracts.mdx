@@ -1,0 +1,91 @@
+---
+title: 'Prompt Contracts'
+---
+
+import PromptExample from '@site/src/components/PromptExample';
+import { PromptAnatomy, PromptComparison } from '@site/src/components/PromptTreatment';
+
+## Choose the Output Structure Early {#applying-structure-to-prompts}
+
+Structure organizes information and directs attention. Markdown, JSON, and XML work well because they're information-dense formats heavily represented in training data. Pick the shape before details compete for attention.
+
+<PromptAnatomy
+  sequenced
+  items={[
+    { label: 'Decision frame', detail: 'Sets the artifact as an architecture decision, not an implementation dump.' },
+    { label: 'Context + constraints', detail: 'Separates why the decision exists from the non-negotiable boundaries.' },
+    { label: 'Options', detail: 'Forces trade-off analysis before recommending an approach.' },
+    { label: 'Execution + validation', detail: 'Connects the decision to rollout, observability, and success criteria.' },
+  ]}
+  prompt={
+    <PromptExample>
+      <div className="prompt-md-section">
+        <span className="prompt-md-line"><span className="prompt-md-heading-token mono-spec prompt-seq-token prompt-seq-anchor prompt-seq-1"># Task:</span> Draft an <span className="prompt-seq-token prompt-seq-1">architecture decision record</span> for moving report generation from synchronous requests to asynchronous jobs.</span>
+      </div>
+      <div className="prompt-md-section">
+        <span className="prompt-md-heading mono-spec"><span className="prompt-seq-token prompt-seq-anchor prompt-seq-2">## Context</span></span>
+        <span className="prompt-md-line">- Enterprise reports time out during peak usage.</span>
+        <span className="prompt-md-line">- Customers expect downloadable reports and email notifications.</span>
+        <span className="prompt-md-line">- Support needs explainable status for delayed jobs.</span>
+      </div>
+      <div className="prompt-md-section">
+        <span className="prompt-md-heading mono-spec"><span className="prompt-seq-token prompt-seq-2">## Constraints</span></span>
+        <span className="prompt-md-line">- Preserve the existing API contract during rollout.</span>
+        <span className="prompt-md-line">- Keep audit logs for every generated report.</span>
+        <span className="prompt-md-line">- Support rollback without losing in-progress work.</span>
+      </div>
+      <div className="prompt-md-section">
+        <span className="prompt-md-heading mono-spec"><span className="prompt-seq-token prompt-seq-anchor prompt-seq-3">## Options</span></span>
+        <span className="prompt-md-line"><span className="prompt-line-number">1.</span> Queue-backed async jobs</span>
+        <span className="prompt-md-line"><span className="prompt-line-number">2.</span> Scheduled batch generation</span>
+        <span className="prompt-md-line"><span className="prompt-line-number">3.</span> Keep synchronous flow and optimize queries</span>
+      </div>
+      <div className="prompt-md-section">
+        <span className="prompt-md-heading mono-spec"><span className="prompt-seq-token prompt-seq-anchor prompt-seq-4">## Return</span></span>
+        <span className="prompt-md-line">- Recommendation with trade-offs</span>
+        <span className="prompt-md-line">- Rollout and rollback plan</span>
+        <span className="prompt-md-line">- Observability gaps and validation criteria</span>
+      </div>
+    </PromptExample>
+  }
+/>
+
+The structure makes the decision reviewable: why this matters, what cannot break, which options were considered, and how success will be verified.
+
+## Add Constraints as Guardrails {#constraints-as-guardrails}
+
+Without constraints, the model fills gaps with assumptions. Define boundaries explicitly.
+
+<PromptComparison
+  badLabel="Unconstrained"
+  goodLabel="Constrained"
+  goodNotes={[
+    { label: 'Decision', detail: 'Frames the work as a migration plan instead of a vague refactor.' },
+    { label: 'Boundaries', detail: 'Protects customer experience, contracts, auditability, and rollback.' },
+    { label: 'Contract', detail: 'Requires evidence and open decisions instead of pretending the plan is complete.' },
+  ]}
+  bad={
+    <PromptExample>
+      Move file processing to background jobs.
+    </PromptExample>
+  }
+  good={
+    <PromptExample>
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-1">Design a migration plan for moving file processing from synchronous API requests to asynchronous jobs.</span><br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-2">Constraints:</span><br />
+      <span className="prompt-seq-token prompt-seq-2">- Preserve the current API response contract during rollout.</span><br />
+      <span className="prompt-seq-token prompt-seq-2">- No user-visible regression for upload progress or error recovery.</span><br />
+      <span className="prompt-seq-token prompt-seq-2">- Preserve audit logs and idempotency guarantees.</span><br />
+      <span className="prompt-seq-token prompt-seq-2">- No schema change without a backfill and rollback plan.</span><br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-3">Return affected systems, migration phases, risks, evidence needed, and decisions that require human approval.</span>
+    </PromptExample>
+  }
+/>
+
+The unconstrained version invites the agent to jump into implementation. The constrained version defines the operational envelope before code exists.
+
+---
+
+**Next:** [Prompting by Example](./prompting-by-example.mdx)

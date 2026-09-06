@@ -1,0 +1,59 @@
+---
+title: 'Interactive Harness Agents'
+---
+
+import InteractiveHarnessWorkbench from '@site/src/components/VisualElements/InteractiveHarnessWorkbench';
+import HarnessDeltaExplorer from '@site/src/components/VisualElements/HarnessDeltaExplorer';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+
+The useful distinction is not CLI versus IDE versus chat UI. Those are interaction surfaces. The architectural distinction is where probabilistic decision-making lives. Both architectures wrap the same kind of LLM, but they let it make different kinds of choices: harness agents let the model choose many next steps; structured systems put orchestration in deterministic code and call the model at bounded junctions.
+
+That placement changes the agent's character. A harness agent amplifies the operator's intent through fast, tool-mediated action, but the amplification is never lossless: each model step is still probabilistic token prediction, so even well-scoped work can pick up subtle noise. The more control the architecture gives the LLM, the more places that noise can enter the search path, edits, and conclusions — and the more operator skill and domain knowledge are required to steer it. A structured control-plane agent leaves fewer choices to probabilistic prediction. It trades open-ended flexibility for control, optimization, and accuracy by letting surrounding software own state, routing, validation, and stop conditions — but that control costs more engineering effort and is harder to build well.
+
+Interactive coding agents — Claude Code, Codex-style terminals, Pi, OpenClaw, Copilot's agent mode in VS Code, Cursor, Zed — let the LLM drive many next-step decisions through tool calls or command requests. The harness provides guardrails and execution, but the model often chooses the next search, read, edit, test, or question.
+
+<DiagramFrame kicker="Agent mechanics" title="Harnesses turn model calls into controlled work" size="wide" caption="Interactive harness agents hand more autonomy to the LLM; the tradeoff is higher operator skill in scope, review, and verification.">
+  <InteractiveHarnessWorkbench />
+</DiagramFrame>
+
+Harness agents hand more autonomy to the LLM; the harness enforces boundaries, but the model chooses the next search, read, edit, or question. This makes them the most flexible architecture and the simplest to build — a loop, guardrails, and tool bindings.
+
+This is why they feel like leverage. The operator supplies intent, constraints, and judgment; the harness gives the model tools; the model converts that intent into action at machine speed. The tradeoff is that many conversions pass through probabilistic token prediction. Clear intent and tight constraints narrow the action path, but they do not make it deterministic. The wider the model's decision surface, the more the operator must know how to scope, steer, and evaluate the work. Ambiguous intent makes the problem worse: wandering behavior, excessive tool calls, over-broad edits, or plausible but wrong conclusions — and every detour still spends tokens.
+
+## The Harness Attention Budget
+
+[Effective Context](./effective-context.mdx) established that LLMs are finite machines. The context window is a fixed pool, and every token the model must process competes with every other token for influence on the next prediction. A harness helps the model act, but it is not free: tool definitions, planning prompts, output schemas, permissions, memory rules, and coordination protocols all enter the same context as the user's task.
+
+That means harness design is an attention-allocation decision. Instruction-following benchmarks such as IFScale show the same pattern under load: as simultaneous instructions increase, models miss more constraints, overweight earlier instructions, and eventually drop requirements instead of merely executing them imperfectly. Harness instructions are part of that load.
+
+Rich harnesses also ask the model to operate the harness itself. The model may need to maintain a plan, choose among tools, manage subagents, summarize history, update task state, or produce UX metadata. Some of that work improves reliability. Some of it is product polish. Either way, it uses tokens and attention that are no longer available for the user's task.
+
+## The Harness Spectrum
+
+This tradeoff creates a spectrum across harness agent products. Different products sit at different points:
+
+|                             | Minimal harness                                                  | Rich harness                                                           |
+| --------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Examples**                | Pi, raw API loops                                                | Claude Code, Codex-style agents                                        |
+| **Context overhead**        | Low                                                              | High                                                                 |
+| **Token cost**              | Low                                                            | High                                                                 |
+| **UX appearance**           | Open-ended — visible exploration, false starts, and backtracking | Structured — visible planning, progress tracking, polished interaction |
+| **Operator skill required** | High — must steer, scope, verify                                 | Lower — harness manages more workflow                                  |
+| **Attention for user task** | More of the context can stay task-focused                        | More context spent on coordination, tools, safety, and UX              |
+
+The benchmark evidence is easiest to read when the harness is the axis and the model is held constant. Terminal-Bench 2.0 reports several same-model rows across different coding harnesses; the spread makes harness effects visible, even when it does not isolate every design choice inside the harness.
+
+<DiagramFrame kicker="Agent mechanics" title="Harness design changes agent behavior" size="full">
+
+  <HarnessDeltaExplorer />
+
+</DiagramFrame>
+In less structured harnesses, the reasoning loop is more exposed. ReAct-style coding agents solve tasks by observing, trying an action, reading the result, and revising the next step; from the outside, that can look like tangents, false starts, or contradictory approaches. That loop is useful only when bounded by verification — tests, builds, diffs, reviews, budgets, or human approval.
+
+Richer harnesses make the same work look more controlled by adding planning modes, structured tools, permissions, compaction, subagents, and progress UI. Those structures can improve reliability and operator experience, but they also consume context and narrow the model's action space. The engineering choice is not minimal versus rich. It is how much scaffolding the task needs before the scaffolding itself becomes overhead.
+
+Scaffolding is one answer to variance. Moving orchestration out of the model entirely is the other.
+
+---
+
+**Next:** [Structured Control-Plane Agents](./structured-control-plane-agents.mdx)

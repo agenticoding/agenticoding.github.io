@@ -1,0 +1,59 @@
+---
+title: 'Roles and Tool Contracts'
+---
+
+import InstructionLayerAuthority from '@site/src/components/VisualElements/InstructionLayerAuthority';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+
+## Same Instruction, Different Source Role
+
+The harness does not only choose what the model sees. It chooses which source role carries that text.
+
+Take one instruction:
+
+> Always return JSON with `summary`, `risks`, and `next_action`.
+
+The words are identical in every case. The source role changes how the model is expected to treat them.
+
+<DiagramFrame kicker="Agent mechanics" title="The same words behave differently by source role" size="wide" caption="Same words, different source role: the role boundary changes the model's predicted continuation.">
+  <InstructionLayerAuthority />
+</DiagramFrame>
+
+This behavior is not incidental formatting. Chat models are trained to use message roles as part of the input. During instruction tuning and safety training, examples teach the model that system and developer text should constrain the conversation, user text should express the active request, and tool or observation text should be treated as environmental evidence.
+
+That training is why the same sentence can predict different continuations. In a high-authority role, it behaves like a standing rule. In the current user request, it behaves like a task preference. In an observation, file, webpage, or command output, it is data to interpret, not a command to obey.
+
+The security version of this idea is the instruction hierarchy: when instructions conflict, the model should prefer the higher-authority source and ignore lower-authority attempts to override it. OpenAI formalizes this in the [Model Spec chain of command](https://model-spec.openai.com/2025-12-18.html) and describes training models for it in [The Instruction Hierarchy](https://openai.com/index/the-instruction-hierarchy/) and the [Instruction Hierarchy Challenge](https://openai.com/index/instruction-hierarchy-challenge/). The research paper [The Instruction Hierarchy](https://arxiv.org/abs/2404.13208) frames this as a prompt-injection defense; [Role Separation Learning](https://arxiv.org/html/2505.00626v2) studies why models need explicit role signals rather than relying on shortcuts.
+
+For agent design, the operating rule is straightforward: message roles are not metadata around the prompt. They are part of the prompt the model was trained to interpret.
+
+## Integration: CLI as Default, MCP Where Structure Pays
+
+Tool interface design is a context-budget decision. Every tool schema the model must hold competes with instructions, evidence, and reasoning. A CLI skill costs ~50–100 tokens to describe. An MCP tool schema costs ~500–3,600+ tokens. That gap compounds with every tool.
+
+CLI commands also leverage model training data (git, curl, jq, rg, pipes), compose through shell operators without protocol overhead, and produce text the model can read directly — at the cost of parsing ambiguity.
+
+### The Agent-Optimized CLI Generation
+
+A 2026 wave of CLIs is purpose-built for agent consumption, collapsing the efficiency-structure tradeoff:
+
+| Domain          | Tool                                                                | How It Helps Agents                                                                                                                                                                                                                                                                                                                             |
+| --------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Browser         | **[Playwright CLI](https://playwright.dev/agent-cli/introduction)** | 68 token skill, 4.6× fewer tokens than MCP (25K vs 115K per session). State on disk (YAML snapshots), compact element refs (`e21`), daemon persistence.                                                                                                                                                                                         |
+| Browser         | **[agent-browser](https://agent-browser.dev)** (Vercel)             | ~200–400 token accessibility snapshots (15× smaller than DOM). Ref-based addressing (`@e1`), ~1ms warm daemon latency, security boundaries.                                                                                                                                                                                                     |
+| Version control | **[GitHub CLI (`gh`)](https://cli.github.com)**                     | `--json` flag on most commands for structured output. `gh api` grants access to any GitHub endpoint with JSON responses. Covers PRs, issues, repos, Actions, releases — the full developer workflow agents need. No Docker, no cloud dependency, zero setup beyond `gh auth login`.                                                             |
+| Database        | **[Supabase CLI](https://supabase.com/docs/guides/cli)**            | Starts a full local Postgres stack (`supabase start`) with a single command — database, auth, storage, realtime, edge functions — all inside Docker with `--json` output. Agents get a disposable, production-like database sandbox for schema migrations, query testing, and seed data. No cloud dependency, no config beyond `supabase init`. |
+
+Common thread: **structured output, externalized state, minimal context overhead — all without a formal protocol.**
+
+### When MCP Still Makes Sense
+
+MCP's structured guarantees justify the cost when the problem is structural, not incidental: remote services with OAuth, governed access with audit trails, dynamic tool ecosystems that need runtime discovery, or services with no CLI at all. For local developer workflows, an agent-optimized CLI delivers equivalent structure at a fraction of the context cost.
+
+**Decision Rule:** Default to CLI; escalate to MCP only when the problem demands protocol-level guarantees.
+
+Roles and tool contracts describe how one model call is assembled. The next question is who decides what the next call should be.
+
+---
+
+**Next:** [Interactive Harness Agents](./interactive-harness-agents.mdx)

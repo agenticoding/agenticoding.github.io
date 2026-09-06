@@ -1,0 +1,106 @@
+---
+title: 'Training and Post-Training'
+---
+
+import ModelEncodingAtlas from '@site/src/components/VisualElements/ModelEncodingAtlas';
+import PostTrainingTuningBoard from '@site/src/components/VisualElements/PostTrainingTuningBoard';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+
+## What Training Actually Does
+
+A useful mental model: the architecture is the program shape; the weights are the learned contents of that program.
+
+The architecture defines the fixed computation: layers, attention, token flow, and the mathematical operations that turn input tokens into output probabilities. The weights are billions of numeric parameters inside that computation. During inference, those weights are fixed. During training, they are adjusted.
+
+Training is optimization. The training system shows the model many examples of input context and desired output, measures how wrong the model's prediction was, then nudges the weights so similar contexts produce better probabilities next time.
+
+For a language model, the basic pretraining task is next-token prediction:
+
+```text
+Context: "The capital of France is"
+Desired next token: " Paris"
+```
+
+If the model assigns low probability to `" Paris"`, the loss is high. If it assigns high probability, the loss is low. Across billions or trillions of examples, training searches for weight values that reduce average loss.
+
+That is the sense in which the model "learns." It does not write facts into named database rows. It tunes a very large mathematical function until its outputs approximate the patterns in the training data.
+
+:::tip[Training is local optimization, not guaranteed discovery]
+Training searches through a high-dimensional space where every point is one possible setting of the model's weights. The loss function defines the terrain: lower is better, but the terrain is not a smooth bowl with one obvious bottom.
+
+Modern training algorithms such as [stochastic gradient descent](https://en.wikipedia.org/wiki/Stochastic_gradient_descent) and [Adam](https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Adam) estimate which direction should reduce loss, then take small steps. Because the space is huge and non-convex, training is not guaranteed to find the best weights—or even a useful stable model. Random initialization, batch order, optimizer settings, data mix, and compute details all affect the path.
+
+That stochasticity is part of why model training feels less like compiling a program and more like fitting a massive probabilistic system until it behaves well enough under evaluation.
+:::
+
+Post-training then narrows that broad continuation engine into a product behavior profile: follow instructions, prefer useful answers, refuse some requests, call tools, solve checked tasks, or match a domain style.
+
+## What Gets Encoded Into the Model
+
+After training, the weights become a compressed map of patterns. They encode statistical structure learned from training data: language, facts, code idioms, document formats, interaction norms, visual patterns, domain terminology, and common ways people respond to situations.
+
+That includes two useful kinds of structure:
+
+- **World and domain knowledge:** what tends to be true, how concepts relate, what APIs look like, how legal clauses are written, what a support ticket usually contains
+- **Action patterns:** what to do next in a scenario, how to answer a question, how to revise code, when to ask for clarification, how to format a tool call
+
+This knowledge is not stored like rows in a database. It is distributed across parameters.
+
+<DiagramFrame
+  kicker="LLM mechanics"
+  title="Training compresses examples into model behavior"
+  size="wide"
+  caption={
+    <>
+      The model does not retrieve a fact row or a playbook entry. Training
+      distributes both kinds of patterns across the weights, which is what makes
+      generalization possible—and failure modes harder to inspect.
+    </>
+  }
+>
+  <ModelEncodingAtlas />
+</DiagramFrame>
+
+That is why the model can generalize beyond exact examples, but also why it can be stale, incomplete, biased, or confidently wrong.
+
+A useful mental model: the model has learned patterns for how situations usually continue. Inference gives it a new situation and asks for the next likely continuation.
+
+## Base Models Learn Patterns; Post-Training Shapes Behavior
+
+Modern LLM products are not just pretrained models exposed through an API. Vendors usually start with a base model, then post-train it toward a product goal.
+
+| Stage                      | What it contributes                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| Pretraining                | Broad knowledge, language/code/multimodal patterns, raw continuation ability               |
+| Supervised fine-tuning     | Instruction following, task formats, assistant behavior                                    |
+| Preference training        | Helpfulness, tone, safety behavior, refusal policy, response quality                       |
+| Verifiable reward training | Stronger math, code, retrieval, or tool behavior where outputs can be checked              |
+| Domain tuning              | Specialized patterns for coding, legal, medical, finance, support, or enterprise workflows |
+
+Read the stages as a manufacturing pipeline. Each stage narrows the raw continuation engine into a product behavior profile: what it follows, prefers, refuses, verifies, and specializes for. For agents, this is the difference between a model that can continue code-shaped text and a product model shaped to produce patches, explanations, safe refusals, or tool calls.
+
+<DiagramFrame
+  kicker="LLM mechanics"
+  title="Post-training shapes product behavior"
+  size="standard"
+  caption={
+    <>
+      The final model reflects deliberate product choices about customers,
+      workflows, policies, and quality expectations.
+    </>
+  }
+>
+  <PostTrainingTuningBoard />
+</DiagramFrame>
+
+Reinforcement-style post-training is one way manufacturers shape behavior. [InstructGPT](https://arxiv.org/abs/2203.02155) popularized the supervised fine-tuning + reward model + reinforcement learning pipeline for instruction following. Later methods such as [DPO](https://arxiv.org/abs/2305.18290) simplify preference optimization. Verifiable rewards go further for tasks like code, math, retrieval, and tool use because the output can be checked.
+
+For code, the objective may include tests or compiler feedback. For tool use, it may include correct function calls. For regulated domains, it may include compliance, citations, or safe refusal behavior.
+
+That is the product reality behind many model claims: vendors are not selling generic intelligence. They are selling differently trained behavior profiles.
+
+Every one of those profiles is produced by optimization, not by rules. That is where the practical limits begin.
+
+---
+
+**Next:** [Why LLMs Fail](./llm-reliability-limits.mdx)

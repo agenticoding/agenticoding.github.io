@@ -122,18 +122,6 @@ const config: Config = {
 
   plugins: [
     [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'developer-tools',
-        path: 'developer-tools',
-        routeBasePath: 'developer-tools',
-        sidebarPath: './sidebarsDeveloperTools.ts',
-        editUrl,
-        showLastUpdateTime: false,
-        showLastUpdateAuthor: false,
-      },
-    ],
-    [
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
         hashed: true,

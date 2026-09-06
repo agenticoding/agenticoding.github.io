@@ -1,7 +1,7 @@
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import { type ComponentType, type ReactNode } from 'react';
-import { getChapterById, type ChapterId } from '../../../chapters';
+import { getSectionNumber, type ChapterId } from '../../../chapters';
 import styles from './index.module.css';
 
 interface VisualNode {
@@ -250,10 +250,11 @@ const PREVIEWS: readonly Preview[] = [
   },
 ];
 
-function getChapterMetadata(chapterId: ChapterId) {
-  const chapter = getChapterById(chapterId);
-  if (!chapter) throw new Error(`Unknown homepage chapter: ${chapterId}`);
-  return chapter;
+function getChapterNumber(chapterId: ChapterId): number {
+  const sectionNumber = getSectionNumber(chapterId);
+  if (sectionNumber === undefined)
+    throw new Error(`Homepage preview chapter is not numbered: ${chapterId}`);
+  return sectionNumber;
 }
 
 function PreviewCaption({
@@ -290,14 +291,14 @@ function PreviewFigure(props: Preview & { chapterNumber: number }) {
 
 function PreviewTile(preview: Preview) {
   const { title, caption, chapterId } = preview;
-  const chapter = getChapterMetadata(chapterId);
+  const chapterNumber = getChapterNumber(chapterId);
   return (
     <Link
       to={`/${chapterId}`}
       className={styles.previewTile}
-      aria-label={`Chapter ${chapter.sectionNumber}: ${title}. ${caption}`}
+      aria-label={`Chapter ${chapterNumber}: ${title}. ${caption}`}
     >
-      <PreviewFigure {...preview} chapterNumber={chapter.sectionNumber} />
+      <PreviewFigure {...preview} chapterNumber={chapterNumber} />
     </Link>
   );
 }

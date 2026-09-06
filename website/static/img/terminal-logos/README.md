@@ -1,7 +1,7 @@
 # Terminal Logos
 
 Official marks for the eight terminals covered in
-`website/developer-tools/terminals.md`. `ToolMark` renders transparent
+`website/docs/developer-tools/terminals.md`. `ToolMark` renders transparent
 silhouettes as monochrome CSS masks (`background: var(--text-heading)`). It
 renders compound/app-icon artwork directly with one image element and shared
 achromatic filters, so theme changes never change logo geometry. Kitty uses a

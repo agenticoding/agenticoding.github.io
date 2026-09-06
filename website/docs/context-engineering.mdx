@@ -4,11 +4,6 @@ title: 'Context Engineering'
 
 import ContextPressureDiagram from '@site/src/components/VisualElements/ContextPressureDiagram';
 import ContextMechanismMap from '@site/src/components/VisualElements/ContextMechanismMap';
-import SkillsInvocationDiagram from '@site/src/components/VisualElements/SkillsInvocationDiagram';
-import SubAgentFanoutDiagram from '@site/src/components/VisualElements/SubAgentFanoutDiagram';
-import ContextSqueezeDiagram from '@site/src/components/VisualElements/ContextSqueezeDiagram';
-import CompactionLineDiagram from '@site/src/components/VisualElements/CompactionLineDiagram';
-import MCPToolSchemaDiagram from '@site/src/components/VisualElements/MCPToolSchemaDiagram';
 import UShapeAttentionCurve from '@site/src/components/VisualElements/UShapeAttentionCurve';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
@@ -16,7 +11,7 @@ The agent loop rebuilds context each turn. Instructions, tool definitions, conve
 
 Context engineering is the practice of shaping each LLM call's context to be optimal for its task. It applies to every call — not just when the window is full. A fresh session with a clear task benefits from the same thinking as a 1M-token conversation approaching compaction.
 
-This chapter covers the six mechanisms that control what enters the context window and where: **context files**, **MCP tool schemas**, **skills**, **sub-agents**, **context compaction**, and **retrieval**. Each changes the parent context differently: some enlarge its fixed prefix, some append task-specific material, some replace accumulated history, and some keep work in a separate window. The sections that follow start with the fundamental constraint — why position in the window matters — then work through each mechanism.
+Six mechanisms control what enters the context window and where: **context files**, **MCP tool schemas**, **skills**, **sub-agents**, **context compaction**, and **retrieval**. Each changes the parent context differently: some enlarge its fixed prefix, some append task-specific material, some replace accumulated history, and some keep work in a separate window. This module covers the fundamental constraint that governs all six — why position in the window matters — and hands each mechanism to its own module ([The Six Context Mechanisms](#the-six-context-mechanisms)).
 
 ## The Attention Curve: Why Placement Matters
 
@@ -28,7 +23,7 @@ This chapter covers the six mechanisms that control what enters the context wind
 
 Drag the slider to 50%. The diagram is normalized: 50% means halfway through the window, whether the window holds 10K, 100K, or 1M tokens. The same failure exists at every size. What changes is the scale of the weak middle. At 50% fill, those windows contain 5K, 50K, and 500K tokens respectively. The model must find relevant information amid ever more competing context. A larger window gives the agent more room; it does not give the agent uniform recall across that room.
 
-The valley is not fixed — it deepens as the window fills. Every diagram in this chapter renders this same curve, so watch the middle band: it darkens from benign to degraded to collapsed as context pressure grows.
+The valley is not fixed — it deepens as the window fills. Every diagram in these chapters renders this same curve, so watch the middle band: it darkens from benign to degraded to collapsed as context pressure grows.
 
 Three zones emerge from the curve. The **primacy zone** at the start — where system instructions, user rules, and project files land. The **recency zone** at the end — where your current task and recent tool results sit. And the **dead center** — the middle of the window, where attention drops off sharply.
 
@@ -46,7 +41,7 @@ At modest absolute lengths, both primacy and recency can remain useful: the curv
 
 Recent evaluations show that this is not an artifact of an older model generation. Du et al. tested five open and closed models on coding, question-answering, and math tasks: performance fell 13.9–85% as input length grew within the models' claimed windows, even with perfect retrieval and masked or whitespace distractors.[^context-length-alone] Chroma's Context Rot tested 18 frontier models, including GPT-4.1, Claude 4, Gemini 2.5, and Qwen3; every model showed non-uniform degradation as input length grew, with coherent and semantically similar distractors making the decline worse.[^context-rot] This is the constraint that context engineering works within.
 
-Every mechanism in this chapter — context files, tool schemas, skills, sub-agents, compaction, and retrieval — is a way to keep important information where the model can still attend to it. The job is not to fit everything. The job is to keep the active task, current constraints, and relevant evidence in the high-attention zones.
+Every mechanism in this part — context files, tool schemas, skills, sub-agents, compaction, and retrieval — is a way to keep important information where the model can still attend to it. The job is not to fit everything. The job is to keep the active task, current constraints, and relevant evidence in the high-attention zones.
 
 ## The Context Pressure Problem
 
@@ -88,224 +83,6 @@ Compare mechanisms through the same context lens: **when tokens load**, **where 
 
 These mechanisms do not sit on one spectrum. Context files and eager MCP schemas enlarge the fixed prefix. Skills and tool-driven retrieval add material when the active task needs it. Sub-agents keep their working trace in another window and return a synthesis. Compaction replaces accumulated conversation with a smaller, lossy state. Effective context engineering means choosing the context effect that matches the knowledge and the task.
 
-## Context Files
-
-Context files are markdown documents injected between the system prompt and your input. They give agents project memory without repeated explanations: architecture, conventions, build commands, constraints.
-
-**Context effect:** they load on every call into the fixed prefix. The tradeoff is **guaranteed delivery vs. pushing your task toward the valley**: every token inflates the prefix your task travels behind. Once the conversation starts building after your prompt, that prefix helps decide where the prompt ends up.
-
-<DiagramFrame
-  kicker="Context management"
-  title="File size decides where your prompt lands"
-  size="standard"
-  caption={
-    'Same conversation, two file sizes. As turns append after the prompt, the prompt drifts from the recency edge: a small file lets it settle near the primacy edge — still strong attention; a big file lands it in the dead middle, where attention collapses.'
-  }
->
-  <ContextSqueezeDiagram />
-</DiagramFrame>
-
-`AGENTS.md` is the vendor-neutral standard adopted by 60,000+ open-source projects (now governed by the Linux Foundation's Agentic AI Foundation), working across GitHub Copilot, Cursor, Zed, Windsurf, and most other AI coding tools (note: Claude Code does not support AGENTS.md — see tip below). Keep it minimal — your README should contain 90% of what AI needs; AGENTS.md adds only AI-specific operational context. That 10% is where the discipline lives — every token in AGENTS.md sits in the attention valley between the prefix and your actual task. Put project knowledge in your README where agents can read it on demand; AGENTS.md is for what changes _how_ the agent operates, not _what_ the project does. Reference external docs by link rather than inlining them — agents can fetch details when needed.
-
-:::tip Claude Code: Using AGENTS.md with Claude Code
-Claude Code uses `CLAUDE.md` instead of `AGENTS.md`. To maintain a single source of truth while supporting both ecosystems, use **@-linking** in your `CLAUDE.md`:
-
-```markdown
-# CLAUDE.md
-
-@/AGENTS.md
-```
-
-This imports your AGENTS.md content into Claude's context. For details on Claude Code's hierarchical context system, see the [Claude Code documentation](/developer-tools/cli-coding-agents#claude-code).
-:::
-
-:::warning Hierarchical CLAUDE.md: Hidden Context Bloat
-Unlike AGENTS.md (a single file with predictable token cost), Claude Code's hierarchical system merges `CLAUDE.md` files from multiple levels — project root, subdirectories, `.claude/rules/`, user config, and enterprise policy — all automatically loaded based on your working directory. Each additional file lands in the attention valley this chapter describes: every merged file adds more middle-zone content between the prefix and your task. The total context-file token cost becomes invisible unless you audit every level of the hierarchy. If you use Claude Code, keep a single root `CLAUDE.md` that `@`-imports `AGENTS.md` and avoid scattering files throughout subdirectories — the hierarchy multiplies the squeeze.
-:::
-
-:::warning Security Consideration
-Context files are injected directly into system prompts. Security researchers have identified "Rules File Backdoor" attacks where malicious instructions are injected using Unicode characters or evasion techniques. Keep context files minimal, version-controlled, and code-reviewed like any other code.
-:::
-
-## MCP Tools
-
-Every tool the agent can call ships with a schema: name, description, parameters. Built-in tools (Read, Edit, Bash) are modest at ~50–1000 tokens each. MCP servers are a different story entirely.
-
-**Context effect:** eager loading places every schema in the fixed request prefix before the model plans its first action. Deferred loading keeps most schemas out initially, but adds a Tool Search decision boundary: the model must search, choose a candidate, load its schema, then call it. A near match can append the wrong schema, call, and result before recovery. Those artifacts are not discarded; they persist and can drift into the low-attention middle.
-
-The cost is structural: every tool schema is serialized as JSON with repeated type annotations, nested `required` arrays, and verbose natural-language descriptions. A typical tool runs 300–600 tokens; complex API tools like GitHub's file operations hit 1,000–2,000. These costs compound quickly across multi-server setups. The governing rule is simple: **small, high-frequency toolsets favor eager loading; large, broad catalogs favor deferred loading.**
-
-### Eager vs Deferred Loading
-
-Eager loading keeps calls simple because the model already has the schema when it starts planning. Deferred loading protects the startup prompt, but every deferred tool depends on probabilistic candidate selection. Catalog breadth controls how much eager schema mass enters the prefix; task breadth controls how many schemas the work actually needs; selection quality controls whether discovery takes a wrong path. They are separate variables.
-
-<DiagramFrame
-  kicker="Context management"
-  title="Deferred loading adds a Tool Search decision boundary"
-  size="wide"
-  caption={
-    'Tool Search saves prefix tokens, but a near match can leave wrong schemas, calls, and results in the context middle.'
-  }
->
-  <MCPToolSchemaDiagram />
-</DiagramFrame>
-
-Drag the catalog control: it changes installed breadth, not what the representative task needs. The task always requires two schemas. Eager loading puts the full catalog in the fixed prefix; deferred loading exposes only schemas selected at runtime and keeps the remainder out of the request.
-
-Switch the Tool Search outcome. A direct match takes the short path. A near match loads a wrong schema, produces a false call and result, then retries. The wrong-path artifacts remain in history and occupy the attention valley even after the correct schemas load. The crossover therefore depends on schema size, task breadth, result breadth, and selection quality—not catalog size alone.
-
-**Takeaway:** the more your catalog behaves like infrastructure, the more you should optimize for what stays out of the valley instead of immediate tool visibility. The same logic applies one layer up to reusable procedures: if a workflow library is broad, discover it cheaply and load the full instructions only when needed. The same automation-versus-reliability tradeoff applies here.
-
-## Skills and Procedures
-
-Skills are the **procedure-side analogue of deferred MCP tools**. The agent sees lightweight discovery metadata first, then loads the full workflow only when the task matches or you invoke it directly.
-
-**Context effect:** the catalog creates a small fixed cost; activation adds the selected procedure near the active turn, where it initially benefits from recency but can drift as work continues. The critical tradeoff is who activates it: auto-discovery is friction-free but probabilistic, while manual invocation is reliable but requires the human to know the skill exists.
-
-### Two Invocation Paths
-
-<DiagramFrame
-  kicker="Context management"
-  title="Who picks the skill decides what stays in the valley"
-  size="wide"
-  caption={
-    'Both paths pay the same discovery metadata. Manual invocation loads one procedure; a near match loads a second one it never uses — and never removes.'
-  }
->
-  <SkillsInvocationDiagram />
-</DiagramFrame>
-
-Drag the catalog control: it grows the discovery metadata carried by both prefixes, pushing the prompt deeper into the attention valley, while every procedure body stays out of the window until something activates it. The AUTO panel always shows a near match, because that is the only outcome worth drawing — a lucky direct match reproduces the manual trace exactly. The wrong procedure body and the false-start turn it produced load before the correct skill and then sit at the bottom of the valley for the rest of the run. Everything separating the two panels is the price of one bad pick, and manual invocation never pays it.
-
-**Manual invocation**: The user explicitly selects a procedure — a slash command (`/commit`), skill picker, or sub-agent mention. The procedure loads because the human chose it. **Always reliable** — the model cannot misidentify the workflow — but the human must discover the skill and remember its name.
-
-**Model invocation**: The agent sees the procedure catalog in context, matches your intent against the descriptions, and loads the relevant workflow automatically. **Zero friction** — the agent handles discovery — but the model may pick the wrong skill, miss the right one, or waste tokens evaluating irrelevant descriptions.
-
-This tradeoff is configurable per skill, not just per project, so the invocation path can match each workflow's reliability requirement: critical workflows (deploy, commit, review) belong on the manual path, where nothing can mis-select them; exploration workflows (search code, explain errors) work well with auto-discovery, where a wrong guess costs a false start and little else.
-
-:::tip Going full manual
-Every major harness lets you take a skill off the matching path. Claude Code and [pi](https://pi.dev/docs/latest/skills) both read `disable-model-invocation: true` from a skill's `SKILL.md` frontmatter; in pi that also drops the skill's metadata from the system prompt, so a manual-only skill costs **zero standing context** and runs only via `/skill:name`. Codex gates the same behavior with `allow_implicit_invocation` in `agents/openai.yaml`.
-
-Full manual removes near-match risk entirely — and, where metadata is dropped with it, the standing cost too. The price is the one this section keeps returning to: a human has to know the skill exists and remember its name.
-:::
-
-### Different Harnesses, Same Core Pattern
-
-The format itself is standardized. `SKILL.md` — YAML frontmatter carrying a name and description, a Markdown body, optional bundled files — is defined by the [Agent Skills specification](https://agentskills.io/specification), with an [integration guide](https://agentskills.io/integrate-skills) for harness authors. Every implementation honors the same loading contract: metadata in the system prompt at startup, body only on activation. What differs is the invocation surface — how much window a harness spends advertising the catalog, and how long an activated skill stays resident.
-
-[Claude Code](https://code.claude.com/docs/en/skills) caps the skill listing at 1% of the context window and truncates descriptions, least-used first, once the catalog exceeds it; an activated skill then stays in history until compaction. [Pi](https://pi.dev/docs/latest/skills) injects skill metadata as XML in the system prompt and has the model `read` the body on demand. [Codex](https://learn.chatgpt.com/docs/build-skills) places its catalog immediately after AGENTS.md, capped at roughly 2% of the window or 8,000 characters — skills past the cap are dropped with a warning — and [releases skill context once the task completes](https://openai.com/index/unrolling-the-codex-agent-loop/) instead of carrying it forward. OpenCode leans on reusable agents and `@`-invoked subagents and does not document its loading budget, but it reads the same standard format.
-
-Those caps are the tell: the catalog listing is not free. Procedure metadata consumes context budget before any workflow runs, which is why harnesses bound it at 1–2% of the window. Exceeding the cap does not stop the matching — the model keeps matching against truncated or missing descriptions, which is exactly how the near match in the figure above happens. A broad catalog degrades the descriptions the model needs to pick correctly. This is the procedure-side analogue of MCP schema pressure: different payload, same design problem.
-
-The practical framing: **AGENTS.md** holds what the agent should always know — architecture, conventions, constraints. **Skills** hold what the agent should know how to do — specific workflows loaded on demand, with the invocation path controlling who decides which one runs.
-
-## Sub-Agents
-
-Sub-agents are **delegated agents** — independent instances that run in separate context windows under the direction of an orchestrator. Each sub-agent operates on its own task slice, and the orchestrator consumes only the returned synthesis rather than inheriting the full working trace.
-
-**Context effect:** the prompt forks work into separate windows; each sub-agent carries its own context lifecycle, and only its synthesis returns to the orchestrator. The parent pays for that synthesis, not the raw search trail, file reads, and partial interpretations. This isolation keeps the orchestrator clean while making the return boundary intentionally lossy.
-
-Sub-agents are the agentic analogue of a function call: the dispatch prompt is the parameter ("Find all JWT authentication code and explain the current implementation") and the synthesis is the return value ("JWT implementation found at src/auth/jwt.ts using Passport.js..."). You pay to process tokens in all participating contexts, but the orchestrator receives compact results instead of inheriting every delegate's full journey.
-
-What makes sub-agents a first-class orchestration primitive — beyond context isolation — is **per-agent optimization**. With the right harness, each delegate can run on the LLM best suited to its sub-task: [pi](https://pi.dev) + [pi-agenticoding](https://github.com/agenticoding/pi-agenticoding) lets you route each sub-agent to the model that matches its cost-accuracy profile. Similarly, Claude Code, Codex, and OpenCode let you customize the system prompt per sub-agent, so each delegate carries only the instructions it needs for its slice of work. Regardless of the mechanism, the payoff is the same: **orchestrating a single task via multiple specialized agents** instead of overloading one context.
-
-<DiagramFrame
-  kicker="Context management"
-  title="Only the root orchestrates; syntheses cross back"
-  size="wide"
-  caption={
-    'The root calls agent 1, then 2, then agents 3 and 4 concurrently. Every sub-agent is one level deep: its compact dispatch and synthesis are the only two parent-window landings.'
-  }
->
-  <SubAgentFanoutDiagram />
-</DiagramFrame>
-
-### Benefits and Costs
-
-**Benefits:**
-- **Proper delegation** — the orchestrator assigns each sub-task to an independent agent rather than doing all work in one overloaded context
-- **LLM optimization per task** — pi + pi-agenticoding routes each delegate to the model best suited to its slice (e.g. high-throughput for research, precision-tuned for review)
-- **System prompt customization per agent** — Claude Code, Codex, and OpenCode let you tailor the system prompt to each delegate's role
-- **Parallel execution** — independent sub-tasks run concurrently instead of serially
-- **Cleaner orchestrator** — only syntheses cross back, keeping the parent window focused on coordination
-
-**Costs:**
-- **No shared state** — each sub-agent starts fresh, so context-file loading cost is paid again per delegate
-- **Synthesis can lose nuance** — the compact return omits details the orchestrator might have needed
-- **Token cost multiplied** — every sub-agent is a separate API call with its own consumption
-- **No nesting** — sub-agents cannot spawn sub-agents; the orchestrator is always the root
-- **Concurrency cap** — Claude Code limits concurrent sub-agents to 10
-
-These are token-cost tradeoffs in exchange for delegation and specialization — the right tradeoff when per-agent optimization improves outcome quality faster than the added token spend costs.
-
-Sub-agents are ideal for delegating independent research, multi-file analysis, and exploratory tasks to the agent best suited for each slice, and for generating independent plans or implementations across specialized models when you want to compare options before applying one result.
-
-## Context Compaction
-
-**Context effect:** compaction replaces accumulated conversation with a smaller synthetic state, restoring working room while discarding detail. It is lossy summarization guided by your instruction, but it cannot guarantee what survives. Future relevance is unknowable at compaction time: a debugging trace that looks like noise now may be the clue the next step needed.
-
-In practice, the harness usually performs two reductions, not one. First it removes or offloads stale tool traces that no longer need to be replayed. Then it summarizes the surviving sections while leaving the most recent turns intact. The raw transcript may remain available outside the model call, but only the compact working set reaches the next request.
-
-<DiagramFrame kicker="Context management" title="Compaction deletes traces, then summarizes the survivors" size="full" caption={'Stale tool-call/result pairs leave the next request entirely. Surviving sections are summarized one by one, while the recent tail remains verbatim. The raw transcript may persist externally, but only the compact working set reaches the model.'}>
-
-<CompactionLineDiagram />
-
-</DiagramFrame>
-
-Deletion is selection; summarization is transformation. Both reduce the model's working set, but only summarization preserves a synthetic version of the source section.
-
-The reliable alternative is **manual handoff with external checkpointing**. Before starting a new phase, write a brief state file with the current goal, changed files, decisions, unresolved errors, and next step. Files provide exact recall; a fresh context provides inference quality.
-
-### The Buffer Tax
-
-Compaction itself consumes working context. The system reserves a buffer to ensure it can still perform the handoff when the session nears capacity — capacity intentionally withheld from normal conversation. This is the compaction buffer: a tax on your effective window.
-
-:::tip Disable auto-compaction
-Auto-compaction trades usable context for a safety margin you don't need when you own handoffs explicitly. Both Claude Code (CLI settings) and [pi](https://pi.dev) let you disable it:
-
-```json
-{ "compaction": { "enabled": false } }
-```
-
-Reclaim the buffer for actual work. Compact only when you choose to — at phase boundaries — and always externalize anything that must survive exactly.
-:::
-
-## Retrieval
-
-The agents chapter showed that [memory is retrieval](./how-agents-work.mdx#memory-is-retrieval-not-recall) — the model does not remember your project conventions, previous sessions, or domain facts unless the harness retrieves them and feeds them into a later call. ChunkHound, OpenGrok, vector databases, BM25 indexes, web search, knowledge graphs, and memory systems are all retrieval flavors. They solve the same problem: choosing which facts deserve space in the next request.
-
-Retrieval is a context engineering mechanism because it controls what evidence enters the context window and where it lands.
-
-**Context effect:** harness-level RAG injects retrieved content before the user prompt, in the primacy zone. It is always visible but competes with context files for the fixed prefix. Tool-call retrieval — ChunkHound, grep, web search — appends results after the user prompt. Those results enter with recency advantage, then drift toward the middle as the conversation grows.
-
-Each placement has different attention characteristics. Harness-level retrieval is always visible but always costs tokens. Tool-call retrieval loads on demand but competes with every other conversation turn for attention.
-
-### The Token Cost of Discovery
-
-Retrieval decisions are context engineering decisions because every retrieved chunk costs tokens. Three grep searches can return 18,000 tokens. Reading five files can add another 22,000. You are at 40,000 tokens before discovery is finished. Ten semantic chunks from a vector database can cost 15,000 tokens; reading related files adds 25,000; exploring patterns adds another 10,000. You are at 50,000 tokens before implementation starts.
-
-That is why correct retrieval can still hurt reliability. A long search trail can push the actual task into the forgotten middle. A useful web page can arrive too early, sit too long, and compete with more relevant instructions later. Coherent distractor text is especially dangerous because it looks relevant while degrading reasoning more than obvious noise.[^context-rot]
-
-### Retrieval Quality ≠ Context Quality
-
-The failure mode most teams hit with retrieval is not "the retriever found irrelevant chunks." It is "the retriever found relevant chunks, but the model could not use them."[^context-injection]
-
-Retrieval quality and context injection quality are separate problems. Finding the right facts is necessary but not sufficient. How those facts are structured, prioritized, and wrapped in the context determines whether the model can attend to them. A chunk that is relevant but arrives in the dead center of a 200K-token window may as well not exist.
-
-This is why retrieval is a context engineering mechanism, not a precursor to it. The operator decides what to retrieve, where to place it, how much context budget to spend on it, and when to load it. Those are the same decisions that govern every other mechanism in this chapter.
-
-:::warning The Agentic Coding Cost Trap
-
-Most providers apply per-token surcharges past a context threshold:
-
-- **Gemini 3.1 Pro:** 2× input pricing above 200K tokens
-- **GPT-5.5 / GPT-5.4:** 2× input pricing above ~272K tokens
-- **DeepSeek V4 Pro / Flash:** 1.5× pricing above 512K tokens
-- **Claude 4.6/4.7 (Opus/Sonnet):** No surcharge — flat rate to 1M
-
-For retrieval tasks (summarization, document review), the surcharge buys tokens in the model's strong accuracy zone. For agentic coding, you're paying a premium for tokens in the model's _worst_ accuracy zone — the middle, where your constraints and requirements go to die.
-:::
-
 ---
 
 [^attention-sinks]: Xiao et al. (2023), [_Efficient Streaming Language Models with Attention Sinks_](https://arxiv.org/abs/2309.17453).
@@ -314,8 +91,4 @@ For retrieval tasks (summarization, document review), the surcharge buys tokens 
 
 [^context-length-alone]: Du et al. (2025), [_Context Length Alone Hurts LLM Performance Despite Perfect Retrieval_](https://aclanthology.org/2025.findings-emnlp.1264/).
 
-[^context-rot]: Chroma Research (2025), [_Context Rot_](https://www.trychroma.com/research/context-rot).
-
-[^context-injection]: ExplainX (2026), [_RAG Context Injection Pipeline Design_](https://www.explainx.ai/blog/rag-context-injection-pipeline-design-2026).
-
-**Next:** [Chapter 7: Reliability Levers](./reliability-levers.md)
+**Next:** [Context Files](./context-files.md)

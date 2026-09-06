@@ -1,0 +1,75 @@
+---
+title: 'Steering Retrieval and Multistep Work'
+---
+
+import PromptExample from '@site/src/components/PromptExample';
+import { PromptComparison } from '@site/src/components/PromptTreatment';
+
+## Add Persona When Vocabulary Matters
+
+Use personas when domain-specific terminology matters: security, performance, accessibility, reliability. Skip personas when the task is straightforward and adding persona context wastes tokens without adding value.
+
+<PromptComparison
+  badLabel="Generic"
+  goodLabel="Reliability-focused"
+  goodNotes={[
+    { label: 'Persona', detail: 'Sets reliability vocabulary: blast radius, failover, SLOs, runbooks.' },
+    { label: 'Review targets', detail: 'Names exact operational risks instead of leaving "issues" undefined.' },
+    { label: 'Assumptions', detail: 'Forces production posture: partial outages, human response, rollback.' },
+  ]}
+  bad={
+    <PromptExample>
+      Review this multi-region design for issues.
+    </PromptExample>
+  }
+  good={
+    <PromptExample>
+      <code className="mono-human prompt-seq-token prompt-seq-anchor prompt-seq-1">You are a staff-level reliability engineer reviewing a proposed multi-region failover design.</code><br />
+      <br />
+      Review for:<br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-2">blast radius, failover trigger ambiguity, data consistency risk, observability gaps, runbook gaps, rollback assumptions.</span><br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-3">Assume partial regional outages, degraded dependencies, and an on-call engineer executing under time pressure.</span>
+    </PromptExample>
+  }
+/>
+
+The persona doesn't add knowledge. It changes which knowledge gets retrieved by shifting vocabulary. The same control interface applies to code search, web research, vector databases, and sub-agent delegation: "multi-region failover risks" retrieves different context than "deployment issues."
+
+## Define the Reasoning Path for Multi-Step Work {#chain-of-thought-paving-a-clear-path}
+
+When tasks require multiple steps, define the execution path. You are not asking for hidden reasoning; you are dictating the route so the agent cannot skip diagnosis, evidence, or validation.
+
+<PromptComparison
+  badLabel="Without path"
+  goodLabel="With path"
+  goodNotes={[
+    { label: 'Scope', detail: 'Pins the investigation to one business regression.' },
+    { label: 'Path', detail: 'Forces diagnosis through funnel data, product changes, hypotheses, and fixes.' },
+    { label: 'Evidence', detail: 'Separates measured facts from plausible explanations.' },
+  ]}
+  bad={
+    <PromptExample>
+      Figure out why enterprise onboarding completion dropped.
+    </PromptExample>
+  }
+  good={
+    <PromptExample>
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-1">Investigate why enterprise onboarding completion dropped after the workspace invitation redesign.</span><br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-2"><span className="prompt-line-number">1.</span> Identify the affected funnel stages and the before/after metric deltas.</span><br />
+      <span className="prompt-seq-token prompt-seq-2"><span className="prompt-line-number">2.</span> Compare the old and new onboarding sequence at the product-experience level.</span><br />
+      <span className="prompt-seq-token prompt-seq-2"><span className="prompt-line-number">3.</span> List hypotheses across copy, flow, permissions, data readiness, and reliability.</span><br />
+      <span className="prompt-seq-token prompt-seq-2"><span className="prompt-line-number">4.</span> Mark each hypothesis as supported, unsupported, or needs data.</span><br />
+      <span className="prompt-seq-token prompt-seq-2"><span className="prompt-line-number">5.</span> Propose experiments or fixes with expected signal.</span><br />
+      <br />
+      <span className="prompt-seq-token prompt-seq-anchor prompt-seq-3">Provide evidence for every claim and call out assumptions separately.</span>
+    </PromptExample>
+  }
+/>
+
+Use this whenever the path must be enforced: diagnosis before recommendation, evidence before conclusion, validation before implementation. It does not make the agent deterministic; it just makes skipped steps and premature claims easier to detect.
+
+---
+
+**Next:** [Grounded, Safe Instructions](./grounded-safe-instructions.mdx)

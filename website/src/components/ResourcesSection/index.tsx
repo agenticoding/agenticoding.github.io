@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import { rectanglePath } from '@site/src/utils/svgMath';
+import { toolboxEntries } from '../../../chapters';
 import styles from './index.module.css';
 
 // ---------------------------------------------------------------------------
@@ -248,7 +249,9 @@ export default function ResourcesSection() {
               AI-first development
             </p>
             <div className={styles.resourceFooter}>
-              <span className={styles.resourceCount}>3 guides</span>
+              <span className={styles.resourceCount}>
+                {toolboxEntries.length} guides
+              </span>
               <span className={styles.ghostLink}>Explore Tools &rarr;</span>
             </div>
           </Link>

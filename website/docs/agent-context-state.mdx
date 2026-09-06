@@ -1,0 +1,93 @@
+---
+title: 'Context and Memory'
+---
+
+import InlineEmojiImage from '@site/src/components/VisualElements/InlineEmojiImage';
+import LivingContextWindowStream from '@site/src/components/VisualElements/LivingContextWindowStream';
+import { EMOJI } from '@site/src/components/VisualElements/emojiAssets';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+
+## Everything Useful Becomes Context
+
+The agent's working state is the context it sends to the next model call. At the API boundary this may be a provider-native message array with roles, tool schemas, and tool-result blocks. At the model boundary it becomes an ordered token sequence. For practical agent design, think of it as a big append-only string.
+
+The model does not remember the previous step. The harness makes the previous step matter by appending it to the next request: instructions, prior messages, tool calls, tool results, retrieved evidence, and the current task.
+
+That boundary matters. A failed test, a repo convention, a project rule, or a prior decision has no effect until the harness includes it in a later call.
+
+:::tip[Why conversations can be cached]
+Prompt caching works because agent conversations usually keep a stable prefix and append new tokens. System instructions, developer instructions, tool definitions, and earlier turns can be reused from cache when the provider sees the same prefix again. The next turn mostly adds the new user input, generated output, tool call, or tool result.
+
+Provider details vary, but the shape is the same: stable content belongs early, variable content belongs late, and each turn pays the full attention cost of what the model must see while cached prefixes reduce repeated input cost.
+:::
+
+### What Enters the Request
+
+A model request is not just your latest prompt. Depending on the harness, it may include:
+
+- <InlineEmojiImage asset={EMOJI.compass} size={18} /> **System or developer
+  instructions:** durable rules, behavior constraints, safety policy, and output
+  format.
+- <InlineEmojiImage asset={EMOJI.plug} size={18} /> **Tool definitions:** names,
+  descriptions, and schemas for actions the model may request.
+- <InlineEmojiImage asset={EMOJI.chat} size={18} /> **Conversation history:**
+  prior user and assistant messages replayed as context.
+- <InlineEmojiImage asset={EMOJI.tools} size={18} /> **Assistant tool calls:**
+  structured action requests the model emitted on earlier turns.
+- <InlineEmojiImage asset={EMOJI.receipt} size={18} /> **Tool observations:**
+  command output, file contents, search results, test failures, and API
+  responses.
+- <InlineEmojiImage asset={EMOJI.database} size={18} /> **Retrieved context:**
+  selected files, docs, tickets, issues, or memory records.
+- <InlineEmojiImage asset={EMOJI.operator} size={18} /> **Current user
+  request:** the active task the model is supposed to solve now.
+
+These pieces are still one request, but they are not semantically flat. Modern models are trained on role hierarchies and tool-use formats, so system instructions, user messages, tool definitions, tool calls, and tool results carry different learned meanings. A tool result is not just prose; it is evidence returned by the environment. A tool definition is not just documentation; it is an action contract the model may invoke.
+
+### Role Determines Meaning
+
+The request is one token stream, but modern models are not trained to treat every section as equally authoritative. They learn role and source boundaries: system or developer text has different authority from user text, and tool results are evidence from the environment rather than new commands.
+
+The harness does not just decide which content to include. It decides which role carries it, and that selection changes how the model interprets the same words. System instructions constrain behavior. User messages express tasks. Tool results report environmental evidence. Putting content in the wrong role invites the wrong interpretation — an idea [Same Instruction, Different Source Role](./agent-roles-tools-contract.mdx#same-instruction-different-source-role) demonstrates concretely.
+
+### What the Context Window Looks Like
+
+When you ask an agent to inspect the registration flow and find where email validation should happen, watch the context window grow. The user request enters first. The model emits a tool call. The harness executes the tool outside the model. The tool result is appended as an observation. The next model call sees that larger context and predicts from it.
+
+<DiagramFrame kicker="Agent mechanics" title="The context window is a living stream" size="wide" caption="Each turn rebuilds the context window. The layer view is only a source map; tool calls and tool results matter after the harness serializes them into raw context for a later request.">
+  <LivingContextWindowStream />
+</DiagramFrame>
+
+The stream may be represented as provider-native messages rather than one literal string, and some providers hide parts of reasoning behind summarized "thinking" outputs. The important part is the data flow: observations only influence future behavior after the harness serializes them back into the next call.
+
+### The Stateless Advantage
+
+Because the harness rebuilds context, it can also reset, fork, compact, or prune it. A fresh context can produce an independent review, alternate design, or clean re-run without defending earlier conversation drift. Statelessness is useful because the software controls what gets carried forward.
+
+## Memory Is Retrieval, Not Recall
+
+Memory is not a separate model ability. It is one more source the harness can place into the request. The LLM does not remember your project conventions, previous sessions, or domain facts unless the agent retrieves or stores them and feeds them into a later call.
+
+Common memory sources include:
+
+- **Working memory:** the current conversation, active files, recent tool observations, and task state.
+- **Persistent rules:** `CLAUDE.md`, `AGENTS.md`, project instructions, style guides, and saved preferences.
+- **Summaries:** compressed session state that keeps long work from exceeding the context budget.
+- **RAG and search:** keyword search, vector databases, hybrid retrieval, knowledge graphs, and documentation indexes.
+- **External records:** tickets, design docs, audit logs, prior decisions, and production telemetry.
+
+All of them solve the same problem: choose which tokens deserve space in the next request. Good memory systems retrieve precise, current, source-backed context. Bad memory systems flood the model with stale summaries, irrelevant vector hits, or unverified preferences. The subtlest failure is invisible: every stored fact is a cached copy of an external source, and caches go silent when they go stale.
+
+The quality question is not "does the model remember?" It is "did the software retrieve the right evidence and compress it without losing the constraint that matters?"
+
+:::warning[Memory is a cache; caches drift silently]
+Every fact stored in memory is a cached copy of an external source — a codebase, a document, a database, a ticket system. When the source evolves, the copy stays frozen. No error fires. The agent acts on outdated premises until the drift is large enough to notice. Prefer reading the source directly; use memory only for what the environment cannot express.
+
+For codebases, tools like [ChunkHound](https://chunkhound.github.io) [disclosure] implement this principle: they index code structure directly and retrieve fresh research, search hits, and cited reports on demand, rather than storing extracted facts that can silently drift.
+:::
+
+Retrieval decides which tokens enter the request. The role that carries them decides how the model reads them.
+
+---
+
+**Next:** [Roles and Tool Contracts](./agent-roles-tools-contract.mdx)

@@ -1,6 +1,7 @@
 import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import { type ReactNode } from 'react';
+import { chapters, getSectionNumber, isNumbered } from '../../../chapters';
 
 import GitHubSocialProof from '../GitHubSocialProof';
 import InlineEmojiImage from '../VisualElements/InlineEmojiImage';
@@ -45,13 +46,28 @@ function HeroCopy() {
   );
 }
 
+// Hero CTA targets the first numbered chapter. Number, route, and title all
+// derive from chapters.ts so reordering never stales the CTA.
+const firstChapter = chapters.find(isNumbered);
+const firstChapterNumber = firstChapter
+  ? getSectionNumber(firstChapter.id)
+  : undefined;
+// Title is optional on the Chapter type (toolbox/standalone have none); assert
+// for the numbered first chapter so a missing title fails fast in CI/tests.
+const firstChapterTitle =
+  firstChapter && 'title' in firstChapter
+    ? (firstChapter as { title: string }).title
+    : undefined;
+
 function HeroActions() {
+  if (!firstChapter || firstChapterNumber === undefined || !firstChapterTitle)
+    throw new Error('SiteHero requires a numbered first chapter with title');
   return (
     <div className={styles.actions}>
       <HeroAction
         className={styles.primaryAction}
-        href="/how-llms-work"
-        label="Read Chapter 1: LLMs Demystified"
+        href={`/${firstChapter.id}`}
+        label={`Read Chapter ${firstChapterNumber}: ${firstChapterTitle}`}
         icon={EMOJI.rightArrow}
       />
     </div>

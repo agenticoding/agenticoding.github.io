@@ -1,0 +1,67 @@
+---
+title: 'Effective Context'
+---
+
+import LongContextBenchmarkExplorer from '@site/src/components/VisualElements/LongContextBenchmarkExplorer';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+
+## Context Under Pressure
+
+More context is not automatically better context. For model selection, the context-window number is only an input capacity limit. It does not mean the model becomes more precise as you add tokens; often retrieval gets worse as the prompt grows.
+
+That distinction matters because model marketing often collapses three different capabilities into one number:
+
+- **Advertised context** is how many tokens the model accepts.
+- **Effective context** is how much of that input the model can still use reliably under load.
+- **Point drop** is absolute percentage-point loss. A fall from 80% to 40% is −40 percentage points, even though relative accuracy was cut in half.
+
+The simplest signal to watch is retrieval decay: as the prompt grows from moderate context toward the advertised maximum, can the model still recover facts buried inside it? A 1M-token window can be real capacity while still producing worse retrieval near 1M than at 128K or 256K.
+
+:::warning[Capacity is not recall]
+A model can accept a million tokens and still become less reliable at finding the relevant fact as the prompt approaches that size. Bigger windows expand what you can send; they do not guarantee better retrieval or more precise answers.
+
+For model selection, compare degradation curves, not just maximum window size. [Grounding](./workflow-grounding.md#phase-1-grounding) covers retrieval and RAG as system levers. [Context Engineering](./context-engineering.mdx) covers the attention-shape problem and how to exploit it operationally.
+:::
+
+### Long-Context Benchmarks Show the Tradeoff
+
+Long-context benchmarks are not coding benchmarks, but they isolate one model-selection question: as context grows, can the model still recover the requested evidence?
+
+[MRCR v2](https://arxiv.org/html/2409.12640v2) gives the model a long synthetic conversation containing similar requests and responses. The **8-needle** variant includes eight relevant request-response pairs among distractors, then asks the model to reproduce one requested earlier response.
+
+Its [default score](https://github.com/google-deepmind/eval_hub/tree/master/eval_hub/mrcr_v2) is mean approximate similarity to the target response. A score of 76% does not mean the model found 76% of the facts.
+
+Current results show the pattern: models cluster more tightly at moderate context, then diverge near the advertised maximum. Some products publish full curves; others publish only sparse points. The figure and table preserve that distinction and list the exact values, modes, and sources.
+
+<DiagramFrame kicker="LLM mechanics" title="Effective context is smaller than advertised context" size="full">
+
+<LongContextBenchmarkExplorer />
+
+</DiagramFrame>
+The figure tells three stories:
+
+1. **Same window does not mean same reliability.** A 1M-token model can retain usable facts or collapse near the end of its advertised range.
+2. **Moderate context is not the main problem.** Many models look strong before the window is saturated.
+3. **The degradation curve matters more than the headline number.** If your workload routinely reaches 500K–1M tokens, benchmark shape matters more than maximum capacity.
+
+The verified rows make that distinction immediate. Claude Opus 4.6 reports 78.3% at 1M, while Claude Sonnet 4.6 reports 65.1% at 1M in the published comparison. GPT-5.4 falls to 36.6% in the 512K–1M bucket, and DeepSeek V4 Pro reaches 59% at 1M. These results come from different providers, modes, and reporting formats; they are workload evidence, not an overall ranking.
+
+:::tip[First-pass takeaway]
+Every model has an effective context limit. Some decline gradually, some fall off a cliff, and some recover only with expensive reasoning modes. None make context management obsolete.
+:::
+
+### Newer Models Can Improve One Dimension and Regress Another
+
+Model releases move along a Pareto frontier. A vendor can improve coding, tool use, vision, latency, safety, or instruction following while making long-context retrieval worse.
+
+Claude Opus is a useful example. The plotted [Opus 4.6 system-card result](https://www.anthropic.com/claude-opus-4-6-system-card) reports 78.3% at 1M. Opus 4.7 then improved across agentic coding, visual acuity, tool use, self-verification, instruction following, and long-running task behavior, according to Anthropic's [Opus 4.7 release notes](https://www.anthropic.com/news/claude-opus-4-7). But the long-context retrieval line regressed sharply in the benchmark data above.
+
+That is not a contradiction. It is the point: **"better model" is not a scalar property.** A model can become better for autonomous coding while becoming worse at needle-in-a-haystack retrieval. Another can improve long-context recall by spending more reasoning tokens, raising cost and latency. A smaller model can be preferable when verification is strong and the loop needs speed.
+
+Use benchmarks to identify which dimension improved, which dimension paid the cost, and whether your workload depends on the dimension that moved. This chapter stops at the model-selection question; [Context Engineering](./context-engineering.mdx) handles the operational attention shape and context-engineering tactics.
+
+Degradation curves are one published field among many. Reading a full spec sheet is the next skill.
+
+---
+
+**Next:** [Choosing a Production Model](./selecting-production-llms.mdx)

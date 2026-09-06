@@ -1,7 +1,7 @@
 # CLI Agent Logos
 
 Official logo marks for the six CLI coding agents covered in
-`website/developer-tools/cli-coding-agents.md`. Rendered by
+`website/docs/developer-tools/cli-coding-agents.md`. Rendered by
 `website/src/components/VisualElements/ToolMark.tsx` as monochrome CSS masks
 (`background: var(--text-heading)`). OpenCode is the exception: its two-tone
 mark is rendered as an image because flattening its internal contrast makes the

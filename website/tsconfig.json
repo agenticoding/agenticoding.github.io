@@ -7,6 +7,6 @@
     "allowImportingTsExtensions": true,
     "types": ["@docusaurus/module-type-aliases", "@docusaurus/types"]
   },
-  "include": ["src/**/*", "docs/**/*"],
+  "include": ["src/**/*", "docs/**/*", "*.ts"],
   "exclude": [".docusaurus", "build", "node_modules"]
 }

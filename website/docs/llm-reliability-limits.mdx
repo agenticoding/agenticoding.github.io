@@ -1,0 +1,102 @@
+---
+title: 'Why LLMs Fail'
+---
+
+import ProbabilityIsNotLogicDiagram from '@site/src/components/VisualElements/ProbabilityIsNotLogicDiagram';
+import ErrorReasonComparisonDiagram from '@site/src/components/VisualElements/ErrorReasonComparisonDiagram';
+import LocalPredictionConsequenceDiagram from '@site/src/components/VisualElements/LocalPredictionConsequenceDiagram';
+import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
+
+## Probability Is Not Logic
+
+LLMs are governed by learned probabilities, not by logical rules.
+
+A logical system derives conclusions from explicit premises. If the premises are true and the rules are valid, the conclusion follows. Correctness is part of the machinery.
+
+An LLM has different machinery. It does not store a set of claims, prove new claims from them, and check whether the result is true. It has learned which tokens, structures, and responses tend to follow other tokens, structures, and responses. At inference time, it generates the continuation that fits the context according to those learned probabilities.
+
+<DiagramFrame
+  kicker="LLM mechanics"
+  title="Probability imitates logic; it does not become logic"
+  size="wide"
+  caption={
+    <>
+      Logic follows a rule path from premises to a conclusion. Token prediction
+      follows a probability landscape: the target direction can be clear while
+      the produced artifact is still only the model-selected continuation.
+    </>
+  }
+>
+  <ProbabilityIsNotLogicDiagram />
+</DiagramFrame>
+
+That is why LLM output can read like reasoning without being governed by reasoning. The model can produce a proof-shaped explanation, a confident technical claim, a realistic API call, or a clean architecture argument because those forms are common in the data it learned from. The form can be logical even when the process is not.
+
+Correct answers happen when the probable continuation also matches reality. Wrong answers happen when a plausible continuation diverges from reality. The model itself does not know the difference.
+
+This is the fundamental limitation: probability can imitate correctness, but it does not guarantee correctness.
+
+So an LLM response should be treated as a candidate artifact, not as a verified answer. First judge whether it has the right shape. Then validate whether it is actually correct: run the tests, check the citation, inspect the API, verify the constraint, reproduce the result.
+
+### Human and LLM Errors Leave Different Clues
+
+Human mistakes often leave useful clues: a knowledge gap, fatigue, a skimmed requirement, an incentive, or a cognitive bias. Those clues create **predictable error funnels**. A junior engineer may struggle with distributed systems; a tired reviewer may miss subtle bugs. Over time, those patterns help teams calibrate review.
+
+An LLM does not expose an equivalent human-style account. The model that just produced a flawless architecture analysis can, in the next sentence, add 2+2 and get 5. The failure may correlate with training coverage, task shape, context quality, or inference setup, but the individual answer often does not tell you which factor mattered.
+
+<DiagramFrame
+  kicker="Error structure"
+  title="Human and LLM mistakes leave different clues"
+  size="wide"
+  caption={
+    <>
+      Human errors often expose factors that guide review. An LLM can produce a
+      locally plausible wrong answer without an equivalent causal account, so
+      trust still needs external evidence.
+    </>
+  }
+>
+  <ErrorReasonComparisonDiagram />
+</DiagramFrame>
+
+:::tip[Why letter counting and basic math mislead]
+
+Letter counting and arithmetic are common "LLM tests" but they test the wrong thing. LLMs process tokens, not characters or exact numbers. To count letters correctly, the model must write code, extract the exact input from your prompt, execute it, and reproduce the output — a multi-step pipeline where each step can introduce error. Same for math: the model needs to generate and run code.
+
+These tests measure tool-use orchestration reliability, not understanding. A model that fails at counting the number of r's in "strawberry" can still reason correctly about architecture trade-offs.
+:::
+
+The operational implication: **do not trust an LLM based on human notions of task difficulty.** A brilliant design analysis does not make the next step—a trivial constraint check—safe. Longer chains create more opportunities for an unchecked mistake to influence later work. Validate at phase boundaries, before unverified state can propagate.
+
+This also explains why more context does not remove the problem. More context gives the model more material to condition on, but it does not turn probability into logic. The model can still weight the wrong evidence, miss a constraint, or continue from a locally plausible pattern instead of the globally correct one.
+
+### Local Prediction, Global Consequences
+
+The previous framing — probability imitates logic but does not guarantee it — captures the philosophical gap. But there is a sharper operational consequence: **each token is chosen as the best local continuation, but the overall response needs global coherence.** These two objectives can conflict.
+
+<DiagramFrame
+  kicker="LLM mechanics"
+  title="Local predictions compound into global outcomes"
+  size="wide"
+  caption={
+    <>
+      Each selected token is plausible from the current context. Once selected,
+      it becomes context for the next prediction, so small local choices can
+      steer the final answer toward a different global result.
+    </>
+  }
+>
+  <LocalPredictionConsequenceDiagram />
+</DiagramFrame>
+
+A wrong token early in a response does not stay local. It becomes part of the context for every prediction that follows, shifting what looks probable next. The model may recover, but asking it to check its own work is still another model generation. Recovery becomes more reliable when the loop receives external feedback: tool results, code execution, tests, or retrieved sources.
+
+Generated output can also become self-reinforcing. A repeated phrase, false premise, or malformed plan becomes evidence for the next prediction, making the same direction easier to continue. When a run starts repeating or defending bad state, stop it. Remove the problematic context, restate the verified state, and resume from that boundary.
+
+During normal inference, the model's weights remain fixed. A context reset works because it changes the input available to the model, not because the model learned from the failed run.
+
+Context is the model's only working state. How much of it stays usable as it grows is the next question.
+
+---
+
+**Next:** [Effective Context](./effective-context.mdx)
