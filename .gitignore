@@ -32,6 +32,7 @@ node_modules/
 .chunkhound/
 .chunkhound.json
 .pi/
+.mcp.json
 
 # Generated content
 scripts/output/
