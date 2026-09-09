@@ -5,62 +5,49 @@ title: 'Effective Context'
 import LongContextBenchmarkExplorer from '@site/src/components/VisualElements/LongContextBenchmarkExplorer';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
-## Context Under Pressure
+## The Number on the Box
 
-More context is not automatically better context. For model selection, the context-window number is only an input capacity limit. It does not mean the model becomes more precise as you add tokens; often retrieval gets worse as the prompt grows.
+Qwen 3.8 Max markets an extensible 1M-token window. It scores 92.3% at 128K and 29.7% at 512K on Context Arena's retrieval test. The window is real; recall at range is a separate question.
 
-That distinction matters because model marketing often collapses three different capabilities into one number:
+Marketing collapses two things into one number. **Advertised context** is how many tokens a model accepts. **Effective context** is how much of that input it still uses reliably under load.
 
-- **Advertised context** is how many tokens the model accepts.
-- **Effective context** is how much of that input the model can still use reliably under load.
-- **Point drop** is absolute percentage-point loss. A fall from 80% to 40% is −40 percentage points, even though relative accuracy was cut in half.
-
-The simplest signal to watch is retrieval decay: as the prompt grows from moderate context toward the advertised maximum, can the model still recover facts buried inside it? A 1M-token window can be real capacity while still producing worse retrieval near 1M than at 128K or 256K.
-
-:::warning[Capacity is not recall]
-A model can accept a million tokens and still become less reliable at finding the relevant fact as the prompt approaches that size. Bigger windows expand what you can send; they do not guarantee better retrieval or more precise answers.
-
-For model selection, compare degradation curves, not just maximum window size. [Grounding](./workflow-grounding.md#phase-1-grounding) covers retrieval and RAG as system levers. [Context Engineering](./context-engineering.mdx) covers the attention-shape problem and how to exploit it operationally.
-:::
-
-### Long-Context Benchmarks Show the Tradeoff
-
-Long-context benchmarks are not coding benchmarks, but they isolate one model-selection question: as context grows, can the model still recover the requested evidence?
-
-[MRCR v2](https://arxiv.org/html/2409.12640v2) gives the model a long synthetic conversation containing similar requests and responses. The **8-needle** variant includes eight relevant request-response pairs among distractors, then asks the model to reproduce one requested earlier response.
-
-Its [default score](https://github.com/google-deepmind/eval_hub/tree/master/eval_hub/mrcr_v2) is mean approximate similarity to the target response. A score of 76% does not mean the model found 76% of the facts.
-
-Current results show the pattern: models cluster more tightly at moderate context, then diverge near the advertised maximum. Some products publish full curves; others publish only sparse points. The figure and table preserve that distinction and list the exact values, modes, and sources.
+So compare degradation curves, not window sizes. The curves below come from one independent benchmark: [Context Arena](https://contextarena.ai/) runs every model through the same long-context test with one scoring function. Models with no independent coverage aren't plotted.
 
 <DiagramFrame kicker="LLM mechanics" title="Effective context is smaller than advertised context" size="full">
 
 <LongContextBenchmarkExplorer />
 
 </DiagramFrame>
-The figure tells three stories:
 
-1. **Same window does not mean same reliability.** A 1M-token model can retain usable facts or collapse near the end of its advertised range.
-2. **Moderate context is not the main problem.** Many models look strong before the window is saturated.
-3. **The degradation curve matters more than the headline number.** If your workload routinely reaches 500K–1M tokens, benchmark shape matters more than maximum capacity.
+## Reading the Curves {#long-context-benchmarks-show-the-tradeoff}
 
-The verified rows make that distinction immediate. Claude Opus 4.6 reports 78.3% at 1M, while Claude Sonnet 4.6 reports 65.1% at 1M in the published comparison. GPT-5.4 falls to 36.6% in the 512K–1M bucket, and DeepSeek V4 Pro reaches 59% at 1M. These results come from different providers, modes, and reporting formats; they are workload evidence, not an overall ranking.
+Recall is a property of the whole system, not a model-card number. Architecture and training determine what a model can distinguish; your harness sets the conditions: thinking effort, context length, and how much similar material it must resolve. The chart shows the result of that combination.
 
-:::tip[First-pass takeaway]
-Every model has an effective context limit. Some decline gradually, some fall off a cliff, and some recover only with expensive reasoning modes. None make context management obsolete.
-:::
+The [position-based attention curve](./context-engineering.mdx#the-attention-curve-why-placement-matters) in Context Engineering is the _mechanism_ — how the model's focus is spread. This recall curve is the _measured outcome_: it hides an answer somewhere in the window and demands the model find it and reproduce it, so it probes the whole range rather than the two bright ends, and it falls as more content lands where attention is thin. Reproduction is strict — a model that can't quote a passage exactly can still summarize or extract it, so a low score is a floor on one capability, not proof it can't use its context.
 
-### Newer Models Can Improve One Dimension and Regress Another
+The shape is the signal. A flat line sustains precise retrieval; a slope exposes its limit; a cliff marks where [context engineering](./context-engineering.mdx) must keep the task in a reliable range—or where the model belongs on less recall-dependent work. Qwen 3.8 Max measures 92.3% at 128K, 67.7% at 256K, then 29.7% at 512K. A low start means the skill is unproven. A line ending at 512K, as with GPT-5.6 Sol and Claude Opus 4.6, is unmeasured at 1M—not a failed score.
 
-Model releases move along a Pareto frontier. A vendor can improve coding, tool use, vision, latency, safety, or instruction following while making long-context retrieval worse.
+Models are not databases: they must preserve identity, position, and relationships well enough to answer later. That is why giving a model more context can reduce recall instead of improving it. Context Arena makes those outcomes comparable under one task and scoring rule. An agent retrieving an old decision, API contract, tool result, file detail, or user constraint needs a curve that holds at its operating length. That is its effective context limit—not the API maximum. It is one input to [Choosing a Production Model](./selecting-production-llms.mdx), alongside task quality, latency, and cost.
 
-Claude Opus is a useful example. The plotted [Opus 4.6 system-card result](https://www.anthropic.com/claude-opus-4-6-system-card) reports 78.3% at 1M. Opus 4.7 then improved across agentic coding, visual acuity, tool use, self-verification, instruction following, and long-running task behavior, according to Anthropic's [Opus 4.7 release notes](https://www.anthropic.com/news/claude-opus-4-7). But the long-context retrieval line regressed sharply in the benchmark data above.
+## The Test: Eight Poems About Penguins
 
-That is not a contradiction. It is the point: **"better model" is not a scalar property.** A model can become better for autonomous coding while becoming worse at needle-in-a-haystack retrieval. Another can improve long-context recall by spending more reasoning tokens, raising cost and latency. A smaller model can be preferable when verification is strong and the loop needs speed.
+[MRCR v2](https://arxiv.org/html/2409.12640v2) builds a long synthetic conversation: "Write a poem about penguins" appears eight times, each answered with a different poem among near-identical distractors. Then:
 
-Use benchmarks to identify which dimension improved, which dimension paid the cost, and whether your workload depends on the dimension that moved. This chapter stops at the model-selection question; [Context Engineering](./context-engineering.mdx) handles the operational attention shape and context-engineering tactics.
+> Prepend the string AKJSs89sal to the fifth poem about penguins. Do not include any other text.
 
-Degradation curves are one published field among many. Reading a full spec sheet is the next skill.
+The model finds all eight, orders them, selects the fifth, and reproduces it, scored by string similarity with partial credit. Miss the hash prefix and it's zero. This isn't needle-in-a-haystack: NIAH hides one conspicuous fact in filler; MRCR hides eight near-identical candidates and demands ordered discrimination — closer to agentic context, where the hard part is picking the right one.
+
+Here's what that score actually means. The model isn't solving anything — it's echoing back text it was just handed, and copying is the easiest job you can give an LLM. It still never gets it perfectly right, because an LLM doesn't really copy: it [guesses, word by word, what probably comes next](./how-llms-work.mdx), and reproducing a poem is a long chain of those guesses — every single one has to be right ([local prediction, global consequences](./llm-reliability-limits.mdx#local-prediction-global-consequences)). One wrong guess anywhere changes the answer, and the hash prefix is exactly where a wrong guess is most likely: a short, odd, meaningless string with nothing to anchor it. That's not a flaw in the test; it's the cost of working with a machine that predicts instead of recalls. The test only looks pristine because it runs in a clean room — nothing else in the window, so the model gets the front, the strongest part of its attention. Real windows are never that tidy: by the time the system prompt, tool definitions, and project notes have [claimed the front](./interactive-harness-agents.mdx#the-harness-attention-budget), your task sits further back in the [weaker middle](./context-engineering.mdx#the-attention-curve-why-placement-matters). You can't keep the machine from guessing; you can only set up the room so the guess lands — which is what [context engineering](./context-engineering.mdx#the-six-context-mechanisms) is for.
+
+## Who Grades the Homework
+
+Everyone runs MRCR differently — their own effort modes, anchors, averaging — so a cumulative average up to 128K is a different quantity from a pointwise score at 128K. Several labs publish no length-stratified eval at all. MRCR is one corner of a landscape — OAI-MRCR, GraphWalks, RULER, LongMemEval ask other questions — so pick the benchmark that matches the workload.
+
+For MRCR, [Context Arena](https://contextarena.ai/) runs every model through the same DeepMind MRCR v2 harness and publishes the curves and code. One harness, one scoring function: what's left in the data is the models. Read vendor cards the same way: a vendor number often isn't even the same quantity as the measured one. Google's reproduces — 84.9% cumulative @128K and 26.3% @1M come back as 85.1% and 25.9% — while Anthropic reports 91.9% @256K where the arena measures 69.1%. Treat numbers that exist only under vendor conventions as claims, and select on measured curves.
+
+## The Takeaway
+
+Every model has an effective context limit, and it's a curve, not a number. If your workload routinely reaches 512K–1M, measured evidence narrows the shortlist; below 128K, compare the measured curve with task quality, latency, and cost — several compact and specialized models already fail there. None of it makes context management obsolete: [Grounding](./workflow-grounding.md#phase-1-grounding) covers retrieval and RAG as system levers; [Context Engineering](./context-engineering.mdx) covers the attention-shape problem operationally.
 
 ---
 

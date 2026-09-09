@@ -260,21 +260,21 @@ const MOBILE_PRESET_LABELS: Record<string, string> = {
 
 const SCENARIO_DESCRIPTIONS: Record<string, string> = {
   'Fresh Session':
-    'Built-in tools only, no conversation history. Task sits in recency — full attention.',
+    'Built-in tools only, no history. Task sits at the bright end — full attention.',
   'Normal Session':
-    'Built-in tools only after a few turns. Comfortable headroom, middle-zone attention.',
+    'A few turns with built-in tools. The task sits near the start — strong attention, comfortable headroom.',
   'Heavy MCP (eager)':
-    '500 eager tools consume ~335K in schemas. After 75 turns the effective budget reaches 90% — task sits in the weak middle.',
+    '500 eager tools load ~335K of schemas ahead of the task, balancing the 75 turns behind it and landing it in the depleted middle at 90% fill.',
   'Heavy MCP (deferred)':
-    'Same catalog, ToolSearch keeps startup schemas near 40K. The task remains clear of the overloaded middle.',
+    'Same catalog, but ToolSearch keeps the schemas near 40K. Conversation dominates, so the task stays near the start — 55% fill.',
   'Deep Conversation':
-    '90 tools plus 120 turns of history consume about 80% of the effective budget. The task crosses into the weak middle.',
+    '120 turns of history pile up behind the task. The window reaches 80% fill, yet the task stays near the start — because it is conversation behind the task, not schemas in front.',
   'Skill-Heavy':
-    'Each skill expansion costs +4K extra tokens, compounding pressure on the middle zone.',
+    'Skill expansions add bursts of content behind the task, raising fill. The task stays near the start — strong attention.',
   'Near Compaction':
-    '100K of files, 300 tools, and 105 turns reach the 835K effective budget reserved for a lossy handoff.',
+    '100K of files, 300 tools, and 105 turns press the task into the degraded middle at the 835K budget.',
   Overloaded:
-    '500 tools + 200K of files + 120 turns overflow the effective budget. Older conversation is compacted first.',
+    '500 tools + 200K of files + 120 turns overflow the budget. The task lands in the collapsed middle; older conversation is compacted first.',
 };
 
 /* ── Attention math: shared model (attentionModel.ts) ───────────── */

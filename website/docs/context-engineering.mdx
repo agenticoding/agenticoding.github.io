@@ -21,49 +21,36 @@ Six mechanisms control what enters the context window and where: **context files
 
 </DiagramFrame>
 
-Drag the slider to 50%. The diagram is normalized: 50% means halfway through the window, whether the window holds 10K, 100K, or 1M tokens. The same failure exists at every size. What changes is the scale of the weak middle. At 50% fill, those windows contain 5K, 50K, and 500K tokens respectively. The model must find relevant information amid ever more competing context. A larger window gives the agent more room; it does not give the agent uniform recall across that room.
+**Every window has a weak middle — and a bigger window makes it worse.** Attention is never flat: at any size the same profile holds — strong at the start, strong at the end, weak in the middle. What changes with size is the toll, not the shape; a longer window strands more content in that middle. Three zones emerge: the **primacy zone** at the start (instructions, project files), the **recency zone** at the end (your task, recent results), and the **dead center**, where attention drops off sharply.
 
-The valley is not fixed — it deepens as the window fills. Every diagram in these chapters renders this same curve, so watch the middle band: it darkens from benign to degraded to collapsed as context pressure grows.
+**Attention isn't uniform — it can't be.** For each token the model scores every earlier token, then turns those scores into shares that must add up to 100%. That step doesn't split evenly — it over-rewards the strongest scores and squeezes the rest toward zero.[^softmax] It's not a choice; it's how transformer attention works. So the attention budget pools where it reliably pays off: a small pouch of opening tokens absorbs an outsized share (they become _attention sinks_), and a rolling window stays locked on the tokens just before the prediction, because they're what it's about to answer from.[^attention-sinks][^sliding-window] Everything between the two gets what's left over — a thin, unreliable spread. That's the starved middle.
 
-Three zones emerge from the curve. The **primacy zone** at the start — where system instructions, user rules, and project files land. The **recency zone** at the end — where your current task and recent tool results sit. And the **dead center** — the middle of the window, where attention drops off sharply.
+That budget doesn't grow with the window. The same anchors hold at 10K and 1M — only the middle widens. Under load the curve becomes a **J**, as primacy erodes while recency holds — and when depends on the model, task, and absolute token count, not a fixed utilization mark: 80% fill is 8K tokens in a 10K window, 800K in a 1M one. Position is normalized, not absolute length, so the curve alone can't say where a model's J-curve begins.[^lost-in-middle]
 
-**Why does this happen?** Recall that attention is relevance-weighted context mixing, not memory. For each next token, a causal transformer builds a new weighted mix of the tokens that came before it. That mix is not position-neutral.
+Context engineering works within that limit: keep the active task where the model can still attend — via context files, schemas, skills, sub-agents, compaction, and retrieval.
 
-The two edges have structural advantages. Opening tokens are visible to every later computation, and models often turn some of them into attention sinks. The newest tokens are closest to the prediction frontier, where trained models tend to give recent context more weight. Middle tokens get neither advantage: they must compete with the opening context's accumulated influence and the end of the prompt's recency bias.
-
-Causal attention, positional encoding, and learned attention patterns determine how strong each advantage is. The curve differs by model, task, and context length, but the engineering consequence is consistent: information placed in the middle has a lower chance of shaping the next prediction. Initial tokens can receive disproportionately high attention even when they carry no semantic importance.[^attention-sinks]
-
-This is not a single bug to fix. The lost-in-the-middle effect means the same instruction can be reliable at the top or bottom of the window and unreliable in the middle.[^lost-in-middle]
-
-Now drag the slider toward high utilization. The J-curve is a **long-context failure mode**, not a universal phase change at 70% fill.
-
-At modest absolute lengths, both primacy and recency can remain useful: the curve is U-shaped. As the sequence becomes much longer, primacy can erode while recency remains strong, turning the U into a J and expanding the unreliable middle. The transition depends on the model, task, and absolute token count — not a fixed utilization percentage. A 10K context at 80% fill contains 8K tokens; a 1M context at the same fill contains 800K. The slider normalizes position, so it cannot predict where a particular model's J-curve begins.
-
-Recent evaluations show that this is not an artifact of an older model generation. Du et al. tested five open and closed models on coding, question-answering, and math tasks: performance fell 13.9–85% as input length grew within the models' claimed windows, even with perfect retrieval and masked or whitespace distractors.[^context-length-alone] Chroma's Context Rot tested 18 frontier models, including GPT-4.1, Claude 4, Gemini 2.5, and Qwen3; every model showed non-uniform degradation as input length grew, with coherent and semantically similar distractors making the decline worse.[^context-rot] This is the constraint that context engineering works within.
-
-Every mechanism in this part — context files, tool schemas, skills, sub-agents, compaction, and retrieval — is a way to keep important information where the model can still attend to it. The job is not to fit everything. The job is to keep the active task, current constraints, and relevant evidence in the high-attention zones.
+**But attention isn't recall.** The attention curve is the _mechanism_ — how the model's focus is spread across the window. The [recall curve](./effective-context.mdx#long-context-benchmarks-show-the-tradeoff) is the _measured outcome_: it hides an answer somewhere in the window and demands the model find it and reproduce it, so it probes the whole range rather than the two bright ends. As the window grows, more content lands where attention is thin, and less comes back.
 
 ## The Context Pressure Problem
 
-The agent rebuilds context each turn: a fixed prefix (system instructions, tool definitions, context files) followed by everything appended so far. When you type your task, it lands at the end — in the recency zone, where attention is strongest. Then the agent starts working. Tool calls, tool results, file reads, search hits — each one appends after your prompt.
+You type a prompt and it lands at the end of the window — the recency zone, the spot attention treats best. Then the agent loops.
 
-Your prompt does not move. The context grows around it. After a few turns, tens of thousands of tokens sit between your task and the end of the window. It is no longer in the recency zone. It is in the middle — the zone the attention curve showed as weakest.
+The loop rebuilds the window every turn, and that's the point: nothing is static. Instructions, tool schemas, and context files sit at the front; each tool call, result, and file read the loop produces lands behind your prompt; then it all feeds back in for the next turn. Your prompt stays in one place in the sequence, but the window around it reflows on both sides with every step, so the task's position on the attention curve changes constantly — and the loop is what moves it.
 
-This is the context pressure problem: the more work the agent does, the further your original instructions drift from where the model can still attend to them.
+That movement is the context pressure problem. The window isn't just filling up; the loop is actively re-placing your task, and it has no reason to keep it where you want it. Left to itself, the loop hands the task to wherever the accumulated content settles, and it can end up in the middle of the window — the band attention drains first — where the model strains to act on it.
 
 <DiagramFrame kicker="Context management" title="Context pressure moves the task through the window" size="full">
 
 <ContextPressureDiagram />
 
 </DiagramFrame>
-Try the presets. **Fresh Session** keeps the 1M-token window light — the task gets strong attention. **Heavy MCP (eager)** shows the real danger: a broad MCP catalog plus conversation pushes the task into the weak middle, well before capacity. **Heavy MCP (deferred)** demonstrates the savings from deferred tool loading — same catalog, a fraction of the startup tokens. **Deep Conversation** shows how long conversations alone create pressure — 120 turns of accumulated context push the task down. **Skill-Heavy** shows procedure expansions: turns where a skill or reusable workflow was invoked get a violet accent bar, and their extra 4K tokens per expansion add up fast. **Near Compaction** shows the drain cascade in action — the hatched region models the 165K capacity reserved for the compaction handoff, leaving an 835K effective working window. **Overloaded** is the worst case — older conversation is compacted first until the model fits.
 
-The connector on the right side shows how tool definitions produce results that land in conversation turns. Notice how the drain cascade works: when total content exceeds the effective window, headroom disappears first, then conversation gets compacted (reduced opacity bands), then context files shrink, and finally tool definitions yield — each slider shows the requested-vs-actual gap when drained.
+Context engineering is predicting that drift and shaping it. The loop will keep re-placing your task and won't keep it where you want it, so the discipline is to steer the content that lands around the task: what sits before it, what trails behind it, and what never enters this window at all.
 
-The key insight: **it's not about running out of tokens — it's about where your task lands relative to the attention curve.** A 65% full window with heavy tool definitions is worse than an 80% full window where most content is conversation (which sits below the task in the recency zone).
+**The key insight: it's not about running out of tokens — it's about where your task lands.** Two sessions can reach the same footprint yet behave differently, because the loop placed the task differently in each. You predict the movement, then shape the context so the important thing lands where the model can still attend to it.
 
 :::note Scope
-This section describes behavior measured in long-context autoregressive LLMs, especially causal transformers. Diffusion language models denoise a sequence iteratively rather than generate left to right, so they do not share the same causal-mask and recency mechanism. Evaluate their positional reliability separately instead of assuming the same curve.
+This section describes behavior in long-context autoregressive LLMs, especially causal transformers. Diffusion language models denoise a sequence iteratively rather than generate left to right, so they don't share the same causal-mask and recency mechanics. Evaluate their positional reliability separately instead of assuming the same curve.
 :::
 
 ## The Six Context Mechanisms
@@ -87,8 +74,10 @@ These mechanisms do not sit on one spectrum. Context files and eager MCP schemas
 
 [^attention-sinks]: Xiao et al. (2023), [_Efficient Streaming Language Models with Attention Sinks_](https://arxiv.org/abs/2309.17453).
 
-[^lost-in-middle]: Liu et al. (2023), [_Lost in the Middle: How Language Models Use Long Contexts_](https://arxiv.org/abs/2307.03172).
+[^softmax]: Vaswani et al. (2017), [_Attention Is All You Need_](https://arxiv.org/abs/1706.03762) — the score-to-share step is a **softmax**, which turns a set of scores into weights that sum to 1 and magnifies the largest.
 
-[^context-length-alone]: Du et al. (2025), [_Context Length Alone Hurts LLM Performance Despite Perfect Retrieval_](https://aclanthology.org/2025.findings-emnlp.1264/).
+[^sliding-window]: Beltagy et al. (2020), [_Longformer: The Long-Document Transformer_](https://arxiv.org/abs/2004.05150) introduced the bounded **sliding window** — attention limited to a nearby run of tokens. Modern long-context models push this into hybrid attention: [DeepSeek-V4](https://arxiv.org/abs/2606.19348) layers a sliding window with compressed and sparse attention, and [GLM-5.3 Flash](https://huggingface.co/zai-org/GLM-5.3-Flash) pairs a linear local window with sparse global retrieval.
+
+[^lost-in-middle]: Liu et al. (2023), [_Lost in the Middle: How Language Models Use Long Contexts_](https://arxiv.org/abs/2307.03172).
 
 **Next:** [Context Files](./context-files.md)
