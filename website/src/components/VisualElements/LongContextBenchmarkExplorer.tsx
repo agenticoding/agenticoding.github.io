@@ -2,15 +2,14 @@ import React, { useEffect, useId, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import {
+  ARENA_SOURCE,
   benchmarkRows,
-  type BenchmarkPoint,
   type BenchmarkRow,
-} from './LongContextBenchmarkTable';
+} from './longContextBenchmarkData';
 import {
   BenchmarkChartSvg,
   desktopChart,
   desktopXTicks,
-  familyClassName,
   layoutCurveLabels,
   MobileCurveSummary,
   mobileChart,
@@ -18,29 +17,18 @@ import {
   type CurveLabelLayout,
   type RenderedCurveLabel,
 } from './LongContextBenchmarkChart';
+import {
+  benchmarkHueKeys,
+  deriveDefaultSelections,
+  groupChipTiers,
+  hueClassOf,
+} from './longContextBenchmarkModel';
 import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './LongContextBenchmarkExplorer.module.css';
 
-const defaultSelectedIds = [
-  'gpt-55',
-  'gpt-54',
-  'opus-46',
-  'sonnet-46',
-  'deepseek-v4-pro',
-];
-const longScoreRows = [...benchmarkRows].sort(
-  (a, b) => b.longScore - a.longScore
-);
-const chipGroups = [
-  {
-    label: 'Native 1M candidates',
-    rows: longScoreRows.filter((row) => row.longScore >= 60),
-  },
-  {
-    label: 'Validate or chunk near 1M',
-    rows: longScoreRows.filter((row) => row.longScore < 60),
-  },
-];
+// One hue per provider, ranked from the shipped rows — shared with the model
+// cards via longContextBenchmarkModel.benchmarkHueKeys.
+const chipGroups = groupChipTiers(benchmarkRows);
 function ChartStage({
   selectedRows,
   selectedIds,
@@ -57,11 +45,7 @@ function ChartStage({
         selectedIds={selectedIds}
         onToggle={onToggle}
       />
-      <SourceDataPanel
-        selectedRows={selectedRows}
-        selectedIds={selectedIds}
-        onToggle={onToggle}
-      />
+      <ModelChipRail selectedIds={selectedIds} onToggle={onToggle} />
     </div>
   );
 }
@@ -95,6 +79,7 @@ function EvidenceChart({
           labels={labels}
           onToggle={onToggle}
           variant="desktop"
+          hueKeys={benchmarkHueKeys}
         />
       }
       mobile={
@@ -106,8 +91,9 @@ function EvidenceChart({
             selectedIds={selectedIds}
             onToggle={onToggle}
             variant="mobile"
+            hueKeys={benchmarkHueKeys}
           />
-          <MobileCurveSummary rows={selectedRows} />
+          <MobileCurveSummary rows={selectedRows} hueKeys={benchmarkHueKeys} />
         </>
       }
     />
@@ -239,93 +225,13 @@ function ModelChip({
   return (
     <button
       type="button"
-      className={`${styles.modelChip} ${familyClassName(row)} ${styles[row.signalTone]}`}
+      className={`${styles.modelChip} ${styles[hueClassOf(benchmarkHueKeys, row.vendor)]} ${styles[row.signalTone]}`}
       aria-pressed={selected}
       onClick={() => onToggle(row.id)}
     >
       <strong>{row.model}</strong>
     </button>
   );
-}
-
-function SourceDataPanel({
-  selectedRows,
-  selectedIds,
-  onToggle,
-}: {
-  selectedRows: BenchmarkRow[];
-  selectedIds: string[];
-  onToggle: (id: string) => void;
-}) {
-  return (
-    <section
-      className={styles.sourcePanel}
-      aria-label="Model selection and plotted source data"
-    >
-      <ModelChipRail selectedIds={selectedIds} onToggle={onToggle} />
-      <SourceDataTable rows={selectedRows} />
-    </section>
-  );
-}
-
-function SourceDataTable({ rows }: { rows: BenchmarkRow[] }) {
-  return (
-    <table
-      className={styles.sourceTable}
-      aria-label="Exact plotted long-context benchmark values"
-    >
-      <thead>
-        <tr>
-          <th scope="col">Model</th>
-          <th scope="col">Benchmark</th>
-          <th scope="col">Mode</th>
-          <th scope="col">Evidence</th>
-          <th scope="col">Plotted points</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => (
-          <tr key={row.id}>
-            <th scope="row" data-label="Model">
-              <span>{row.model}</span>
-              <a
-                href={row.source}
-                aria-label={`Open source for ${row.model}: ${row.source}`}
-              >
-                Source ↗
-              </a>
-            </th>
-            <td data-label="Benchmark">{row.benchmark}</td>
-            <td data-label="Mode">{row.mode}</td>
-            <td data-label="Evidence">
-              <EvidenceBadge row={row} />
-            </td>
-            <td data-label="Plotted points">{formatPoints(row.points)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-function EvidenceBadge({ row }: { row: BenchmarkRow }) {
-  const differentBenchmark = row.benchmark !== 'MRCR v2 8-needle';
-  const className = differentBenchmark
-    ? `${styles.evidenceBadge} ${styles.evidenceBadgeDifferent}`
-    : styles.evidenceBadge;
-  return (
-    <span className={className}>
-      {differentBenchmark
-        ? 'Different benchmark'
-        : row.curveDensity === 'full'
-          ? 'Full curve'
-          : 'Sparse points'}
-    </span>
-  );
-}
-
-function formatPoints(points: BenchmarkPoint[]) {
-  return points.map((point) => `${point.label}: ${point.score}%`).join('; ');
 }
 
 function useRenderedCurveLabels(labels: CurveLabelLayout[]) {
@@ -387,7 +293,9 @@ function normalizeSelectedIds(selectedIds: string[]) {
 }
 
 export default function LongContextBenchmarkExplorer() {
-  const [selectedIds, setSelectedIds] = useState(defaultSelectedIds);
+  const [selectedIds, setSelectedIds] = useState(() =>
+    deriveDefaultSelections(benchmarkRows)
+  );
   const selectedRows = getSelectedRows(selectedIds);
   const containerClassName = styles.container;
 
@@ -396,10 +304,9 @@ export default function LongContextBenchmarkExplorer() {
       className={containerClassName}
       aria-label="Long-context benchmark explorer"
     >
-      <p className={styles.screenSummary}>
-        The chart plots reported benchmark points from 8K to 1M where available.
-        GPT-5.5, GPT-5.4, and both DeepSeek V4 rows have full MRCR curves;
-        Claude and Gemini rows use sparse published points.
+      <p className={styles.provenance}>
+        Effective-context retrieval by model, measured on{' '}
+        <a href={ARENA_SOURCE}>Context Arena</a> (MRCR v2, 8-needle).
       </p>
       <ChartStage
         selectedRows={selectedRows}

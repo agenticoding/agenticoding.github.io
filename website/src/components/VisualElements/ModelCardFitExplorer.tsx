@@ -16,7 +16,14 @@ import {
   compactXTicks,
   layoutCurveLabels,
 } from './LongContextBenchmarkChart';
-import { benchmarkRows, type BenchmarkRow } from './LongContextBenchmarkTable';
+import { benchmarkRows, type BenchmarkRow } from './longContextBenchmarkData';
+import {
+  advertisedContext,
+  benchmarkHueKeys,
+  claimSummary,
+  measuredSummary,
+} from './longContextBenchmarkModel';
+import { resolveBenchmarkRow } from './modelCardFitModel';
 import styles from './ModelCardFitExplorer.module.css';
 
 type ModelId = 'opus' | 'sonnet' | 'gpt55' | 'flash' | 'pro';
@@ -44,7 +51,6 @@ type ArchitectureProfile = {
   base: string;
   reasoning: string;
   multimodal: string;
-  context: string;
 };
 
 type CardField = {
@@ -65,6 +71,9 @@ type ModelCard = {
   benchmarkId: BenchmarkRow['id'];
   provider: string;
   name: string;
+  // Fallback window for models with no measured row; measured cards take the
+  // row's advertisedWindow instead (data module is the source of facts).
+  advertisedWindow: string;
   architecture: ArchitectureProfile;
   source: { label: string; href: string };
   fields: readonly CardField[];
@@ -101,17 +110,25 @@ const LIVEBENCH_INSTRUCTION_FOLLOWING = {
   },
 } as const;
 
+/**
+ * Static value for a measured card's recall field, shown only if row
+ * resolution fails (the two data sets drift independently). Number-free by
+ * construction so a failed lookup can never resurrect a stale measurement.
+ */
+const UNRESOLVED_RECALL_FALLBACK =
+  'Measured curve unresolved; treat vendor figures as unverified claims.';
+
 const CARDS: readonly ModelCard[] = [
   {
     id: 'opus',
     benchmarkId: 'opus-46',
     provider: 'Anthropic',
     name: 'Claude Opus 4.6',
+    advertisedWindow: '1M',
     architecture: {
       base: 'Mixture-of-Experts (reported)',
       reasoning: 'Adaptive thinking · System 1 / System 2',
       multimodal: 'GUI navigation · high-resolution images',
-      context: '1M tokens · context compaction',
     },
     source: SOURCES.opus,
     fields: [
@@ -143,11 +160,11 @@ const CARDS: readonly ModelCard[] = [
       {
         label: 'Context vs. recall',
         icon: EMOJI.books,
-        value: '76% on 1M-token MRCR v2 8-needle',
+        value: UNRESOLVED_RECALL_FALLBACK,
         implication:
-          'Strongest directly relevant published retrieval signal in this set.',
+          'A strong measured curve to its tested endpoint; the published 1M figure has no independent check.',
         boundary:
-          'MRCR does not measure extraction, ranking, or schema validity.',
+          'Vendor figures are claims, not comparable data; MRCR does not measure extraction, ranking, or schema validity.',
       },
       {
         label: 'Instruction following',
@@ -168,11 +185,11 @@ const CARDS: readonly ModelCard[] = [
     benchmarkId: 'sonnet-46',
     provider: 'Anthropic',
     name: 'Claude Sonnet 4.6',
+    advertisedWindow: '1M',
     architecture: {
       base: 'Dense Transformer (reported)',
       reasoning: 'Adaptive thinking · System 1 / System 2',
       multimodal: 'GUI navigation · documents',
-      context: '1M tokens · context compaction',
     },
     source: SOURCES.sonnet,
     fields: [
@@ -201,11 +218,12 @@ const CARDS: readonly ModelCard[] = [
       {
         label: 'Context vs. recall',
         icon: EMOJI.books,
-        value: '90.6% at 256K; 65.1% at 1M in the published comparison',
+        value:
+          'Vendor-published: 90.6% at 256K, 65.1% at 1M — no independent measurement',
         implication:
-          'Broad context is plausible, but saturated retrieval needs validation.',
+          'A claim to verify, not a measured curve; validate saturated retrieval on your own workload.',
         boundary:
-          'Sparse points do not show the intermediate degradation shape.',
+          'Published points do not show the intermediate degradation shape.',
       },
       {
         label: 'Instruction following',
@@ -227,11 +245,11 @@ const CARDS: readonly ModelCard[] = [
     benchmarkId: 'gpt-55',
     provider: 'OpenAI',
     name: 'GPT-5.5',
+    advertisedWindow: '1.05M',
     architecture: {
       base: 'Massive MoE · ~10T active parameters (rumored)',
       reasoning: 'Chain-of-thought 2.0 · error recovery',
       multimodal: 'Native text · image · audio · video',
-      context: '2M tokens (reported)',
     },
     source: SOURCES.gpt55,
     fields: [
@@ -267,11 +285,11 @@ const CARDS: readonly ModelCard[] = [
       {
         label: 'Context vs. recall',
         icon: EMOJI.books,
-        value: '2M context reported; MRCR score not published',
+        value: UNRESOLVED_RECALL_FALLBACK,
         implication:
-          'Use chunking or retrieval instead of trusting native saturated recall.',
+          'Reliable measured recall through ~256K; plan chunking or retrieval past that regardless of the advertised window.',
         boundary:
-          'MRCR does not predict date normalization, ranking, or schema validity.',
+          'OpenAI’s published far-end bucket is a claim the measured curve does not reproduce.',
       },
       {
         label: 'Instruction following',
@@ -293,11 +311,11 @@ const CARDS: readonly ModelCard[] = [
     benchmarkId: 'deepseek-v4-flash',
     provider: 'DeepSeek',
     name: 'DeepSeek V4 Flash',
+    advertisedWindow: '1.25M',
     architecture: {
       base: 'DeepSeekMoE · 285B total / 13B active',
       reasoning: 'Think High · Think Max',
       multimodal: 'Text-focused agentic model',
-      context: '1M tokens',
     },
     source: SOURCES.flash,
     fields: [
@@ -328,11 +346,11 @@ const CARDS: readonly ModelCard[] = [
       {
         label: 'Context vs. recall',
         icon: EMOJI.books,
-        value: '1M context; 49% MRCR at 1M',
+        value: UNRESOLVED_RECALL_FALLBACK,
         implication:
-          'The low price makes it a useful baseline, not evidence of reliable saturated retrieval.',
+          'The low price makes it a useful baseline; anything past the measured mid-range is chunk/RAG territory.',
         boundary:
-          'DeepSeek’s published 1M result is a model-specific benchmark signal, not a workload result.',
+          'The advertised window has no measured far-end bin; treat longer-context claims as unverified.',
       },
       {
         label: 'Instruction following',
@@ -353,11 +371,11 @@ const CARDS: readonly ModelCard[] = [
     benchmarkId: 'deepseek-v4-pro',
     provider: 'DeepSeek',
     name: 'DeepSeek V4 Pro',
+    advertisedWindow: '1M',
     architecture: {
       base: 'DeepSeekMoE · 1.6T total / 49B active',
       reasoning: 'Think High · Think Max',
       multimodal: 'Text-focused agentic model',
-      context: '1M tokens',
     },
     source: SOURCES.pro,
     fields: [
@@ -388,11 +406,11 @@ const CARDS: readonly ModelCard[] = [
       {
         label: 'Context vs. recall',
         icon: EMOJI.books,
-        value: '1M context; report: >82% through 256K, 59% at 1M',
+        value: UNRESOLVED_RECALL_FALLBACK,
         implication:
-          'A published long-context signal to test against inbox archives.',
+          'Both curves agree on the story: strong short-range retrieval, then chunked strategies beyond it.',
         boundary:
-          'This separately scoped curve is not comparable to the Terra/Luna pair.',
+          'The vendor report is not comparable data; select on the measured endpoint, not the vendor claim.',
       },
       {
         label: 'Instruction following',
@@ -513,7 +531,7 @@ function CardFieldView({
   benchmarkRow,
 }: {
   field: CardField;
-  benchmarkRow: BenchmarkRow;
+  benchmarkRow: BenchmarkRow | null;
 }) {
   return (
     <section className={styles.cardField}>
@@ -541,11 +559,15 @@ function FieldGraphic({
   benchmarkRow,
 }: {
   field: CardField;
-  benchmarkRow: BenchmarkRow;
+  benchmarkRow: BenchmarkRow | null;
 }) {
   const graphic =
     field.label === 'Context vs. recall' ? (
-      <BenchmarkRecallGraphic row={benchmarkRow} />
+      benchmarkRow ? (
+        <BenchmarkRecallGraphic row={benchmarkRow} />
+      ) : (
+        <NoMeasurementGraphic />
+      )
     ) : field.publishedBenchmark ? (
       <PublishedBenchmarkGraphic benchmark={field.publishedBenchmark} />
     ) : field.price ? (
@@ -687,17 +709,13 @@ function BenchmarkRecallGraphic({ row }: { row: BenchmarkRow }) {
         selectedIds={[row.id]}
         labels={labels}
         variant="compact"
+        hueKeys={benchmarkHueKeys}
         title={`${row.model} ${row.benchmark} retrieval curve`}
-        description={`${row.model} reported ${row.benchmark} retrieval scores across the plotted context range. ${row.curveDensity === 'full' ? 'Multiple reported points form a full curve.' : 'Only sparse reported points are available; the connecting line is not a measured intermediate curve.'}`}
+        description={`${row.model} measured ${row.benchmark} retrieval scores across the plotted context range; multiple measured points form a full curve.`}
       />
       <div className={styles.benchmarkMeta}>
         <span>{row.benchmark}</span>
-        <span>
-          {row.mode} ·{' '}
-          {row.curveDensity === 'full'
-            ? 'full reported curve'
-            : 'sparse reported points'}
-        </span>
+        <span>{row.mode} · full measured curve</span>
         <a href={row.source}>Benchmark source ↗</a>
       </div>
     </div>
@@ -756,6 +774,17 @@ function ArchitectureFact({ label, value }: { label: string; value: string }) {
   );
 }
 
+/**
+ * Display value for the recall field, derived from the measured row so card
+ * prose can never drift from the benchmark data. Vendor claims lead only when
+ * the vendor publishes length-stratified numbers.
+ */
+function recallFieldValue(row: BenchmarkRow): string {
+  const claims = claimSummary(row);
+  const measured = measuredSummary(row);
+  return claims ? `Vendor-published: ${claims} · ${measured}` : measured;
+}
+
 function ModelCardView({
   card,
   direction,
@@ -763,9 +792,16 @@ function ModelCardView({
   card: ModelCard;
   direction: SlideDirection;
 }) {
-  const benchmarkRow = benchmarkRows.find((row) => row.id === card.benchmarkId);
-  if (!benchmarkRow)
-    throw new Error(`Missing benchmark row: ${card.benchmarkId}`);
+  const benchmarkRow = resolveBenchmarkRow(card, benchmarkRows);
+  const contextFact = advertisedContext(
+    benchmarkRow,
+    benchmarkRow ? benchmarkRow.advertisedWindow : card.advertisedWindow
+  );
+  const fields = card.fields.map((field) =>
+    field.label === 'Context vs. recall' && benchmarkRow
+      ? { ...field, value: recallFieldValue(benchmarkRow) }
+      : field
+  );
   return (
     <section
       id={`model-card-panel-${card.id}`}
@@ -794,15 +830,12 @@ function ModelCardView({
               label="MULTIMODAL"
               value={card.architecture.multimodal}
             />
-            <ArchitectureFact
-              label="CONTEXT"
-              value={card.architecture.context}
-            />
+            <ArchitectureFact label="CONTEXT" value={contextFact} />
           </div>
         </div>
       </header>
       <div className={styles.fieldGrid}>
-        {card.fields.map((field) => (
+        {fields.map((field) => (
           <CardFieldView
             key={field.label}
             field={field}
@@ -811,6 +844,22 @@ function ModelCardView({
         ))}
       </div>
     </section>
+  );
+}
+
+function NoMeasurementGraphic() {
+  return (
+    <div
+      className={styles.noMeasurement}
+      aria-label="No independent MRCR measurement available"
+    >
+      <p className={styles.noMeasurementTitle}>No measured curve</p>
+      <p>
+        This published value is a vendor claim — it is not plotted against the
+        neutral harness yet.
+      </p>
+      <a href="https://contextarena.ai/">View the independent benchmark ↗</a>
+    </div>
   );
 }
 

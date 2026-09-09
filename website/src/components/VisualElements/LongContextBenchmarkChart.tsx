@@ -1,7 +1,14 @@
 import React, { useId } from 'react';
 import type { KeyboardEvent } from 'react';
 
-import type { BenchmarkPoint, BenchmarkRow } from './LongContextBenchmarkTable';
+import type { BenchmarkPoint, BenchmarkRow } from './longContextBenchmarkData';
+import {
+  aucDiamondScore,
+  curveEndpointLabel,
+  hueClassOf,
+  providerHueKeys,
+  type ProviderHueKey,
+} from './longContextBenchmarkModel';
 import styles from './LongContextBenchmarkExplorer.module.css';
 
 export type ChartLayout = {
@@ -84,9 +91,10 @@ export function BenchmarkChartSvg({
   labels = [],
   onToggle,
   variant = 'desktop',
-  title = 'Effective-context retrieval curves by product',
-  description = 'Reported benchmark points show retrieval score as context grows from thousands of tokens to one million.',
+  title = 'Effective-context retrieval curves by model (MRCR v2, 8-needle, Context Arena measurements)',
+  description = 'Measured retrieval score as context grows from thousands of tokens to one million; every curve comes from the same independent harness, so all plotted values share one convention.',
   className,
+  hueKeys,
 }: {
   chart: ChartLayout;
   ticks: number[];
@@ -98,6 +106,7 @@ export function BenchmarkChartSvg({
   title?: string;
   description?: string;
   className?: string;
+  hueKeys?: ReadonlyMap<string, ProviderHueKey>;
 }) {
   const instanceId = useId();
   const titleId = `benchmark-chart-title-${variant}-${instanceId}`;
@@ -110,6 +119,7 @@ export function BenchmarkChartSvg({
       : variant === 'compact'
         ? styles.compactChart
         : styles.desktopChart);
+  const resolvedHueKeys = hueKeys ?? providerHueKeys(rows);
   return (
     <svg
       className={svgClassName}
@@ -126,6 +136,7 @@ export function BenchmarkChartSvg({
         selectedIds={selectedSet}
         labels={labels}
         onToggle={onToggle}
+        hueKeys={resolvedHueKeys}
       />
     </svg>
   );
@@ -138,6 +149,7 @@ export function BenchmarkChartFragment({
   selectedIds,
   labels,
   onToggle,
+  hueKeys: hueKeysProp,
 }: {
   chart: ChartLayout;
   ticks: number[];
@@ -145,7 +157,11 @@ export function BenchmarkChartFragment({
   selectedIds: ReadonlySet<string>;
   labels?: readonly RenderedCurveLabel[];
   onToggle?: (id: string) => void;
+  hueKeys?: ReadonlyMap<string, ProviderHueKey>;
 }) {
+  const hueKeys = hueKeysProp ?? providerHueKeys(rows);
+  const hueClass = (row: BenchmarkRow) =>
+    styles[hueClassOf(hueKeys, row.vendor)];
   return (
     <>
       <ChartFrame chart={chart} ticks={ticks} />
@@ -154,6 +170,7 @@ export function BenchmarkChartFragment({
           key={row.id}
           chart={chart}
           row={row}
+          hueClass={hueClass(row)}
           selected={selectedIds.has(row.id)}
           onToggle={onToggle}
         />
@@ -164,6 +181,7 @@ export function BenchmarkChartFragment({
           chart={chart}
           row={label.row}
           y={label.y}
+          hueClass={hueClass(label.row)}
           visible={label.visible}
         />
       ))}
@@ -243,47 +261,83 @@ function Tick({ chart, tokens }: { chart: ChartLayout; tokens: number }) {
   );
 }
 
-function Curve({
-  chart,
-  row,
-  selected,
-  onToggle,
-}: {
+type CurveProps = {
   chart: ChartLayout;
   row: BenchmarkRow;
+  hueClass: string;
   selected: boolean;
   onToggle?: (id: string) => void;
-}) {
+};
+
+function Curve({ chart, row, hueClass, selected, onToggle }: CurveProps) {
   const path = pathD(row.points, chart);
   const relation = selected ? styles.selectedCurve : styles.contextCurve;
-  const className = `${styles.curve} ${familyClassName(row)} ${styles[row.signalTone]} ${styles[row.curveDensity]} ${relation}`;
-  const interactiveProps = onToggle
-    ? {
-        role: 'button' as const,
-        tabIndex: 0,
-        'aria-label': `${selected ? 'Remove' : 'Compare'} ${row.model}`,
-        'aria-pressed': selected,
-        onClick: () => onToggle(row.id),
-        onKeyDown: (event: KeyboardEvent<SVGGElement>) =>
-          selectOnEnter(event, row.id, onToggle),
-      }
-    : {};
+  const className = `${styles.curve} ${hueClass} ${styles[row.signalTone]} ${relation}`;
   return (
-    <g className={className} {...interactiveProps}>
-      {onToggle ? <path className={styles.hitLine} d={path} /> : null}
-      <path d={path} />
-      {selected
-        ? row.points.map((point) => (
-            <Marker
-              key={`${row.id}-${point.label}`}
-              chart={chart}
-              point={point}
-              row={row}
-            />
-          ))
-        : null}
+    <g
+      className={className}
+      {...curveInteractionProps(row, selected, onToggle)}
+    >
+      <title>{`${row.model} (${row.vendor})`}</title>
+      <CurvePath path={path} row={row} interactive={Boolean(onToggle)} />
+      {selected || row.points.length === 1 ? (
+        <CurveMarkers chart={chart} row={row} />
+      ) : null}
     </g>
   );
+}
+
+function CurvePath({
+  path,
+  row,
+  interactive,
+}: {
+  path: string;
+  row: BenchmarkRow;
+  interactive: boolean;
+}) {
+  if (row.points.length <= 1) return null;
+  return (
+    <>
+      {interactive ? <path className={styles.hitLine} d={path} /> : null}
+      <path d={path} />
+    </>
+  );
+}
+
+type ChartRowProps = { chart: ChartLayout; row: BenchmarkRow };
+
+function CurveMarkers({ chart, row }: ChartRowProps) {
+  return (
+    <>
+      {row.points.map((point) => (
+        <Marker
+          key={`${row.id}-${point.label}`}
+          chart={chart}
+          point={point}
+          row={row}
+        />
+      ))}
+      <AucDiamond chart={chart} row={row} />
+    </>
+  );
+}
+
+function curveInteractionProps(
+  row: BenchmarkRow,
+  selected: boolean,
+  onToggle?: (id: string) => void
+) {
+  if (!onToggle) return {};
+  return {
+    role: 'button' as const,
+    tabIndex: 0,
+    'aria-label': `${selected ? 'Remove' : 'Compare'} ${row.model}`,
+    'aria-pressed': selected,
+    onClick: () => onToggle(row.id),
+    onKeyDown: (event: KeyboardEvent<SVGGElement>) =>
+      selectOnEnter(event, row.id, onToggle),
+  };
 }
 
 function Marker({
@@ -297,17 +351,39 @@ function Marker({
 }) {
   const x = contextX(point.tokens, chart);
   const y = scoreY(point.score, chart);
+  const last = row.points[row.points.length - 1];
+  const isTruncated = point.tokens === last.tokens && last.tokens < 1048576;
+  const title = `${row.model}: ${point.score}% at ${point.label}${isTruncated ? ' \u2014 coverage ends here' : ''}`;
   if (row.signalTone === 'warning') {
     return (
       <rect x={x - 4.5} y={y - 4.5} width="9" height="9" rx={0}>
-        <title>{`${row.model}: ${point.score}% at ${point.label}`}</title>
+        <title>{title}</title>
       </rect>
     );
   }
   return (
     <circle cx={x} cy={y} r="4.5">
-      <title>{`${row.model}: ${point.score}% at ${point.label}`}</title>
+      <title>{title}</title>
     </circle>
+  );
+}
+
+function AucDiamond({ chart, row }: ChartRowProps) {
+  const score = aucDiamondScore(row);
+  if (score == null) return null;
+  const x = contextX(1048576, chart);
+  const y = scoreY(score, chart);
+  return (
+    <rect
+      className={styles.aucDiamond}
+      x={x - 3.2}
+      y={y - 3.2}
+      width="6.4"
+      height="6.4"
+      transform={`rotate(45 ${x} ${y})`}
+    >
+      <title>{`${row.model}: AUC @1M ${score}% — band average over the measured 8K–512K range, not a pointwise 1M score`}</title>
+    </rect>
   );
 }
 
@@ -315,11 +391,13 @@ function CurveLabel({
   chart,
   row,
   y,
+  hueClass,
   visible,
 }: {
   chart: ChartLayout;
   row: BenchmarkRow;
   y: number;
+  hueClass: string;
   visible: boolean;
 }) {
   const last = row.points[row.points.length - 1];
@@ -327,7 +405,7 @@ function CurveLabel({
   const activeClass = visible ? styles.curveLabelsActive : '';
   return (
     <g
-      className={`${styles.curveLabels} ${activeClass} ${familyClassName(row)} ${styles[row.signalTone]}`}
+      className={`${styles.curveLabels} ${activeClass} ${hueClass} ${styles[row.signalTone]}`}
     >
       <text
         className={styles.labelScore}
@@ -346,8 +424,11 @@ function CurveLabel({
 
 export function MobileCurveSummary({
   rows,
+  hueKeys,
 }: {
   rows: readonly BenchmarkRow[];
+  // Ranked over the full row set so colors match the chart and chips
+  hueKeys: ReadonlyMap<string, ProviderHueKey>;
 }) {
   return (
     <ul
@@ -357,10 +438,10 @@ export function MobileCurveSummary({
       {rows.map((row) => (
         <li
           key={row.id}
-          className={`${familyClassName(row)} ${styles[row.signalTone]}`}
+          className={`${styles[hueClassOf(hueKeys, row.vendor)]} ${styles[row.signalTone]}`}
         >
           <strong>{row.model}</strong>
-          <span>{row.longScore}% @1M</span>
+          <span>{curveEndpointLabel(row)}</span>
         </li>
       ))}
     </ul>
@@ -431,14 +512,6 @@ function pathD(points: BenchmarkPoint[], chart: ChartLayout) {
 function tokenLabel(tokens: number) {
   if (tokens >= 1048576) return '1M';
   return `${Math.round(tokens / 1024)}K`;
-}
-
-export function familyClassName(row: BenchmarkRow) {
-  if (row.model.startsWith('GPT')) return styles.familyOpenAI;
-  if (row.model.startsWith('Claude')) return styles.familyAnthropic;
-  if (row.model.startsWith('DeepSeek')) return styles.familyDeepSeek;
-  if (row.model.startsWith('Gemini')) return styles.familyGoogle;
-  return styles.familyOther;
 }
 
 function clamp(value: number, min: number, max: number) {
