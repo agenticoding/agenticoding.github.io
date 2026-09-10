@@ -36,8 +36,6 @@
    ======================================================================== */
 
 :root {
-  --announcement-height: 0px;
-
   /* === NEUTRAL SCALE — Pure achromatic (C:0.000) === */
   --neutral-50: #f5f5f5;
   --neutral-100: #e8e8e8;
@@ -319,10 +317,6 @@
 
   /* Search icon — stroke-based magnifying glass (light: #808080, 3.95:1 on white) */
   --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="%23808080" stroke-width="1.5"/><line x1="9.68" y1="9.68" x2="14" y2="14" stroke="%23808080" stroke-width="1.5" stroke-linecap="round"/></svg>');
-
-  /* === ANNOUNCEMENT BAR === */
-  --announcement-bg: #ffe3c3; /* warning-100 */
-  --announcement-text: #402400; /* warning-900 */
 }
 
 /* ========================================================================
@@ -545,10 +539,6 @@ details.alert {
 
   /* Search icon — stroke-based magnifying glass (dark: #9b9b9b, 6.81:1 on #0d1117) */
   --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="%239b9b9b" stroke-width="1.5"/><line x1="9.68" y1="9.68" x2="14" y2="14" stroke="%239b9b9b" stroke-width="1.5" stroke-linecap="round"/></svg>');
-
-  /* === ANNOUNCEMENT BAR === */
-  --announcement-bg: #8e5900; /* warning-600 */
-  --announcement-text: #fff3e6; /* warning-50 */
 }
 
 /* ========================================================================
@@ -800,7 +790,6 @@ article .tool-verdict {
   :root,
   [data-theme='dark'] {
     --ifm-navbar-height: 0px;
-    --announcement-height: 30px;
   }
 
   .theme-doc-sidebar-container {
@@ -809,16 +798,16 @@ article .tool-verdict {
   }
 
   .theme-doc-sidebar-container [class*='sidebarViewport'] {
-    top: var(--announcement-height);
-    height: calc(100vh - var(--announcement-height));
-    max-height: calc(100vh - var(--announcement-height));
-    height: calc(100dvh - var(--announcement-height));
-    max-height: calc(100dvh - var(--announcement-height));
+    top: 0;
+    height: 100vh;
+    max-height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
   }
 }
 
 .navbar {
-  top: var(--announcement-height);
+  top: 0;
   border-bottom: 1px solid var(--neutral-300);
 }
 
@@ -1419,54 +1408,6 @@ kbd,
   color: var(
     --text-body
   ); /* lift to body color when active — subtle emphasis */
-}
-
-/* ========================================================================
-   ANNOUNCEMENT BANNER
-   ======================================================================== */
-
-.theme-announcement-bar {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding-top: env(safe-area-inset-top, 0px);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  line-height: var(--lh-sm);
-  border-bottom: var(--border-accent) solid var(--visual-warning);
-}
-
-.theme-announcement-bar > div[class*='announcementBarContent'] {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  text-align: center;
-}
-
-.announcement-status-icon {
-  flex: 0 0 auto;
-}
-
-.announcement-status-label {
-  font-family: var(--font-mono-keyword);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  font-feature-settings: var(--font-mono-features);
-}
-
-.announcement-status-detail {
-  font-weight: 400;
-}
-
-@media (max-width: 576px) {
-  .theme-announcement-bar > div[class*='announcementBarContent'] {
-    gap: var(--space-0h) var(--space-1);
-  }
 }
 
 /* ========================================================================

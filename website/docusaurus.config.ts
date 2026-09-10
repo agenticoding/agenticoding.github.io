@@ -158,13 +158,6 @@ const config: Config = {
   themeConfig: {
     // Social media preview card (Open Graph, Twitter Card)
     image: 'img/social-card.png',
-    announcementBar: {
-      id: 'under_construction',
-      content: 'This reference is actively evolving.',
-      backgroundColor: 'var(--announcement-bg)',
-      textColor: 'var(--announcement-text)',
-      isCloseable: false,
-    },
     colorMode: {
       respectPrefersColorScheme: true,
     },

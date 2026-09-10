@@ -54,7 +54,6 @@ export const EMOJI = {
   ruler: asset('1F4CF.svg', 'ruler', { x: 13.5, width: 45.3 }),
   tools: asset('1F6E0.svg', 'tools', { x: 6.6, width: 55 }),
   warning: asset('26A0.svg', 'warning'),
-  construction: asset('1F6A7.svg', 'under construction'),
   emergency: asset('1F6A8.svg', 'emergency'),
   writing: asset('270F.svg', 'writing'),
   receipt: asset('1F9FE.svg', 'receipt', { x: 23.7, width: 24.3 }),
