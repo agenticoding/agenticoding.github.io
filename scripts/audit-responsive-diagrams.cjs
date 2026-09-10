@@ -19,7 +19,6 @@ const names = [
   'LongContextBenchmarkExplorer',
   'ModelEncodingAtlas',
   'OperatorCycleDiagram',
-  'OperatorTransformationDiagram',
   'OwnershipBoundaryDiagram',
   'PlanningContractCheckpointDiagram',
   'PostTrainingTuningBoard',

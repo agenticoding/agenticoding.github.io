@@ -1,6 +1,8 @@
 .showcaseSection {
-  padding: var(--space-6) 0;
-  border-block: 1px solid var(--border-subtle);
+  /* No block border: the surrounding prose bands and this section read as one
+     continuous page. Top spacing comes from the preceding prose; only the
+     bottom band is owned here. */
+  padding: 0 0 var(--space-6);
   container-type: inline-size;
 }
 
@@ -11,17 +13,81 @@
   font-size: var(--text-3xl);
   font-weight: 700;
   line-height: var(--lh-2xl);
-  text-align: center;
 }
 
 .sectionSubtitle {
-  max-width: 66ch;
-  margin: 0 auto var(--space-5);
+  margin: 0 0 var(--space-5);
   color: var(--text-body);
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: var(--lh-sm);
-  text-align: center;
+}
+
+.previewBoard {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* Foundations on-ramp: a full-width entry above the discipline cards. */
+.entryTile {
+  display: grid;
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  align-items: stretch;
+  border: 1px solid var(--border-default);
+  background: var(--surface-page);
+  color: inherit;
+  text-decoration: none !important;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.entryTile:hover {
+  background: var(--surface-raised);
+  color: inherit;
+  text-decoration: none !important;
+}
+
+.entryTile:hover .entryTitle {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: var(--space-0h);
+}
+
+.entryTile:focus-visible {
+  outline: 2px solid var(--text-heading);
+  outline-offset: var(--space-0h);
+}
+
+.entryVisualPanel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  border-right: 1px solid var(--border-default);
+  background: var(--surface-raised);
+}
+
+.entryContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-3);
+}
+
+.entryTitle {
+  margin: 0 0 var(--space-1);
+  color: var(--text-heading);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--lh-lg);
+}
+
+.entryCaption {
+  margin: 0;
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
 }
 
 .previewGrid {
@@ -80,93 +146,79 @@
   height: auto;
 }
 
-.systemNode,
-.agentNode {
-  stroke-width: 1.5px;
+.visualFrame,
+.beatRule {
+  fill: none;
+  stroke: var(--border-default);
+  stroke-width: 1px;
 }
 
-.systemNode {
-  fill: var(--visual-bg-cyan);
-  stroke: var(--visual-cyan);
+.beatLabel,
+.beatText,
+.foundationLabel,
+.foundationValue {
+  font-feature-settings: var(--font-mono-features);
 }
 
-.agentNode {
+.beatLabel {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-keyword);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.beatText {
+  fill: var(--text-heading);
+  font-family: var(--font-mono-human);
+  font-size: 13px;
+}
+
+.previewVisual[data-tone='violet'] .visualFrame {
   fill: var(--visual-bg-violet);
   stroke: var(--visual-violet);
 }
 
-.nodeLabel,
-.visualNote,
-.qualityLabel,
-.debtLabel {
-  font-family: var(--font-mono-keyword);
-  font-feature-settings: var(--font-mono-features);
-  text-anchor: middle;
+.previewVisual[data-tone='warning'] .visualFrame {
+  fill: var(--visual-bg-warning);
+  stroke: var(--visual-warning);
 }
 
-.nodeLabel {
-  fill: var(--text-heading);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.systemFlow,
-.agentFlow,
-.feedbackFlow,
-.qualityFlow,
-.debtFlow,
-.contextBarrier {
-  fill: none;
-  stroke-width: 1.5px;
-}
-
-.systemFlow,
-.feedbackFlow {
-  stroke: var(--visual-cyan);
-}
-
-.agentFlow {
-  stroke: var(--visual-violet);
-}
-
-.feedbackFlow,
-.contextBarrier {
-  stroke-dasharray: 4 3;
-}
-
-.contextBarrier {
+.previewVisual[data-tone='indigo'] .visualFrame {
+  fill: var(--visual-bg-indigo);
   stroke: var(--visual-indigo);
 }
 
-.qualityFlow {
-  stroke: var(--visual-success);
+/* Foundations story: model → agent. */
+.foundationVisual {
+  display: block;
+  width: 100%;
+  max-width: 15rem;
+  height: auto;
 }
 
-.debtFlow {
-  stroke: var(--visual-error);
+.storyArrow {
+  fill: none;
+  stroke: var(--border-emphasis);
+  stroke-width: 1.5;
 }
 
-.arrowHead {
-  fill: var(--text-body);
+.storyArrowHead {
+  fill: var(--border-emphasis);
 }
 
-.visualNote,
-.qualityLabel,
-.debtLabel {
+.foundationLabel {
+  fill: var(--text-muted);
+  font-family: var(--font-mono-keyword);
   font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
-.visualNote {
-  fill: var(--text-body);
-}
-
-.qualityLabel {
-  fill: var(--visual-success);
-}
-
-.debtLabel {
-  fill: var(--visual-error);
+.foundationValue {
+  fill: var(--text-heading);
+  font-family: var(--font-mono-human);
+  font-size: 12px;
 }
 
 .tileContent {
@@ -187,6 +239,10 @@
   text-transform: uppercase;
 }
 
+.chapterBadge > span {
+  display: block;
+}
+
 .tileTitle {
   margin: 0 0 var(--space-1);
   color: var(--text-heading);
@@ -205,9 +261,17 @@
   text-align: left;
 }
 
+/* Multi-column grid: reserve two title lines so captions align across cards
+   regardless of how each title wraps. */
+@container (min-width: 40rem) {
+  .tileTitle {
+    min-height: calc(2 * var(--lh-lg));
+  }
+}
+
 @container (max-width: 40rem) {
   .showcaseSection {
-    padding: var(--space-5) 0;
+    padding: 0 0 var(--space-5);
   }
 
   .sectionTitle {
@@ -217,9 +281,19 @@
   .sectionSubtitle {
     margin-bottom: var(--space-4);
   }
+
+  .entryTile {
+    grid-template-columns: 1fr;
+  }
+
+  .entryVisualPanel {
+    border-right: none;
+    border-bottom: 1px solid var(--border-default);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .entryTile,
   .previewTile {
     transition: none;
   }

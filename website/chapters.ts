@@ -325,6 +325,13 @@ export function getChapterById(id: string): Chapter | undefined {
   return chapters.find((chapter) => chapter.id === id);
 }
 
+/** Sidebar group that owns a chapter; undefined for standalone pages. */
+export function getChapterGroup(id: string) {
+  return chapterGroups.find((group) =>
+    group.chapters.some((chapter) => chapter.id === id)
+  );
+}
+
 /** Section number is the dense 1-indexed count of numbered chapters;
     unnumbered items (e.g. intro/about) have no section number. */
 export function getSectionNumber(id: string): number | undefined {

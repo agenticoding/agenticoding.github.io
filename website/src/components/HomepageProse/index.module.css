@@ -1,0 +1,16 @@
+/* Pull-quote: achromatic per DESIGN_SYSTEM (monochrome-first); emphasis comes
+   from the display face and a neutral rule, not hue or fill. */
+.prose blockquote {
+  margin: var(--space-4) 0;
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--border-emphasis);
+  color: var(--text-heading);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--lh-lg);
+}
+
+.prose blockquote p {
+  margin: 0;
+}

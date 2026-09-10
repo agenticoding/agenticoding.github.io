@@ -1,8 +1,14 @@
+/* Hero band; its bottom margin owns the gap before the opening prose heading.
+   --space-4 matches the page's other block → section-heading band. */
 .hero {
+  margin-bottom: var(--space-4);
+}
+
+/* No max-width: homepage copy uses the content column's full measure, matching
+   the rest of the book (regular docs run the full `--ifm-container-width-xl`). */
+.copy {
   display: grid;
   gap: var(--space-2);
-  max-width: 66ch;
-  margin-bottom: var(--space-6);
 }
 
 .eyebrow,
@@ -36,51 +42,9 @@
   line-height: var(--lh-lg);
 }
 
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  align-items: flex-start;
-}
-
-.primaryAction {
-  min-height: var(--target-lg);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.primaryAction {
-  padding-inline: var(--space-4);
-  background: var(--text-heading);
-  color: var(--surface-page);
-  text-decoration: none;
-}
-
-.actionIcon {
-  flex: 0 0 auto;
-  margin-left: var(--space-0h);
-}
-
-.primaryAction:hover {
-  background: var(--text-body);
-  color: var(--surface-page);
-  text-decoration: none;
-}
-
-.primaryAction:focus-visible {
-  outline: 2px solid var(--text-heading);
-  outline-offset: var(--space-0h);
-}
-
 @media (max-width: 576px) {
   .title {
     font-size: var(--text-3xl);
     line-height: var(--lh-2xl);
-  }
-
-  .primaryAction {
-    width: 100%;
   }
 }

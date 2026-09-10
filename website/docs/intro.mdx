@@ -5,75 +5,25 @@ sidebar_label: 'Introduction'
 hide_table_of_contents: false
 ---
 
-import AgentWorkStabilityDiagram from '@site/src/components/VisualElements/AgentWorkStabilityDiagram';
-import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 import { GitHubProjectSource } from '@site/src/components/GitHubSocialProof';
-import OperatorTransformationDiagram from '@site/src/components/VisualElements/OperatorTransformationDiagram';
+import HomepageProse from '@site/src/components/HomepageProse';
+import HomepageVisualPreview from '@site/src/components/HomepageVisualPreview';
 
-AI agents make execution cheap. They also make production judgment more valuable.
+<HomepageProse>
 
-**Agentic Coding is an advanced technical reference for operating coding agents on production software.** It helps you decide what an agent needs to know, what it may change, and what evidence makes its work safe to accept.
+## Learn to run the machine.
 
-An agent can produce candidate work; the operator still defines its boundaries and decides whether the evidence is enough to accept it.
+An agent is a machine. It keeps working after you stop touching it, and it builds exactly what you asked for — including the parts you didn't mean. Every powerful tool has offered the same bargain: useless in careless hands, transformative in skilled ones.
 
-<DiagramFrame
-  kicker="Operating model"
-  title="The agent executes; the operator owns acceptance."
-  size="wide"
-  caption={
-    <>
-      The agent turns bounded work and context into a candidate. The operator
-      decides what ships.
-    </>
-  }
->
-  <OperatorTransformationDiagram />
-</DiagramFrame>
+> For the first time, the limit on what you can build is your intent, not your hands.
 
-## What this book covers
+That skill is the whole prize. Operate the machine well and the labor moves to it while the judgment stays with you.
 
-This is a book about directing agent-assisted work without outsourcing engineering, product, security, or release ownership. It covers model and harness behavior, context and task design, production workflows, validation, and codebase practices that make agents more reliable over time.
+</HomepageProse>
 
-It is not a beginner programming course, a prompt library, or a recipe for hands-off software generation. You do not need ML expertise, a preferred model, or a specific harness. You do need enough fluency in your discipline to recognize incomplete, unsafe, or incorrect work.
+<HomepageVisualPreview />
 
-## What you will be able to do
-
-After reading, you will be able to:
-
-- reason about an agent's capabilities, failure modes, and autonomy boundaries;
-- turn ambiguous requests into bounded work with explicit constraints and acceptance criteria;
-- supply the right codebase, product, and external context without overwhelming execution;
-- evaluate agent output with independent evidence rather than plausible diffs; and
-- improve the systems, code, and workflows that determine reliability at scale.
-
-The book is for software engineers, product designers, project managers, and product managers working with coding agents in production. The responsibilities differ by role; accountability for the outcome does not.
-
-## Where is the work stuck?
-
-Where does agent work break first? Find the pressure you recognize. This book gives you the next move—not another prompt trick.
-
-<DiagramFrame
-  kicker="Production pressure"
-  title="Stabilize the agent loop before asking it to carry more work."
-  size="wide"
-  caption={
-    <>
-      Production pressure enters from model behavior, missing reality, task
-      shape, and unverified output. Boundaries, working context, and independent
-      evidence make the loop reliable.
-    </>
-  }
->
-  <AgentWorkStabilityDiagram />
-</DiagramFrame>
-
-The dangerous runs are not the obviously broken ones. They look finished early—until a missing constraint, stale assumption, or untested change turns speed into rework.
-
-**Agentic Coding is about making that moment predictable:** direct the work, expose the pressure, and keep acceptance in your hands.
-
-## Free & open source — nothing to sell
-
-This book, the tools it references, and everything built around them are **100% open source, community-backed projects with no commercial agenda.**
+**Free & open source — nothing to sell.** This book, the tools it references, and everything built around them are 100% open source, community-backed projects with no commercial agenda. No paid tiers. No enterprise licenses. Nothing to buy.
 
 - <GitHubProjectSource
     name="Book source"
@@ -90,8 +40,6 @@ This book, the tools it references, and everything built around them are **100% 
     repo="agenticoding/pi-agenticoding"
     fallbackStars={18}
   />
-
-No paid tiers. No enterprise licenses. Nothing to buy. Everything here exists because the problems are real and the solutions should be shared.
 
 ---
 
