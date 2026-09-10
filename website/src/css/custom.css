@@ -1535,15 +1535,6 @@ kbd,
     opacity: 0.45;
   }
 }
-@keyframes idleFlowDrift {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(2px);
-  }
-}
 @keyframes idleReadyBreathe {
   0%,
   100% {
@@ -1551,15 +1542,6 @@ kbd,
   }
   50% {
     transform: scale(1.02);
-  }
-}
-@keyframes idleCloudServe {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-3px) scale(1.035);
   }
 }
 @keyframes idleEyeRead {
@@ -1624,137 +1606,12 @@ kbd,
     transform: rotate(360deg);
   }
 }
-@keyframes idleStopwatchHand {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes idleBugLegsA {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(8deg);
-  }
-}
-@keyframes idleBugLegsB {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(-8deg);
-  }
-}
-@keyframes idleBugAntennae {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(5deg);
-  }
-  75% {
-    transform: rotate(-5deg);
-  }
-}
-@keyframes idleMagnifySearch {
-  0% {
-    transform: translate(0px, 3px);
-  }
-  12.5% {
-    transform: translate(2.1px, 2.1px);
-  }
-  25% {
-    transform: translate(3px, 0px);
-  }
-  37.5% {
-    transform: translate(2.1px, -2.1px);
-  }
-  50% {
-    transform: translate(0px, -3px);
-  }
-  62.5% {
-    transform: translate(-2.1px, -2.1px);
-  }
-  75% {
-    transform: translate(-3px, 0px);
-  }
-  87.5% {
-    transform: translate(-2.1px, 2.1px);
-  }
-  100% {
-    transform: translate(0px, 3px);
-  }
-}
-@keyframes idleBrushArc {
-  from {
-    transform: rotate(-3.9deg);
-  }
-  to {
-    transform: rotate(3.9deg);
-  }
-}
 @keyframes idleMicroscopeRock {
   from {
     transform: rotate(-2deg);
   }
   to {
     transform: rotate(2deg);
-  }
-}
-/* Ruler – tick-mark sweep, forward then reverse (5000ms cycle).
-   Each tick fires twice: fwd pass (delays 0→10) then return pass (delays 10→0).
-   Two separate `animation` layers are required so that each tick element can
-   receive two independent `animationDelay` values (one per direction) via
-   inline style. Do not collapse the dual `animation` shorthand into one. */
-@keyframes idleRulerTick {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  10% {
-    opacity: 1;
-  }
-  20% {
-    opacity: 0.35;
-  }
-}
-/* Robot – teeth progress-bar sweep */
-@keyframes idleRobotTeeth {
-  0% {
-    opacity: 0.35;
-  }
-  10% {
-    opacity: 1;
-  }
-  20%,
-  100% {
-    opacity: 0.35;
-  }
-}
-/* Robot – eye blink */
-@keyframes idleRobotBlink {
-  0%,
-  16%,
-  100% {
-    opacity: 0;
-  }
-  8% {
-    opacity: 1;
-  }
-}
-/* Robot – antenna sparks */
-@keyframes idleRobotSpark {
-  0%,
-  30% {
-    opacity: 0;
-    transform: scale(0);
-  }
-  15% {
-    opacity: 1;
-    transform: scale(1);
   }
 }
 /* Landing zone – thumbnail highlight glow */
@@ -1873,14 +1730,8 @@ kbd,
 .idle-alternating-emphasis {
   animation: idleAlternatingEmphasis 6000ms ease-in-out infinite;
 }
-.idle-flow-drift {
-  animation: idleFlowDrift 3000ms ease-in-out infinite;
-}
 .idle-ready-breathe {
   animation: idleReadyBreathe 4000ms ease-in-out infinite;
-}
-.idle-cloud-serve {
-  animation: idleCloudServe 3600ms ease-in-out infinite;
 }
 .idle-eye-read {
   transform-box: fill-box;
@@ -1899,47 +1750,12 @@ kbd,
 .idle-gear-spin {
   animation: idleGearSpin 2500ms linear infinite;
 }
-.idle-stopwatch-hand {
-  transform-box: fill-box;
-  transform-origin: 50% 90%;
-  animation: idleStopwatchHand 10s linear infinite;
-}
-.idle-bug-legs-a {
-  transform-box: fill-box;
-  transform-origin: 0% 50%;
-  animation: idleBugLegsA 800ms ease-in-out infinite;
-}
-.idle-bug-legs-b {
-  transform-box: fill-box;
-  transform-origin: 100% 50%;
-  animation: idleBugLegsB 800ms ease-in-out infinite;
-}
-.idle-bug-antennae {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: idleBugAntennae 1200ms ease-in-out infinite;
-}
-.idle-magnify-search {
-  animation: idleMagnifySearch 4500ms linear infinite;
-}
-.idle-brush-arc {
-  transform-box: fill-box;
-  transform-origin: 43% 68%; /* pivot ≈ (55, 87) in 128×128 viewBox — the ferrule */
-  animation: idleBrushArc 2800ms ease-in-out infinite alternate;
-}
 .idle-microscope-rock {
   transform-box: fill-box;
   transform-origin: 50% 95%; /* pivot near base plate bottom */
   animation: idleMicroscopeRock 3500ms ease-in-out infinite alternate;
 }
-/* DO NOT deduplicate — two animation layers needed for independent per-tick delay offsets (fwd/bwd) */
-.idle-ruler-tick {
-  animation:
-    idleRulerTick 5000ms linear infinite,
-    idleRulerTick 5000ms linear infinite;
-}
 /* Bookmark tabs – rests at full opacity, brief dip sweeps top→bottom then bottom→top.
-   Inverted from idleRulerTick: rest is 1.0, event is a dim dip.
    DO NOT deduplicate — two animation layers needed for independent per-tab delay offsets (fwd/bwd) */
 @keyframes idleBookmarkTab {
   0%,
@@ -1972,19 +1788,6 @@ kbd,
 .idle-text-line {
   animation: idleTextLine 4000ms linear infinite;
 }
-.idle-robot-teeth {
-  animation: idleRobotTeeth 2500ms linear infinite;
-}
-.idle-robot-blink {
-  opacity: 0;
-  animation: idleRobotBlink 5000ms linear infinite;
-}
-.idle-robot-spark {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  animation: idleRobotSpark 2500ms ease-in-out infinite;
-}
-
 @keyframes idleCompassNeedle {
   from {
     transform: rotate(-15deg);
@@ -2066,27 +1869,15 @@ html:not([data-theme='dark']) .wordmark-dark {
   .idle-status-pulse,
   .idle-alternating-emphasis,
   .idle-inference-cycle,
-  .idle-flow-drift,
   .idle-ready-breathe,
-  .idle-cloud-serve,
   .idle-eye-read,
   .ping-once,
   .idle-arm-rock,
   .idle-palm-wave,
   .idle-gear-spin,
-  .idle-stopwatch-hand,
-  .idle-bug-legs-a,
-  .idle-bug-legs-b,
-  .idle-bug-antennae,
-  .idle-magnify-search,
-  .idle-brush-arc,
   .idle-microscope-rock,
-  .idle-ruler-tick,
   .idle-bookmark-tab,
   .idle-text-line,
-  .idle-robot-teeth,
-  .idle-robot-blink,
-  .idle-robot-spark,
   .idle-compass-needle,
   .idle-bullseye-ring,
   .idle-air-stripe,
