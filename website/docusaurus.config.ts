@@ -114,7 +114,7 @@ const config: Config = {
             '**/CLAUDE.md', // Exclude AI agent instructions from build
           ],
           editUrl,
-          showLastUpdateTime: false,
+          showLastUpdateTime: true,
           showLastUpdateAuthor: false,
         },
         blog: false,

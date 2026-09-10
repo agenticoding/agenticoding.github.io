@@ -1,0 +1,34 @@
+/* Footer metadata row: "Edit this page" (left) + page freshness (right).
+   Design system: tertiary metadata — muted, --text-sm, achromatic, never bold.
+   The flex row keeps the two items on one line; at very narrow widths the date
+   wraps to its own line, still flush right. */
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+}
+
+@media (max-width: 576px) {
+  .metaRow {
+    gap: var(--space-1); /* tighter column gap keeps both items on one line */
+  }
+}
+
+/* Always flush right — including when it wraps to its own line or is the only
+   child (Tauri builds have no edit link). */
+.metaRow :global(.theme-last-updated) {
+  margin-left: auto;
+  text-align: right;
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--text-muted);
+}
+
+/* Page metadata is not part of the printed book. */
+@media print {
+  .metaRow {
+    display: none;
+  }
+}

@@ -1,0 +1,26 @@
+/* Design-system "ghost" link — tertiary inline action.
+   Achromatic dark text + underline (interactivity is not signalled by hue). */
+
+.editLink {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--text-heading);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.editLink:hover {
+  text-decoration-thickness: 2px;
+}
+
+.editLink:focus-visible {
+  outline: 2px solid var(--border-emphasis);
+  outline-offset: 2px;
+}
+
+.icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  vertical-align: middle;
+  margin-right: var(--space-0h);
+}
