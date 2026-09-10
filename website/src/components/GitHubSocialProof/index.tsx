@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useState, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -83,6 +83,22 @@ function StarCount({
   );
 }
 
+// Break opportunities after each `/` so long repo paths wrap at segment
+// boundaries on narrow screens instead of overflowing their list item.
+function RepoPath({ repo }: { repo: string }): ReactNode {
+  const segments = `github.com/${repo}`.split('/');
+  return segments.map((segment, index) => (
+    <Fragment key={segment}>
+      {segment}
+      {index < segments.length - 1 ? (
+        <>
+          /<wbr />
+        </>
+      ) : null}
+    </Fragment>
+  ));
+}
+
 export function GitHubProjectSource({
   name,
   repo,
@@ -98,7 +114,7 @@ export function GitHubProjectSource({
           target="_blank"
           rel="noopener noreferrer"
         >
-          github.com/{repo}
+          <RepoPath repo={repo} />
         </a>{' '}
         <span className={styles.projectSourceStars}>
           <GitHubSocialProof

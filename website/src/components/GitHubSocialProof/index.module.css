@@ -74,6 +74,14 @@
   vertical-align: baseline;
 }
 
+/* Long repo paths must wrap inside the item instead of overflowing it: the flex
+   item has min-width:auto by default, which pins it to its content width. No
+   overflow-wrap: that would split the URL mid-word — break only at the path's
+   own separators. */
+.projectSourceLink {
+  min-width: 0;
+}
+
 .starCount {
   transform: translateY(var(--space-px));
 }
