@@ -4,6 +4,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "jsx": "react-jsx",
+    // The star band imports the build-time snapshot JSON directly; tsc must
+    // resolve it (scripts/fetch-github-stars.js generates it).
+    "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "types": [
       "@docusaurus/module-type-aliases",

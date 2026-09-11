@@ -1,0 +1,22 @@
+{
+  "projects": [
+    {
+      "name": "Book source",
+      "repo": "agenticoding/agenticoding.github.io",
+      "stars": 109,
+      "fetchedAt": "2026-09-10T20:13:07.685Z"
+    },
+    {
+      "name": "ChunkHound",
+      "repo": "chunkhound/chunkhound",
+      "stars": 1427,
+      "fetchedAt": "2026-09-10T20:13:07.688Z"
+    },
+    {
+      "name": "Pi agenticoding extension",
+      "repo": "agenticoding/pi-agenticoding",
+      "stars": 51,
+      "fetchedAt": "2026-09-10T20:13:07.688Z"
+    }
+  ]
+}

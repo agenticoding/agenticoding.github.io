@@ -53,6 +53,12 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
+      - name: Refresh GitHub star counts
+        # Unauthenticated (60 req/hr/IP). The fetcher merges per repo and keeps
+        # the committed snapshot on failure, so a rate-limited deploy still
+        # ships the last known counts instead of failing the build.
+        run: node ../scripts/fetch-github-stars.js
+
       - name: Build website
         run: npm run build
 

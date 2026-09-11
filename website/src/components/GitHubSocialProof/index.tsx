@@ -1,23 +1,14 @@
 import { Fragment, useEffect, useState, type ReactNode } from 'react';
 
+import starsSnapshot from '@site/src/generated/github-stars.json';
+
+import { formatStars } from './formatStars';
 import styles from './index.module.css';
 
-type GitHubSocialProofVariant = 'hero' | 'project';
-
-interface GitHubSocialProofProps {
-  repo: string;
-  fallbackStars: number;
-  variant: GitHubSocialProofVariant;
-}
-
-interface GitHubRepository {
-  stargazers_count: number;
-}
-
-interface GitHubProjectSourceProps {
+interface StarProject {
   name: string;
   repo: string;
-  fallbackStars: number;
+  stars: number;
 }
 
 const starCountRequests = new Map<string, Promise<number | null>>();
@@ -29,7 +20,9 @@ function fetchStarCount(repo: string): Promise<number | null> {
   const request = fetch(`https://api.github.com/repos/${repo}`)
     .then(async (response) => {
       if (!response.ok) return null;
-      const repository = (await response.json()) as GitHubRepository;
+      const repository = (await response.json()) as {
+        stargazers_count: number;
+      };
       return Number.isSafeInteger(repository.stargazers_count)
         ? repository.stargazers_count
         : null;
@@ -39,8 +32,25 @@ function fetchStarCount(repo: string): Promise<number | null> {
   return request;
 }
 
-function useGitHubStars(repo: string, fallbackStars: number): number {
-  const [stars, setStars] = useState(fallbackStars);
+// The generated snapshot is the build-time baseline: the count is correct in
+// the static HTML (no JavaScript, no network) and the live fetch below can only
+// make it fresher. A slug absent from the snapshot means intro.mdx references a
+// repo the fetcher doesn't know — fail loudly rather than render nothing.
+function requireProject(repo: string): StarProject {
+  const project = starsSnapshot.projects.find((entry) => entry.repo === repo);
+  if (!project) {
+    throw new Error(
+      `No star snapshot for "${repo}"; run npm run stars:refresh`
+    );
+  }
+  return project;
+}
+
+// Seeded with the build-time value so SSR is accurate; the live fetch only
+// overwrites it when it returns a valid count. The polite live region stays
+// because the number can still change after hydration.
+function useGitHubStars(repo: string, baselineStars: number): number {
+  const [stars, setStars] = useState(baselineStars);
 
   useEffect(() => {
     let active = true;
@@ -55,11 +65,6 @@ function useGitHubStars(repo: string, fallbackStars: number): number {
   return stars;
 }
 
-function formatStars(stars: number): string {
-  if (stars < 1_000) return String(stars);
-  return `${(stars / 1_000).toFixed(stars < 10_000 ? 1 : 0).replace('.0', '')}k`;
-}
-
 function StarIcon(): ReactNode {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -68,17 +73,11 @@ function StarIcon(): ReactNode {
   );
 }
 
-function StarCount({
-  stars,
-  label = 'stars',
-}: {
-  stars: number;
-  label?: string;
-}): ReactNode {
+function StarCount({ stars }: { stars: number }): ReactNode {
   return (
     <span className={styles.starCount} aria-live="polite">
       <span className={styles.count}>{formatStars(stars)}</span>
-      <span className={styles.label}>{label}</span>
+      <span className={styles.label}>stars</span>
     </span>
   );
 }
@@ -99,11 +98,17 @@ function RepoPath({ repo }: { repo: string }): ReactNode {
   ));
 }
 
-export function GitHubProjectSource({
-  name,
-  repo,
-  fallbackStars,
-}: GitHubProjectSourceProps): ReactNode {
+/**
+ * One open-source project in the trust band: name, linked repo path, and its
+ * star count. Projects are always listed together — the grouped count is what
+ * makes each number readable as "a real project", never a lone badge. Data
+ * comes from the build-time snapshot keyed by `repo`; the live fetch refreshes
+ * it after hydration.
+ */
+export function GitHubProjectSource({ repo }: { repo: string }): ReactNode {
+  const { name, stars: baselineStars } = requireProject(repo);
+  const stars = useGitHubStars(repo, baselineStars);
+
   return (
     <span className={styles.projectSource}>
       <strong className={styles.projectSourceName}>{name}</strong>{' '}
@@ -117,44 +122,12 @@ export function GitHubProjectSource({
           <RepoPath repo={repo} />
         </a>{' '}
         <span className={styles.projectSourceStars}>
-          <GitHubSocialProof
-            repo={repo}
-            fallbackStars={fallbackStars}
-            variant="project"
-          />
+          <span className={styles.project}>
+            <StarIcon />
+            <StarCount stars={stars} />
+          </span>
         </span>
       </span>
     </span>
-  );
-}
-
-export default function GitHubSocialProof({
-  repo,
-  fallbackStars,
-  variant,
-}: GitHubSocialProofProps): ReactNode {
-  const stars = useGitHubStars(repo, fallbackStars);
-  const starCount = <StarCount stars={stars} />;
-
-  if (variant === 'project') {
-    return (
-      <span className={styles.project}>
-        <StarIcon />
-        {starCount}
-      </span>
-    );
-  }
-
-  return (
-    <a
-      className={styles.hero}
-      href={`https://github.com/${repo}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`GitHub repository: ${formatStars(stars)} stars`}
-    >
-      <StarIcon />
-      <StarCount stars={stars} label="GitHub stars" />
-    </a>
   );
 }

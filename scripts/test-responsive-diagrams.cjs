@@ -4,6 +4,7 @@ const http = require("node:http");
 const net = require("node:net");
 const os = require("node:os");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 
 const puppeteer = require(
   path.resolve(__dirname, "..", "website", "node_modules", "puppeteer"),
@@ -37,6 +38,16 @@ const FOUNDATIONS_FIRST_DOC = "/how-llms-work";
 const TRACE_DIR = path.join(path.resolve(__dirname, "..", "website"), "browser-contracts-traces");
 
 const websiteDir = path.resolve(__dirname, "..", "website");
+// The build-time star snapshot and its canonical formatter, read by the
+// no-JavaScript homepage contract below.
+const STARS_SNAPSHOT = path.join(websiteDir, "src", "generated", "github-stars.json");
+const FORMAT_STARS = path.join(
+  websiteDir,
+  "src",
+  "components",
+  "GitHubSocialProof",
+  "formatStars.ts",
+);
 // CI builds once and points us at the artifact; local runs self-build.
 const providedBuildDir = process.env.BROWSER_TEST_BUILD_DIR
   ? path.resolve(process.env.BROWSER_TEST_BUILD_DIR)
@@ -361,15 +372,35 @@ function linksInHtml(html) {
   }));
 }
 
-async function inspectNoJavaScriptSidebar() {
+// The homepage's no-JavaScript contract: navigation works and the trust band's
+// build-time star counts are baked into the HTML. One fetch feeds both checks.
+async function inspectNoJavaScriptHomepage() {
   const response = await fetch(siteUrl());
   if (!response.ok) fail(`no-JavaScript homepage returned ${response.status}`);
-  const foundation = linksInHtml(await response.text()).find(
+  const html = await response.text();
+  inspectNoJavaScriptSidebar(html);
+  await inspectNoJavaScriptStars(html);
+}
+
+function inspectNoJavaScriptSidebar(html) {
+  const foundation = linksInHtml(html).find(
     (link) => link.label === LABEL_FOUNDATIONS,
   );
   if (!foundation) fail("collapsed Foundations group has no SSR fallback link");
   if (new URL(foundation.href, siteUrl()).pathname !== FOUNDATIONS_FIRST_DOC)
     fail(`${LABEL_FOUNDATIONS} SSR fallback points to ${foundation.href}`);
+}
+
+// Asserts each count is rendered server-side from the committed snapshot, tied
+// to its "stars" label so a stray number elsewhere cannot satisfy the check.
+async function inspectNoJavaScriptStars(html) {
+  const { formatStars } = await import(pathToFileURL(FORMAT_STARS).href);
+  const { projects } = JSON.parse(fs.readFileSync(STARS_SNAPSHOT, "utf8"));
+  for (const { repo, stars } of projects) {
+    const count = formatStars(stars).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (!new RegExp(`>${count}</span>[^<]*<span[^>]*>stars</span>`).test(html))
+      fail(`SSR homepage is missing the baked-in star count for ${repo}`);
+  }
 }
 
 // Scoped to the desktop docs sidebar. Keep in sync with the theme's canonical
@@ -506,7 +537,6 @@ async function inspectMobileDrawerSidebar() {
 }
 
 async function inspectSidebarNavigation() {
-  await inspectNoJavaScriptSidebar();
   const page = await browser.newPage();
   await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
   await page.emulateMediaFeatures([
@@ -668,6 +698,7 @@ async function main() {
 
   fs.mkdirSync(TRACE_DIR, { recursive: true });
   browser = await puppeteer.launch({ headless: true });
+  await withRetry(() => inspectNoJavaScriptHomepage(), "inspectNoJavaScriptHomepage");
   await withRetry(() => inspectSidebarNavigation(), "inspectSidebarNavigation");
   await withRetry(() => inspectMobileDrawerSidebar(), "inspectMobileDrawerSidebar");
   await withRetry(() => inspectActiveChapterScroll(), "inspectActiveChapterScroll");

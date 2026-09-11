@@ -6,6 +6,7 @@
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
+    "stars:refresh": "node ../scripts/fetch-github-stars.js",
     "test": "find src -name '*.test.ts' -print0 | xargs -0 node --test",
     "audit:breakpoints": "node ../scripts/audit-breakpoints.cjs",
     "audit:responsive-diagrams": "node ../scripts/audit-responsive-diagrams.cjs",
