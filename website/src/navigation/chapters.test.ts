@@ -102,14 +102,14 @@ test('exactly one beforeGroups entry occupies index 0 so section numbers stay st
   );
 });
 
-test('first numbered chapter is how-llms-work (SiteHero CTA depends on this)', () => {
-  // SiteHero derives number, route, and title from the first numbered chapter.
-  // If the first numbered chapter changes, the CTA must update accordingly.
+test('first numbered chapter is how-llms-work (intro Next link depends on this)', () => {
+  // The intro page's "Next:" link points at the first numbered chapter. If the
+  // first numbered chapter changes, that link must be updated with it.
   const firstNumbered = chapters.find(isNumbered);
   assert.equal(
     firstNumbered?.id,
     'how-llms-work',
-    'SiteHero CTA title "LLMs Demystified" is coupled to this chapter ID'
+    'intro.mdx Next link "LLMs Demystified" is coupled to this chapter ID'
   );
 });
 
@@ -185,8 +185,8 @@ test('Toolbox is the final category before About and has no chapter numbers', ()
 
 test('chapter titles match the frontmatter titles the sidebar displays', () => {
   // The sidebar label comes from each doc's frontmatter, while chapters.ts
-  // titles are the declared single source of truth (chapters.ts header);
-  // SiteHero consumes the first one. Drift here desyncs those consumers.
+  // titles are the declared single source of truth (chapters.ts header).
+  // Drift here desyncs the two descriptions of the same chapter.
   for (const group of chapterGroups) {
     for (const chapter of group.chapters) {
       assert.equal(
