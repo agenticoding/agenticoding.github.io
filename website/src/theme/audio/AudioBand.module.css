@@ -1,0 +1,15 @@
+/*
+ * The pinned band. Flat construction: a 1px edge on an opaque surface separates it from the
+ * contents list below — never a shadow, never a floating pill.
+ */
+
+.band {
+  --scrubber-track: var(--border-subtle);
+  display: flex;
+  /* Never shrinks: the band's height is a contract other audio surfaces are measured against. */
+  flex: none;
+  align-items: center;
+  height: var(--target-lg);
+  padding: 0 var(--space-2);
+  background: var(--surface-page);
+}

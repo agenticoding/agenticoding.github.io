@@ -10,6 +10,7 @@ import { PromptComparison } from '@site/src/components/PromptTreatment';
 Evidence requirements control what the model can claim. When the agent explains a plan, discrepancy, or bug, require file paths, line numbers, concrete values, exact error messages, cited sources, metric names, timestamps, or customer quotes.
 
 <PromptComparison
+  narration="A claim that the onboarding redesign failed because teammates were invited too early sounds plausible and cannot be checked. Evidence makes it checkable. The same claim, grounded, points to the largest drop at workspace_invite_shown to first_dashboard_view, falling from 62% to 41% in activation_funnel_enterprise for May 14 to 21, three support tickets quoting confusion about mandatory invites, and a redesign spec that lists the invite before the dashboard preview. Now if the metric, the date range, the quote, or the spec reference is wrong, you catch the drift. Evidence requirements do not make the model deterministic, they make unsupported claims visible."
   badLabel="Weak claim—pattern completion"
   goodLabel="Grounded claim—retrieval with evidence"
   bad={
@@ -31,6 +32,7 @@ The second claim is verifiable. If the metric, date range, quote, or spec refere
 Negation is a weak control surface because the model is not applying symbolic rules. It predicts continuations from the whole context, and the forbidden concept is still part of that context. Use "do not" to mark the boundary, then immediately specify the desired behavior in positive, concrete terms.
 
 <PromptComparison
+  narration="Telling the model not to make onboarding confusing names the outcome you fear and leaves it sitting in the context as the strongest signal. Negation is a weak control surface, because the model predicts continuations from whatever is in front of it, forbidden or not. So use the boundary, then immediately supply the positive opposite: keep the first-run path linear and value-first. Finish with the mechanism, ask for the workspace name before teammate invites, show optional setup only after dashboard preview, label optional steps as skippable. The model now has a concrete continuation instead of a prohibition."
   badLabel="Risky"
   goodLabel="Better—positive target plus boundary"
   goodNotes={[

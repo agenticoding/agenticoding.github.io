@@ -11,6 +11,7 @@ Structure organizes information and directs attention. Markdown, JSON, and XML w
 
 <PromptAnatomy
   sequenced
+  narration="Structure turns a request into something a reviewer can actually judge. It names the artifact first, here an architecture decision record for moving report generation from synchronous requests to asynchronous jobs. Then it separates why the decision exists from what cannot break, forces the real options onto the table, and closes by demanding a recommendation with trade-offs, a rollout and rollback plan, and observable success criteria. Why this matters, what cannot break, which options were considered, how success gets verified."
   items={[
     { label: 'Decision frame', detail: 'Sets the artifact as an architecture decision, not an implementation dump.' },
     { label: 'Context + constraints', detail: 'Separates why the decision exists from the non-negotiable boundaries.' },
@@ -57,6 +58,7 @@ The structure makes the decision reviewable: why this matters, what cannot break
 Without constraints, the model fills gaps with assumptions. Define boundaries explicitly.
 
 <PromptComparison
+  narration="Without constraints, the model fills every gap with its own assumptions, so it jumps straight into implementation. Give it the boundaries first and the same request becomes a migration plan instead of a vague refactor. Those boundaries protect what must not break, the API response contract, audit logs, idempotency, and rollback, and forbid a schema change without a backfill plan. A closing contract that demands evidence and flags the decisions needing human approval makes the plan report open questions instead of pretending to be complete."
   badLabel="Unconstrained"
   goodLabel="Constrained"
   goodNotes={[

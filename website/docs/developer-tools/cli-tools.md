@@ -1,8 +1,7 @@
 ---
-title: Modern CLI Tools
+title: Modern CLI Tools for Multi-Agent Workflows
+sidebar_label: Modern CLI Tools
 ---
-
-# Modern CLI Tools for Multi-Agent Workflows
 
 [Modern terminals](/developer-tools/terminals) combined with CLI tools achieve feature parity with traditional IDEs—ripgrep + fzf for global search, yazi for file exploration, tmux/Zellij for pane management, lazygit for git operations. For multi-agent development, this stack becomes critical infrastructure: session persistence across disconnects, rapid context switching between worktrees, and efficient file operations without breaking flow.
 
@@ -24,7 +23,7 @@ title: Modern CLI Tools
 
 **Installation:**
 
-```bash
+```bash narration="Every common route is covered: Homebrew on macOS, Cargo for a Rust toolchain, and the native package managers on Debian, Ubuntu and Arch. The result is one dependency-free binary on your path, and its ignore-aware search works immediately."
 # macOS
 brew install ripgrep
 
@@ -50,7 +49,7 @@ sudo pacman -S ripgrep       # Arch
 
 **Installation:**
 
-```bash
+```bash narration="fd installs through Homebrew, Cargo, or your distribution's package manager, where it is usually named fd-find because GNU find already owns the short name. Either path yields a single binary whose parallel, ignore-aware search behaves the same."
 # macOS
 brew install fd
 
@@ -78,7 +77,7 @@ sudo pacman -S fd              # Arch
 
 **Installation:**
 
-```bash
+```bash narration="micro installs from Homebrew, a direct download script, or the Go toolchain. All three place a single self-contained binary on your path with no runtime dependency; clipboard support on Linux optionally needs a helper such as xclip or xsel."
 # macOS
 brew install micro
 
@@ -105,7 +104,7 @@ Requirements: None (static binary). Optional: clipboard support via xclip/xsel o
 
 **Installation:**
 
-```bash
+```bash narration="Fresh is distributed through a Homebrew tap, Cargo, npm for cross-platform installs, and the Arch user repository. The channel only affects naming and updates; plugin development additionally needs the Deno runtime, which the static binary itself does not."
 # macOS
 brew tap sinelaw/fresh && brew install fresh-editor
 
@@ -135,7 +134,7 @@ Requirements: None (static binary). Optional: Deno for plugin development.
 
 **Installation:**
 
-```bash
+```bash narration="bat installs from Homebrew, Cargo, or the Debian, Ubuntu and Arch repositories. The result is one binary that replaces cat with syntax highlighting and git-aware diffs, while icon-heavy themes also need a compatible Nerd Font."
 # macOS
 brew install bat
 
@@ -163,7 +162,7 @@ sudo pacman -S bat         # Arch
 
 **Installation:**
 
-```bash
+```bash narration="lazygit arrives via Homebrew, the Go toolchain, Scoop on Windows, or the usual Linux package managers. It is a terminal interface layered over the git binary, so git must already be installed and customization lives in a YAML file under your user config."
 # macOS
 brew install lazygit
 
@@ -196,7 +195,7 @@ Requirements: git. Optional: custom config in `~/.config/lazygit/config.yml`.
 
 **Installation:**
 
-```bash
+```bash narration="eza installs through Homebrew, Cargo, or the Debian, Ubuntu and Arch repositories. It is the maintained fork of the abandoned exa project, so switching gains you git status columns, a tree view and icons while keeping an ls-compatible command."
 # macOS
 brew install eza
 
@@ -222,7 +221,7 @@ sudo pacman -S eza        # Arch
 
 **Installation:**
 
-```bash
+```bash narration="yazi installs from Homebrew, Cargo, or Arch's repository. Cargo pulls both the file manager and its companion command-line helper, which is why two crates are named together; the asynchronous interface then previews images, video and archives without leaving the terminal."
 # macOS
 brew install yazi
 
@@ -245,7 +244,7 @@ sudo pacman -S yazi       # Arch
 
 **Installation:**
 
-```bash
+```bash narration="fzf installs from Homebrew, a shallow git clone, or your package manager. On Homebrew the second command matters: it runs fzf's own installer, which wires the key bindings into your shell configuration, so skipping it gives you the binary without the shortcuts."
 # macOS
 brew install fzf
 $(brew --prefix)/opt/fzf/install  # Shell integration
@@ -262,7 +261,7 @@ sudo pacman -S fzf        # Arch
 :::tip fzf Shell Integration
 Full fzf power requires shell integration. After installation, run:
 
-```bash
+```bash narration="These lines are fzf's shell integration script in its Homebrew and manual-git variants. Running the one matching your installation adds the keyboard shortcuts for history search, file search, directory jumping and fuzzy completion, which is what turns the binary into a daily driver."
 $(brew --prefix)/opt/fzf/install  # macOS Homebrew
 ~/.fzf/install                     # Git installation
 ```
@@ -285,7 +284,7 @@ requires learning new command names (though `z` becomes muscle memory quickly).
 
 **Installation:**
 
-```bash
+```bash narration="zoxide installs from Homebrew, Cargo, or the Debian, Ubuntu and Arch package managers. Installation alone is not enough: your shell configuration file must also run its init command, after which it takes over directory changing and starts learning the paths you visit most."
 # macOS
 brew install zoxide
 
@@ -321,7 +320,7 @@ Requirements: Add to shell config (`~/.bashrc`, `~/.zshrc`, `~/.config/fish/conf
 
 **Installation:**
 
-```bash
+```bash narration="This installs tmux from Homebrew, the distribution package managers, or by compiling from source, which needs libevent and ncurses. Source builds suit servers whose packaged version is too old; the optional resurrection plugin and plugin manager are added separately."
 # macOS
 brew install tmux
 
@@ -357,7 +356,7 @@ Requirements: libevent and ncurses (pre-installed on most systems). Optional: tm
 
 **Installation:**
 
-```bash
+```bash narration="Zellij installs through Homebrew, Cargo, or Arch's package manager, and the comment points to the project's own documentation for the remaining platforms. The list is deliberately partial; layouts and the Wasm plugin system add no extra runtime beyond the binary."
 # macOS
 brew install zellij
 
@@ -383,7 +382,7 @@ sudo pacman -S zellij       # Arch
 
 **Example workflow:**
 
-```bash
+```bash narration="This run opens a page, snapshots the accessibility tree to obtain stable element references, clicks one by its reference, saves a screenshot and closes the browser. Clicking by reference avoids fragile selectors, and the snapshot must come first because references are assigned per snapshot."
 agent-browser open example.com
 agent-browser snapshot -i        # Returns refs: [ref=@e1] "Example Domain", [ref=@e2] "More information..."
 agent-browser click @e2          # Click by ref—deterministic, no selector fragility
@@ -393,7 +392,7 @@ agent-browser close
 
 **Installation:**
 
-```bash
+```bash narration="agent-browser installs globally through npm, then verifies itself with a version check. Installation needs Node and a Chromium-based browser, either bundled or already on the system; because the tool is native Rust, it adds no Python or Node cost at run time."
 # npm (recommended)
 npm install -g agent-browser
 

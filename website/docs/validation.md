@@ -30,7 +30,7 @@ Build the profile from production traces, support incidents, and domain knowledg
 
 Then define the **tolerance**: how much error, delay, degradation, or manual intervention is acceptable for this claim. The fundamental tradeoff is between **throughput** and **accuracy** — most workloads fall somewhere between those poles.
 
-<DiagramFrame kicker="Calibration" title="Precision costs throughput" size="wide" caption={<>Higher accuracy costs decision time; higher speed accepts more variation. Choose the position your claim can tolerate.</>}>
+<DiagramFrame kicker="Calibration" title="Precision costs throughput" size="wide" narration="Precision and throughput pull against each other, and the choice is a dial, not a switch. Push toward throughput and you decide faster and accept more variation; push toward accuracy and every decision costs more time and demands stronger evidence. There's no correct setting, only the one a given claim can defend. A campaign landing page can sit near the fast end. A control path that must never issue an unsafe command sits at the other. Most work lands in between, and calibrating that position is a product decision as much as an engineering one: it decides how much manual intervention per artifact the claim can tolerate." caption={<>Higher accuracy costs decision time; higher speed accepts more variation. Choose the position your claim can tolerate.</>}>
 <SpeedAccuracyTradeoff />
 </DiagramFrame>
 
@@ -38,7 +38,7 @@ Even the throughput end still needs validation: a broken form, false claim, or i
 
 The throughput/accuracy tradeoff is not solely an engineering decision — it is a product and business decision that determines how the engineering system is built. A product manager owning a campaign factory will calibrate differently than one shipping industrial control software. Designers have a stake too: a high-throughput validation pipeline can only scale if the evaluation rubric captures the design qualities the team cares about. The claim, profile, and tolerance should be written into the [feature spec](./spec-driven-development.md) before any agent runs — the agent acts against what the spec already established, not a fresh interpretation per execution.
 
-<DiagramFrame kicker="Validation lifecycle" title="Turn the claim into evidence before release" size="wide" caption={<>A release claim determines the operating profile and evidence plan. Field signals update that profile rather than ending validation.</>}>
+<DiagramFrame kicker="Validation lifecycle" title="Turn the claim into evidence before release" size="wide" narration="Validation isn't a gate you pass once and walk away from. It starts with a claim about what must hold, moves through the operating profile of representative use, then into the checks that make up your evidence. When something fails you analyze and retest to reproduce it. Release itself is bounded, canary and rollback, because it's still part of the loop. Then real field signals feed back and rewrite the operating profile, the conditions the claim has to survive. So production evidence doesn't end validation, it updates it. A confirmed failure in the field becomes a new condition the claim must hold under, plus a regression check that keeps it honest." caption={<>A release claim determines the operating profile and evidence plan. Field signals update that profile rather than ending validation.</>}>
 <ValidationEvidenceLifecycle />
 </DiagramFrame>
 

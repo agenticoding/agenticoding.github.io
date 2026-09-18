@@ -54,7 +54,7 @@ The harness does not just decide which content to include. It decides which role
 
 When you ask an agent to inspect the registration flow and find where email validation should happen, watch the context window grow. The user request enters first. The model emits a tool call. The harness executes the tool outside the model. The tool result is appended as an observation. The next model call sees that larger context and predicts from it.
 
-<DiagramFrame kicker="Agent mechanics" title="The context window is a living stream" size="wide" caption="Each turn rebuilds the context window. The layer view is only a source map; tool calls and tool results matter after the harness serializes them into raw context for a later request.">
+<DiagramFrame kicker="Agent mechanics" title="The context window is a living stream" size="wide" narration="The model never remembers the last step. The harness rebuilds the window every turn and decides what enters and which role carries it: system instructions, tool schemas, previous turns, memory, a tool call, the result it returned, your current request. Those are not interchangeable prose. A tool definition is an action contract; a tool result is evidence returned by the environment. And none of it changes behavior until the harness serializes it back into the next request, which is why a failed test or a project rule only matters once a later call carries it." caption="Each turn rebuilds the context window. The layer view is only a source map; tool calls and tool results matter after the harness serializes them into raw context for a later request.">
   <LivingContextWindowStream />
 </DiagramFrame>
 
@@ -89,5 +89,7 @@ For codebases, tools like [ChunkHound](https://chunkhound.github.io) [disclosure
 Retrieval decides which tokens enter the request. The role that carries them decides how the model reads them.
 
 ---
+
+[disclosure]: /about 'Disclosure: the author created ChunkHound'
 
 **Next:** [Roles and Tool Contracts](./agent-roles-tools-contract.mdx)

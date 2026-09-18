@@ -14,15 +14,16 @@ Skills are the **procedure-side analogue of deferred MCP tools**. The agent sees
 ### Two Invocation Paths
 
 <DiagramFrame
-  kicker="Context management"
-  title="Who picks the skill decides what stays in the valley"
-  size="wide"
-  caption={
-    'Both paths pay the same discovery metadata. Manual invocation loads one procedure; a near match loads a second one it never uses — and never removes.'
-  }
->
-  <SkillsInvocationDiagram />
-</DiagramFrame>
+kicker="Context management"
+title="Who picks the skill decides what stays in the valley"
+size="wide"
+narration="Skills cost the same to advertise either way: the discovery metadata for every installed skill sits in the prefix. What differs is who picks, and that decides what else ends up in the window. Invoke a procedure manually and exactly one loads, right behind your prompt while attention is still strong. Let the model auto-discover and you are paying for a gamble: a near match loads a procedure the task never needed, plus the false start it produced, and both sit in the weak middle for the rest of the run. Grow the catalog to twelve skills and only two bodies ever enter the window. Everything separating the two paths is the price of one bad pick, and manual invocation never pays it."
+caption={
+'Both paths pay the same discovery metadata. Manual invocation loads one procedure; a near match loads a second one it never uses — and never removes.'
+}
+
+>   <SkillsInvocationDiagram />
+> </DiagramFrame>
 
 Drag the catalog control: it grows the discovery metadata carried by both prefixes, pushing the prompt deeper into the attention valley, while every procedure body stays out of the window until something activates it. The AUTO panel always shows a near match, because that is the only outcome worth drawing — a lucky direct match reproduces the manual trace exactly. The wrong procedure body and the false-start turn it produced load before the correct skill and then sit at the bottom of the valley for the rest of the run. Everything separating the two panels is the price of one bad pick, and manual invocation never pays it.
 

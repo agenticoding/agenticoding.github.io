@@ -1,0 +1,258 @@
+{
+  "chapterId": "how-llms-work",
+  "sourceHash": "e8e9305ad59fdd61ea98ad8db8440cb53ba0af25053dca31ffa523a2ede2498b",
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Here's the thing about operating agents. It starts with a grounded model of the engine inside the agent. And the counterintuitive part is this: you don't need to understand LLMs to use them. You need to understand them to use them well."
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "That distinction matters. If I skip the mechanics, I'll end up blaming the model for failures that are actually mine."
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Exactly. The next few chapters are just enough of how they work, and where they fail, so you can pick the right model, stay inside its sweet spot, and catch problems before they cost you."
+    },
+    {
+      "id": "t4",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "So let's kill the mystique first. An LLM is not magic, not a coworker, and not a mind. It's a token prediction system trained on large-scale patterns in text, code, images, audio, or whatever data the model was built around."
+    },
+    {
+      "id": "t5",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "And that reductive framing isn't dismissive. It's what explains why LLMs are useful, why they fail, and why there's no such thing as the best model."
+    },
+    {
+      "id": "t6",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Which lands you on the operator stance. Treat every LLM as a powerful probabilistic tool with a specific operating envelope. Pick it, route to it, and constrain it like any other production dependency."
+    },
+    {
+      "id": "t7",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Same discipline I'd apply to a database or a queue: choose where it runs, point the work at it, and bound what it can touch. Different failure modes."
+    },
+    {
+      "id": "t8",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "Now let's build the engine. A Large Language Model is a statistical pattern engine built on transformer architecture. When you send it a prompt, it runs one loop, over and over."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "Encode the input as model-specific tokens. Use attention to read relationships across the current context. Estimate the likely next tokens. Pick one of those tokens. Append it to the context. Repeat."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "So context is everything the model can see right now. Instructions, input, tool results, everything generated so far. And tokens are the units inside that sequence."
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "Right. Each token becomes numbers the model can work with, plus information about its order. And attention uses the surrounding tokens to interpret each one. Bank next to river carries different information than bank next to account."
+    },
+    {
+      "id": "t12",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "So it isn't looking anything up. It's reading relationships in whatever is in front of it."
+    },
+    {
+      "id": "t13",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "Exactly. The output is one predicted next token, which immediately becomes part of the next context. That single loop is the mechanism behind every fluent paragraph, code patch, tool call, or chain of steps the model emits."
+    },
+    {
+      "id": "t14",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "And that's why it fits engineering. Most software work is already token-shaped: code, diffs, logs, shell commands, tickets, docs, test failures, review comments, tool schemas."
+    },
+    {
+      "id": "t15",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "Multimodal models extend the same mechanism. They encode screenshots, diagrams, audio, PDFs, and charts into token streams the model can condition on."
+    },
+    {
+      "id": "t16",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "Here's the whole thing in one idea. The model never plans an answer. It does one thing, over and over: it looks at everything in the context right now, bets on one of the tokens that would fit next, appends that token, and looks again."
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "That's why the output can read like intention when there is none behind it, and why a confident answer drifts the moment the next likely token is the wrong one."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "So there's no hidden plan I can appeal to. Fluent output isn't evidence of intent. It's a very good next-token guess feeding itself, which is exactly why it can drift without noticing."
+    },
+    {
+      "id": "t19",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "Now tokens. They're the units the model processes and emits: a word, a subword, punctuation, an image patch, an audio frame, or a tool-call structure, depending on the modality. Rule of thumb for English, one token is about 0.75 words."
+    },
+    {
+      "id": "t20",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 1 },
+      "text": "However different the inputs look — text, code, an image, a sound — the model reads them as one kind of unit."
+    },
+    {
+      "id": "t21",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 1 },
+      "text": "None of those shapes gets a privileged path; none is more native to the model than the others. That sameness is the entire point: the model never has to know what it is looking at."
+    },
+    {
+      "id": "t22",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 1 },
+      "text": "So there's no separate image brain and text brain, just one mechanism applied to one kind of unit."
+    },
+    {
+      "id": "t23",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "Which makes tokens the model's input and output budget. Providers bill by token, the context window is measured in tokens, and more tokens means higher cost and latency. Output tokens are priced 4–8 times higher than input tokens."
+    },
+    {
+      "id": "t24",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "But for coding workloads the volume ratio flips it. Feed 50,000 tokens of context for a 200-token edit, and input accounts for 70–85 percent of the bill. That's from morphllm, and it holds up."
+    },
+    {
+      "id": "t25",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "So the expensive part usually isn't the answer. It's the context I fed it. That turns both prompt and context design into cost engineering."
+    },
+    {
+      "id": "t26",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-an-llm-actually-is" },
+      "text": "One correction to a common assumption. Attention relates tokens inside the current context. It is not persistent memory, and it is not retrieval. More context gives the model more material to relate, but it doesn't guarantee the right evidence will influence the answer. That's the long-context reliability problem, and it shows up in cost and latency too."
+    },
+    {
+      "id": "t27",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-reasoning-actually-is" },
+      "text": "Now the obvious question: if the model only predicts one token at a time, where does reasoning come from? Every pass is the same fixed pipeline. One token buys a fixed amount of computation — a hard ceiling on how big a problem a single step can solve."
+    },
+    {
+      "id": "t28",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-reasoning-actually-is" },
+      "text": "So how does it get past that ceiling?"
+    },
+    {
+      "id": "t29",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-reasoning-actually-is" },
+      "text": "The same way you do long division on paper. You can't hold the intermediate results in your head, so you write them down, and each partial result gets read back and used for the next step. Reasoning tokens are that paper. They're appended to the context and read back on the following passes, so the model can carry partial work forward and take on problems no single token could."
+    },
+    {
+      "id": "t30",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-reasoning-actually-is" },
+      "text": "So more steps buy bigger problems, but they're not free. Each added step is another place for an error to creep in: a wrong step feeds everything built on it, and nothing in the chain checks itself."
+    },
+    {
+      "id": "t31",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "why-the-same-prompt-gives-a-different-answer"
+      },
+      "text": "Now let's put that loop under pressure. Every pass through it is a draw, not a lookup. The model scores the tokens that would plausibly come next, then picks one — weighted toward the top of the list, but not always the top. And a different pick sends everything after it somewhere else: same prompt, same model, two different answers that are both defensible."
+    },
+    {
+      "id": "t32",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "why-the-same-prompt-gives-a-different-answer"
+      },
+      "text": "You used to be able to trade predictability for variety with a temperature setting, and the frontier APIs don't expose one anymore — it survives on older hosted models and your own open weights. What replaced it is a different dial: how many intermediate steps a request may spend before it answers — reasoning effort, sometimes thinking level. It is not a cleaner version of the draw. It is a longer chain of the model's own working steps, and every extra step is another chance: more room to find the right route, and more room for one wrong turn to get baked into everything after it."
+    },
+    {
+      "id": "t33",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "why-the-same-prompt-gives-a-different-answer"
+      },
+      "text": "Vendors sell that as quality bought with latency and tokens, and on hard problems the trade usually pays. Usually is the operative word. Accuracy peaks at an intermediate reasoning length and then declines — the same lesson long context teaches, that past a point more is not better. And while the most common answer keeps improving with more thinking, any single run gets less predictable."
+    },
+    {
+      "id": "t34",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "why-the-same-prompt-gives-a-different-answer"
+      },
+      "text": "So more thinking doesn't remove the variance. It moves the center of the answers in the right direction, while any single run wanders further. That's the part I have to hold: better on average, less predictable on any one attempt."
+    },
+    {
+      "id": "t35",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "stochastic-by-design" },
+      "text": "Now the design question behind all of it. A stochastic system does not converge on one answer. Deterministic tools codify instances: a compiler, a regex, a linter each encode the exact case, and a new case means new code. Designing a data model, reading a stack trace, triaging a bug report, summarizing a week of notes — none of it reduces to an exact rule. There's a pattern to approximate, not a rule to follow, and two runs approximate it differently."
+    },
+    {
+      "id": "t36",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "stochastic-by-design" },
+      "text": "That's what the randomness is for. Each run draws a plausible generalization, so you can aim the model at a problem instead of enumerating cases. Pin it to one fixed output and you've asked a pattern generalizer to act like a lookup table — same answer every time, right or wrong, with no room to generalize or explore."
+    },
+    {
+      "id": "t37",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "stochastic-by-design" },
+      "text": "So the variability isn't a defect I'm supposed to engineer away. It's the mechanism that lets the model handle problems I can't write a rule for. Fighting it means I've picked the wrong tool."
+    },
+    {
+      "id": "t38",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "stochastic-by-design" },
+      "text": "Attempts are not answers. A stochastic system has no invariants to check, only a distribution. Reliability comes from the guardrails around it — schemas, tests, diffs, retries, review, the control plane — not from the model. It has no intent behind any of it, which is why it is a tool and never an authority."
+    },
+    {
+      "id": "t39",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "stochastic-by-design" },
+      "text": "Everything in this chapter happens in the moment of answering. Where those probabilities come from is the next chapter: how training bakes patterns into the weights, and how post-training turns that engine into the product behind the API."
+    },
+    {
+      "id": "t40",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "So let me put the whole thing together. A language model isn't a coworker — it's a pattern engine. One mechanism, repeated: read the context, weigh what fits next, emit a token, do it all again. Every pass is a fresh draw, so the same question can land two reasonable ways, and spending longer on a hard problem moves the typical answer without taming any single run. That puts the safety on my side of the line: schemas, tests, review, retries. It is a capable, probabilistic component with a known range — and I run it like any other dependency in the stack."
+    }
+  ]
+}

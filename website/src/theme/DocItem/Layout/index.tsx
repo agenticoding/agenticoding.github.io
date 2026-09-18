@@ -12,6 +12,9 @@ import DocBreadcrumbs from '@theme/DocBreadcrumbs';
 import ContentVisibility from '@theme/ContentVisibility';
 import type { Props } from '@theme/DocItem/Layout';
 
+import { useActiveHeadingPublisher } from '../../useActiveHeading';
+import AudioDock from '../../audio/AudioDock';
+import AudioEngine from '../../audio/AudioEngine';
 import styles from './styles.module.css';
 
 /**
@@ -36,6 +39,8 @@ function useDocTOC() {
 export default function DocItemLayout({ children }: Props): ReactNode {
   const docTOC = useDocTOC();
   const { metadata } = useDoc();
+  // The one scrollspy for this page: both TOC instances read the store it publishes to.
+  useActiveHeadingPublisher(metadata.id);
 
   return (
     <div className="row">
@@ -52,7 +57,10 @@ export default function DocItemLayout({ children }: Props): ReactNode {
             <DocItemContent>{children}</DocItemContent>
             <DocItemFooter />
           </article>
+          {/* Sibling of <article>: the artifact test asserts DOM contracts on article p. */}
+          <AudioEngine chapterId={metadata.id} title={metadata.title} />
           <DocItemPaginator />
+          <AudioDock />
         </div>
       </div>
     </div>

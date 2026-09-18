@@ -15,7 +15,13 @@ Take one instruction:
 
 The words are identical in every case. The source role changes how the model is expected to treat them.
 
-<DiagramFrame kicker="Agent mechanics" title="The same words behave differently by source role" size="wide" caption="Same words, different source role: the role boundary changes the model's predicted continuation.">
+<DiagramFrame
+  kicker="Agent mechanics"
+  title="The same words behave differently by source role"
+  size="wide"
+  narration="Here's the same sentence in three places: a system message, a user request, and an observation like command output. The words never change, but the model doesn't treat them the same. In a system message it reads as a standing rule; in a user turn it reads as a task preference, followed unless something overrides it; in an observation it's data to interpret, never a command to obey. That's not formatting, it's training: message roles are part of the input, so the same words predict different continuations depending on who carries them. Which means defending against prompt injection isn't about filtering text, it's about keeping lower-authority content from acting like a higher-authority instruction."
+  caption="Same words, different source role: the role boundary changes the model's predicted continuation."
+>
   <InstructionLayerAuthority />
 </DiagramFrame>
 

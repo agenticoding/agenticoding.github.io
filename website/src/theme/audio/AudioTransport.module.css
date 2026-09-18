@@ -1,0 +1,70 @@
+/*
+ * The player's one line and its one status text, shared by the desktop band and the mobile
+ * dock so the two surfaces cannot drift: same button, same truncation, same words.
+ * Flat construction — 0 radius, no shadows, achromatic.
+ */
+
+.line {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.play {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--target-sm);
+  height: var(--target-sm);
+  padding: 0;
+  border: 1px solid var(--border-default);
+  background: var(--surface-page);
+  color: var(--text-heading);
+  cursor: pointer;
+}
+
+.play:hover {
+  background: var(--surface-muted);
+}
+
+/* The repo's focus treatment: a hairline outline, offset so a filled state cannot hide it. */
+.play:focus-visible {
+  outline: 1px solid var(--border-emphasis);
+  outline-offset: 1px;
+}
+
+/*
+ * Which heading is playing. The fraction never shrinks and the heading takes what is left,
+ * so a long title ellipsises rather than growing the surface it sits in. The full title
+ * stays in the DOM, so assistive tech still reads all of it.
+ * `flex: 1` gives a zero basis, so the heading's unbounded max-content width stays out of
+ * the row's flex resolution — an `auto` basis put it in, which shrank the GitHub anchor.
+ */
+.status {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.position {
+  flex: none;
+  font-family: var(--font-mono-keyword);
+  font-feature-settings: var(--font-mono-features);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.heading {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  color: var(--text-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

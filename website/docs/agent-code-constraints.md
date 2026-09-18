@@ -8,7 +8,7 @@ Agents discover your codebase through **agentic search**—Grep, Read, Glob. **A
 
 **Anti-pattern (scattered constraints):**
 
-```typescript
+```typescript narration="The scattered-constraint anti-pattern. A user-creation function hashes and stores the password while the length rule lives in a separate validation file. An agent searching for the function never opens that file. The detail that matters is that the constraint is invisible to the search, so the next generated caller accepts passwords the rule forbids."
 // File: services/auth.ts
 function createUser(email: string, password: string) {
   return db.users.insert({ email, password: hashPassword(password) });
@@ -22,7 +22,7 @@ const MIN_PASSWORD_LENGTH = 12; // ← Agent never searches for this file
 
 **Production pattern (co-located constraints):**
 
-```typescript
+```typescript narration="The co-located pattern. The minimum password length lives in the same file as the function that enforces it, so one read reveals the constraint and the guard rejects anything shorter before persistence. The detail that matters is discoverability rather than the check: the agent meets the rule in the same context window as the code it is about to extend."
 // File: services/auth.ts
 const MIN_PASSWORD_LENGTH = 12; // ← Agent sees this in same file
 
@@ -42,7 +42,7 @@ function createUser(email: string, password: string) {
 
 When constraints must be shared across modules, create **semantic bridges**—comments with related semantic keywords enabling semantic search and code research tools to discover relationships:
 
-```typescript
+```typescript narration="The semantic-bridge pattern for unavoidable separation. The shared constant carries a comment about password strength and minimum character length, and the consumer carries a comment about credential validation and security constraints, so both files answer a semantic query even though they share no words. The detail that matters is that meaning, not naming, is what the search matches."
 // File: shared/constants.ts
 // Password strength requirements: minimum character length enforcement
 export const MIN_PASSWORD_LENGTH = 12;

@@ -13,7 +13,7 @@ An agent is the software system wrapped around that model call. The harness supp
 
 The agent loop is not a cognitive cycle. It is an application loop around repeated LLM calls. Each pass prepares input context, gets model output, validates the output, performs any approved side effect, and serializes the result back into the next context.
 
-<DiagramFrame kicker="Agent mechanics" title="Agents run inside a harness loop" size="standard" caption={<>
+<DiagramFrame kicker="Agent mechanics" title="Agents run inside a harness loop" size="standard" narration="An agent isn't a thinking cycle, it's an ordinary application loop wrapped around repeated model calls. Each pass assembles context, asks the model for the next output, validates that output, runs any approved action, and folds the result back into the next context. That's the whole thing. The model only ever predicts tokens; everything that makes it useful, checking the output against schema and budget and permissions, executing tools, capturing observations, deciding when to stop, lives in the harness around it. Read the boundary that way and the whole thing stops being mysterious: it's a deterministic control plane steering a probabilistic engine." caption={<>
     The harness turns model output into a controlled loop: context in, validated
     action out, observation back into context.
 </>}>
@@ -24,7 +24,7 @@ Once you see the loop as context flow, the agent boundary becomes explicit. The 
 
 A stripped-down version looks like this:
 
-```ts
+```ts narration="The loop keeps a fixed instruction prefix and an append-only transcript. Each turn rebuilds context from that prefix plus everything accumulated, asks the model, inspects the raw reply, and appends it. Tool calls run outside the model, their observations are appended, and the harness decides whether to stop on completion, an exhausted budget, or a full context window."
 // Fixed prefix: instructions, tool definitions, and the current task.
 const base = basePrompt(task);
 // Accumulated transcript: everything appended so far.

@@ -20,7 +20,7 @@ This chapter introduces that operating workflow. Each phase answers one operator
 
 ## The Four-Phase Workflow
 
-<DiagramFrame kicker="Methodology" title="The operator loop" size="standard">
+<DiagramFrame kicker="Methodology" title="The operator loop" size="standard" narration="Production work is bigger than one context window, so you run it as a loop of four phases, each answering one operator question. Grounding: what reality does the agent need before it acts? Planning: what shape should the work take, and where are the checkpoints? Execution: how much autonomy is safe for this unit? And validation: did the result actually meet the goal? The loop matters because failures have different causes. Missing knowledge means grounding was weak; a wrong approach means planning was weak. So when a result comes back weak, you don't restart, you route the work back to the phase that failed.">
     <OperatorCycleDiagram />
 </DiagramFrame>
 

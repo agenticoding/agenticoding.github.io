@@ -4,8 +4,6 @@ title: CLI Coding Agents
 
 import ToolMark from '@site/src/components/VisualElements/ToolMark';
 
-# CLI Coding Agents
-
 **CLI coding agents are the orchestration layer for agentic development.** [How agents work](/how-agents-work) explains the harness loop behind that orchestration. CLI agents read and change files, run commands, and work naturally with terminals, SSH, worktrees, and scripts. They are distinct from IDE-bound assistants — today led by GitHub Copilot's agent mode in VS Code and Zed's agent panel, alongside Cursor and Windsurf — though the boundary keeps blurring: Copilot and Cursor ship their own CLIs, and Zed hosts CLI agents like Claude Code via ACP and terminal threads.
 
 This is an opinionated shortlist for serious engineering work, ordered by recommendation. The practical differences are model choice, subscription economics, and how much of the workflow the tool imposes on you.
@@ -38,7 +36,7 @@ That steering is the other side of the axis. A harness that controls the model h
 
 **Installation:**
 
-```bash
+```bash narration="The installer script is piped straight into the shell, fetching and placing the pi binary without a package manager. It needs only a POSIX shell and network access, and the login that follows connects whichever model provider you choose."
 curl -fsSL https://pi.dev/install.sh | sh
 ```
 
@@ -64,7 +62,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 
 **Installation:**
 
-```bash
+```bash narration="OpenCode installs through a script downloaded over HTTPS and executed, which puts the binary on your path. Nothing is a hosted service here: the setup is local-first, so no account is required before you run it and attach a provider."
 curl -fsSL https://opencode.ai/install | bash
 ```
 
@@ -89,7 +87,7 @@ curl -fsSL https://opencode.ai/install | bash
 
 **Installation:**
 
-```bash
+```bash narration="OpenAI's installer script delivers the Codex command-line client. Because the ChatGPT login travels across harnesses, the same sign-in can later be reused in pi or OpenCode, while an API key is the alternative for scripted and automated use."
 curl -fsSL https://chatgpt.com/codex/install.sh | sh
 ```
 
@@ -113,7 +111,7 @@ curl -fsSL https://chatgpt.com/codex/install.sh | sh
 
 **Installation:**
 
-```bash
+```bash narration="This installs Anthropic's Claude Code globally through npm, so the command is available from any directory. It needs a supported Node runtime, and authentication afterwards uses either the Claude subscription or metered API credentials."
 npm install -g @anthropic-ai/claude-code
 ```
 
@@ -139,7 +137,7 @@ npm install -g @anthropic-ai/claude-code
 
 **Installation:**
 
-```bash
+```bash narration="Antigravity, the successor to Gemini CLI, installs from Google's script into the local path. Sign-in uses an ordinary Google account with no billing step, though a free daily and weekly request allowance caps how far it goes."
 curl -fsSL https://antigravity.google/cli/install.sh | bash
 ```
 
@@ -161,6 +159,6 @@ curl -fsSL https://antigravity.google/cli/install.sh | bash
 
 **Installation:**
 
-```bash
+```bash narration="GitHub's Copilot command-line client installs globally with npm. It only pays off when an organization already funds Copilot seats, so procurement and policy rather than capability are the deciding factors here, and personal users are pointed at other tools."
 npm install -g @github/copilot
 ```

@@ -54,3 +54,6 @@ src-tauri/gen/
 # Cargo.lock is intentionally tracked (application binary, not library)
 # .openmoji-cache
 scripts/.openmoji-cache/
+
+# audiobook: rendered PCM cache (committed: narration scripts, MP3s and the manifest)
+website/audio/.cache/

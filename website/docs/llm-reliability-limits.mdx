@@ -19,6 +19,7 @@ An LLM has different machinery. It does not store a set of claims, prove new cla
   kicker="LLM mechanics"
   title="Probability imitates logic; it does not become logic"
   size="wide"
+  narration="A proof works by derivation: if the premises are true and the rules are valid, the conclusion must follow. Token prediction works by probability: the model picks the continuation that best fits the context, and the result is only the path it happened to sample. So output can be proof-shaped without being governed by proof. A fluent, confident explanation is therefore a candidate to verify, not an answer to trust."
   caption={
     <>
       Logic follows a rule path from premises to a conclusion. Token prediction
@@ -48,6 +49,7 @@ An LLM does not expose an equivalent human-style account. The model that just pr
   kicker="Error structure"
   title="Human and LLM mistakes leave different clues"
   size="wide"
+  narration="Human mistakes usually leave a trail you can inspect — a knowledge gap, fatigue, a bias — so a reviewer knows where to look. A model can run a flawless analysis and then get 2 + 2 = 5, with no causal account of why that answer went wrong. Its failure may correlate with training coverage, task shape, or context quality, but the answer itself doesn't tell you which. So you can't calibrate trust the way you would with a person; you have to substitute external evidence."
   caption={
     <>
       Human errors often expose factors that guide review. An LLM can produce a
@@ -78,6 +80,7 @@ The previous framing — probability imitates logic but does not guarantee it �
   kicker="LLM mechanics"
   title="Local predictions compound into global outcomes"
   size="wide"
+  narration="Every token is picked as the best local continuation, and that pick immediately becomes context for the next one, so it rewrites the odds for everything that follows. From a prompt about the checkout button flow, small near-coin-flip choices compound: one run earns trust, another hits a surprise fee, another abandons the cart. Each step can look reasonable while the run lands somewhere wrong. A wrong token early on doesn't stay local — it becomes evidence for the next prediction."
   caption={
     <>
       Each selected token is plausible from the current context. Once selected,

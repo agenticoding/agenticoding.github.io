@@ -29,7 +29,7 @@ A spec nobody reads carefully is not a checkpoint. It is a ritual.
 
 One spec may feed several plans:
 
-<DiagramFrame kicker="Execution boundaries" title="One stable spec, several bounded runs" size="wide" caption="The approved feature spec remains the human-approved contract. Every run re-checks against the code state left by the preceding run before making its next plan.">
+<DiagramFrame kicker="Execution boundaries" title="One stable spec, several bounded runs" size="wide" narration="A feature spec sits one level above any single execution run. A human approves the intent, weighing scope and trade-offs, and that approval releases a spec holding the boundaries, constraints, and evidence the work has to satisfy. From there the same spec drives run after run without being renegotiated. Each run grounds again, because the codebase changed since the last one, plans against the code that run left behind, executes, and validates. The spec stays fixed while execution keeps re-grounding against reality. That split is the point: the spec holds what a human decided, and the plans handle what current code already determines." caption="The approved feature spec remains the human-approved contract. Every run re-checks against the code state left by the preceding run before making its next plan.">
   <SpecExecutionRunsDiagram />
 </DiagramFrame>
 

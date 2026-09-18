@@ -16,7 +16,7 @@ Training is optimization. The training system shows the model many examples of i
 
 For a language model, the basic pretraining task is next-token prediction:
 
-```text
+```text narration="This is next-token prediction in miniature: given the opening context, the target is the next token. The detail that matters is that the desired text is the training label, never part of the input — the model is scored on how much probability it assigns to it, and training nudges the weights until similar contexts score it higher."
 Context: "The capital of France is"
 Desired next token: " Paris"
 ```
@@ -24,6 +24,8 @@ Desired next token: " Paris"
 If the model assigns low probability to `" Paris"`, the loss is high. If it assigns high probability, the loss is low. Across billions or trillions of examples, training searches for weight values that reduce average loss.
 
 That is the sense in which the model "learns." It does not write facts into named database rows. It tunes a very large mathematical function until its outputs approximate the patterns in the training data.
+
+Training text is full of worked solutions — homework answers, code walkthroughs, derivations. "Show the steps" is a pattern in that data, and next-token prediction picks it up. The base model can already reason; post-training decides how reliably it does, and how much it tends to think before answering.
 
 :::tip[Training is local optimization, not guaranteed discovery]
 Training searches through a high-dimensional space where every point is one possible setting of the model's weights. The loss function defines the terrain: lower is better, but the terrain is not a smooth bowl with one obvious bottom.
@@ -50,6 +52,7 @@ This knowledge is not stored like rows in a database. It is distributed across p
   kicker="LLM mechanics"
   title="Training compresses examples into model behavior"
   size="wide"
+  narration="The model stores no fact rows and no playbook entries. Training compresses both world knowledge — facts, docs, code idioms, formats — and action patterns — how to answer, ask, repair, validate — into the same distributed weights. That sharing is exactly what lets it generalize past the examples it saw, and it is also why a particular failure is so hard to trace back to a cause."
   caption={
     <>
       The model does not retrieve a fact row or a playbook entry. Training
@@ -83,6 +86,7 @@ Read the stages as a manufacturing pipeline. Each stage narrows the raw continua
   kicker="LLM mechanics"
   title="Post-training shapes product behavior"
   size="standard"
+  narration="A model you use is rarely just pretrained. Vendors post-train a base model through a sequence of stages — supervised fine-tuning, preference training, verifiable rewards, domain data — and each stage narrows raw continuation toward the behavior they chose to ship: follow instructions, be helpful, refuse unsafe requests, do checked reasoning, call tools, fit a domain. Read it as a manufacturing pipeline, not a single training run. That is why a model can win on one dimension and lose on another."
   caption={
     <>
       The final model reflects deliberate product choices about customers,
@@ -93,13 +97,13 @@ Read the stages as a manufacturing pipeline. Each stage narrows the raw continua
   <PostTrainingTuningBoard />
 </DiagramFrame>
 
-Reinforcement-style post-training is one way manufacturers shape behavior. [InstructGPT](https://arxiv.org/abs/2203.02155) popularized the supervised fine-tuning + reward model + reinforcement learning pipeline for instruction following. Later methods such as [DPO](https://arxiv.org/abs/2305.18290) simplify preference optimization. Verifiable rewards go further for tasks like code, math, retrieval, and tool use because the output can be checked.
+Reinforcement-style post-training is one way manufacturers shape behavior. [InstructGPT](https://arxiv.org/abs/2203.02155) popularized the supervised fine-tuning + reward model + reinforcement learning pipeline for instruction following. Later methods such as [DPO](https://arxiv.org/abs/2305.18290) simplify preference optimization.
 
-For code, the objective may include tests or compiler feedback. For tool use, it may include correct function calls. For regulated domains, it may include compliance, citations, or safe refusal behavior.
+Post-training is where a vendor turns that engine into a product. It decides what the model is good at, what it refuses, and how much reasoning it reaches for on its own. Training sets the range of how far it can think; the thinking setting on a request picks where inside that range it lands — and exposing that setting at all is itself a product decision.
 
-That is the product reality behind many model claims: vendors are not selling generic intelligence. They are selling differently trained behavior profiles.
+That is the product reality behind a lot of model claims: vendors aren't selling generic intelligence. Any model in the market today is a deliberate product choice, with a target use case its creators had in mind. Someone picked a base model, decided what it should be good at and what it should never do, then shipped that.
 
-Every one of those profiles is produced by optimization, not by rules. That is where the practical limits begin.
+Every one of those choices is produced by optimization, not by rules — which is where the practical limits begin.
 
 ---
 

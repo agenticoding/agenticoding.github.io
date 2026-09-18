@@ -25,12 +25,12 @@ dependency.
 
 ## What an LLM Actually Is
 
-A Large Language Model is a statistical pattern engine built on [transformer architecture](<https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)>). At inference time, it repeatedly runs one loop:
+A Large Language Model is a statistical pattern engine built on [transformer architecture](<https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)>). When you send it a prompt, it runs one loop, over and over:
 
 1. Encode the input as model-specific tokens
 2. Use attention to read relationships across the current context
 3. Estimate likely next tokens
-4. Sample or select one token
+4. Pick one of those tokens
 5. Append it to the context
 6. Repeat
 
@@ -38,7 +38,7 @@ Here, **context** is everything currently available to the model: instructions, 
 
 Inside the model, each token becomes numbers the model can work with, along with information about its order. Attention uses the surrounding tokens to interpret each one—`bank` carries different information beside `river` than beside `account`.
 
-The output is one predicted next token, which immediately becomes part of the next context. This loop is the core mechanism behind every fluent paragraph, code patch, tool call, or reasoning trace the model emits.
+The output is one predicted next token, which immediately becomes part of the next context. This loop is the core mechanism behind every fluent paragraph, code patch, tool call, or chain of steps the model emits.
 
 That works for engineering because most software work is already token-shaped: code, diffs, logs, shell commands, tickets, docs, test failures, review comments, and tool schemas. Multimodal models extend the same mechanism by encoding screenshots, diagrams, audio, PDFs, and charts into token streams the model can condition on.
 
@@ -46,6 +46,7 @@ That works for engineering because most software work is already token-shaped: c
   kicker="LLM mechanics"
   title="The model predicts the next token"
   size="standard"
+  narration="The model never plans an answer. It does one thing, over and over: it looks at everything in the context right now, bets on one of the tokens that would fit next, appends that token, and looks again. That is why the output can read like intention when there is none behind it, and why a confident answer drifts the moment the next likely token is the wrong one."
   caption={
     <>
       The selected token is appended to the context, then the same loop runs
@@ -56,24 +57,44 @@ That works for engineering because most software work is already token-shaped: c
   <TokenPredictionDiagram />
 </DiagramFrame>
 
-:::tip[Tokens and Sampling]
+:::tip[Tokens]
 **Tokens** are the units the model processes and emits — a word, subword, punctuation, image patch, audio frame, or tool-call structure depending on the modality. Rule of thumb for English: 1 token ≈ 0.75 words.
 
-<TokenTypeIllustration />
+<TokenTypeIllustration narration="However different the inputs look — text, code, an image, a sound — the model reads them as one kind of unit. None of those shapes gets a privileged path; none is more native to the model than the others. That sameness is the entire point: the model never has to know what it is looking at." />
 
 Tokens define the model's input/output budget: providers bill by token, the context window is measured in tokens, and more tokens means higher cost and latency. Output tokens are priced 4–8× higher than input tokens ([morphllm](https://www.morphllm.com/ai-coding-costs)), but for coding workloads the volume ratio flips the cost: feeding 50,000 tokens of context for a 200-token edit means [input accounts for 70–85% of the bill](https://www.morphllm.com/llm-cost-calculator).
-
-**Sampling** controls how the next token is selected. Temperature 0 (greedy) picks the highest-probability token and removes sampling randomness, which is useful for evals and structured tool calls. It does not guarantee correctness or identical runs across the serving stack. Temperature > 0 samples from the distribution, introducing variance useful for drafting and brainstorming. Top-p and top-k further restrict the candidate set.
 :::
 
-Attention relates tokens inside the current context; it is not persistent memory or search. More context gives the model more material to relate, but it does not guarantee the right evidence will influence the answer. That matters for cost, latency, and long-context reliability.
+Attention relates tokens inside the current context; it is not persistent memory or retrieval. More context gives the model more material to relate, but it does not guarantee the right evidence will influence the answer. That matters for cost, latency, and long-context reliability.
 
-The model has no consciousness, intent, or feelings. It does not "want" to solve your task. It produces continuations that are likely under its training and instruction context.
+## What Reasoning Actually Is
 
-That does not make it useless. It makes it a tool.
+Every pass through the model is the same fixed pipeline. One token buys a fixed amount of computation — a hard ceiling on how big a problem a single step can solve.
 
-The loop explains what the model does at inference time. Training explains where its behavior came from.
+Long division on paper is the same situation. You can't hold the intermediate results in your head, so you write them down: each partial result is read back and used for the next step. Reasoning tokens are that paper. They're appended to the context and read back on the following passes, letting the model carry partial work forward and take on problems no single token could.
+
+Same trade as on paper: more intermediate steps means more places for an error to creep in. A wrong step feeds everything built on it, and nothing in the chain checks itself.[^reasoning-faithfulness]
+
+## Why the Same Prompt Gives a Different Answer
+
+Every pass through that loop is a draw, not a lookup. The model scores the tokens that would plausibly come next, then picks one — weighted toward the top of the list, but not always the top. A different pick sends everything after it somewhere else: same prompt, same model, two different answers that are both defensible.
+
+You used to be able to trade predictability for variety with a **temperature** setting, and the frontier APIs no longer expose one — it survives only on older hosted models and your own open weights. What replaced it is a different dial: how many intermediate steps a request may spend before it answers (`reasoning.effort`, `effort`, `thinking_level`). It is not a cleaner version of the draw. It is a longer chain of the model's own working steps, and every extra step is another chance: more room to find the right route, and more room for one wrong turn to [get baked into everything after it](./reliability-levers.md#real-decay-is-uneven). Vendors sell it as quality bought with latency and tokens, and on hard problems that trade usually pays. _Usually_ is the operative word. Accuracy peaks at an intermediate reasoning length and declines past it: [the same lesson long context teaches](./effective-context.mdx#long-context-benchmarks-show-the-tradeoff), that past a point more is not better. And while the most common answer keeps improving with more thinking, any single run gets less predictable.[^reasoning-length]
+
+### Stochastic by Design
+
+A stochastic system does not converge on one answer. Deterministic tools codify instances: a compiler, a regex, a linter each encode the exact case, and a new case means new code. Designing a data model, reading a stack trace, triaging a bug report, summarizing a week of notes: none of it reduces to an exact rule. There is a pattern to approximate, not a rule to follow, and two runs approximate it differently.
+
+That is what the randomness is for. Each run draws a plausible generalization, so you can aim the model at a problem instead of enumerating cases. Pin it to one fixed output and you have asked a pattern generalizer to act like a lookup table — same answer every time, right or wrong, with no room to generalize or explore.
+
+Attempts are not answers. A stochastic system has no invariants to check, only a distribution. Reliability comes from the **guardrails** around it — schemas, tests, diffs, retries, review, the [control plane](./how-agents-work.mdx) — not from the model. It has no intent behind any of it, which is why it is a tool and never an authority.
+
+Everything in this chapter happens in the moment of answering. Where those probabilities come from is the next chapter: how training bakes patterns into the weights, and how post-training turns that engine into the product behind the API.
 
 ---
 
 **Next:** [Training and Post-Training](./llm-training-and-post-training.mdx)
+
+[^reasoning-length]: Nohara, Nakamura & Yokota (2026), [_On the Optimal Reasoning Length for RL-Trained Language Models_](https://arxiv.org/abs/2602.09591) — mode accuracy keeps improving with output length while sample accuracy peaks and falls, so the curve is dispersion around an increasingly correct center; Zhou et al. (2026), [_When More Thinking Hurts: Overthinking in LLM Test-Time Compute Scaling_](https://arxiv.org/abs/2604.10739).
+
+[^reasoning-faithfulness]: The visible chain is where the computation happens, not a guaranteed transcript of it — models often omit influences they used (Turpin et al. (2023), [_Language Models Don't Always Say What They Think_](https://arxiv.org/abs/2305.04388)) — and some reasoning can run in hidden states rather than visible tokens (Hao et al. (2024), [_Training Large Language Models to Reason in a Continuous Latent Space_](https://arxiv.org/abs/2412.06769)).

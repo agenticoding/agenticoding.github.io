@@ -16,7 +16,7 @@ Every piece of code you accept today becomes pattern context for tomorrow's agen
 
 During code research, agents grep for patterns, read implementations, and load examples into context. The code they find becomes the pattern context for generation.
 
-<DiagramFrame kicker="Agent-friendly code" title="Quality compounds through the codebase" size="wide">
+<DiagramFrame kicker="Agent-friendly code" title="Quality compounds through the codebase" size="wide" narration="Agents don't just write code, they copy the patterns they find. Accept clean code and the next iteration gets cleaner; accept a random AI error and it becomes the template the agent copies again and again. Early on the two paths look almost identical, but every accepted file becomes example context for the next generation, so the gap compounds exponentially. Your review decision today doesn't just fix today's code, it sets the direction for everything the agent writes after it.">
 
   <CompoundQualityVisualization />
 

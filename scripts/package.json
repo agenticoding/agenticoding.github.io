@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "png-to-ico": "^2.1.8",
-    "sharp": "^0.33.0"
+    "sharp": "^0.33.0",
+    "@google/genai": "^2.22.0"
   }
 }

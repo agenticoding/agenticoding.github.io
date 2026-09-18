@@ -20,6 +20,7 @@ Read across the fields on a card to build a model profile. Then compare profiles
   kicker="Model selection"
   title="A model card is a profile, not a rank"
   size="wide"
+  narration="A model card is a spec sheet, not a scorecard. Price, modality, context versus recall, and instruction following are each a single published measurement taken under its own conditions, price at listed rates, recall at a given context length, instruction following on one benchmark. Strength in one predicts nothing about another, and a field with no published result for your workload is simply unknown. Read across them and you get a profile: where a model fits and where it falls short. That profile picks a candidate for a workload, it never ranks a winner."
   caption={
     <>
       Each field is a narrow published measurement with a known boundary. A
@@ -47,7 +48,7 @@ A model card describes a released checkpoint. A system card describes a provider
 
 LLM marketing often starts with a familiar launch claim and hides the operational behavior underneath. Translate the claim before evaluating the system.
 
-<MarketingDecoderInteractive />
+<MarketingDecoderInteractive narration="Launch claims hide behavior. One model is announced as four times faster, which turns out to mean more tokens per second, faster feedback on screen rather than faster completion of your task. Another claims long-context consistency, yet measured recall falls from 78% to 32% as the input grows. Translating a claim means asking what actually changed and what it costs. Four times faster, 78% to 32% recall, different numbers, same move: translate before you evaluate, because the marketing line and the engineering trade-off are never the same statement." />
 
 These translations are not cynicism. They are operational clarity. Once you translate the claim, you can evaluate the system like an engineer.
 

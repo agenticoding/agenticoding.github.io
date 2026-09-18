@@ -1,0 +1,1280 @@
+{
+  "version": 1,
+  "chapters": {
+    "how-llms-work": {
+      "file": "how-llms-work.mp3",
+      "modelId": "gemini-2.5-pro-preview-tts",
+      "speakers": {
+        "alex": "Kore",
+        "sam": "Charon"
+      },
+      "narrationHash": "2018c9b838d673a5ab7092d7a6bc95f97929990a6ab625e81fe2c2647d248d36",
+      "durationMs": 659753,
+      "sampleRate": 44100,
+      "bitrateKbps": 64,
+      "lufs": -23,
+      "truePeakDb": -3.5,
+      "marks": [
+        {
+          "startMs": 0,
+          "endMs": 4200,
+          "segmentId": "t0",
+          "label": "LLMs Demystified",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 4200,
+          "endMs": 22400,
+          "segmentId": "t1",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 22400,
+          "endMs": 29600,
+          "segmentId": "t2",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 29600,
+          "endMs": 42800,
+          "segmentId": "t3",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 42800,
+          "endMs": 61000,
+          "segmentId": "t4",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 61000,
+          "endMs": 70900,
+          "segmentId": "t5",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 70900,
+          "endMs": 85700,
+          "segmentId": "t6",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 85700,
+          "endMs": 95100,
+          "segmentId": "t7",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 95100,
+          "endMs": 108000,
+          "segmentId": "t8",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 108000,
+          "endMs": 123300,
+          "segmentId": "t9",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 123300,
+          "endMs": 134400,
+          "segmentId": "t10",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 134400,
+          "endMs": 150200,
+          "segmentId": "t11",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 150200,
+          "endMs": 155600,
+          "segmentId": "t12",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 155600,
+          "endMs": 172100,
+          "segmentId": "t13",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 172100,
+          "endMs": 184200,
+          "segmentId": "t14",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 184200,
+          "endMs": 195800,
+          "segmentId": "t15",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 195800,
+          "endMs": 212700,
+          "segmentId": "t16",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 212700,
+          "endMs": 222900,
+          "segmentId": "t17",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 222900,
+          "endMs": 234251,
+          "segmentId": "t18",
+          "label": "sam",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 234251,
+          "endMs": 255151,
+          "segmentId": "t19",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 255151,
+          "endMs": 263651,
+          "segmentId": "t20",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 1
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 263651,
+          "endMs": 276251,
+          "segmentId": "t21",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 1
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 276251,
+          "endMs": 283951,
+          "segmentId": "t22",
+          "label": "sam",
+          "anchor": {
+            "kind": "figure",
+            "index": 1
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 283951,
+          "endMs": 300851,
+          "segmentId": "t23",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 300851,
+          "endMs": 316751,
+          "segmentId": "t24",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 316751,
+          "endMs": 326551,
+          "segmentId": "t25",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 326551,
+          "endMs": 351351,
+          "segmentId": "t26",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-an-llm-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 351351,
+          "endMs": 370351,
+          "segmentId": "t27",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-reasoning-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 370351,
+          "endMs": 373151,
+          "segmentId": "t28",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-reasoning-actually-is"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 373151,
+          "endMs": 397051,
+          "segmentId": "t29",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-reasoning-actually-is"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 397051,
+          "endMs": 410251,
+          "segmentId": "t30",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-reasoning-actually-is"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 410251,
+          "endMs": 435051,
+          "segmentId": "t31",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "why-the-same-prompt-gives-a-different-answer"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 435051,
+          "endMs": 473622,
+          "segmentId": "t32",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "why-the-same-prompt-gives-a-different-answer"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 473622,
+          "endMs": 501922,
+          "segmentId": "t33",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "why-the-same-prompt-gives-a-different-answer"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 501922,
+          "endMs": 515922,
+          "segmentId": "t34",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "why-the-same-prompt-gives-a-different-answer"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 515922,
+          "endMs": 549922,
+          "segmentId": "t35",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "stochastic-by-design"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 549922,
+          "endMs": 570422,
+          "segmentId": "t36",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "stochastic-by-design"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 570422,
+          "endMs": 582822,
+          "segmentId": "t37",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "stochastic-by-design"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 582822,
+          "endMs": 606122,
+          "segmentId": "t38",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "stochastic-by-design"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 606122,
+          "endMs": 622022,
+          "segmentId": "t39",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "stochastic-by-design"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 622022,
+          "endMs": 659753,
+          "segmentId": "t40",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "sam"
+        }
+      ]
+    },
+    "intro": {
+      "file": "intro.mp3",
+      "modelId": "gemini-2.5-pro-preview-tts",
+      "speakers": {
+        "alex": "Kore",
+        "sam": "Charon"
+      },
+      "narrationHash": "811d70d2849eefca56809a897a2843a26e26f0a80e85fb92c998ed3f8bbdb035",
+      "durationMs": 138891,
+      "sampleRate": 44100,
+      "bitrateKbps": 64,
+      "lufs": -22.5,
+      "truePeakDb": -3.5,
+      "marks": [
+        {
+          "startMs": 0,
+          "endMs": 4000,
+          "segmentId": "t0",
+          "label": "A field guide to AI agents you can stand behind.",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 4000,
+          "endMs": 15000,
+          "segmentId": "t1",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 15000,
+          "endMs": 23700,
+          "segmentId": "t2",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 23700,
+          "endMs": 33800,
+          "segmentId": "t3",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 33800,
+          "endMs": 39600,
+          "segmentId": "t4",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 39600,
+          "endMs": 47500,
+          "segmentId": "t5",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 47500,
+          "endMs": 53500,
+          "segmentId": "t6",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 53500,
+          "endMs": 66600,
+          "segmentId": "t7",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 66600,
+          "endMs": 83200,
+          "segmentId": "t8",
+          "label": "sam",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 83200,
+          "endMs": 94000,
+          "segmentId": "t9",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 94000,
+          "endMs": 103600,
+          "segmentId": "t10",
+          "label": "sam",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 103600,
+          "endMs": 112700,
+          "segmentId": "t11",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 112700,
+          "endMs": 127900,
+          "segmentId": "t12",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 127900,
+          "endMs": 138891,
+          "segmentId": "t13",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "learn-to-run-the-machine"
+          },
+          "speaker": "alex"
+        }
+      ]
+    },
+    "llm-training-and-post-training": {
+      "file": "llm-training-and-post-training.mp3",
+      "modelId": "gemini-2.5-pro-preview-tts",
+      "speakers": {
+        "alex": "Kore",
+        "sam": "Charon"
+      },
+      "narrationHash": "588df171889640b944ba61ec5294131d53008ff73acebb66359226233ecf8321",
+      "durationMs": 569633,
+      "sampleRate": 44100,
+      "bitrateKbps": 64,
+      "lufs": -22.9,
+      "truePeakDb": -3.5,
+      "marks": [
+        {
+          "startMs": 0,
+          "endMs": 300,
+          "segmentId": "t0",
+          "label": "Training and Post-Training",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 300,
+          "endMs": 20600,
+          "segmentId": "t1",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 20600,
+          "endMs": 35600,
+          "segmentId": "t2",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 35600,
+          "endMs": 44600,
+          "segmentId": "t3",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 44600,
+          "endMs": 71000,
+          "segmentId": "t4",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 71000,
+          "endMs": 84500,
+          "segmentId": "t5",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 84500,
+          "endMs": 102100,
+          "segmentId": "t6",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 102100,
+          "endMs": 126200,
+          "segmentId": "t7",
+          "label": "alex",
+          "anchor": {
+            "kind": "code",
+            "index": 0,
+            "headingId": "what-training-actually-does"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 126200,
+          "endMs": 136100,
+          "segmentId": "t8",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 136100,
+          "endMs": 169300,
+          "segmentId": "t9",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 169300,
+          "endMs": 179600,
+          "segmentId": "t10",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 179600,
+          "endMs": 209400,
+          "segmentId": "t11",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 209400,
+          "endMs": 222251,
+          "segmentId": "t12",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 222251,
+          "endMs": 241851,
+          "segmentId": "t13",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-training-actually-does"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 241851,
+          "endMs": 274151,
+          "segmentId": "t14",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-gets-encoded-into-the-model"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 274151,
+          "endMs": 281451,
+          "segmentId": "t15",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-gets-encoded-into-the-model"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 281451,
+          "endMs": 298951,
+          "segmentId": "t16",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-gets-encoded-into-the-model"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 298951,
+          "endMs": 318851,
+          "segmentId": "t17",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 318851,
+          "endMs": 330751,
+          "segmentId": "t18",
+          "label": "sam",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 330751,
+          "endMs": 349351,
+          "segmentId": "t19",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-gets-encoded-into-the-model"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 349351,
+          "endMs": 357451,
+          "segmentId": "t20",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "what-gets-encoded-into-the-model"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 357451,
+          "endMs": 373551,
+          "segmentId": "t21",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 373551,
+          "endMs": 382851,
+          "segmentId": "t22",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 382851,
+          "endMs": 399451,
+          "segmentId": "t23",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 399451,
+          "endMs": 426051,
+          "segmentId": "t24",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 1
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 426051,
+          "endMs": 438051,
+          "segmentId": "t25",
+          "label": "sam",
+          "anchor": {
+            "kind": "figure",
+            "index": 1
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 438051,
+          "endMs": 461622,
+          "segmentId": "t26",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 461622,
+          "endMs": 488322,
+          "segmentId": "t27",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 488322,
+          "endMs": 500122,
+          "segmentId": "t28",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 500122,
+          "endMs": 514222,
+          "segmentId": "t29",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 514222,
+          "endMs": 523822,
+          "segmentId": "t30",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 523822,
+          "endMs": 538122,
+          "segmentId": "t31",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "base-models-learn-patterns-post-training-shapes-behavior"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 538122,
+          "endMs": 569633,
+          "segmentId": "t32",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "sam"
+        }
+      ]
+    },
+    "prompting-101": {
+      "file": "prompting-101.mp3",
+      "modelId": "gemini-2.5-pro-preview-tts",
+      "speakers": {
+        "alex": "Kore",
+        "sam": "Charon"
+      },
+      "narrationHash": "4bf457bee9ab69d98a2bee2db02876a6419f7efe9108abbc854cd793aed9defa",
+      "durationMs": 195451,
+      "sampleRate": 44100,
+      "bitrateKbps": 64,
+      "lufs": -23.6,
+      "truePeakDb": -3.5,
+      "marks": [
+        {
+          "startMs": 0,
+          "endMs": 2400,
+          "segmentId": "t0",
+          "label": "Prompting 101",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 2400,
+          "endMs": 12800,
+          "segmentId": "t1",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 12800,
+          "endMs": 17700,
+          "segmentId": "t2",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 17700,
+          "endMs": 34000,
+          "segmentId": "t3",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 34000,
+          "endMs": 42800,
+          "segmentId": "t4",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 42800,
+          "endMs": 57500,
+          "segmentId": "t5",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 57500,
+          "endMs": 69800,
+          "segmentId": "t6",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "start-with-the-task-and-output-target"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 69800,
+          "endMs": 72900,
+          "segmentId": "t7",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "start-with-the-task-and-output-target"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 72900,
+          "endMs": 91100,
+          "segmentId": "t8",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 91100,
+          "endMs": 105600,
+          "segmentId": "t9",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 105600,
+          "endMs": 115900,
+          "segmentId": "t10",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "start-with-the-task-and-output-target"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 115900,
+          "endMs": 119800,
+          "segmentId": "t11",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "start-with-the-task-and-output-target"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 119800,
+          "endMs": 129100,
+          "segmentId": "t12",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "start-with-the-task-and-output-target"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 129100,
+          "endMs": 137400,
+          "segmentId": "t13",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "ask-questions-to-load-context"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 137400,
+          "endMs": 141400,
+          "segmentId": "t14",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "ask-questions-to-load-context"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 141400,
+          "endMs": 153900,
+          "segmentId": "t15",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "ask-questions-to-load-context"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 153900,
+          "endMs": 155900,
+          "segmentId": "t16",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "ask-questions-to-load-context"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 155900,
+          "endMs": 166300,
+          "segmentId": "t17",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "ask-questions-to-load-context"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 166300,
+          "endMs": 167400,
+          "segmentId": "t18",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "ask-questions-to-load-context"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 167400,
+          "endMs": 176300,
+          "segmentId": "t19",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "ask-questions-to-load-context"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 176300,
+          "endMs": 179700,
+          "segmentId": "t20",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "ask-questions-to-load-context"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 179700,
+          "endMs": 195451,
+          "segmentId": "t21",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        }
+      ]
+    }
+  }
+}

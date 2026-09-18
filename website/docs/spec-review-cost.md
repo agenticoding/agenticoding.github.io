@@ -16,7 +16,7 @@ Each example deliberately uses a different shape. Real specs should do the same 
 
 A short artifact can still expose intent, limits, evidence, and one unresolved decision.
 
-```markdown
+```markdown narration="A compact spec: a short intent, a handful of claims and constraints, a checklist of evidence, and a single unresolved question kept visible. The detail that matters is that the unresolved section stays in the document instead of being silently closed, so the reviewer sees exactly what is still open before approving. At this size the whole artifact fits in one reading pass."
 # Compact Spec
 
 ## Intent
@@ -45,7 +45,7 @@ Mauris luctus aliquam lorem, nec mattis ex commodo sed. In laoreet tristique eli
 
 At this size, scenarios and trade-offs can coexist, but the reviewer must hold more relationships in mind.
 
-```markdown
+```markdown narration="A broader review brief. Context and decision notes frame the problem, named scenarios, Alpha, Beta and Gamma, carry the variation, and constraints and acceptance criteria sit below them. The detail that matters is that the scenarios and the acceptance criteria now have to be read against each other, so the reviewer must hold more relationships in mind and a contradiction is easier to miss than in the compact version."
 # Review Brief
 
 > Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vulputate pulvinar nunc, sed fringilla sem posuere vel. Nunc metus eros, finibus nec rhoncus vitae, volutpat at turpis.
@@ -97,7 +97,7 @@ Etiam mollis tempor purus eget consequat. Integer nec purus quis tellus ultricie
 
 A longer artifact can coordinate more uncertainty. It also makes omissions, contradictions, and casual skimming harder to detect. The added structure must earn that cost.
 
-```markdown
+```markdown narration="The extended proposal. A premise and a narrative come first, then included and excluded boundaries, a risk register where each concern pairs a condition with a response, an evidence plan split into review and verification, a numbered sequence, a decision record, and unresolved questions. The detail that matters is the condition-and-response pairing in the risk register, which keeps each concern traceable. This structure coordinates more uncertainty, but omissions and contradictions from casual skimming become far harder to detect."
 # Extended Proposal
 
 ## Premise

@@ -12,22 +12,23 @@ Context files are markdown documents injected between the system prompt and your
 **Context effect:** they load on every call into the fixed prefix. The tradeoff is **guaranteed delivery vs. pushing your task toward the valley**: every token inflates the prefix your task travels behind. Once the conversation starts building after your prompt, that prefix helps decide where the prompt ends up.
 
 <DiagramFrame
-  kicker="Context management"
-  title="File size decides where your prompt lands"
-  size="standard"
-  caption={
-    'Same conversation, two file sizes. As turns append after the prompt, the prompt drifts from the recency edge: a small file lets it settle near the primacy edge — still strong attention; a big file lands it in the dead middle, where attention collapses.'
-  }
->
-  <ContextSqueezeDiagram />
-</DiagramFrame>
+kicker="Context management"
+title="File size decides where your prompt lands"
+size="standard"
+narration="Context files buy guaranteed delivery, and the price is where your task ends up. Everything in the file sits ahead of your prompt, so as the conversation appends turns behind it, the file decides how far back the task drifts. Keep it small at two thousand tokens and the prompt still settles near the strong beginning of the window, holding attention around 0.831. Let it grow to twenty thousand and the same conversation pins the prompt in the dead middle, where attention collapses to roughly 0.225. Same task, same turns - only the file size changed. That is why the discipline is minimal, and why project knowledge belongs in the README where agents read it on demand."
+caption={
+'Same conversation, two file sizes. As turns append after the prompt, the prompt drifts from the recency edge: a small file lets it settle near the primacy edge — still strong attention; a big file lands it in the dead middle, where attention collapses.'
+}
+
+>   <ContextSqueezeDiagram />
+> </DiagramFrame>
 
 `AGENTS.md` is the vendor-neutral standard adopted by 60,000+ open-source projects (now governed by the Linux Foundation's Agentic AI Foundation), working across GitHub Copilot, Cursor, Zed, Windsurf, and most other AI coding tools (note: Claude Code does not support AGENTS.md — see tip below). Keep it minimal — your README should contain 90% of what AI needs; AGENTS.md adds only AI-specific operational context. That 10% is where the discipline lives — every token in AGENTS.md sits in the attention valley between the prefix and your actual task. Put project knowledge in your README where agents can read it on demand; AGENTS.md is for what changes _how_ the agent operates, not _what_ the project does. Reference external docs by link rather than inlining them — agents can fetch details when needed.
 
 :::tip Claude Code: Using AGENTS.md with Claude Code
 Claude Code uses `CLAUDE.md` instead of `AGENTS.md`. To maintain a single source of truth while supporting both ecosystems, use **@-linking** in your `CLAUDE.md`:
 
-```markdown
+```markdown narration="A minimal CLAUDE.md whose entire content is an at-sign import of AGENTS.md. Claude Code expands that import, so the project rules live in one file and both ecosystems read the same source instead of maintaining two copies that drift apart."
 # CLAUDE.md
 
 @/AGENTS.md

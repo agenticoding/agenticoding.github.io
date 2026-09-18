@@ -15,7 +15,7 @@ Six mechanisms control what enters the context window and where: **context files
 
 ## The Attention Curve: Why Placement Matters
 
-<DiagramFrame kicker="Context management" title="Attention is strongest at the edges" size="standard" caption={'Attention is reliable near the beginning and end of the window; the middle degrades first as context fills.'}>
+<DiagramFrame kicker="Context management" title="Attention is strongest at the edges" size="standard" narration="Attention is never spread evenly. The model burns strongest on the start of the window and the end, and thins to almost nothing in the middle. That budget does not grow with the window: the same anchors hold at ten thousand tokens and at a million, so a longer window just widens the dead zone. As the window fills, the middle collapses first - at mid fill it is already significant, near full it turns severe, and only the recent edge stays reliable. Whatever you park in that middle, including your own task, is the first thing the model stops seeing." caption={'Attention is reliable near the beginning and end of the window; the middle degrades first as context fills.'}>
 
 <UShapeAttentionCurve />
 
@@ -39,7 +39,7 @@ The loop rebuilds the window every turn, and that's the point: nothing is static
 
 That movement is the context pressure problem. The window isn't just filling up; the loop is actively re-placing your task, and it has no reason to keep it where you want it. Left to itself, the loop hands the task to wherever the accumulated content settles, and it can end up in the middle of the window — the band attention drains first — where the model strains to act on it.
 
-<DiagramFrame kicker="Context management" title="Context pressure moves the task through the window" size="full">
+<DiagramFrame kicker="Context management" title="Context pressure moves the task through the window" size="full" narration="Your prompt lands at the end of the window, where attention is strongest. Then the agent loop starts appending, and every turn pushes the task further back, with no reason to keep it where you want it. Two sessions can reach the same footprint and behave completely differently, because the loop placed the task differently. Load five hundred tool schemas up front and the task sinks into the depleted middle near ninety percent fill; defer that same catalog and it holds near the start at fifty-five percent. The question was never whether you run out of tokens. It is where the task lands.">
 
 <ContextPressureDiagram />
 
@@ -61,6 +61,7 @@ Compare mechanisms through the same context lens: **when tokens load**, **where 
   kicker="Context management"
   title="Six mechanisms share the same context lens"
   size="wide"
+  narration="These six mechanisms are not one spectrum. They differ in when they load, where they land, and what they cost. Context files and eager MCP schemas enlarge the fixed prefix, landing at the strong start. Skills and retrieval add material on demand, right where the active task is. Sub-agents fork the work into a separate window and return a synthesis. Compaction replaces accumulated conversation with a compressed, lossy state. Read them through the same lens - what loads, where it lands, what it costs, what it is good for - and you can pick the one that fits the knowledge and the task in front of you."
   caption={
     <>The six context mechanisms: where tokens land and when they load.</>
   }

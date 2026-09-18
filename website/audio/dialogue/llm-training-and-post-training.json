@@ -1,0 +1,229 @@
+{
+  "chapterId": "llm-training-and-post-training",
+  "sourceHash": "d0c0e59cbcd5cf6b3e2cc54a374eeeb105441e30f83ac019b754be612f051d61",
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Training and Post-Training. Every answer we've looked at so far ran on a model whose weights were already fixed. This chapter is about how they got that way — and about the gap between a model that predicts text and an LLM product that follows instructions, refuses requests, and calls tools."
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "That gap is the part operators underestimate. Two models with the same architecture can behave completely differently, and nothing in the architecture explains it. You have to know which stage of training set a behavior, or you'll blame the wrong thing when it goes wrong."
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "So three moves: what training actually does, what ends up encoded in the weights, and how post-training shapes behavior on top of it."
+    },
+    {
+      "id": "t4",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "The cleanest mental model: the architecture is the program shape, and the weights are its learned contents. The architecture fixes the computation — layers, attention, token flow, the operations that turn input tokens into output probabilities. The weights are billions of numeric parameters inside it. During an answer they hold still; during training they move."
+    },
+    {
+      "id": "t5",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "So learning is just the weights moving. That's a useful demystification, because nothing gets written into a facts table. The model doesn't acquire a database. It ends up at a different point in a very large space of numbers."
+    },
+    {
+      "id": "t6",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "Right. Training is optimization. You show the model an input and the output you wanted, measure how wrong its prediction was, and nudge the weights so a similar input scores better next time. Across billions of examples, the average error falls."
+    },
+    {
+      "id": "t7",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "code",
+        "index": 0,
+        "headingId": "what-training-actually-does"
+      },
+      "text": "Here's the task in miniature. Give it 'The capital of France is', and the target is the next token — the space and the word Paris. The text it has to produce is the label, never part of the input. So the only thing training can measure is how much probability the model gave something it never saw. Score too low, and the weights move until they don't."
+    },
+    {
+      "id": "t8",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "The subtle part is that nobody hands it the answer to study. It's graded on the probability it assigned, in advance, to a token that wasn't in the input."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "And that is the whole sense in which the model learns — it tunes a very large mathematical function until its outputs approximate the patterns in the data. Here's the detail that matters for everything after: training text is full of worked solutions. Homework answers, code walkthroughs, derivations. 'Show the steps' is a pattern in that data, and next-token prediction picks it up. The base model can already reason. Post-training decides how reliably it does, and how many steps it takes."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "That reframes a lot. Reasoning isn't bolted on afterward. The raw material is already in the weights, and post-training is about which part of it actually gets used."
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "One more consequence of this being a search: it's local. Training moves through a high-dimensional space where every point is one possible setting of the weights. The loss defines the terrain, but it isn't a smooth bowl with one obvious bottom. Algorithms like stochastic gradient descent and Adam estimate a direction and take small steps — and because that space is huge and non-convex, nothing guarantees you land somewhere useful."
+    },
+    {
+      "id": "t12",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "Which is why it feels less like compiling a program and more like fitting a massive probabilistic system until it behaves well enough. Initialization, batch order, the data mix — all of it changes where you end up."
+    },
+    {
+      "id": "t13",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-training-actually-does" },
+      "text": "And once a base model is trained, post-training narrows it. That broad continuation engine becomes a behavior profile: follow instructions, prefer useful answers, refuse some requests, call tools, solve checked tasks, or match a domain style."
+    },
+    {
+      "id": "t14",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-gets-encoded-into-the-model" },
+      "text": "So what is actually in the weights afterward? A compressed map of patterns. Language, facts, code idioms, document formats, interaction norms, domain terminology, common ways people respond. Two useful kinds: world and domain knowledge — what tends to be true, how concepts relate, what an API looks like — and action patterns — how to answer, how to revise code, when to ask for clarification, how to format a tool call."
+    },
+    {
+      "id": "t15",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-gets-encoded-into-the-model" },
+      "text": "And those two kinds live in the same place. That's easy to miss, and it's also the part that makes a failure hard to explain."
+    },
+    {
+      "id": "t16",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-gets-encoded-into-the-model" },
+      "text": "Exactly. This knowledge isn't stored like rows in a database. It's distributed across parameters — which is why the model generalizes past the exact examples it saw, and why the question of where a wrong answer came from rarely has a clean answer."
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "The idea worth holding onto is that training compresses facts and ways of acting into one set of numbers. Nothing is filed under a heading you could point at. That sharing is what buys generalization — and what makes a single failure so hard to trace back to a cause."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "In practice, that's why you can't audit a model the way you audit a service. There's no log line saying which fact was consulted, because there's no fact to consult. You get the behavior, not the provenance."
+    },
+    {
+      "id": "t19",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "what-gets-encoded-into-the-model" },
+      "text": "Which is also why the same weights can be stale, incomplete, biased, or confidently wrong. The useful model here is: the model learned how situations usually continue. Inference hands it a new situation and asks for the next likely continuation."
+    },
+    {
+      "id": "t20",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "what-gets-encoded-into-the-model" },
+      "text": "So the map is dense, useful, and never complete. That's not something you fix by training longer — it's the shape of the thing."
+    },
+    {
+      "id": "t21",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "Which brings us to the product. Modern LLM products aren't just pretrained models exposed through an API. Vendors start with a base model and post-train it toward a goal, and it's worth reading those stages as a manufacturing pipeline."
+    },
+    {
+      "id": "t22",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "Each stage narrows what the system does. So the model you call is really a stack of decisions, and the last stages are the ones a customer actually feels."
+    },
+    {
+      "id": "t23",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "Exactly. For agents, that's the difference between a model that can continue code-shaped text and a product model shaped to produce patches, explanations, safe refusals, or tool calls. Same base engine, very different behavior."
+    },
+    {
+      "id": "t24",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 1 },
+      "text": "The sequence is roughly this: supervised fine-tuning for instruction following, preference training for helpfulness and tone, verifiable rewards for what can be checked, and domain data for specialization. Each stage narrows raw continuation toward the behavior the vendor chose to ship. And because they're separate choices, a model can win on one dimension and lose on another."
+    },
+    {
+      "id": "t25",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 1 },
+      "text": "Which is the practical reason you compare models on your own task instead of on a leaderboard. The behavior you need might have been shaped by exactly one of those stages, and the weights alone won't tell you which."
+    },
+    {
+      "id": "t26",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "Reinforcement-style post-training is one way vendors shape that behavior. InstructGPT popularized the pipeline: a first pass that teaches instruction format, a reward model, then reinforcement learning. Later methods like DPO simplify preference optimization. That covers tone, format, refusals — the things people have opinions about."
+    },
+    {
+      "id": "t27",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "So here's the thing to take away. Post-training is where a vendor turns a general engine into a specific product. It decides what the model is good at, what it refuses, and how much thinking it does on its own. Training sets how far it can think; the setting you pick on a request decides how much of that you actually spend. And offering you that setting at all is a product choice in itself."
+    },
+    {
+      "id": "t28",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "Which is why the model's name isn't the interesting part. What matters is the job it was built for. You can feel it in how much it hedges, how it formats, how long it works before it commits to an answer."
+    },
+    {
+      "id": "t29",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "And that's the product reality behind a lot of model claims. Vendors aren't selling generic intelligence. Any model in the market today is a deliberate product choice, with a target use case its creators had in mind."
+    },
+    {
+      "id": "t30",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "So you're not picking the best model. You're picking the one built for the job you have. If your job isn't the one it was built for, you'll feel that mismatch everywhere."
+    },
+    {
+      "id": "t31",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "base-models-learn-patterns-post-training-shapes-behavior"
+      },
+      "text": "Someone picked a base model, decided what it should be good at and what it should never do, then shipped that. Every one of those choices is produced by optimization, not by rules. Which is exactly where the practical limits begin."
+    },
+    {
+      "id": "t32",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "So to put it together. The design fixes what the model can compute; the numbers inside it are what training produced — a dense map of facts and ways of acting, which is where generalization comes from and why explainability is hard. Then a product is built on top: what it follows, what it refuses, how long it reasons. And since every stage is a choice made by optimization rather than rules, the model you're holding was built for somebody's job. The limits you hit next are structural, not cosmetic."
+    }
+  ]
+}

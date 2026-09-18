@@ -1,10 +1,9 @@
 ---
-title: Terminals
+title: Modern Terminals for Multi-Agent Workflows
+sidebar_label: Terminals
 ---
 
 import ToolMark from '@site/src/components/VisualElements/ToolMark';
-
-# Modern Terminals for Multi-Agent Workflows
 
 **Invest in customizing and tailoring your terminal environment just like you would with your IDE.** Multi-agent workflows mean managing multiple concurrent sessions, context-switching between agent instances, and monitoring long-running processes. Your terminal becomes mission-critical infrastructure, not just a command prompt.
 

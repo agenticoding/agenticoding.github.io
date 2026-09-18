@@ -1,11 +1,11 @@
 ---
-title: 'Reliability: HITL Checkpoints'
+title: 'Human Checkpoints'
 ---
 
 import HITLCheckpointLeverDiagram from '@site/src/components/VisualElements/HITLCheckpointLeverDiagram';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
-## 4. HITL Checkpoints: Stop Bad State from Propagating {#4-human-in-the-loop-hitl-checkpoints-break-error-propagation}
+## Stop Bad State from Propagating
 
 Use this lever when a wrong assumption would be expensive downstream: before implementation commits to a flawed plan, before scope expands into an unrequested refactor, or before an irreversible external action.
 
@@ -21,7 +21,7 @@ Humans are especially strong at missing constraints, scope enlargement, and deci
 
 The diagram shows the checkpoint blocking inherited failure state and making a validated artifact the start of the next phase.
 
-<DiagramFrame kicker="Reliability levers" title="Human checkpoints reduce failure stickiness" size="wide" caption={<>
+<DiagramFrame kicker="Reliability levers" title="Human checkpoints reduce failure stickiness" size="wide" narration="A checkpoint only helps if it actually blocks a flawed plan from carrying into the next phase. Without one, a missed constraint or a wrong assumption just inherits forward, and every later step builds on it. With one, the bad path is stopped and the next phase restarts from a reviewed artifact instead of the noise of the old thread. The catch is the review surface: if the artifact is too big for a human to inspect seriously, the gate becomes a rubber stamp." caption={<>
 A checkpoint works when it blocks propagation and starts the next phase from
 a validated artifact—not when it rubber-stamps a noisy thread.
 </>}>

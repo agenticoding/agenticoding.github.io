@@ -8,7 +8,7 @@ After approval, use the spec to coordinate bounded plans rather than turning it 
 
 For each run:
 
-```text
+```text narration="The bounded run loop: ground in the approved intent and the current code, plan the next bounded change, execute and validate it, then compare the result against the spec. The detail that matters is that the loop closes with comparison rather than completion, so each run is judged against approved intent, not against whatever the agent chose to build."
 Ground in approved intent + current code
   ↓
 Plan the next bounded change

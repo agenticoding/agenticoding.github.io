@@ -13,7 +13,7 @@ After grounding, the agent may know the middleware pattern, the product constrai
 
 Planning is the pause between knowing and doing. The plan itself is a checkpoint: a small execution contract that a human can approve, reject, or correct before the agent turns ambiguity into code.
 
-<DiagramFrame kicker="Methodology" title="A plan is an approved execution contract" size="wide" caption="The operator reviews scope, unit, and verification before the agent turns intent into code.">
+<DiagramFrame kicker="Methodology" title="A plan is an approved execution contract" size="wide" caption="The operator reviews scope, unit, and verification before the agent turns intent into code." narration="Grounding gives the agent facts. It still doesn't know which trade-off you want, what's out of scope, or which boundary must not move. If execution starts there, those decisions get made inside the diff, which is the most expensive place to discover them. A plan is the pause in between: a small execution contract that states the scope, the next bounded unit, and how it will be verified, plus the checkpoints where the risky calls are reviewed. The human approves, rejects, or revises it before any code exists, and only an approved plan unlocks execution. A plan is a checkpoint, not a formality, because it makes intent inspectable before the agent turns ambiguity into code.">
 
   <PlanningContractCheckpointDiagram />
 
@@ -30,7 +30,7 @@ For rate limiting, that might be enough: add limiter behavior in the existing mi
 
 Older prompt advice treated plans as todo lists so the model would remember what to do. That still helps, but it is not the main value. A plan works because it makes intent inspectable before the agent turns ambiguity into code.
 
-Planning is complete when execution can begin from a reviewed contract instead of an unresolved conversation. The reliability mechanics behind task sizing and why phase-boundary review works belong in [Reliability: Orchestration](./reliability-orchestration.md) and [Reliability: HITL Checkpoints](./reliability-hitl-checkpoints.md#4-human-in-the-loop-hitl-checkpoints-break-error-propagation).
+Planning is complete when execution can begin from a reviewed contract instead of an unresolved conversation. The reliability mechanics behind task sizing and why phase-boundary review works belong in [Shaping the Work](./reliability-orchestration.md) and [Human Checkpoints](./reliability-hitl-checkpoints.md#stop-bad-state-from-propagating).
 
 ---
 

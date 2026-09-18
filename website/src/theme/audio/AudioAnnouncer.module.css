@@ -1,0 +1,11 @@
+/* Visually removed, still announced: this element exists only to reach assistive tech. */
+.srOnly {
+  position: absolute;
+  width: var(--space-px);
+  height: var(--space-px);
+  margin: calc(-1 * var(--space-px));
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

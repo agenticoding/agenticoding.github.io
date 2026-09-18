@@ -1,0 +1,147 @@
+{
+  "chapterId": "prompting-101",
+  "sourceHash": "c90167ae5b5f20295e3a4dab142adbb9bc210eeb82820c3d4a81c75f5143afc9",
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Here's what people get wrong about prompting an agent. They think they're having a conversation. They aren't. They're setting the pattern the model is going to continue."
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Pattern. That's abstract. What actually changes when I get the prompt right?"
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Everything downstream: the task, the inputs, the constraints, the examples, the vocabulary, and the shape of the output. You're narrowing the space of possible next moves before the agent spends a single tool call or edits a file."
+    },
+    {
+      "id": "t4",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "So a vague opener isn't just inefficient. It's expensive in production. Every ambiguous token gives the model another place to guess wrong."
+    },
+    {
+      "id": "t5",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Exactly. The harness turns some of those completions into tool calls, file reads, edits, commands, and observations. Prompting decides which continuation is most likely. It's not small talk."
+    },
+    {
+      "id": "t6",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "start-with-the-task-and-output-target"
+      },
+      "text": "So skip the pleasantries. AI models don't need please or thank you. Those tokens add no useful signal. Start with the decision or artifact you want, and state the standard it has to satisfy."
+    },
+    {
+      "id": "t7",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "start-with-the-task-and-output-target"
+      },
+      "text": "Name the target before you fill in the details."
+    },
+    {
+      "id": "t8",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "Look at the difference. The ineffective prompt just asks, can you help us think through usage-based billing? Thanks. The effective prompt opens by naming the artifact: produce an implementation plan for migrating workspace billing from seat-based pricing to usage-based pricing."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "Then it pins down three things. Target: the artifact, audience, and business change up front. Scope: the systems and risks the plan must cover. Contract: the sections a reviewer can evaluate quickly."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "start-with-the-task-and-output-target"
+      },
+      "text": "Right. Once you name the target, the opening phrase steers the response toward a plan, a decision record, a review, or a spec instead of an open-ended discussion."
+    },
+    {
+      "id": "t11",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "start-with-the-task-and-output-target"
+      },
+      "text": "And that works even when I don't fully know what I want yet?"
+    },
+    {
+      "id": "t12",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "start-with-the-task-and-output-target"
+      },
+      "text": "Especially then. Naming the artifact forces you to commit to a shape, and that shape constrains everything that comes after it."
+    },
+    {
+      "id": "t13",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "ask-questions-to-load-context" },
+      "text": "Now here's the part people miss. Sometimes the best prompt isn't an instruction at all. It's a question."
+    },
+    {
+      "id": "t14",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "ask-questions-to-load-context" },
+      "text": "A question? Even when the agent's supposed to be doing the work?"
+    },
+    {
+      "id": "t15",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "ask-questions-to-load-context" },
+      "text": "Because a question makes it search. In an agent harness, a question can trigger repository search, file reads, documentation queries, and tool inspection. That's Agentic Search."
+    },
+    {
+      "id": "t16",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "ask-questions-to-load-context" },
+      "text": "Give me a concrete example."
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "ask-questions-to-load-context" },
+      "text": "Ask how the onboarding flow handles teammate invites before the dashboard preview. The agent finds the flow, inspects the relevant files, and summarizes the current behavior."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "ask-questions-to-load-context" },
+      "text": "And then?"
+    },
+    {
+      "id": "t19",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "ask-questions-to-load-context" },
+      "text": "Then ask for the change: make teammate invites optional before that same preview. Load the context first, then edit."
+    },
+    {
+      "id": "t20",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "ask-questions-to-load-context" },
+      "text": "So it's a sequence, not a single magic sentence."
+    },
+    {
+      "id": "t21",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "That's the whole chapter. Define the target, specify the contract, ask for the discoverable facts, then plan or edit. When you do that, your prompt becomes a deliberate control surface for the agent instead of an invitation to improvise."
+    }
+  ]
+}

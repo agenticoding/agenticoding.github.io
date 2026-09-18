@@ -12,7 +12,7 @@ Start with a proportional, human-authored starting intent. For a small change, i
 
 A practical loop is:
 
-```text
+```text narration="The approval loop as one line of stages: a human-authored intent, research, a draft that keeps derived requirements separate from agent scope proposals, adversarial review, fixes that cannot silently expand scope, then the human accepts, rejects, defers or clarifies before approving. The detail that matters is that agent proposals never become requirements until a person decides."
 Human starting intent → Research → Draft: derived requirements + separate scope proposals → Adversarial review: challenge, trace, remove → Fix without silent expansion → Human accepts/rejects/defers/clarifies → Approve
 ```
 
@@ -56,7 +56,9 @@ Drafting cycles depend on the case. A familiar, reversible change may need one p
 - **The human decides before agent output becomes the decision.** Approval is the conclusion of human judgment, not a skim of AI-generated prose. People who judge first accept AI advice more critically.
 
 [^1]: Qu et al. — benchmark of coding-agent execution. [arXiv:2605.18583](https://arxiv.org/abs/2605.18583)
+
 [^2]: Buçinca, Malaya, and Gajos — 199-participant experiment. [doi:10.1145/3449287](https://doi.org/10.1145/3449287)
+
 [^3]: Lee et al. — 319 knowledge workers, 936 examples. [doi:10.1145/3706598.3713778](https://doi.org/10.1145/3706598.3713778)
 
 ---

@@ -10,6 +10,7 @@ import { PromptComparison } from '@site/src/components/PromptTreatment';
 Use personas when domain-specific terminology matters: security, performance, accessibility, reliability. Skip personas when the task is straightforward and adding persona context wastes tokens without adding value.
 
 <PromptComparison
+  narration="A generic prompt asks for a review and leaves the target undefined, so the model guesses what matters. Add a persona and the vocabulary changes: you are a staff-level reliability engineer reviewing a multi-region failover design. Now the model reaches for blast radius, failover trigger ambiguity, data consistency risk, observability and runbook gaps, and rollback assumptions, and the closing line forces a production posture, partial regional outages, degraded dependencies, an on-call engineer under time pressure. The persona adds no knowledge. It changes which knowledge gets pulled in, which is why the same lever works for code search, web research, and sub-agent delegation."
   badLabel="Generic"
   goodLabel="Reliability-focused"
   goodNotes={[
@@ -41,6 +42,7 @@ The persona doesn't add knowledge. It changes which knowledge gets retrieved by 
 When tasks require multiple steps, define the execution path. You are not asking for hidden reasoning; you are dictating the route so the agent cannot skip diagnosis, evidence, or validation.
 
 <PromptComparison
+  narration="Tell the model to figure out why onboarding completion dropped and it takes whatever path it likes, usually the shortest one. Define the route and you force the diagnosis: pin the scope to the drop after the invitation redesign, identify the affected funnel stages and metric deltas, compare the old and new sequence, list hypotheses across copy, flow, permissions, data readiness, and reliability, mark each one supported or unsupported, and propose experiments with expected signal. Requiring evidence for every claim, kept separate from assumptions, is what makes skipped steps and premature conclusions easy to spot."
   badLabel="Without path"
   goodLabel="With path"
   goodNotes={[

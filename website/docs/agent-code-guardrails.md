@@ -8,7 +8,7 @@ title: 'Agent Code Guardrails'
 
 When agents research your codebase, they read files and load every comment into their context window. This means comments become prompts. Write them like prompts using techniques from [Prompting 101](./prompting-101.mdx): imperative directives (NEVER, MUST, ALWAYS), explicit negation patterns ("Do NOT X. Instead, always Y"), numbered steps for complex operations (Step 1, Step 2), and concrete consequences. When the agent generates password handling code and reads "NEVER store passwords in plain text" with implementation alternatives, that violation becomes far less likely. You're exploiting prompt injection—the good kind.
 
-```typescript
+```typescript narration="The same function written both ways. The standard version stores the raw password behind a descriptive comment. The critical version adds an identifier and imperative rules such as never store plain text and always hash with bcrypt before persistence. The detail that matters is that the comment becomes the barrier, and the identifier carries a spec constraint into the code."
 // Standard comment
 // Validates password before storing
 function createUser(password: string) {

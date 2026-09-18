@@ -18,15 +18,16 @@ The cost is structural: every tool schema is serialized as JSON with repeated ty
 Eager loading keeps calls simple because the model already has the schema when it starts planning. Deferred loading protects the startup prompt, but every deferred tool depends on probabilistic candidate selection. Catalog breadth controls how much eager schema mass enters the prefix; task breadth controls how many schemas the work actually needs; selection quality controls whether discovery takes a wrong path. They are separate variables.
 
 <DiagramFrame
-  kicker="Context management"
-  title="Deferred loading adds a Tool Search decision boundary"
-  size="wide"
-  caption={
-    'Tool Search saves prefix tokens, but a near match can leave wrong schemas, calls, and results in the context middle.'
-  }
->
-  <MCPToolSchemaDiagram />
-</DiagramFrame>
+kicker="Context management"
+title="Deferred loading adds a Tool Search decision boundary"
+size="wide"
+narration="Two ways to pay for tool schemas. Load them eagerly and every schema sits in the fixed prefix ahead of your prompt; as the catalog grows from four schemas to forty, that block swells toward 180 of the window's 260 units and drags the prompt down toward the weak middle. Defer them and you protect the prompt, but you buy a decision: the model has to search, pick a candidate, load its schema, then call it. A near match is the expensive case — the wrong schema, the false call, and its result land in the middle and stay for the rest of the run. Deferring protects the prompt but prices discovery, so small high-frequency toolsets favor eager loading and broad catalogs favor deferred."
+caption={
+'Tool Search saves prefix tokens, but a near match can leave wrong schemas, calls, and results in the context middle.'
+}
+
+>   <MCPToolSchemaDiagram />
+> </DiagramFrame>
 
 Drag the catalog control: it changes installed breadth, not what the representative task needs. The task always requires two schemas. Eager loading puts the full catalog in the fixed prefix; deferred loading exposes only schemas selected at runtime and keeps the remainder out of the request.
 

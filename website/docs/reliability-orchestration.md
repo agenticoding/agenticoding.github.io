@@ -1,11 +1,11 @@
 ---
-title: 'Reliability: Orchestration'
+title: 'Shaping the Work'
 ---
 
 import OrchestrationLeverDiagram from '@site/src/components/VisualElements/OrchestrationLeverDiagram';
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 
-## 2. Orchestration: Change the Shape of the Work
+## Choose the largest unit the agent can finish reliably
 
 Use this lever when the agent has enough facts but the work is shaped badly. The run may mix discovery, design, implementation, and cleanup; depend on half-correct intermediate results; or quietly expand into adjacent refactors.
 
@@ -19,7 +19,7 @@ For rate limiting, these work shapes behave differently:
 
 The diagram makes the trade-off explicit: orchestration avoids both one oversized step and an unnecessarily long serial chain.
 
-<DiagramFrame kicker="Reliability levers" title="Orchestration changes task shape" size="wide" caption={<>
+<DiagramFrame kicker="Reliability levers" title="Orchestration changes task shape" size="wide" narration="Orchestration is about work shape. One oversized task like implement rate limiting pushes a single step past what the model can hold, so it fails. The same goal split into four bounded steps — inspect, locate, implement, validate — stays inside the model's capability and removes unnecessary dependent transformations. Split too far, though, and you just add handoffs. Independent research can run in parallel instead of widening the serial chain." caption={<>
 Reliable orchestration keeps work inside the model's capability while removing
 unnecessary dependent transformations and handoffs.
 </>}>
@@ -30,4 +30,4 @@ Orchestration also removes dependencies. Run independent research in parallel su
 
 This lever does not fix missing facts or an unclear success condition. Better shape only helps when each unit is grounded and judgeable.
 
-**Next:** [Reliability: Independent Retries](./reliability-independent-retries.md)
+**Next:** [Sample, Then Select](./reliability-independent-retries.md)

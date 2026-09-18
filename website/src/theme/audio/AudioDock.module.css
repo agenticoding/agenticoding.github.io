@@ -1,0 +1,40 @@
+/* Mobile audio dock. Flat construction: a full-bleed 1px hairline is the bar's own top edge —
+   the separation from the page — never a shadow. The bar is anchored to the viewport bottom
+   where the reader's thumb already is. */
+
+.dock {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 20;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-page);
+  /* The home indicator on notched phones overlaps the dock's bottom edge; this padding
+     lifts the controls clear. --audio-dock-height carries the same inset, so the spacer
+     and the floating chrome still clear the grown dock. */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Two equal rows — the transport line, then the heading being read — so the dock's height is
+   the 1px top edge plus two rows. The scrubber keeps the shared --border-subtle track; the
+   hairline above already carries the separation, so it is a scrubber and nothing else. */
+.transportRow,
+.statusRow {
+  display: flex;
+  align-items: center;
+  height: var(--target-lg);
+  padding: 0 var(--space-1);
+}
+
+/* The bar is fixed; this holds its height in the page so the last paragraph stays readable.
+   It reads the dock's own contract from custom.css — the 1px top edge plus its two rows. */
+.spacer {
+  height: var(--audio-dock-height);
+}
+
+/* The sidebar carries the outline from here up; the dock only exists below it. */
+@media (min-width: 997px) {
+  .dock,
+  .spacer {
+    display: none;
+  }
+}

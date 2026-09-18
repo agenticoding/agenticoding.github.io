@@ -18,7 +18,7 @@ Start before choosing a test or review technique:
 3. **Define the operating profile.** Specify the representative environments and conditions in which the claim must hold: real user workflows, data shapes and volume, permissions, dependency failures, retries, and credible malformed or adversarial inputs.
 4. **Gather evidence against that profile.** Choose the smallest portfolio of checks whose remaining blind spots the claim can tolerate.
 
-<DiagramFrame kicker="Methodology" title="The claim meets its real world" size="wide" caption="Preset tolerance and representative operating conditions turn a plausible artifact into an evidence-backed acceptance decision.">
+<DiagramFrame kicker="Methodology" title="The claim meets its real world" size="wide" caption="Preset tolerance and representative operating conditions turn a plausible artifact into an evidence-backed acceptance decision." narration="Validation isn't a feeling about whether the artifact looks good. It's a measurement against a claim you declared up front. First you state what must remain true, for example a checkout still completes after a declined payment. Then you set the tolerance, how much error or delay it can absorb, before you've seen the result, so you can't move the goalposts later. Then you define the operating profile: the real workflows, data volumes, dependencies, and failure conditions the claim has to survive. Only then do you gather evidence. A passing test suite only means something if it measures part of that predefined claim under representative conditions. Otherwise you have proof that a property nobody asked about still holds.">
 
   <ValidationClaimBenchDiagram />
 

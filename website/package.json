@@ -2,15 +2,21 @@
   "name": "website",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
     "stars:refresh": "node ../scripts/fetch-github-stars.js",
+    "audio:build": "node ../scripts/audiobook/cli.mjs --build",
+    "audio:verify": "node ../scripts/audiobook/cli.mjs --verify",
+    "audio:list": "node ../scripts/audiobook/cli.mjs --list",
+    "audio:dialogue:lint": "node ../scripts/audiobook/cli.mjs --lint",
+    "audio:dialogue:source": "node ../scripts/audiobook/cli.mjs --source",
     "test": "find src -name '*.test.ts' -print0 | xargs -0 node --test",
     "audit:breakpoints": "node ../scripts/audit-breakpoints.cjs",
     "audit:responsive-diagrams": "node ../scripts/audit-responsive-diagrams.cjs",
-    "test:browser-contracts": "node ../scripts/test-responsive-diagrams.cjs",
+    "test:browser-contracts": "node ../scripts/test-browser-contracts.cjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -22,7 +28,7 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,css}\"",
-    "prepare": "husky"
+    "prepare": "cd .. && husky website/.husky"
   },
   "dependencies": {
     "@docusaurus/core": "3.9.2",
@@ -41,6 +47,7 @@
     "@docusaurus/module-type-aliases": "3.9.2",
     "@docusaurus/tsconfig": "3.9.2",
     "@docusaurus/types": "3.9.2",
+    "@docusaurus/utils": "3.9.2",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "baseline-browser-mapping": "^2.9.10",
@@ -51,7 +58,13 @@
     "lint-staged": "^15.0.0",
     "prettier": "^3.0.0",
     "puppeteer": "^25.0.0",
-    "typescript": "~5.6.2"
+    "remark-directive": "^3.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-mdx": "^3.1.1",
+    "remark-parse": "^11.0.0",
+    "typescript": "~5.6.2",
+    "unified": "^11.0.5"
   },
   "browserslist": {
     "production": [

@@ -1,0 +1,84 @@
+{
+  "chapterId": "intro",
+  "sourceHash": "c77d1a9b88be05fe2cde9a3e1835961b4befa36e12a4eb66e4acd1a9d9aac3fe",
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "Stand behind — that's the bar. An agent is a machine: it keeps working after you stop touching it, and it builds exactly what you asked for, including the parts you didn't mean."
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "So it isn't a tool that waits for my next keystroke. It runs, and it builds to spec — which means the spec is the thing I have to get right."
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "And that's an old problem, not a new one. Every powerful tool has offered the same bargain: useless in careless hands, transformative in skilled ones."
+    },
+    {
+      "id": "t4",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "So for the first time, the limit on what I can build is my intent, not my hands."
+    },
+    {
+      "id": "t5",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "That skill is the whole prize. Operate the machine well and the labor moves to it while the judgment stays with you."
+    },
+    {
+      "id": "t6",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "The labor goes to the machine, the calls stay with me. That's the part I can't hand over."
+    },
+    {
+      "id": "t7",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "And that's the shape of the rest of the book. It starts on a foundation: know what you're actually running. See what the model can and can't do, and the pieces you assemble around it — everything after builds on that."
+    },
+    {
+      "id": "t8",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "So the foundation comes first, then three disciplines in order. The first: make the agent build what you meant. Hand over the goals, boundaries, and trade-offs it can't guess, so you get the file you expected rather than the one that merely seemed relevant."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "The second: trust results you can verify. Check the work with something other than the agent itself, because all checks passed isn't the same as the change I intended."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "And the third: own what ships. Set the bar before the code arrives, prove the work cleared it, and keep the final call your own."
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "And the open-source part: everything here is something I can read, run, and change myself, with nobody steering the answers toward a product."
+    },
+    {
+      "id": "t12",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "Right. The book, the tools it references, and everything built around them are 100% open source, community-backed projects with no commercial agenda. No paid tiers, no enterprise licenses, nothing to buy."
+    },
+    {
+      "id": "t13",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "text": "And the machine only pays off if you know what you're operating, so next is LLMs Demystified — the model itself, and what its behavior means for the work you hand it."
+    }
+  ]
+}

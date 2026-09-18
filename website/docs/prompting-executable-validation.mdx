@@ -10,6 +10,7 @@ import { PromptComparison } from '@site/src/components/PromptTreatment';
 Math needs exact execution, not plausible continuation. Because LLMs generate probable next tokens rather than verified results, they can produce arithmetic-shaped answers that look coherent but are wrong. Ask them to write executable code for arithmetic, measurement, parsing, and validation.
 
 <PromptComparison
+  narration="Ask a model to judge whether usage-based pricing will grow revenue without upsetting enterprise customers, and you get a confident guess. Math needs execution, not plausible continuation. So move the arithmetic into code: have the model write a script that models the pricing across customer cohorts, define every input the result depends on, return the cohort revenue deltas and a sensitivity table, and require tests for formulas, caps, discounts, and missing data. The model is far better at writing code that computes and verifies the result than at producing an answer that merely sounds right."
   badLabel="Don't rely on LLMs for math"
   goodLabel="Instead, have the model write code"
   goodNotes={[

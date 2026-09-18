@@ -10,6 +10,7 @@ import { PromptAnatomy, PromptComparison } from '@site/src/components/PromptTrea
 Few-shot prompting gives the model input/output examples before the real task. Instead of describing every rule, you show the pattern you want completed.
 
 <PromptComparison
+  narration="Rules are hard to describe but easy to show. With no examples, the model guesses at the shape of the answer. Give it labeled examples first and it sees both the format to continue and the judgment you want: the categories, Copy, Flow, Permissions, Data model, and Reliability, plus input and output pairs that turn fuzzy product calls into concrete labels. The real lever is the last line, an output left half-finished so the model continues the exact pattern instead of inventing one."
   badLabel="No examples"
   goodLabel="Few-shot"
   goodNotes={[
@@ -53,6 +54,7 @@ When you already have an ideal output, don't guess the prompt from scratch. Give
 
 <PromptAnatomy
   sequenced
+  narration="When you already have a great output, do not guess the prompt from scratch. Hand the model the finished artifact, here a complete architecture decision record, and ask it to reverse-engineer what produced it: the intended audience and decision scope, the sections, the evidence requirements, the trade-off language, and the constraints a reviewer must preserve. That inferred pattern becomes a reusable forward prompt with variables you fill in per decision, plus a validation checklist for testing whether it reproduces the same quality. Anchoring on the target is what makes the reconstruction reliable."
   items={[
     { label: 'Ideal output', detail: 'Anchors the model on the target artifact before asking it to infer anything.' },
     { label: 'Inference', detail: 'Extracts the audience, sections, evidence rules, tone, and operating constraints behind the artifact.' },

@@ -6,7 +6,7 @@ title: 'Knowledge Cache'
 
 You've extracted architectural knowledge from your codebase with an agent—clean diagrams, comprehensive API documentation, detailed component relationships. You save it as `ARCHITECTURE.md` and commit it. Now you have a cache invalidation problem: code changes (always), documentation doesn't (usually), and future agents find both during code research. The diagram below shows the divergence.
 
-```mermaid
+```mermaid narration="A sequence diagram between a codebase and a stateless agent. On the good path the agent reads source, plans and executes. On the bad path it commits an extracted architecture document, edits code, and the cache goes stale, so the next agent finds both current code and outdated cache. Committed extracted knowledge becomes a cache that must be invalidated."
 sequenceDiagram
     participant KB as 🗄️ Codebase<br/>(Persistent)
     participant Agent as ⚡ Agent<br/>(Stateless)
