@@ -6,7 +6,7 @@
 //
 // Source-only complement: the rendered DOM contract (footer link is clickable
 // in built HTML and drives SPA sidebar state) is covered by browser contracts
-// — see scripts/test-responsive-diagrams.cjs: clickReadingSpineNext /
+// — see scripts/test-browser-contracts.cjs: clickReadingSpineNext /
 // inspectActiveChapterScroll. This file guards the authoring contract without
 // requiring build artifacts. Full per-footer DOM coverage is optional future
 // work (a cheap addition to the browser routes loop), not owed by this suite.
@@ -30,7 +30,7 @@ function normalizeTarget(target: string): string {
     .split('#')[0];
 }
 
-// Complements the browser contract (scripts/test-responsive-diagrams.cjs
+// Complements the browser contract (scripts/test-browser-contracts.cjs
 // clickReadingSpineNext) which clicks the rendered `article p` "Next:" link
 // and asserts sidebar expansion — this test guards the source authoring side.
 test('every Next: footer points at the next document in book order', () => {

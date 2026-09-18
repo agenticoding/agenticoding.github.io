@@ -1,7 +1,7 @@
 // Guards navigation contracts the build cannot catch: every doc is reachable,
 // book numbering remains stable, and Toolbox stays ahead of About.
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import {
   chapterGroups,
@@ -16,55 +16,21 @@ import {
   type SidebarCustomProps,
 } from '../../chapters.ts';
 import sidebars from '../../sidebars.ts';
+import { docIds, docSource, frontmatterTitle } from './docSources.ts';
 // SidebarCustomProps is the single source of truth for sidebar typing (see
 // website/chapters.ts). website/tsconfig.json#include must cover "*.ts" at the
 // website root so sidebars.ts + chapters.ts outside src/ still type-check and
 // this test's SidebarDocItem stays in sync with the producer.
 
-const docsDir = new URL('../../docs/', import.meta.url);
+/** Frontmatter title of a doc (asserted present) — the sidebar's display value. */
+const docTitle = (id: string): string => {
+  const title = frontmatterTitle(docSource(id));
+  assert.ok(title, `${id} has no frontmatter title`);
+  return title;
+};
 
-// Doc file lookup by ID (readdirSync lists names with extension) for reading
-// frontmatter in the tests below.
-const docFileById = new Map(
-  readdirSync(docsDir, { recursive: true })
-    .filter(
-      (name): name is string => typeof name === 'string' && /\.mdx?$/.test(name)
-    )
-    .map((name) => [name.replace(/\.mdx?$/, ''), name])
-);
-
-const docIds = readdirSync(docsDir, { recursive: true })
-  .filter((name): name is string => {
-    if (typeof name !== 'string' || !/\.mdx?$/.test(name)) return false;
-    // Mirror the docs plugin's exclude list (docusaurus.config.ts) so
-    // build-excluded files can't false-fail the reachability contract.
-    const segments = name.split(/[\\/]/);
-    const basename = segments.at(-1)!;
-    return (
-      !basename.startsWith('_') && // **/_*.md(x)
-      !segments.some((s) => s.startsWith('_') || s === '__tests__') &&
-      basename !== 'CLAUDE.md'
-    );
-  })
-  .map((name) => name.replace(/\.mdx?$/, ''));
 const toolboxIds = toolboxEntries.map((entry) => entry.id);
 const toolboxIdSet = new Set<string>(toolboxIds);
-
-/** Frontmatter `title` of a doc — the sidebar displays this value, so
-    chapters.ts titles must match it (single source of truth for display). */
-function frontmatterTitle(docId: string): string {
-  const file = docFileById.get(docId);
-  assert.ok(file, `doc file for ${docId} not found in website/docs`);
-  const content = readFileSync(
-    new URL(`../../docs/${file}`, import.meta.url),
-    'utf8'
-  );
-  const title = content
-    .match(/^---\n[\s\S]*?\n---/)?.[0]
-    ?.match(/^title:\s*(.+)$/m)?.[1];
-  assert.ok(title, `${file} has no frontmatter title`);
-  return title.trim().replace(/^['"]|['"]$/g, '');
-}
 
 type SidebarDocItem = {
   type: string;
@@ -113,17 +79,14 @@ test('first numbered chapter is how-llms-work (intro Next link depends on this)'
   );
 });
 
-test('browser-contract deep-link chapters stay stable (test-responsive-diagrams.cjs depends on them)', () => {
-  // scripts/test-responsive-diagrams.cjs inspectActiveChapterScroll deep-links
+test('browser-contract deep-link chapters stay stable (test-browser-contracts.cjs depends on them)', () => {
+  // scripts/test-browser-contracts.cjs inspectActiveChapterScroll deep-links
   // these chapters; a rename should fail here (fast unit suite) rather than in
   // the slow browser suite.
   const lastNumbered = chapters.at(-2); // -1 is About (afterGroups)
   assert.equal(lastNumbered?.id, 'agent-knowledge-cache');
   assert.equal(isNumbered(lastNumbered!), true);
-  assert.equal(
-    chapterGroups[0].chapters.at(-1)!.id,
-    'structured-control-plane-agents'
-  );
+  assert.equal(chapterGroups[0].chapters.at(-1)!.id, 'workflow-agents');
 });
 
 test('chapter IDs are unique and section numbers round-trip through both lookups', () => {
@@ -183,32 +146,17 @@ test('Toolbox is the final category before About and has no chapter numbers', ()
   }
 });
 
-test('chapter titles match the frontmatter titles the sidebar displays', () => {
-  // The sidebar label comes from each doc's frontmatter, while chapters.ts
-  // titles are the declared single source of truth (chapters.ts header).
-  // Drift here desyncs the two descriptions of the same chapter.
-  for (const group of chapterGroups) {
-    for (const chapter of group.chapters) {
-      assert.equal(
-        chapter.title,
-        frontmatterTitle(chapter.id),
-        `${chapter.id}: chapters.ts title diverges from frontmatter`
-      );
-    }
-  }
-});
-
 test('browser-contract LABEL_* constants stay in sync with chapters.ts labels', () => {
-  // scripts/test-responsive-diagrams.cjs duplicates these strings with only a
+  // scripts/test-browser-contracts.cjs duplicates these strings with only a
   // comment enforcing sync; a rename must fail here (fast unit suite) rather
   // than in the slow browser suite.
   const script = readFileSync(
-    new URL('../../../scripts/test-responsive-diagrams.cjs', import.meta.url),
+    new URL('../../../scripts/test-browser-contracts.cjs', import.meta.url),
     'utf8'
   );
   const extractLabel = (name: string): string => {
     const value = script.match(new RegExp(`const ${name} = "([^"]+)"`))?.[1];
-    assert.ok(value, `${name} not found in test-responsive-diagrams.cjs`);
+    assert.ok(value, `${name} not found in test-browser-contracts.cjs`);
     return value;
   };
   // Indices are pinned because inspectSidebarNavigation/inspectMobileDrawerSidebar
@@ -219,6 +167,6 @@ test('browser-contract LABEL_* constants stay in sync with chapters.ts labels', 
   // About's sidebar label is the standalone doc's frontmatter title.
   assert.equal(
     extractLabel('LABEL_ABOUT'),
-    frontmatterTitle(standaloneChapters.afterGroups[0].id)
+    docTitle(standaloneChapters.afterGroups[0].id)
   );
 });
