@@ -5,6 +5,7 @@ import {
   type TokenUnitModality,
   type TokenUnitSignal,
 } from './TokenUnit';
+import { VISUALLY_HIDDEN } from './visuallyHidden';
 
 export type TokenExample = {
   modality: TokenUnitModality;
@@ -32,6 +33,9 @@ export const tokenIllustrationWidth = (count: number) =>
   count * (CHIP_SIZE + GAP) - GAP + EDGE_PAD * 2;
 const TOTAL_W = tokenIllustrationWidth(TOKEN_EXAMPLES.length);
 const SVG_H = CHIP_SIZE + LABEL_GAP + LABEL_HEIGHT;
+
+const ARIA_LABEL =
+  'Five token chips — text, code, image, audio, video — shown as the same kind of unit: whatever the input modality, the model reads it as tokens.';
 
 export function TokenTypeTokens({
   examples,
@@ -78,15 +82,28 @@ export function TokenTypeTokens({
   );
 }
 
-export default function TokenTypeIllustration() {
+type TokenTypeIllustrationProps = {
+  /** Spoken explanation the audiobook extractor reads statically; rendered only
+   * as the visually-hidden figcaption. */
+  narration?: string;
+};
+
+export default function TokenTypeIllustration({
+  narration,
+}: TokenTypeIllustrationProps) {
   return (
-    <svg
-      viewBox={`0 0 ${TOTAL_W} ${SVG_H}`}
-      width="100%"
-      style={{ maxWidth: TOTAL_W, margin: '0.5rem auto', display: 'block' }}
-      aria-hidden="true"
-    >
-      <TokenTypeTokens examples={TOKEN_EXAMPLES} />
-    </svg>
+    // data-audio-figure marks the DOM order the player maps figure anchors to.
+    // margin: 0 keeps the global figure spacing from shifting the illustration.
+    <figure data-audio-figure="" style={{ margin: 0 }}>
+      <svg
+        viewBox={`0 0 ${TOTAL_W} ${SVG_H}`}
+        width="100%"
+        style={{ maxWidth: TOTAL_W, margin: '0.5rem auto', display: 'block' }}
+        aria-hidden="true"
+      >
+        <TokenTypeTokens examples={TOKEN_EXAMPLES} />
+      </svg>
+      <figcaption style={VISUALLY_HIDDEN}>{narration ?? ARIA_LABEL}</figcaption>
+    </figure>
   );
 }

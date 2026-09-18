@@ -1,0 +1,179 @@
+/* Deep Research (v5) — layout + base styles for the one-straight-pipeline figure.
+   Every animated element's base style is its FINISHED state: with animation off
+   (reduced motion) the figure still reads — the walk traced, reached nodes lit
+   (their rings are animation-only, so they stay hidden), candidates seated,
+   topic rows built, each lane's fact shown, the exit plumbing cornered out of
+   the tile, the stream on its joint and the answer shown. The keyframes that
+   add the motion are generated in the component from the model's schedule, so
+   no timing lives here. */
+
+/* The cap matches the desktop canvas width exactly (see the model's viewBox), so the
+   figure renders at 1:1 like every other diagram in the book instead of scaling up. */
+.container {
+  container-type: inline-size;
+  display: block;
+  margin: var(--space-4) auto;
+  max-width: 820px;
+}
+
+.diagram {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.desktopDiagram {
+  max-width: 820px;
+}
+
+/* The mobile canvas is only as big as the two stacked tiles, so this cap lets the
+   whole figure scale up to fill a phone's column instead of keeping dead margins. */
+.mobileDiagram {
+  max-width: 360px;
+}
+
+/* --- Flows: one straight line each, joints perpendicular to the tile edge ----
+   ONE connector style for the whole pipeline: the output stream keeps the same
+   stroke and weight as the corridor that fed the tile. */
+.connector {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+/* --- Text ------------------------------------------------------------------ */
+.eyebrow,
+.nodeLabel,
+.noteText {
+  font-family: var(--font-mono-spec);
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.noteText {
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.nodeLabel {
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* --- Exploration trail ----------------------------------------------------- */
+/* The trail is the only line the figure draws; base state is drawn whole, and the
+   keyframe traces it in from dashoffset 1 (pathLength normalises each segment). */
+.tracedEdge {
+  stroke-width: 1.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  vector-effect: non-scaling-stroke;
+  opacity: 1;
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+.reachedNode,
+.idleNode,
+.reachRing {
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+/* A reached node is the finished state; the keyframe hides it until arrival. */
+.reachedNode {
+  opacity: 1;
+}
+
+/* A node the walk never picks stays dim, so the candidate subset is visible. */
+.idleNode {
+  opacity: 0.4;
+}
+
+/* The match ring: the same highlight the vector figures draw on a hit. */
+/* The match ring is a ping, not a badge: it blooms on the stop and clears again,
+   so the walk reads as a sequence of rings. transform-box keeps the scale on the
+   circle's own centre. */
+.reachRing {
+  fill: none;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* --- Synthesis ------------------------------------------------------------- */
+.rowSurface {
+  fill: var(--surface-page);
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+  opacity: 1;
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+/* The grey exit plumbing: one cornered pipe per lane, onto the shared spine and out of
+   the tile. Butt caps + miter joins are what make its corners SHARP; the signal that
+   rides each pipe is drawn by the shared AnimatedSignalTrain. */
+.exitPlumbing {
+  opacity: 1;
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+.exitPipe {
+  fill: none;
+  stroke: var(--border-default);
+  stroke-width: 1;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+.candidateToken {
+  opacity: 1;
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+/* A lane's one fact: the port its exit route leaves from. */
+
+/* The answer node: the figure's terminal, so it POPS in on arrival like any node
+   (transform-box keeps the pop on the node's own centre). */
+.answerNode {
+  opacity: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 360px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diagram * {
+    animation: none !important;
+  }
+}

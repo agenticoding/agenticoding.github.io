@@ -14,6 +14,8 @@ type PromptComparisonProps = {
   badLabel?: string;
   goodLabel?: string;
   goodNotes?: ComparisonNote[];
+  /** Audio-only spoken explanation of the figure; never rendered (see scripts/audiobook/DIALOGUE_GUIDE.md). */
+  narration?: string;
 };
 
 function Panel({
@@ -67,13 +69,16 @@ export default function PromptComparison({
   badLabel = 'Ineffective',
   goodLabel = 'Effective',
   goodNotes,
+  narration: _narration,
 }: PromptComparisonProps) {
   const comparisonClass = goodNotes
     ? `${styles.comparison} ${styles.comparisonWithNotes}`
     : styles.comparison;
 
   return (
-    <div className={comparisonClass}>
+    // data-audio-figure marks the DOM order the player maps figure anchors to; it
+    // must sit on the one figure the extractor emits for this component.
+    <figure className={comparisonClass} data-audio-figure="">
       <Panel tone="bad" label={badLabel}>
         {bad}
       </Panel>
@@ -84,6 +89,6 @@ export default function PromptComparison({
       >
         {good}
       </Panel>
-    </div>
+    </figure>
   );
 }

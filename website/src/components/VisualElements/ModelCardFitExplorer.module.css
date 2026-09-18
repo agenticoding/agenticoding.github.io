@@ -143,7 +143,6 @@
 }
 
 .cardHeader p,
-.cardHeader h4,
 .cardHeader span,
 .cardField p,
 .cardField h5,
@@ -151,7 +150,7 @@
   margin: 0;
 }
 
-.cardHeader h4 {
+.cardHeader .cardName {
   color: var(--text-heading);
   font-family: var(--font-display);
   font-size: var(--text-xl);

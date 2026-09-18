@@ -33,7 +33,6 @@
   justify-content: space-between;
 }
 
-.header h3,
 .header p,
 .marketingPane blockquote,
 .marketingPane p,
@@ -43,7 +42,7 @@
   margin: 0;
 }
 
-.header h3 {
+.header .headline {
   color: var(--text-heading);
   font-size: var(--text-2xl);
   line-height: var(--lh-2xl);
@@ -506,7 +505,7 @@
     --translator-note-block-size: calc(var(--space-9) + var(--space-2));
   }
 
-  .header h3,
+  .header .headline,
   .marketingPane blockquote {
     font-size: var(--text-lg);
   }

@@ -47,24 +47,65 @@ function resolveBand(spec: ContextBandSpec): ResolvedBand {
   };
 }
 
-export function ContextBandShape({ x, y, w, spec }: { x: number; y: number; w: number; spec: ContextBandSpec }) {
+export function ContextBandShape({
+  x,
+  y,
+  w,
+  spec,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  spec: ContextBandSpec;
+}) {
   const band = resolveBand(spec);
   if (spec.dashed) {
     return (
-      <rect x={x} y={y} width={w} height={spec.h} rx={0} fill={band.fill} stroke={band.stroke} strokeWidth={1} strokeDasharray="4 3" />
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={spec.h}
+        rx={0}
+        fill={band.fill}
+        stroke={band.stroke}
+        strokeWidth={1}
+        strokeDasharray="4 3"
+      />
     );
   }
   return (
     <>
-      <rect x={x} y={y} width={w} height={spec.h} rx={0} fill={band.fill} stroke={band.stroke} strokeWidth={1} />
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={spec.h}
+        rx={0}
+        fill={band.fill}
+        stroke={band.stroke}
+        strokeWidth={1}
+      />
       <rect x={x} y={y} width={3} height={spec.h} rx={0} fill={band.stroke} />
     </>
   );
 }
 
-export function ContextBandLabel({ x, y, w, spec }: { x: number; y: number; w: number; spec: ContextBandSpec }) {
+export function ContextBandLabel({
+  x,
+  y,
+  w,
+  spec,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  spec: ContextBandSpec;
+}) {
   const band = resolveBand(spec);
-  const centered = spec.labelAlign ? spec.labelAlign === 'center' : spec.dashed === true;
+  const centered = spec.labelAlign
+    ? spec.labelAlign === 'center'
+    : spec.dashed === true;
   const anchor = centered ? 'middle' : undefined;
   const labelX = centered ? x + w / 2 : x + 8;
   // With a note, the label/note pair is visually centered as a unit.
@@ -76,7 +117,11 @@ export function ContextBandLabel({ x, y, w, spec }: { x: number; y: number; w: n
         y={labelY}
         textAnchor={anchor}
         dominantBaseline="middle"
-        style={spec.dashed ? voiceStyle('keyword', 8.5, 500) : voiceStyle('spec', 8.5, 600)}
+        style={
+          spec.dashed
+            ? voiceStyle('keyword', 8.5, 500)
+            : voiceStyle('spec', 8.5, 600)
+        }
         fill={band.labelFill}
       >
         {spec.label}

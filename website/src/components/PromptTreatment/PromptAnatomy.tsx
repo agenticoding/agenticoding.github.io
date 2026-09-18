@@ -10,19 +10,24 @@ type PromptAnatomyProps = {
   items: AnatomyItem[];
   prompt: ReactNode;
   sequenced?: boolean;
+  /** Audio-only spoken explanation of the figure; never rendered (see scripts/audiobook/DIALOGUE_GUIDE.md). */
+  narration?: string;
 };
 
 export default function PromptAnatomy({
   items,
   prompt,
   sequenced = false,
+  narration: _narration,
 }: PromptAnatomyProps) {
   const anatomyClass = sequenced
     ? `${styles.anatomy} ${styles.anatomySequenced}`
     : styles.anatomy;
 
   return (
-    <div className={anatomyClass}>
+    // data-audio-figure marks the DOM order the player maps figure anchors to; it
+    // must sit on the one figure the extractor emits for this component.
+    <figure className={anatomyClass} data-audio-figure="">
       <div className={styles.anatomyPrompt}>{prompt}</div>
       <aside className={styles.annotations} aria-label="Prompt anatomy">
         {items.map((item, index) => (
@@ -35,6 +40,6 @@ export default function PromptAnatomy({
           </div>
         ))}
       </aside>
-    </div>
+    </figure>
   );
 }

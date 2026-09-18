@@ -1130,6 +1130,46 @@ article .tool-verdict {
   border-bottom-color: var(--neutral-800);
 }
 
+/* ========================================================================
+   Mobile bottom band — the audio dock's footprint, and the site chrome that
+   must clear it.
+   ======================================================================== */
+
+/* The dock's height contract. Declared once because two consumers share the number:
+   AudioDock.module.css reserves this space at the end of the article, and the back-to-top
+   button below clears it. The safe-area inset is part of the dock's height on notched
+   phones (its padding-bottom there), so the token must grow with it. */
+:root {
+  --audio-dock-height: calc(
+    var(--space-px) + var(--target-lg) * 2 + env(safe-area-inset-bottom)
+  );
+}
+
+/* Docusaurus anchors its floating control bottom-right, inside the dock's band — where it also
+   outranks the dock (z-index 199 vs 20) and steals the pointer from the scrubber's last percent
+   and the status line. Chapters without narration render no dock, so the default inset stands.
+   The breakpoint tracks AudioDock.module.css, which hides the dock at min-width 997px. */
+@media (max-width: 996px) {
+  body:has([data-chapter-audio]) .theme-back-to-top-button {
+    bottom: calc(var(--audio-dock-height) + 1.3rem);
+  }
+}
+
+/* Same control chrome as the dock's play button: a hairline on the page surface, never a filled
+   chip. The `button` prefix outranks the theme's hashed module class without leaning on order. */
+button.theme-back-to-top-button {
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-page);
+}
+
+button.theme-back-to-top-button:hover {
+  background-color: var(--surface-muted);
+}
+
+button.theme-back-to-top-button::after {
+  background-color: var(--text-heading);
+}
+
 /* Figure — reset UA margins, apply design-system spacing consistently */
 figure {
   margin-inline: 0;

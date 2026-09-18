@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import InlineEmojiImage from './InlineEmojiImage';
+import { VISUALLY_HIDDEN } from './visuallyHidden';
 import styles from './MarketingDecoderInteractive.module.css';
 
 type DecodePhase = 'source' | 'decode' | 'output' | 'note';
@@ -348,87 +349,107 @@ type PauseButtonProps = {
   onClick: () => void;
 };
 
-export default function MarketingDecoderInteractive() {
+const ARIA_LABEL = 'Marketing Translator widget';
+
+type MarketingDecoderInteractiveProps = {
+  /** Spoken explanation the audiobook extractor reads statically; rendered only
+   * as the visually-hidden figcaption. */
+  narration?: string;
+};
+
+export default function MarketingDecoderInteractive({
+  narration,
+}: MarketingDecoderInteractiveProps) {
   const state = useTranslatorAutoplay();
   const example = examples[state.activeIndex];
   const className = styles.container;
 
   return (
-    <section className={className} aria-label="Marketing Translator widget">
-      <header className={styles.header}>
-        <div className={styles.headingGroup}>
-          <div className={styles.titleLine}>
-            <p className={styles.kicker}>Marketing Translator</p>
-            <PauseButton
-              disabled={state.reducedMotion}
-              onClick={state.togglePaused}
-              paused={state.paused}
-            />
+    // data-audio-figure marks the DOM order the player maps figure anchors to;
+    // it wraps the whole interactive block so the extractor emits one figure.
+    // margin: 0 keeps the global figure spacing from shifting the widget.
+    <figure data-audio-figure="" style={{ margin: 0 }}>
+      <section className={className} aria-label={ARIA_LABEL}>
+        <header className={styles.header}>
+          <div className={styles.headingGroup}>
+            <div className={styles.titleLine}>
+              <p className={styles.kicker}>Marketing Translator</p>
+              <PauseButton
+                disabled={state.reducedMotion}
+                onClick={state.togglePaused}
+                paused={state.paused}
+              />
+            </div>
+            <p className={styles.headline}>
+              Translate launch claims into operational reality.
+            </p>
           </div>
-          <h3>Translate launch claims into operational reality.</h3>
+        </header>
+        <ExampleSelector
+          activeIndex={state.activeIndex}
+          onSelect={state.selectExample}
+          reducedMotion={state.reducedMotion}
+        />
+        <div className={styles.translator}>
+          <Pane
+            active={state.phase === 'source'}
+            duration={phaseDurations.source}
+            kind="marketingPane"
+            title={
+              <RoleLabel
+                asset={EMOJI.megaphone}
+                label={`${example.context} says`}
+              />
+            }
+          >
+            <blockquote>
+              <p>“{example.claim}”</p>
+              <footer>
+                —{' '}
+                <cite>
+                  <a href={example.sourceUrl} rel="noreferrer" target="_blank">
+                    {example.sourceLabel}
+                  </a>
+                </cite>
+              </footer>
+            </blockquote>
+          </Pane>
+          <div
+            aria-current={state.phase === 'decode' ? 'step' : undefined}
+            aria-label="Translate marketing claim into engineering reality"
+            className={`${styles.decode} ${state.phase === 'decode' ? styles.active : ''}`}
+            role="img"
+          >
+            <span className={styles.translatorGlyph} aria-hidden="true">
+              <span
+                className={`${styles.translatorArrow} ${styles.translatorArrowBack}`}
+              />
+              <span
+                className={`${styles.translatorArrow} ${styles.translatorArrowForward}`}
+              />
+            </span>
+          </div>
+          <Pane
+            active={state.phase === 'output'}
+            duration={phaseDurations.output}
+            kind="engineeringPane"
+            title={
+              <RoleLabel asset={EMOJI.tools} label="Engineering reality" />
+            }
+          >
+            <p>{example.output}</p>
+          </Pane>
         </div>
-      </header>
-      <ExampleSelector
-        activeIndex={state.activeIndex}
-        onSelect={state.selectExample}
-        reducedMotion={state.reducedMotion}
-      />
-      <div className={styles.translator}>
-        <Pane
-          active={state.phase === 'source'}
-          duration={phaseDurations.source}
-          kind="marketingPane"
-          title={
-            <RoleLabel
-              asset={EMOJI.megaphone}
-              label={`${example.context} says`}
-            />
-          }
+        <footer
+          aria-current={state.phase === 'note' ? 'step' : undefined}
+          className={`${styles.note} ${state.phase === 'note' ? styles.active : ''}`}
         >
-          <blockquote>
-            <p>“{example.claim}”</p>
-            <footer>
-              —{' '}
-              <cite>
-                <a href={example.sourceUrl} rel="noreferrer" target="_blank">
-                  {example.sourceLabel}
-                </a>
-              </cite>
-            </footer>
-          </blockquote>
-        </Pane>
-        <div
-          aria-current={state.phase === 'decode' ? 'step' : undefined}
-          aria-label="Translate marketing claim into engineering reality"
-          className={`${styles.decode} ${state.phase === 'decode' ? styles.active : ''}`}
-          role="img"
-        >
-          <span className={styles.translatorGlyph} aria-hidden="true">
-            <span
-              className={`${styles.translatorArrow} ${styles.translatorArrowBack}`}
-            />
-            <span
-              className={`${styles.translatorArrow} ${styles.translatorArrowForward}`}
-            />
-          </span>
-        </div>
-        <Pane
-          active={state.phase === 'output'}
-          duration={phaseDurations.output}
-          kind="engineeringPane"
-          title={<RoleLabel asset={EMOJI.tools} label="Engineering reality" />}
-        >
-          <p>{example.output}</p>
-        </Pane>
-      </div>
-      <footer
-        aria-current={state.phase === 'note' ? 'step' : undefined}
-        className={`${styles.note} ${state.phase === 'note' ? styles.active : ''}`}
-      >
-        <RoleLabel asset={EMOJI.receipt} label="Decoder note" />
-        <p>{example.note}</p>
-        <PhaseTimer duration={phaseDurations.note} />
-      </footer>
-    </section>
+          <RoleLabel asset={EMOJI.receipt} label="Decoder note" />
+          <p>{example.note}</p>
+          <PhaseTimer duration={phaseDurations.note} />
+        </footer>
+      </section>
+      <figcaption style={VISUALLY_HIDDEN}>{narration ?? ARIA_LABEL}</figcaption>
+    </figure>
   );
 }

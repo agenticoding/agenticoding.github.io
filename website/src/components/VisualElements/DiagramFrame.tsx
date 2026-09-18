@@ -20,6 +20,8 @@ type DiagramFrameProps = {
   legend?: DiagramLegendItem[];
   size?: DiagramFrameSize;
   className?: string;
+  /** Audio-only spoken explanation of the figure; never rendered (see scripts/audiobook/DIALOGUE_GUIDE.md). */
+  narration?: string;
 };
 
 export default function DiagramFrame({
@@ -30,12 +32,20 @@ export default function DiagramFrame({
   legend,
   size = 'standard',
   className,
+  narration: _narration,
 }: DiagramFrameProps) {
   return (
-    <figure className={clsx(styles.frame, styles[size], className)}>
+    // data-audio-figure marks the DOM order the player uses to map figure anchors;
+    // it must stay on the figure element itself.
+    <figure
+      className={clsx(styles.frame, styles[size], className)}
+      data-audio-figure=""
+    >
       <header className={styles.header}>
         {kicker ? <p className={styles.kicker}>{kicker}</p> : null}
-        <h3 className={styles.title}>{title}</h3>
+        {/* Title is a figure caption, not a document heading: Docusaurus's doc.toc
+            reads the markdown AST only, so a heading here would be invisible to it. */}
+        <p className={styles.title}>{title}</p>
       </header>
       <div className={styles.body}>{children}</div>
       {legend?.length ? <DiagramLegend items={legend} /> : null}

@@ -1,17 +1,16 @@
 import React from 'react';
-import { EmojiImage } from './ActorNodes';
 import {
   AgentTile,
   ContextAgentTile,
-  activationStyle,
   agentIconSize,
   type AgentContextTile,
 } from './AgentTile';
+import { ConceptCluster, type ConceptPlacement } from './ConceptCluster';
+import { CONCEPT_BEAT_STEP_MS } from './conceptClusterGeometry';
 import type { TokenSequence } from './AnimatedTokenFlow';
-import { DiagramTileSurface } from './DiagramTile';
 import { DIAGRAM_ICON_SIZE, DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import { tileToneVars, type DiagramTone } from './diagramTileLayout';
-import { EMOJI, type EmojiAsset } from './emojiAssets';
+import { EMOJI } from './emojiAssets';
 import {
   PairedTokenArrowTrain,
   TokenArrowTrain,
@@ -40,7 +39,6 @@ const SOURCE_RESULT_DELAY_MS = 520;
 const GROUNDING_TO_ROOT_DELAY_MS = 2100;
 const LOOKUP_DELAY_MS = 4700;
 const LOOKUP_RESULT_DELAY_MS = 5400;
-const SOURCE_ACTIVATION_STEP_MS = 180;
 const ROOT_CONTEXT_ACTIVATION_DELAY_MS =
   GROUNDING_TO_ROOT_DELAY_MS + FLOW_TIMING.travelMs;
 const FACT_ACTIVATION_STEP_MS = 250;
@@ -78,10 +76,10 @@ const TARGETED_RESULT_TOKENS = [
   { modality: 'text', signal: 'compressed' },
 ] as const satisfies TokenSequence;
 const SOURCE_ITEMS = [
-  { label: 'codebase', icon: EMOJI.laptop, tone: 'var(--text-body)' },
-  { label: 'docs', icon: EMOJI.books, tone: 'var(--text-body)' },
-  { label: 'history', icon: EMOJI.receipt, tone: 'var(--text-body)' },
-  { label: 'specs', icon: EMOJI.ruler, tone: 'var(--text-body)' },
+  { label: 'codebase', icon: EMOJI.laptop },
+  { label: 'docs', icon: EMOJI.books },
+  { label: 'history', icon: EMOJI.receipt },
+  { label: 'specs', icon: EMOJI.ruler },
 ] as const;
 const ROOT_FACTS = [
   'architecture',
@@ -90,7 +88,6 @@ const ROOT_FACTS = [
 ] as const;
 
 type BoxProps = { x: number; y: number; width: number; height: number };
-type SourceItem = { label: string; icon: EmojiAsset; tone: string };
 type FlowStyle = { strokeTone: DiagramTone; tokenTone: TokenUnitTone };
 
 type FlowSpec =
@@ -136,7 +133,7 @@ function DesktopDiagram() {
     >
       <DiagramTitle title="GROUNDING SOURCES → COMPACT ROOT CONTEXT" />
       <FlowLayer flows={flows} />
-      <SourceCloud x={30} y={58} width={250} height={172} density="desktop" />
+      <SourcesTile x={30} y={58} width={250} height={172} density="desktop" />
       <GroundingAgent x={330} y={260} width={176} height={128} />
       <RootOrchestrator
         x={546}
@@ -161,7 +158,7 @@ function MobileDiagram() {
     >
       <DiagramTitle title="GROUNDING → ROOT CONTEXT" />
       <FlowLayer flows={flows} />
-      <SourceCloud x={28} y={56} width={276} height={186} density="mobile" />
+      <SourcesTile x={28} y={56} width={276} height={186} density="mobile" />
       <GroundingAgent x={82} y={318} width={176} height={104} compact />
       <RootOrchestrator
         x={50}
@@ -184,84 +181,25 @@ function DiagramTitle({ title }: { title: string }) {
   );
 }
 
-function SourceCloud(props: BoxProps & { density: 'desktop' | 'mobile' }) {
-  const layout = sourceItemLayout(props.density);
+// The grounding sources ARE a concept cluster: the shared ConceptCluster owns the
+// tile, its header and the staggered arrival beat; this figure only says which
+// kinds it holds and where they sit inside its own tile.
+function SourcesTile(props: BoxProps & { density: 'desktop' | 'mobile' }) {
+  const placements: readonly ConceptPlacement[] = sourceItemLayout(
+    props.density
+  ).map((item) => ({ x: props.x + item.x, y: props.y + item.y }));
   return (
-    <g>
-      <DiagramTileSurface
-        {...props}
-        tone="context"
-        weight={1.5}
-        className={styles.sourceRect}
-      />
-      <SourceHeader x={props.x} y={props.y} />
-      {SOURCE_ITEMS.map((item, index) => (
-        <SourceCloudItem
-          key={item.label}
-          item={item}
-          x={props.x + layout[index].x}
-          y={props.y + layout[index].y}
-          activationDelayMs={sourceActivationDelay(index)}
-        />
-      ))}
-    </g>
+    <ConceptCluster
+      {...props}
+      eyebrow="GROUNDING SOURCES"
+      note="broad material, one searchable surface"
+      items={SOURCE_ITEMS}
+      placements={placements}
+      cycleMs={LOOP_MS}
+      startDelayMs={SOURCE_RESULT_DELAY_MS}
+      staggerMs={CONCEPT_BEAT_STEP_MS}
+    />
   );
-}
-
-function SourceHeader({ x, y }: { x: number; y: number }) {
-  return (
-    <>
-      <text
-        x={x + 16}
-        y={y + 24}
-        fill="var(--text-heading)"
-        className={styles.nodeEyebrow}
-      >
-        GROUNDING SOURCES
-      </text>
-      <text
-        x={x + 16}
-        y={y + 44}
-        fill="var(--text-muted)"
-        className={styles.noteText}
-      >
-        broad material, one searchable surface
-      </text>
-    </>
-  );
-}
-
-function SourceCloudItem({
-  item,
-  x,
-  y,
-  activationDelayMs,
-}: {
-  item: SourceItem;
-  x: number;
-  y: number;
-  activationDelayMs: number;
-}) {
-  return (
-    <g
-      className={styles.sourceItemActivation}
-      style={activationStyle(activationDelayMs)}
-    >
-      <EmojiImage asset={item.icon} x={x} y={y} size={32} />
-      <text
-        x={x + 40}
-        y={y + 21}
-        fill={item.tone}
-        className={styles.sourceLabel}
-      >
-        {item.label}
-      </text>
-    </g>
-  );
-}
-
-function sourceActivationDelay(index: number) {
-  return SOURCE_RESULT_DELAY_MS + index * SOURCE_ACTIVATION_STEP_MS;
 }
 
 function sourceItemLayout(density: 'desktop' | 'mobile') {

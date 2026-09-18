@@ -1,0 +1,47 @@
+/* ConceptCluster — shared anatomy for "a tile of knowledge kinds". Kept here so
+   every figure showing such a tile uses one type scale and one beat. */
+
+.surface {
+  vector-effect: non-scaling-stroke;
+}
+
+.eyebrow,
+.note,
+.label {
+  font-family: var(--font-mono-spec);
+  font-feature-settings: var(--font-mono-features);
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.note {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* The arrival beat: the cluster answers the flow it belongs to, one kind after
+   another (the step is the caller's, on the caller's cycle). Scale only, so the
+   beat reads as "this material is being touched" rather than a fade. */
+.item {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    animation: none !important;
+  }
+}

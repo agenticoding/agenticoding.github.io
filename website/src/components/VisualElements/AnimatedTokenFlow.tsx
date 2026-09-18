@@ -10,6 +10,7 @@ import {
 import { EmojiImage } from './ActorNodes';
 import { DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import type { EmojiAsset } from './emojiAssets';
+import { VectorGlyph } from './VectorGlyph';
 import { tokenFlowFade } from './diagramMotion';
 import {
   tokenTrainBeginOffsetMs,
@@ -103,6 +104,18 @@ export type AnimatedEmojiTrainProps = Omit<
   asset: EmojiAsset;
   size?: number;
 };
+
+export type AnimatedVectorTrainProps = Omit<
+  AnimatedPathTravelerProps<number>,
+  'items' | 'renderItem'
+> & {
+  count: number;
+  size?: number;
+  tone?: TokenUnitTone;
+};
+
+const SIGNAL_DIAMOND_SIZE = 6;
+const SIGNAL_STAGGER = { mode: 'fixedStep', stepMs: 0 } as const;
 
 const VARIANT_CLASS: Record<FlowVariant, string> = {
   input: styles.inputTokenFlow,
@@ -720,6 +733,42 @@ export function AnimatedTokenTrain({
   );
 }
 
+/** A flow's signal: one small diamond riding the path, so a connector reads as a
+ * flow being DRIVEN rather than merely drawn. Deterministic connectors carry exactly
+ * one, which is what distinguishes them from token trains. */
+export function AnimatedSignalTrain({
+  color,
+  size = SIGNAL_DIAMOND_SIZE,
+  stagger = SIGNAL_STAGGER,
+  ...props
+}: Omit<
+  AnimatedPathTravelerProps<string>,
+  'items' | 'renderItem' | 'stagger'
+> & {
+  color: string;
+  size?: number;
+  stagger?: TokenTrainStagger;
+}) {
+  return (
+    <AnimatedPathTraveler
+      {...props}
+      items={[color]}
+      stagger={stagger}
+      renderStaticItems={false}
+      renderItem={(fill, { x, y }) => (
+        <rect
+          x={x - size / 2}
+          y={y - size / 2}
+          width={size}
+          height={size}
+          transform={`rotate(45 ${x} ${y})`}
+          fill={fill}
+        />
+      )}
+    />
+  );
+}
+
 export function AnimatedEmojiTrain({
   asset,
   size = DIAGRAM_TOKEN_SIZE.flow,
@@ -730,8 +779,39 @@ export function AnimatedEmojiTrain({
       {...props}
       items={[asset]}
       renderStaticItems={false}
+      // Centred on the path point like every other traveler: EmojiImage takes the
+      // top-left of the nominal box, and its rendered box is the wider display box.
       renderItem={(item, center) => (
-        <EmojiImage asset={item} x={center.x} y={center.y} size={size} />
+        <EmojiImage
+          asset={item}
+          x={center.x - size / 2}
+          y={center.y - size / 2}
+          size={size}
+        />
+      )}
+    />
+  );
+}
+
+/** Same path/stagger machinery as the token train, but the traveler is a
+ * vector glyph — a vector must never read as a token chip. */
+export function AnimatedVectorTrain({
+  count,
+  size = DIAGRAM_TOKEN_SIZE.flow,
+  tone = 'indigo',
+  ...props
+}: AnimatedVectorTrainProps) {
+  return (
+    <AnimatedPathTraveler
+      {...props}
+      items={Array.from({ length: count }, (_, index) => index)}
+      renderItem={(_, center) => (
+        <VectorGlyph
+          x={center.x - size / 2}
+          y={center.y - size / 2}
+          size={size}
+          tone={tone}
+        />
       )}
     />
   );

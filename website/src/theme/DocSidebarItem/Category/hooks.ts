@@ -81,7 +81,7 @@ export function useCategoryAccordionState({
   // Deliberate divergence from upstream theme-classic: the sibling-collapse
   // effect omits upstream's autoCollapseCategories theme-config gate, so the
   // accordion is unconditional product behavior (asserted by the browser
-  // contract tests, inspectSidebarNavigation in test-responsive-diagrams.cjs).
+  // contract tests, inspectSidebarNavigation in test-browser-contracts.cjs).
   // Re-adding the gate would silently break those contracts.
   useEffect(() => {
     if (collapsible && expandedItem != null && expandedItem !== index)

@@ -1,0 +1,170 @@
+/* Shared visual language for the two retrieval figures: the embedding-model
+   tile, the vector-index tile and its proximity graph. EmbeddingIndexDiagram
+   (build the index) and SemanticSearchDiagram (query it) render these same
+   classes, so the reader sees one piece of machinery at two moments. Per-figure
+   layout classes (containers, frames) stay in each figure's own module. */
+
+.frameLabel,
+.nodeEyebrow,
+.noteText,
+.dotLabel,
+.similarityLabel,
+.annotationLabel {
+  font-family: var(--font-mono-spec);
+}
+
+.frameLabel,
+.nodeEyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.tileTitle {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.noteText {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.dotLabel {
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* Similarity labels are link labels: they fade in with the link they belong to
+   and roll back with it, so they share the loop timing and that one curve. */
+.similarityLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-anchor: middle;
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+.annotationLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-anchor: middle;
+}
+
+.connector {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Every link: 1px, unsmeared by scaling, and drawn by shifting its dash offset
+   (the traced ones normalise their own length away with pathLength). */
+.graphEdge {
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-dashoffset: 0;
+}
+
+/* A solid link traces out from one node to its neighbour. */
+.graphEdgeTrace {
+  stroke-dasharray: 1;
+  animation-timing-function: ease-in-out;
+}
+
+/* The outlier's lone link stays dashed: a repeating pattern cannot be revealed
+   by shifting it, so it fades in instead of tracing. */
+.graphEdgeDashed {
+  stroke-dasharray: 4 4;
+  stroke-opacity: 0.75;
+  animation-timing-function: ease-in-out;
+}
+
+/* Story loops. Keyframes are generated from each model's step schedule and
+   attached inline by the shared components (inline names bypass CSS Modules
+   renaming); these classes only carry timing, so LOOP_MS stays single-sourced.
+   The gear also carries the shared `inference-llm-cycle` class, which supplies
+   the standard LLM-gear easing and transform box; the figure only sets phase. */
+.gearSpin,
+.graphNode,
+.graphEdgeTrace,
+.graphEdgeDashed,
+.neighbourBreathe,
+.landingPulse,
+.queryLine,
+.queryRing {
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+/* One arriving vector: it pops in when its own glyph lands, around its own
+   centre (the inline origin is the model's dot position, in view-box units).
+   The single curve covers the pop-in and the roll-back; see the dot-in rule for
+   why the phases cannot carry different easings. */
+.graphNode {
+  transform-box: view-box;
+  animation-timing-function: ease-in-out;
+}
+
+/* Settle breath on the landing beat: the close pair breathes together —
+   near = related meaning. */
+.neighbourBreathe {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-timing-function: ease-in-out;
+}
+
+/* The one-time index write, pulsed once per cycle on the node it lands on. */
+.landingPulse {
+  fill: none;
+  stroke: var(--visual-indigo);
+  stroke-width: 1.5px;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  vector-effect: non-scaling-stroke;
+  animation-timing-function: ease-out;
+}
+
+/* The query's match: a link from the query vector to a nearest stored vector.
+   Base opacity is 1, so with motion disabled the relation is drawn statically;
+   the generated keyframes supply the entrance and the roll-back. */
+.queryLine {
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+  animation-timing-function: ease-in-out;
+}
+
+/* A ring around a nearest stored vector when the query answers it. Base opacity
+   is 1 for the same reason — the match must read without motion. */
+.queryRing {
+  fill: none;
+  stroke: var(--visual-indigo);
+  stroke-width: 1.5px;
+  transform-box: fill-box;
+  transform-origin: center;
+  vector-effect: non-scaling-stroke;
+  animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gearSpin,
+  .graphNode,
+  .graphEdgeTrace,
+  .graphEdgeDashed,
+  .neighbourBreathe,
+  .landingPulse,
+  .queryLine,
+  .queryRing,
+  .similarityLabel {
+    animation: none !important;
+  }
+}

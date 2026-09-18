@@ -6,15 +6,6 @@
   container-type: inline-size;
 }
 
-.sectionTitle {
-  margin: 0 0 var(--space-1);
-  color: var(--text-heading);
-  font-family: var(--font-display);
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  line-height: var(--lh-2xl);
-}
-
 .sectionSubtitle {
   margin: 0 0 var(--space-5);
   color: var(--text-body);
@@ -26,6 +17,20 @@
 .previewBoard {
   display: grid;
   gap: var(--space-3);
+  /* Rendered as <figure data-audio-figure>; reset the UA default figure margin. */
+  margin: 0;
+}
+
+/* Screen-reader-only caption for the board figure: absolute positioning keeps
+   it out of the grid so the layout is untouched. */
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* Foundations on-ramp: a full-width entry above the discipline cards. */
@@ -272,10 +277,6 @@
 @container (max-width: 40rem) {
   .showcaseSection {
     padding: 0 0 var(--space-5);
-  }
-
-  .sectionTitle {
-    font-size: var(--text-2xl);
   }
 
   .sectionSubtitle {

@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 
-import { AnimatedPathTraveler } from './AnimatedTokenFlow';
+import { AnimatedSignalTrain } from './AnimatedTokenFlow';
 import { EmojiImage } from './ActorNodes';
 import { ArrowMarker, trimPathEnd } from './diagramGeometry';
 import { DIAGRAM_STROKE } from './diagramScale';
@@ -45,7 +45,6 @@ const REVIEW_OFFSET_Y = 304;
 const CONTINUATION_OFFSET_Y = 160;
 const ANSWER_OFFSET_Y = 256;
 const NO_CAUSE_OFFSET_Y = 352;
-const FLOW_STAGGER = { mode: 'fixedStep', stepMs: 0 } as const;
 const PROBABILITY_TRAIN_STAGGER = {
   mode: 'pathSpacing',
   spacingPx: 24,
@@ -150,36 +149,6 @@ function Arrow({
   );
 }
 
-function Signal({
-  d,
-  timing,
-  color,
-}: {
-  d: string;
-  timing: TokenTrainTiming;
-  color: string;
-}) {
-  return (
-    <AnimatedPathTraveler
-      pathD={d}
-      items={[color]}
-      timing={timing}
-      stagger={FLOW_STAGGER}
-      renderStaticItems={false}
-      renderItem={(fill, { x, y }) => (
-        <rect
-          x={x - 3}
-          y={y - 3}
-          width="6"
-          height="6"
-          transform={`rotate(45 ${x} ${y})`}
-          fill={fill}
-        />
-      )}
-    />
-  );
-}
-
 function DeterministicFlow({
   d,
   markerId,
@@ -194,7 +163,7 @@ function DeterministicFlow({
   return (
     <>
       <Arrow d={d} markerId={markerId} stroke={stroke} />
-      <Signal d={d} timing={timing} color={stroke} />
+      <AnimatedSignalTrain pathD={d} color={stroke} timing={timing} />
     </>
   );
 }

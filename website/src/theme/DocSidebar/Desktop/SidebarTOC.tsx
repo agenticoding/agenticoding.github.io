@@ -1,110 +1,26 @@
+/**
+ * The chapter's contents: the skeleton the reader navigates by.
+ *
+ * The eye channel is the list's own active link — weight plus the rail marker — and comes from
+ * the page's single active-heading publisher. Nothing here seeks, and nothing here reports
+ * playback: a contents row shows navigation position, and progress lives in the player alone.
+ */
 import React, { type ReactNode } from 'react';
 import clsx from 'clsx';
 import {
   useTreeifiedTOC,
   type TOCTreeNode,
 } from '@docusaurus/theme-common/internal';
-import { useSidebarTOC } from '../../tocStore';
+
+import {
+  publishActiveHeading,
+  tocHeadingHtml,
+  useActiveHeading,
+  useSidebarTOC,
+} from '../../tocStore';
+import { scrollToHeading } from '../../useActiveHeading';
 import AnimatedDisclosure from '../../shared/AnimatedDisclosure';
-import { resolveActiveHeading, type HeadingSnapshot } from './scrollspy';
 import styles from './styles.module.css';
-
-function useScrollspy(ids: string[]): {
-  activeId: string;
-  activateId: (id: string) => void;
-} {
-  const [activeId, setActiveId] = React.useState('');
-  const idsKey = ids.join(',');
-
-  React.useEffect(() => {
-    if (ids.length === 0) {
-      setActiveId('');
-      return undefined;
-    }
-
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      setActiveId(resolveCurrentHeading(ids));
-    };
-    const schedule = () => {
-      if (frame === 0) frame = window.requestAnimationFrame(update);
-    };
-
-    setActiveId('');
-    schedule();
-    const observer = createScrollspyObserver(ids, schedule);
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    window.addEventListener('hashchange', schedule);
-
-    return () => {
-      if (frame !== 0) window.cancelAnimationFrame(frame);
-      observer.disconnect();
-      window.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', schedule);
-      window.removeEventListener('hashchange', schedule);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idsKey]);
-
-  const activateId = React.useCallback(
-    (id: string) => {
-      if (ids.includes(id)) setActiveId(id);
-    },
-    [ids]
-  );
-
-  return { activeId, activateId };
-}
-
-function createScrollspyObserver(
-  ids: readonly string[],
-  schedule: () => void
-): IntersectionObserver {
-  const observer = new IntersectionObserver(schedule, { threshold: 0 });
-  ids
-    .flatMap((id) => document.getElementById(id) ?? [])
-    .forEach((el) => observer.observe(el));
-  return observer;
-}
-
-function resolveCurrentHeading(ids: readonly string[]): string {
-  return resolveActiveHeading({
-    headings: ids.flatMap(headingSnapshot),
-    viewportHeight: window.innerHeight,
-    atPageBottom: isAtPageBottom(),
-  });
-}
-
-function headingSnapshot(id: string): HeadingSnapshot[] {
-  const element = document.getElementById(id);
-  if (element == null) return [];
-  const rect = element.getBoundingClientRect();
-  return [{ id, top: rect.top, bottom: rect.bottom }];
-}
-
-function isAtPageBottom(): boolean {
-  const scrollBottom = window.scrollY + window.innerHeight;
-  return Math.ceil(scrollBottom) >= document.documentElement.scrollHeight - 1;
-}
-
-function scrollToHeading(id: string): void {
-  const element = document.getElementById(id);
-  if (element == null) return;
-  window.history.pushState(null, '', `#${id}`);
-  element.scrollIntoView({
-    behavior: scrollBehavior(),
-    block: 'start',
-    inline: 'nearest',
-  });
-}
-
-function scrollBehavior(): ScrollBehavior {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    ? 'auto'
-    : 'smooth';
-}
 
 function shouldHandleTocClick(
   event: React.MouseEvent<HTMLAnchorElement>
@@ -118,51 +34,29 @@ function shouldHandleTocClick(
   );
 }
 
-function flatIds(nodes: readonly TOCTreeNode[]): string[] {
-  const seen = new Set<string>();
-  return nodes
-    .flatMap((h2) => [h2.id, ...h2.children.map((h3) => h3.id)])
-    .filter((id) => {
-      if (seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    });
-}
-
 function isNodeActive(node: TOCTreeNode, activeId: string): boolean {
   return (
     node.id === activeId || node.children.some((child) => child.id === activeId)
   );
 }
 
-function tocLabelHtml(value: string): string {
-  // MDX serializes visual heading components as empty custom elements in the TOC.
-  // Remove the absent mark and its adjacent whitespace so labels stay contiguous.
-  // Matches both paired (<toolmark></toolmark>) and self-closing (<toolmark />)
-  // serialization so a future MDX change cannot leak raw markup into the TOC.
-  return value.replace(
-    /\s*<toolmark\b[^>]*?\/?>(?:\s*<\/toolmark>)?\s*/gi,
-    ' '
-  );
-}
-
 function TocLink({
   node,
   active,
-  onActivate,
   onNavigate,
   sublink = false,
 }: {
   node: TOCTreeNode;
   active: boolean;
-  onActivate: (id: string) => void;
   onNavigate?: () => void;
   sublink?: boolean;
-}) {
+}): ReactNode {
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     if (!shouldHandleTocClick(event)) return;
     event.preventDefault();
-    onActivate(node.id);
+    // Optimistic: the scroll listener reports the scroll, not the press, and the row must
+    // not stay unhighlighted for the length of a smooth scroll.
+    publishActiveHeading(node.id);
     scrollToHeading(node.id);
     onNavigate?.();
   };
@@ -175,10 +69,11 @@ function TocLink({
         active && styles.tocLinkActive
       )}
       onClick={handleClick}
-      // Docusaurus TOC values contain trusted heading markup.
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: tocLabelHtml(node.value) }}
-    />
+    >
+      {/* Docusaurus TOC values contain trusted heading markup. */}
+      {/* eslint-disable-next-line react/no-danger */}
+      <span dangerouslySetInnerHTML={{ __html: tocHeadingHtml(node.value) }} />
+    </a>
   );
 }
 
@@ -196,50 +91,79 @@ function H3Disclosure({
   );
 }
 
-export default function SidebarTOC({
+/** One contents entry plus the sub-entries it owns, revealed only while it is being read. */
+function TocGroup({
+  h2,
+  activeH2,
+  isActiveLink,
   onNavigate,
 }: {
+  h2: TOCTreeNode;
+  activeH2: TOCTreeNode | undefined;
+  isActiveLink: (id: string) => boolean;
   onNavigate?: () => void;
 }): ReactNode {
-  const flatToc = useSidebarTOC();
-  const toc = useTreeifiedTOC(flatToc as Parameters<typeof useTreeifiedTOC>[0]);
-  const allIds = React.useMemo(() => flatIds(toc), [toc]);
-  const { activeId, activateId } = useScrollspy(allIds);
+  return (
+    <>
+      <TocLink node={h2} active={isActiveLink(h2.id)} onNavigate={onNavigate} />
+      <H3Disclosure show={h2 === activeH2 && h2.children.length > 0}>
+        {h2.children.map((h3) => (
+          <TocLink
+            key={h3.id}
+            node={h3}
+            active={isActiveLink(h3.id)}
+            onNavigate={onNavigate}
+            sublink
+          />
+        ))}
+      </H3Disclosure>
+    </>
+  );
+}
 
-  if (toc.length === 0) return null;
-
-  const activeH2 = toc.find((h2) => isNodeActive(h2, activeId));
+/**
+ * The whole list, wired to the active id: rows light up exactly once (the first
+ * link may claim the highlight), and the h2 owning the active row is revealed.
+ */
+function TocNav({
+  toc,
+  activeId,
+  onNavigate,
+}: {
+  toc: readonly TOCTreeNode[];
+  activeId: string;
+  onNavigate?: () => void;
+}): ReactNode {
   const activeLinks = new Set<string>();
   const isActiveLink = (id: string) => {
     if (id !== activeId || activeLinks.has(id)) return false;
     activeLinks.add(id);
     return true;
   };
-
+  const activeH2 = toc.find((h2) => isNodeActive(h2, activeId));
   return (
     <nav className={styles.tocInline} aria-label="Current chapter contents">
       {toc.map((h2) => (
-        <React.Fragment key={h2.id}>
-          <TocLink
-            node={h2}
-            active={isActiveLink(h2.id)}
-            onActivate={activateId}
-            onNavigate={onNavigate}
-          />
-          <H3Disclosure show={h2 === activeH2 && h2.children.length > 0}>
-            {h2.children.map((h3) => (
-              <TocLink
-                key={h3.id}
-                node={h3}
-                active={isActiveLink(h3.id)}
-                onActivate={activateId}
-                onNavigate={onNavigate}
-                sublink
-              />
-            ))}
-          </H3Disclosure>
-        </React.Fragment>
+        <TocGroup
+          key={h2.id}
+          h2={h2}
+          activeH2={activeH2}
+          isActiveLink={isActiveLink}
+          onNavigate={onNavigate}
+        />
       ))}
     </nav>
   );
+}
+
+export default function SidebarTOC({
+  onNavigate,
+}: {
+  onNavigate?: () => void;
+}): ReactNode {
+  const flatToc = useSidebarTOC();
+  const activeId = useActiveHeading();
+  const toc = useTreeifiedTOC(flatToc as Parameters<typeof useTreeifiedTOC>[0]);
+  if (toc.length === 0) return null;
+  return <TocNav toc={toc} activeId={activeId} onNavigate={onNavigate} />;
 }

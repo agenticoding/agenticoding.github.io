@@ -176,7 +176,7 @@ export default function ColorPaletteGenerator() {
   return (
     <div className={containerClassName}>
       <div className={styles.header}>
-        <h4 className={styles.title}>Color Palette Generator</h4>
+        <p className={styles.title}>Color Palette Generator</p>
         <p className={styles.subtitle}>{currentOklch}</p>
       </div>
 

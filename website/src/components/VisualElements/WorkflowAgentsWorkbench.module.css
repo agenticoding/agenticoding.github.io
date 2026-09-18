@@ -1,0 +1,223 @@
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  padding-block-end: var(--space-1);
+  max-width: 760px;
+}
+
+.diagram {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.desktopDiagram {
+  max-width: 760px;
+}
+
+.mobileDiagram {
+  max-width: 340px;
+}
+
+.vectorStroke,
+.divider {
+  vector-effect: non-scaling-stroke;
+}
+
+.frameLabel,
+.eyebrow,
+.stageId,
+.stageText,
+.loopLabel,
+.contextNote,
+.chipText,
+.chipPrompt,
+.boxKicker,
+.boxTitle,
+.boxDetail,
+.railTitle,
+.ticketTitle,
+.ticketDetail,
+.miniCallTitle {
+  font-feature-settings: var(--font-mono-features);
+}
+
+.frameLabel,
+.eyebrow {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.frameLabel {
+  font-size: 10px;
+}
+
+.contextNote {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.boxKicker {
+  font-family: var(--font-mono-spec);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.boxTitle {
+  font-family: var(--font-mono-spec);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.boxDetail {
+  font-family: var(--font-mono-keyword);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.railTitle {
+  font-family: var(--font-mono-spec);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.ticketTitle {
+  font-family: var(--font-mono-spec);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.ticketDetail {
+  font-family: var(--font-mono-keyword);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.miniCallTitle {
+  font-family: var(--font-mono-ai);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.chipText,
+.chipPrompt,
+.loopLabel {
+  font-family: var(--font-mono-keyword);
+  letter-spacing: 0.01em;
+}
+
+.chipText {
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.chipPrompt {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.loopLabel {
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.stageId {
+  font-family: var(--font-mono-spec);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.stageText {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.flowPulse {
+  opacity: 1;
+}
+
+.pipelineChip {
+  animation-duration: 13940ms;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  animation-name: pipelineStepActive;
+  animation-timing-function: ease-in-out;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.llmGearSpin {
+  animation-duration: 13940ms;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  animation-name: llmCallGearSpin;
+  animation-timing-function: linear;
+}
+
+.step1 {
+  animation-delay: 0ms;
+}
+
+.step2 {
+  animation-delay: 820ms;
+}
+
+.step3 {
+  animation-delay: 4920ms;
+}
+
+.step4 {
+  animation-delay: 7380ms;
+}
+
+.step5 {
+  animation-delay: 12300ms;
+}
+
+@keyframes pipelineStepActive {
+  0%,
+  5.9%,
+  100% {
+    transform: scale(1);
+  }
+
+  2.95% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes llmCallGearSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  11.8% {
+    transform: rotate(360deg);
+  }
+
+  13%,
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipelineChip,
+  .llmGearSpin {
+    animation: none;
+  }
+}

@@ -4,12 +4,13 @@ import React, { useId, type ReactNode } from 'react';
 import {
   AnimatedEmojiTrain,
   AnimatedTokenTrain,
+  AnimatedVectorTrain,
   type TokenSequence,
   type TokenTrainOrientation,
 } from './AnimatedTokenFlow';
 import type { EmojiAsset } from './emojiAssets';
 import type { TokenTrainStagger, TokenTrainTiming } from './TokenTrainTiming';
-import { ArrowMarker, trimPathEnd } from './diagramGeometry';
+import { ArrowMarker, trainLaneOffset, trimPathEnd } from './diagramGeometry';
 import { DIAGRAM_STROKE, DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import type { TokenUnitTone } from './TokenUnit';
 
@@ -54,6 +55,9 @@ type TrainFrameProps = Omit<
 
 export type TokenArrowTrainProps = TokenTrainPathProps & { markerId?: string };
 export type EmojiArrowTrainProps = EmojiTrainPathProps & { markerId?: string };
+export type VectorArrowTrainProps = VectorTrainPathProps & {
+  markerId?: string;
+};
 export type PairedTokenArrowTrainProps = {
   className?: string;
   request: TokenArrowTrainProps;
@@ -61,17 +65,12 @@ export type PairedTokenArrowTrainProps = {
 };
 type TokenPathTrainProps = TokenTrainPathProps;
 type EmojiPathTrainProps = EmojiTrainPathProps;
+type VectorTrainPathProps = Omit<TokenTrainPathProps, 'tokens'> & {
+  count: number;
+};
 
 function svgId(id: string) {
   return id.replace(/:/g, '');
-}
-
-function tokenLaneOffset(
-  size: number,
-  strokeWidth: number,
-  laneOffsetPx?: number
-) {
-  return laneOffsetPx ?? size / 2 + strokeWidth + 4;
 }
 
 function TrainPath({
@@ -161,7 +160,7 @@ function TokenTraveler(props: TokenTrainPathProps) {
       stagger={props.stagger}
       size={size}
       tone={props.tone ?? 'violet'}
-      laneOffsetPx={tokenLaneOffset(size, strokeWidth, props.laneOffsetPx)}
+      laneOffsetPx={trainLaneOffset(size, strokeWidth, props.laneOffsetPx)}
       laneOrientation={props.laneOrientation ?? 'above'}
       staticClassName={props.staticClassName}
     />
@@ -178,7 +177,25 @@ function EmojiTraveler(props: EmojiTrainPathProps) {
       timing={props.timing}
       stagger={props.stagger}
       size={size}
-      laneOffsetPx={tokenLaneOffset(size, strokeWidth, props.laneOffsetPx)}
+      laneOffsetPx={trainLaneOffset(size, strokeWidth, props.laneOffsetPx)}
+      laneOrientation={props.laneOrientation ?? 'above'}
+      staticClassName={props.staticClassName}
+    />
+  );
+}
+
+function VectorTraveler(props: VectorTrainPathProps) {
+  const size = props.size ?? DIAGRAM_TOKEN_SIZE.flow;
+  const strokeWidth = props.strokeWidth ?? DIAGRAM_STROKE.connector;
+  return (
+    <AnimatedVectorTrain
+      pathD={props.tokenPathD ?? props.d}
+      count={props.count}
+      timing={props.timing}
+      stagger={props.stagger}
+      size={size}
+      tone={props.tone ?? 'indigo'}
+      laneOffsetPx={trainLaneOffset(size, strokeWidth, props.laneOffsetPx)}
       laneOrientation={props.laneOrientation ?? 'above'}
       staticClassName={props.staticClassName}
     />
@@ -227,6 +244,19 @@ export function EmojiArrowTrain({ markerId, ...props }: EmojiArrowTrainProps) {
       markerId={markerId}
       props={props}
       traveler={<EmojiTraveler {...props} />}
+    />
+  );
+}
+
+export function VectorArrowTrain({
+  markerId,
+  ...props
+}: VectorArrowTrainProps) {
+  return (
+    <ArrowTrain
+      markerId={markerId}
+      props={props}
+      traveler={<VectorTraveler {...props} />}
     />
   );
 }

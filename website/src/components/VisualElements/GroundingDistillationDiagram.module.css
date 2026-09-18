@@ -39,8 +39,7 @@
   letter-spacing: 0.08em;
 }
 
-.factText,
-.sourceLabel {
+.factText {
   font-size: 11px;
   font-weight: 600;
 }
@@ -95,12 +94,10 @@
 }
 
 .agentRect,
-.sourceRect,
 .factRect {
   vector-effect: non-scaling-stroke;
 }
 
-.sourceItemActivation,
 .tileActivation {
   transform-box: fill-box;
   transform-origin: center;
@@ -109,10 +106,6 @@
   animation-iteration-count: infinite;
   animation-name: tileArrivalBeat;
   animation-timing-function: ease-in-out;
-}
-
-.sourceItemActivation {
-  animation-name: sourceItemArrivalBeat;
 }
 
 @keyframes tileArrivalBeat {
@@ -125,23 +118,6 @@
   7% {
     opacity: 1;
     transform: scale(1.035);
-  }
-}
-
-@keyframes sourceItemArrivalBeat {
-  0%,
-  16%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  4% {
-    opacity: 1;
-    transform: scale(1.07);
-  }
-  9% {
-    opacity: 1;
-    transform: scale(1.015);
   }
 }
 

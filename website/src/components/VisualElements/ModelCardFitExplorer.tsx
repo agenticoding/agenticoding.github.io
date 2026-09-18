@@ -813,7 +813,7 @@ function ModelCardView({
         <ProviderMark provider={card.provider} />
         <div className={styles.cardIdentity}>
           <p>{card.provider}</p>
-          <h4>{card.name}</h4>
+          <p className={styles.cardName}>{card.name}</p>
         </div>
         <a className={styles.sourceLink} href={card.source.href}>
           {card.source.label} ↗

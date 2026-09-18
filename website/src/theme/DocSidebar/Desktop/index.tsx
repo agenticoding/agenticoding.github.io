@@ -13,7 +13,7 @@ type Props = WrapperProps<typeof DesktopType>;
 const CHAPTER_SCROLL_DELAY_MS = 250;
 const ACTIVE_CHAPTER_SELECTOR = '.menu__link--active[aria-current="page"]';
 // Selector for the scrollable sidebar nav — keep in sync with
-// scripts/test-responsive-diagrams.cjs SIDEBAR_NAV and the theme DOM
+// scripts/test-browser-contracts.cjs SIDEBAR_NAV and the theme DOM
 // (nav[aria-label="Docs sidebar"] > .sidebarScrollable > nav.menu).
 const SIDEBAR_NAV_SELECTOR = 'nav.menu';
 
@@ -23,7 +23,7 @@ function prefersReducedMotion(): boolean {
 
 // Scroller is .sidebarScrollable's child nav.menu; see
 // website/src/theme/DocSidebar/Desktop/styles.module.css (.sidebarScrollable)
-// and scripts/test-responsive-diagrams.cjs (SIDEBAR_NAV).
+// and scripts/test-browser-contracts.cjs (SIDEBAR_NAV).
 function getSidebarScroller(container: HTMLDivElement): HTMLElement {
   return (
     container.querySelector<HTMLElement>(SIDEBAR_NAV_SELECTOR) ?? container
@@ -90,6 +90,7 @@ export default function DesktopWrapper(props: Props): ReactNode {
   return (
     <div className={styles.sidebarContainer}>
       <SidebarHeader />
+      <div className={styles.sidebarDivider} data-sidebar-divider="" />
       <SidebarScrollProvider value={scrollActiveChapter}>
         <div ref={scrollableRef} className={styles.sidebarScrollable}>
           <Desktop {...props} />

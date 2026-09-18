@@ -4,6 +4,17 @@ export function centerIn(size: number, childSize: number) {
   return (size - childSize) / 2;
 }
 
+/** How far a train rides from the connector it rides on: half an item, the line's
+ * own stroke and a gutter. Shared so that two trains on one connector (e.g. a
+ * token lane and an emoji lane) can be mirrored either side of the same rail. */
+export function trainLaneOffset(
+  size: number,
+  strokeWidth: number,
+  laneOffsetPx?: number
+) {
+  return laneOffsetPx ?? size / 2 + strokeWidth + 4;
+}
+
 export function markerAttrs(
   refX: number = DIAGRAM_MARKER.refX,
   markerUnits?: 'strokeWidth' | 'userSpaceOnUse'

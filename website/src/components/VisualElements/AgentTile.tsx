@@ -1,6 +1,7 @@
 import React from 'react';
 import { DiagramTileSurface } from './DiagramTile';
 import { DIAGRAM_GRID, DIAGRAM_ICON_SIZE } from './diagramScale';
+import { delayStyle } from './diagramMotion';
 import {
   tileToneVars,
   type DiagramTone,
@@ -186,7 +187,7 @@ function ContextChip(props: {
   return (
     <g
       className={chipClassName(props)}
-      style={activationStyle(props.tile.activationDelayMs)}
+      style={delayStyle(props.tile.activationDelayMs)}
     >
       <ContextChipRect {...props} />
       <ContextChipText {...props} />
@@ -372,13 +373,6 @@ function agentBox(props: AgentTileProps): BoxProps {
     y: props.y + props.height - props.agentBlockHeight,
     height: props.agentBlockHeight,
   };
-}
-
-export function activationStyle(
-  delayMs: number | undefined
-): React.CSSProperties | undefined {
-  if (delayMs === undefined) return undefined;
-  return { animationDelay: `${delayMs}ms` };
 }
 
 function chipClassName({

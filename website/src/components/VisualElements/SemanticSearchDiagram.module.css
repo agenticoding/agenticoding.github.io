@@ -1,0 +1,69 @@
+/* Layout + the query figure's own chrome (the chip). The shared tile, graph and
+   label styling lives in EmbeddingTiles.module.css. */
+
+.container {
+  container-type: inline-size;
+  display: block;
+  margin: var(--space-4) auto;
+  max-width: 900px;
+}
+
+.diagram {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.desktopDiagram {
+  max-width: 900px;
+}
+
+.mobileDiagram {
+  max-width: 340px;
+}
+
+/* Query chip — one question entering the same search (see QueryChip). Dashed
+   to read as input rather than a pipeline stage. */
+.queryChip {
+  fill: var(--surface-raised);
+  stroke: var(--border-default);
+  stroke-width: 1px;
+  stroke-dasharray: 4 3;
+}
+
+.queryEyebrow {
+  font-family: var(--font-mono-spec);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.queryText {
+  font-family: var(--font-mono-spec);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* The chip's beat: it states the question, then hands off to the model. The
+   keyframe is generated from QUERY_BEAT_MS (see the diagram's TimingStyles). */
+.chipBeat {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-duration: var(--cycle-ms);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-out;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 340px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chipBeat {
+    animation: none !important;
+  }
+}

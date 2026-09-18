@@ -1,5 +1,4 @@
 import Link from '@docusaurus/Link';
-import Heading from '@theme/Heading';
 import {
   getChapterGroup,
   getSectionNumber,
@@ -262,9 +261,9 @@ function PreviewCaption({
   return (
     <figcaption className={styles.tileContent}>
       <ChapterBadge groupLabel={groupLabel} chapterNumber={chapterNumber} />
-      <Heading as="h3" className={styles.tileTitle}>
-        {discipline.title}
-      </Heading>
+      {/* Caption, not a heading: this component is doc-reachable (intro.mdx), so
+          heading tags would leak into the TOC and audiobook extractor. */}
+      <p className={styles.tileTitle}>{discipline.title}</p>
       <p className={styles.tileCaption}>{discipline.caption}</p>
     </figcaption>
   );
@@ -305,9 +304,8 @@ function EntryTile() {
       </div>
       <div className={styles.entryContent}>
         <ChapterBadge groupLabel={groupLabel} chapterNumber={chapterNumber} />
-        <Heading as="h3" className={styles.entryTitle}>
-          {FOUNDATION.title}
-        </Heading>
+        {/* Caption, not a heading — see PreviewCaption. */}
+        <p className={styles.entryTitle}>{FOUNDATION.title}</p>
         <p className={styles.entryCaption}>{FOUNDATION.caption}</p>
       </div>
     </Link>
@@ -317,9 +315,9 @@ function EntryTile() {
 function PreviewHeader() {
   return (
     <>
-      <Heading id="operator-work" as="h2" className={styles.sectionTitle}>
-        The operator’s job.
-      </Heading>
+      {/* The section title is the MDX `## The operator's job.` heading in
+          intro.mdx (doc-reachable files must not render headings — see the
+          navigation heading contract). */}
       <p className={styles.sectionSubtitle}>
         Where the machine leaves the decision to you.
       </p>
@@ -327,18 +325,43 @@ function PreviewHeader() {
   );
 }
 
-export default function HomepageVisualPreview() {
+type HomepageVisualPreviewProps = {
+  /** Spoken explanation the audiobook extractor reads statically; not rendered. */
+  narration?: string;
+};
+
+/** Local id for the section label + board caption — see HomepageVisualPreview. */
+const BOARD_LABEL_ID = 'homepage-visual-preview-caption';
+
+export default function HomepageVisualPreview(
+  _props: HomepageVisualPreviewProps
+) {
   return (
-    <section className={styles.showcaseSection} aria-labelledby="operator-work">
+    // The caption labels BOTH the section and the board: aria-labelledby must not
+    // depend on intro.mdx's heading id (a file this component does not own).
+    <section
+      className={styles.showcaseSection}
+      aria-labelledby={BOARD_LABEL_ID}
+    >
       <PreviewHeader />
-      <div className={styles.previewBoard}>
+      {/* One data-audio-figure for the whole showcase: the extractor emits a single
+          figure node for this component, so the player's figure-index anchor needs
+          exactly one matching <figure> in the DOM. */}
+      <figure className={styles.previewBoard} data-audio-figure="">
+        {/* The board's own caption: a figure's figcaption must be its direct child,
+            and the tile captions belong to the tile figures. Visually hidden so the
+            grid layout is untouched (absolute positioning takes it out of flow). */}
+        <figcaption id={BOARD_LABEL_ID} className={styles.visuallyHidden}>
+          The operator&rsquo;s job — where the machine leaves the decision to
+          you: a preview of the book&rsquo;s chapters.
+        </figcaption>
         <EntryTile />
         <div className={styles.previewGrid}>
           {DISCIPLINES.map((discipline) => (
             <PreviewTile key={discipline.chapterId} discipline={discipline} />
           ))}
         </div>
-      </div>
+      </figure>
     </section>
   );
 }

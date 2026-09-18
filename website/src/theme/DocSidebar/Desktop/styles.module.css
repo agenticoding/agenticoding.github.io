@@ -20,6 +20,16 @@
   min-height: var(--target-sm);
 }
 
+/* Hairline between the brand row and the scrolling contents list. It is the boundary the
+   chapter audio band used to draw from its old slot, so it is inset to the content width
+   and stays put while the TOC scrolls. */
+.sidebarDivider {
+  flex-shrink: 0;
+  height: 1px;
+  margin: var(--space-1) var(--space-2) 0;
+  background: var(--border-subtle);
+}
+
 /* Brand title — collapses when search active */
 .brandRow:has([data-search-active]) .brandTitle {
   opacity: 0;
@@ -162,9 +172,19 @@
   min-height: 0;
 }
 
-/* Sticky footer: theme toggle + GitHub icon */
+/* Pinned bottom region: chapter audio above the site's own controls.
+   No padding here — the band and the utility row each own their insets, so the
+   band's top separator can span the region's edge while the controls stay inset. */
 .sidebarFooter {
+  position: relative; /* keeps the band's upward-opening panel above the scroller */
+  z-index: 1;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sticky controls: theme toggle + GitHub icon */
+.sidebarUtility {
   display: flex;
   align-items: center;
   gap: var(--space-1);
@@ -211,7 +231,18 @@
   --toc-rail-width: 1px;
   --toc-active-rail-width: 3px;
   --toc-rail-color: var(--border-subtle);
+  /*
+   * The rail is this list's own border, and its offset from a row's left edge is the only
+   * place that position math exists. Rows consume `--toc-rail-left` to sit on the rail and
+   * `--toc-marker-left` to be centred over it.
+   */
+  --toc-rail-left: calc(-1 * var(--space-2) - var(--toc-rail-width));
+  --toc-marker-left: calc(
+    var(--toc-rail-left) -
+      ((var(--toc-active-rail-width) - var(--toc-rail-width)) / 2)
+  );
 
+  position: relative;
   margin: var(--space-1) 0 var(--space-2) var(--space-4);
   padding-left: var(--space-2);
   border-left: var(--toc-rail-width) solid var(--toc-rail-color);
@@ -254,10 +285,18 @@
   outline-offset: -1px;
 }
 
-/* Active position is monochrome: weight + geometry, never hue. */
+/*
+ * Active position is monochrome: weight + geometry, never hue. The weight is drawn as a
+ * zero-blur shadow copy of the glyphs, not with `font-weight`, because a real weight change
+ * widens the text and can push a long heading onto an extra line — which grows the row, the
+ * list, and every row below it, the moment the reader's section changes. A shadow is never
+ * laid out, so the box is byte-identical in both states and the list cannot move.
+ */
 .tocLinkActive {
   color: var(--text-body);
-  font-weight: 600;
+  text-shadow:
+    0.02em 0 0 currentColor,
+    -0.02em 0 0 currentColor;
 }
 
 .tocLinkActive::before {
@@ -265,16 +304,16 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: calc(
-    -1 * var(--space-2) - var(--toc-rail-width) -
-      ((var(--toc-active-rail-width) - var(--toc-rail-width)) / 2)
-  );
+  left: var(--toc-marker-left);
   width: var(--toc-active-rail-width);
   background: var(--toc-rail-color);
 }
 
 .tocSublink.tocLinkActive {
-  font-weight: 500;
+  /* Half a top-level row's weight: an h3 is already read as subordinate. */
+  text-shadow:
+    0.012em 0 0 currentColor,
+    -0.012em 0 0 currentColor;
 }
 
 /* Rank labels use article-scale separation; the TOC retains only its text space. */

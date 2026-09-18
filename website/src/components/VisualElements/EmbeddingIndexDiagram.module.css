@@ -1,0 +1,30 @@
+/* Layout only: the shared tile, graph and label styling lives in
+   EmbeddingTiles.module.css (both retrieval figures render it). */
+
+.container {
+  container-type: inline-size;
+  display: block;
+  margin: var(--space-4) auto;
+  max-width: 900px;
+}
+
+.diagram {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.desktopDiagram {
+  max-width: 900px;
+}
+
+.mobileDiagram {
+  max-width: 340px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 340px;
+  }
+}
