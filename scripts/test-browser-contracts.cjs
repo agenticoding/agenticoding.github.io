@@ -56,6 +56,14 @@ const FORMAT_STARS = path.join(
   "GitHubSocialProof",
   "formatStars.ts",
 );
+// The play button's accessible name, shared with the component so the two cannot drift.
+const AUDIO_LABELS = path.join(
+  websiteDir,
+  "src",
+  "theme",
+  "audio",
+  "labels.ts",
+);
 // CI builds once and points us at the artifact; local runs self-build.
 const providedBuildDir = process.env.BROWSER_TEST_BUILD_DIR
   ? path.resolve(process.env.BROWSER_TEST_BUILD_DIR)
@@ -1401,7 +1409,8 @@ async function assertOpensAtTheBeginning(page, route) {
   );
   if (!state)
     fail(`audio chapter ${route} band has no play button or scrubber to read`);
-  if (state.label !== "Listen chapter audio")
+  const { chapterAudioLabel } = await import(pathToFileURL(AUDIO_LABELS).href);
+  if (state.label !== chapterAudioLabel(false))
     fail(
       `audio chapter ${route} opens offering "${state.label}"; a stored offset must not be offered after navigation or reload`,
     );
