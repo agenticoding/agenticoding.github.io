@@ -22,13 +22,13 @@ npm run deploy                       # Deploy to GitHub Pages
 
 ## Writing Style & Tone
 
-**Coworker-level communication** - Professional, direct, no hand-holding
+**Coworker-level communication** - Professional, direct, no hand-holding, **intuitive**
 
 - Assume strong fundamentals (data structures, design patterns, system design)
 - Skip basic explanations - link to external docs if needed
 - Focus on practical application and production considerations
 - Use industry-standard terminology without over-explaining
-- Write in a way that your product designer or web developer colleague/friend will immediately and intuitively understand
+- Write using intuitive language that'll resonate sharply with all readers
 
 ### Voice
 
