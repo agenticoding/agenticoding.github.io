@@ -25,9 +25,9 @@ narration="Two ways to pay for tool schemas. Load them eagerly and every schema 
 caption={
 'Tool Search saves prefix tokens, but a near match can leave wrong schemas, calls, and results in the context middle.'
 }
-
->   <MCPToolSchemaDiagram />
-> </DiagramFrame>
+>
+  <MCPToolSchemaDiagram />
+</DiagramFrame>
 
 Drag the catalog control: it changes installed breadth, not what the representative task needs. The task always requires two schemas. Eager loading puts the full catalog in the fixed prefix; deferred loading exposes only schemas selected at runtime and keeps the remainder out of the request.
 
