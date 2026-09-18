@@ -143,6 +143,46 @@ const config: Config = {
     [
       '@docusaurus/plugin-client-redirects',
       {
+        // Preserve the pre-rename URL: the rename to Workflow Agents moved the
+        // doc slug, which the auto redirects below no longer cover.
+        redirects: [
+          {
+            from: '/structured-control-plane-agents',
+            to: '/workflow-agents',
+          },
+          {
+            from: '/docs/structured-control-plane-agents',
+            to: '/workflow-agents',
+          },
+          {
+            from: '/AI-Coding-Course/structured-control-plane-agents',
+            to: '/workflow-agents',
+          },
+          {
+            from: '/interactive-harness-agents',
+            to: '/harness-agents',
+          },
+          {
+            from: '/docs/interactive-harness-agents',
+            to: '/harness-agents',
+          },
+          {
+            from: '/AI-Coding-Course/interactive-harness-agents',
+            to: '/harness-agents',
+          },
+          {
+            from: '/retrieval-context-injection',
+            to: '/reliability-context-quality',
+          },
+          {
+            from: '/docs/retrieval-context-injection',
+            to: '/reliability-context-quality',
+          },
+          {
+            from: '/AI-Coding-Course/retrieval-context-injection',
+            to: '/reliability-context-quality',
+          },
+        ],
         createRedirects(existingPath) {
           const redirects = [`/AI-Coding-Course${existingPath}`];
           // Redirect old /docs/* URLs to new /* URLs after routeBasePath change

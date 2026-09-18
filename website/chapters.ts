@@ -53,104 +53,85 @@ export const chapterGroups = [
       {
         id: 'how-llms-work',
         kind: 'chapter' as const,
-        title: 'LLMs Demystified',
       },
       {
         id: 'llm-training-and-post-training',
         kind: 'chapter' as const,
-        title: 'Training and Post-Training',
       },
       {
         id: 'llm-reliability-limits',
         kind: 'chapter' as const,
-        title: 'Why LLMs Fail',
       },
       {
         id: 'effective-context',
         kind: 'chapter' as const,
-        title: 'Effective Context',
       },
       {
         id: 'selecting-production-llms',
         kind: 'chapter' as const,
-        title: 'Choosing a Production Model',
       },
       {
         id: 'how-agents-work',
         kind: 'chapter' as const,
-        title: 'Agents Demystified',
       },
       {
         id: 'agent-context-state',
         kind: 'chapter' as const,
-        title: 'Context and Memory',
       },
       {
         id: 'agent-roles-tools-contract',
         kind: 'chapter' as const,
-        title: 'Roles and Tool Contracts',
       },
       {
-        id: 'interactive-harness-agents',
+        id: 'harness-agents',
         kind: 'chapter' as const,
-        title: 'Interactive Harness Agents',
       },
       {
-        id: 'structured-control-plane-agents',
+        id: 'workflow-agents',
         kind: 'chapter' as const,
-        title: 'Structured Control-Plane Agents',
       },
     ],
   },
   {
     label: 'Directing Agent Work',
     chapters: [
-      { id: 'prompting-101', kind: 'chapter' as const, title: 'Prompting 101' },
+      { id: 'prompting-101', kind: 'chapter' as const },
       {
         id: 'prompt-contracts',
         kind: 'chapter' as const,
-        title: 'Prompt Contracts',
       },
       {
         id: 'prompting-by-example',
         kind: 'chapter' as const,
-        title: 'Prompting by Example',
       },
       {
         id: 'steering-retrieval-and-multistep-work',
         kind: 'chapter' as const,
-        title: 'Steering Retrieval and Multistep Work',
       },
       {
         id: 'grounded-safe-instructions',
         kind: 'chapter' as const,
-        title: 'Grounded, Safe Instructions',
       },
       {
         id: 'prompting-executable-validation',
         kind: 'chapter' as const,
-        title: 'Executable Validation',
       },
       {
         id: 'high-level-methodology',
         kind: 'chapter' as const,
-        title: 'Four-Phase Workflow',
       },
       {
         id: 'workflow-grounding',
         kind: 'chapter' as const,
-        title: 'Grounding',
       },
-      { id: 'workflow-planning', kind: 'chapter' as const, title: 'Planning' },
+      { id: 'workflow-planning', kind: 'chapter' as const },
       {
         id: 'workflow-execution',
         kind: 'chapter' as const,
-        title: 'Execution',
       },
       {
         id: 'workflow-validation-feedback',
         kind: 'chapter' as const,
-        title: 'Validation & Feedback',
       },
     ],
   },
@@ -160,63 +141,47 @@ export const chapterGroups = [
       {
         id: 'context-engineering',
         kind: 'chapter' as const,
-        title: 'Context Engineering',
       },
-      { id: 'context-files', kind: 'chapter' as const, title: 'Context Files' },
+      { id: 'context-files', kind: 'chapter' as const },
       {
         id: 'mcp-tool-schema-budgets',
         kind: 'chapter' as const,
-        title: 'MCP Tool Schemas and Budgets',
       },
       {
         id: 'skills-and-procedures',
         kind: 'chapter' as const,
-        title: 'Skills and Procedures',
       },
       {
         id: 'sub-agent-delegation',
         kind: 'chapter' as const,
-        title: 'Sub-Agent Delegation',
       },
       {
         id: 'context-compaction',
         kind: 'chapter' as const,
-        title: 'Context Compaction',
-      },
-      {
-        id: 'retrieval-context-injection',
-        kind: 'chapter' as const,
-        title: 'Retrieval and Context Injection',
       },
       {
         id: 'reliability-levers',
         kind: 'chapter' as const,
-        title: 'Reliability Levers',
       },
       {
         id: 'reliability-context-quality',
         kind: 'chapter' as const,
-        title: 'Reliability: Context Quality',
       },
       {
         id: 'reliability-orchestration',
         kind: 'chapter' as const,
-        title: 'Reliability: Orchestration',
       },
       {
         id: 'reliability-independent-retries',
         kind: 'chapter' as const,
-        title: 'Reliability: Independent Retries',
       },
       {
         id: 'reliability-hitl-checkpoints',
         kind: 'chapter' as const,
-        title: 'Reliability: HITL Checkpoints',
       },
       {
         id: 'selecting-reliability-controls',
         kind: 'chapter' as const,
-        title: 'Selecting Reliability Controls',
       },
     ],
   },
@@ -226,64 +191,52 @@ export const chapterGroups = [
       {
         id: 'spec-driven-development',
         kind: 'chapter' as const,
-        title: 'Spec-Driven Development',
       },
       {
         id: 'spec-review-cost',
         kind: 'chapter' as const,
-        title: 'Spec Review Cost',
       },
       {
         id: 'spec-drafting-approval',
         kind: 'chapter' as const,
-        title: 'Spec Drafting and Approval',
       },
       {
         id: 'spec-execution',
         kind: 'chapter' as const,
-        title: 'Spec Execution',
       },
       {
         id: 'spec-lifecycle',
         kind: 'chapter' as const,
-        title: 'Spec Lifecycle',
       },
-      { id: 'validation', kind: 'chapter' as const, title: 'Validation' },
+      { id: 'validation', kind: 'chapter' as const },
       {
         id: 'validation-evidence-portfolios',
         kind: 'chapter' as const,
-        title: 'Validation Evidence Portfolios',
       },
-      { id: 'llm-judges', kind: 'chapter' as const, title: 'LLM Judges' },
+      { id: 'llm-judges', kind: 'chapter' as const },
       {
         id: 'human-acceptance-discovery',
         kind: 'chapter' as const,
-        title: 'Human Acceptance and Discovery',
       },
       {
         id: 'continuous-validation',
         kind: 'chapter' as const,
-        title: 'Continuous Validation',
       },
       {
         id: 'agent-friendly-code',
         kind: 'chapter' as const,
-        title: 'Writing Agent-Friendly Code',
       },
       {
         id: 'agent-code-constraints',
         kind: 'chapter' as const,
-        title: 'Agent Code Constraints',
       },
       {
         id: 'agent-code-guardrails',
         kind: 'chapter' as const,
-        title: 'Agent Code Guardrails',
       },
       {
         id: 'agent-knowledge-cache',
         kind: 'chapter' as const,
-        title: 'Knowledge Cache',
       },
     ],
   },
