@@ -19,9 +19,9 @@ narration="Context files buy guaranteed delivery, and the price is where your ta
 caption={
 'Same conversation, two file sizes. As turns append after the prompt, the prompt drifts from the recency edge: a small file lets it settle near the primacy edge — still strong attention; a big file lands it in the dead middle, where attention collapses.'
 }
-
->   <ContextSqueezeDiagram />
-> </DiagramFrame>
+>
+  <ContextSqueezeDiagram />
+</DiagramFrame>
 
 `AGENTS.md` is the vendor-neutral standard adopted by 60,000+ open-source projects (now governed by the Linux Foundation's Agentic AI Foundation), working across GitHub Copilot, Cursor, Zed, Windsurf, and most other AI coding tools (note: Claude Code does not support AGENTS.md — see tip below). Keep it minimal — your README should contain 90% of what AI needs; AGENTS.md adds only AI-specific operational context. That 10% is where the discipline lives — every token in AGENTS.md sits in the attention valley between the prefix and your actual task. Put project knowledge in your README where agents can read it on demand; AGENTS.md is for what changes _how_ the agent operates, not _what_ the project does. Reference external docs by link rather than inlining them — agents can fetch details when needed.
 
