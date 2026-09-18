@@ -23,9 +23,9 @@ narration="A sub-agent is the agentic version of a function call. The orchestrat
 caption={
 'The root calls agent 1, then 2, then agents 3 and 4 concurrently. Every sub-agent is one level deep: its compact dispatch and synthesis are the only two parent-window landings.'
 }
-
->   <SubAgentFanoutDiagram />
-> </DiagramFrame>
+>
+  <SubAgentFanoutDiagram />
+</DiagramFrame>
 
 ### Benefits and Costs
 
