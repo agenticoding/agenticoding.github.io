@@ -9,14 +9,14 @@
     {
       "name": "ChunkHound",
       "repo": "chunkhound/chunkhound",
-      "stars": 1427,
-      "fetchedAt": "2026-09-10T20:13:07.688Z"
+      "stars": 1431,
+      "fetchedAt": "2026-09-15T14:45:00.236Z"
     },
     {
-      "name": "Pi agenticoding extension",
-      "repo": "agenticoding/pi-agenticoding",
-      "stars": 51,
-      "fetchedAt": "2026-09-10T20:13:07.688Z"
+      "name": "Pi Schematic",
+      "repo": "chunkhound/pi-schematic",
+      "stars": 52,
+      "fetchedAt": "2026-09-15T14:54:34.710Z"
     }
   ]
 }

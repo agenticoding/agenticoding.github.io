@@ -2,49 +2,29 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..', 'website', 'src', 'components', 'VisualElements');
-const names = [
-  'AgentWorkStabilityDiagram',
-  'ContextMechanismMap',
-  'ContextWindowAnatomyDiagram',
-  'ErrorReasonComparisonDiagram',
-  'ExecutionPortfolioDiagram',
-  'GroundingDistillationDiagram',
-  'HarnessContextLoop',
-  'HarnessDeltaExplorer',
-  'HarnessLoopDiagram',
-  'InstructionLayerAuthority',
-  'InteractiveHarnessWorkbench',
-  'LivingContextWindowStream',
-  'LocalChoicesGlobalCoherenceDiagram',
-  'LongContextBenchmarkExplorer',
-  'ModelEncodingAtlas',
-  'OperatorCycleDiagram',
-  'OwnershipBoundaryDiagram',
-  'PlanningContractCheckpointDiagram',
-  'PostTrainingTuningBoard',
-  'ProbabilityIsNotLogicDiagram',
-  'SpecExecutionRunsDiagram',
-  'SpeedAccuracyTradeoff',
-  'StructuredControlPlaneWorkbench',
-  'SubAgentFanoutDiagram',
-  'TokenPredictionDiagram',
-  'UShapeAttentionCurve',
-  'ValidationClaimBenchDiagram',
-  'ValidationEvidenceLifecycle',
-];
+
+// Self-maintaining: any component that opts into ResponsiveDiagram joins the
+// audit, so a new paired diagram can never ship unlisted.
+const names = fs
+  .readdirSync(root, { withFileTypes: true })
+  .filter((entry) => entry.isFile() && entry.name.endsWith('.tsx'))
+  .map((entry) => entry.name.replace(/\.tsx$/, ''))
+  .filter((name) => name !== 'ResponsiveDiagram')
+  .filter((name) =>
+    fs.readFileSync(path.join(root, `${name}.tsx`), 'utf8').includes('ResponsiveDiagram')
+  );
+
 const variantSelector =
   /\.(?:desktopDiagram|mobileDiagram|desktop|mobile|operatorDesktop|operatorMobile|validationDesktop|validationMobile|desktopChart|mobileChart)\b/;
 const failures = [];
 
 for (const name of names) {
-  const tsxPath = path.join(root, `${name}.tsx`);
   const cssPath = path.join(root, `${name}.module.css`);
-  const tsx = fs.readFileSync(tsxPath, 'utf8');
-  const css = fs.readFileSync(cssPath, 'utf8');
-
-  if (!tsx.includes('ResponsiveDiagram')) {
-    failures.push(`${name}: paired diagram does not use ResponsiveDiagram`);
+  if (!fs.existsSync(cssPath)) {
+    failures.push(`${name}: missing paired stylesheet ${name}.module.css`);
+    continue;
   }
+  const css = fs.readFileSync(cssPath, 'utf8');
 
   for (const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const selector = match[1];
@@ -76,4 +56,5 @@ if (failures.length) {
   process.exitCode = 1;
 } else {
   console.log(`responsive diagram audit passed (${names.length} paired diagrams)`);
+  console.log(names.map((name) => `- ${name}`).join('\n'));
 }

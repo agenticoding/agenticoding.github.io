@@ -8,7 +8,7 @@
 export const PROJECTS = [
   { name: 'Book source', repo: 'agenticoding/agenticoding.github.io' },
   { name: 'ChunkHound', repo: 'chunkhound/chunkhound' },
-  { name: 'Pi agenticoding extension', repo: 'agenticoding/pi-agenticoding' },
+  { name: 'Pi Schematic', repo: 'chunkhound/pi-schematic' },
 ];
 
 // A star count is trustworthy only as a non-negative safe integer; the /repos

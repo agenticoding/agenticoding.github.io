@@ -18,6 +18,10 @@ const SNAPSHOT_PATH = fileURLToPath(
   new URL('../website/src/generated/github-stars.json', import.meta.url)
 );
 
+const INTRO_MDX_PATH = fileURLToPath(
+  new URL('../website/docs/intro.mdx', import.meta.url)
+);
+
 async function readSnapshot() {
   try {
     return JSON.parse(await readFile(SNAPSHOT_PATH, 'utf8'));
@@ -42,17 +46,22 @@ async function fetchStars(repo) {
   }
 }
 
-// Per-repo merge: a failed repo keeps its previous entry — including its own
-// fetchedAt — so a timestamp always describes the number it sits next to. An
-// unchanged count is also left as-is, so a no-op refresh dirties nothing.
+// Per-repo merge. Two independent concerns:
+//   - stars/fetchedAt are fetched data: a failed fetch keeps the prior pair, so
+//     a timestamp always describes the number it sits next to;
+//   - name is not fetched — it comes from PROJECTS — so a rename applies even
+//     when the network is down.
+// A fully unchanged entry is returned as-is, so a no-op refresh dirties nothing.
 function mergeProjects(previous, results) {
   const previousByRepo = new Map(previous.map((project) => [project.repo, project]));
   return results.flatMap(({ repo, stars }) => {
     const prior = previousByRepo.get(repo);
-    if (stars === null) return prior ? [prior] : [];
-    if (prior && prior.stars === stars) return [prior];
     const { name } = PROJECTS.find((project) => project.repo === repo);
-    return [{ name, repo, stars, fetchedAt: new Date().toISOString() }];
+    if (stars === null) return prior ? [{ ...prior, name }] : [];
+    if (prior && prior.stars === stars && prior.name === name) return [prior];
+    const fetchedAt =
+      prior && prior.stars === stars ? prior.fetchedAt : new Date().toISOString();
+    return [{ name, repo, stars, fetchedAt }];
   });
 }
 
@@ -62,6 +71,21 @@ function serialize(projects) {
   return `${JSON.stringify({ projects }, null, 2)}\n`;
 }
 
+// PROJECTS is the fetcher's source of truth, but the homepage renders its own
+// list from intro.mdx. A slug the page references but the snapshot lacks throws
+// at render time, so name it here instead of reporting a misleading "unchanged".
+async function warnMissingIntroRepos(projects) {
+  const known = new Set(projects.map((project) => project.repo));
+  for (const [, repo] of (await readFile(INTRO_MDX_PATH, 'utf8')).matchAll(
+    /repo="([^"]+)"/g
+  )) {
+    if (!known.has(repo))
+      console.warn(
+        `[stars] ${repo}: referenced in intro.mdx but absent from PROJECTS (scripts/github-stars.js)`
+      );
+  }
+}
+
 async function main() {
   const { projects: previous = [] } = await readSnapshot();
   const results = await Promise.all(PROJECTS.map(({ repo }) => fetchStars(repo)));
@@ -69,7 +93,10 @@ async function main() {
     console.warn(`[stars] ${repo}: ${reason} — keeping last known value`);
   }
 
-  const next = serialize(mergeProjects(previous, results));
+  const merged = mergeProjects(previous, results);
+  await warnMissingIntroRepos(merged);
+
+  const next = serialize(merged);
   if (next === serialize(previous)) {
     console.log('[stars] snapshot unchanged');
     return;

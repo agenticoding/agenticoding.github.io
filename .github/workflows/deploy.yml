@@ -53,6 +53,9 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
+      - name: Audit responsive diagrams
+        run: npm run audit:responsive-diagrams
+
       - name: Refresh GitHub star counts
         # Unauthenticated (60 req/hr/IP). The fetcher merges per repo and keeps
         # the committed snapshot on failure, so a rate-limited deploy still

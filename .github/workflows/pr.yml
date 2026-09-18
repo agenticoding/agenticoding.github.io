@@ -1,0 +1,45 @@
+name: PR checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "pr-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # Fast gate (no browser-contract suite — that stays on deploy); bounded so
+    # a hang fails fast instead of sitting out the platform default.
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ./website
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ./website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run typecheck
+        run: npm run typecheck
+
+      - name: Audit responsive diagrams
+        run: npm run audit:responsive-diagrams
