@@ -103,6 +103,33 @@ export function parseFenceMeta(meta: string): {
   return { pairs, leftover: leftover.trim() };
 }
 
+/**
+ * Docusaurus reads render flags straight out of the raw metastring it is handed:
+ * `live` is a space-split token (mdx-loader codeCompatPlugin). Our narration
+ * prose shares that metastring, so an ordinary word like "live" silently turns a
+ * documentation fence into an executable playground that compiles Markdown as JS
+ * and throws in the browser. The sniffer mirrors the vendor instead of invoking
+ * it: the vendor exposes no API, and a rename upstream must fail loudly in
+ * renderFlags.test.ts rather than leave pages broken.
+ *
+ * Deliberately partial: only the promotion flag is guarded. Cosmetic metastring
+ * tokens (title, showLineNumbers, highlight ranges) share the same string but
+ * cannot break a page.
+ */
+const hasLiveToken = (meta: string): boolean =>
+  meta.split(' ').includes('live');
+
+/**
+ * Bare flags are already rejected as leftover meta by the caller, so this looks
+ * only inside quoted values — where prose hides a flag and the violation would
+ * otherwise be invisible.
+ */
+function smuggledLiveKey(pairs: Record<string, string>): string | null {
+  for (const [key, value] of Object.entries(pairs))
+    if (hasLiveToken(`${key}="${value}"`)) return key;
+  return null;
+}
+
 type State = {
   ctx: NormalizeContext;
   blocks: Block[];
@@ -177,13 +204,8 @@ function directive(state: State, node: MdNode): void {
     .forEach((child) => walk(state, child));
 }
 
-function codeBlock(state: State, node: MdNode): void {
-  flush(state);
-  const anchor: Anchor = {
-    kind: 'code',
-    index: state.codeIndex++,
-    headingId: state.headingId,
-  };
+/** Reports every meta problem, then returns the narration the fence will be spoken from. */
+function codeNarration(state: State, node: MdNode): string | null {
   const { pairs, leftover } = parseFenceMeta(node.meta ?? '');
   const unknown = Object.keys(pairs).filter((key) => key !== 'narration');
   if (leftover)
@@ -194,17 +216,37 @@ function codeBlock(state: State, node: MdNode): void {
       node,
       `unknown code fence meta key(s): ${unknown.join(', ')}`
     );
+  const smuggled = smuggledLiveKey(pairs);
+  if (smuggled)
+    violation(
+      state.ctx,
+      node,
+      `meta key "${smuggled}" must not contain "live": Docusaurus reads it as a live-editor flag and renders this fence as a playground`
+    );
   if (!pairs.narration) {
     violation(
       state.ctx,
       node,
       'code fence needs narration="..." in its meta line; the code itself is not spoken'
     );
-    return;
+    return null;
   }
+  return pairs.narration;
+}
+
+function codeBlock(state: State, node: MdNode): void {
+  flush(state);
+  // The anchor advances even for an unspoken fence: DOM order is the index.
+  const anchor: Anchor = {
+    kind: 'code',
+    index: state.codeIndex++,
+    headingId: state.headingId,
+  };
+  const narration = codeNarration(state, node);
+  if (narration === null) return;
   state.blocks.push({
     kind: 'code',
-    text: sanitizeText(pairs.narration),
+    text: sanitizeText(narration),
     label: node.lang ?? 'text',
     anchor,
   });

@@ -5,6 +5,7 @@ import {
   blocksOf,
   figureIndexes,
   proseOf,
+  SMUGGLING_FENCE,
   violationsOf,
 } from './testing.ts';
 
@@ -140,6 +141,22 @@ test('code fences are spoken from their meta, never from the code itself', () =>
     violationsOf('```bash title="x"\nrg\n```\n')[0] ?? '',
     /unknown code fence meta key/
   );
+});
+
+/** Docusaurus derives its live-editor flag from the raw metastring, so prose in a
+    quoted value can promote a doc fence into a playground whose in-browser compile throws. */
+test('narration prose cannot smuggle the Docusaurus live flag', () => {
+  assert.match(
+    violationsOf(SMUGGLING_FENCE)[0] ?? '',
+    /meta key "narration" must not contain "live"/
+  );
+  // The leftover check, not the sniffer, is what rejects a bare flag.
+  const bare =
+    '```bash live narration="Keep the rules in one file."\nrg --files\n```\n';
+  assert.match(violationsOf(bare)[0] ?? '', /meta not understood/);
+  const safe =
+    '```bash narration="Keep the rules together in one file."\nrg --files\n```\n';
+  assert.deepEqual(violationsOf(safe), []);
 });
 
 test('an unknown component or flow node fails loudly instead of being dropped', () => {
