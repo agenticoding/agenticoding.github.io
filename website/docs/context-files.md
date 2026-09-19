@@ -28,7 +28,7 @@ caption={
 :::tip Claude Code: Using AGENTS.md with Claude Code
 Claude Code uses `CLAUDE.md` instead of `AGENTS.md`. To maintain a single source of truth while supporting both ecosystems, use **@-linking** in your `CLAUDE.md`:
 
-```markdown narration="A minimal CLAUDE.md whose entire content is an at-sign import of AGENTS.md. Claude Code expands that import, so the project rules live in one file and both ecosystems read the same source instead of maintaining two copies that drift apart."
+```markdown narration="A minimal CLAUDE.md whose entire content is an at-sign import of AGENTS.md. Claude Code expands that import, so the project rules sit in one file and both ecosystems read the same source instead of maintaining two copies that drift apart."
 # CLAUDE.md
 
 @/AGENTS.md
