@@ -4,18 +4,11 @@ import { AUDIO_DOC_IDS, readDocSource } from './docs.ts';
 import { parseMdx } from './extract.ts';
 import { createHeadingReader } from './headings.ts';
 import type { MdNode } from './mdast.ts';
+import { loadDocusaurusPlugin, nodesOfType } from './testing.ts';
 
 type HeadingWithProps = MdNode & { data?: { hProperties?: { id?: string } } };
 
-const headingNodes = (root: MdNode): MdNode[] => {
-  const found: MdNode[] = [];
-  const visit = (node: MdNode): void => {
-    if (node.type === 'heading') found.push(node);
-    (node.children ?? []).forEach(visit);
-  };
-  visit(root);
-  return found;
-};
+const headingNodes = (root: MdNode): MdNode[] => nodesOfType(root, 'heading');
 
 /** Ids as the extractor derives them: one slugger per document, explicit ids win. */
 const extractorIds = (mdx: string): string[] => {
@@ -29,16 +22,13 @@ const extractorIds = (mdx: string): string[] => {
  * what we narrate against and what the built page actually renders.
  */
 const docusaurusIds = async (mdx: string): Promise<string[]> => {
-  const mod = await import(
+  const plugin = await loadDocusaurusPlugin(
     '@docusaurus/mdx-loader/lib/remark/headings/index.js'
   );
-  // CJS interop: the module sets `exports.default`, so the plugin is one level deeper.
-  const plugin = ((mod as { default?: { default?: unknown } }).default
-    ?.default ?? mod.default) as never;
   const { unified } = await import('unified');
   const root = parseMdx(mdx);
   await unified()
-    .use(plugin, { anchorsMaintainCase: false } as never)
+    .use(plugin as never, { anchorsMaintainCase: false } as never)
     .run(root as never);
   return headingNodes(root).map(
     (node) => (node as HeadingWithProps).data?.hProperties?.id ?? ''
