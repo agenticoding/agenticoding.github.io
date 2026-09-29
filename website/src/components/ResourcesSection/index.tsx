@@ -257,7 +257,7 @@ export default function ResourcesSection() {
           </Link>
 
           <a
-            href="https://chunkhound.github.io"
+            href="https://chunkhound.ai"
             target="_blank"
             rel="noopener noreferrer"
             className={clsx(styles.resourceCard, styles['resource-indigo'])}

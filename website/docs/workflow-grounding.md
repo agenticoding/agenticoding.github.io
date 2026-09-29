@@ -24,10 +24,10 @@ The grounding agent searches whatever sources encode relevant knowledge for the 
 
 A third source, **git history**, comes up in specific tasks — prior migrations, reverted approaches, bug fixes that encode hidden constraints, and architectural decisions captured in commits. Beyond these, any artifact qualifies: specs, Jira tickets, emails, presentations, Slack threads, transcripts, design docs.
 
-Not every harness has built-in sub-agent support. Claude Code spawns Explore sub-agents for this. [ChunkHound](https://chunkhound.github.io/) [disclosure] is built for this pattern. When your setup doesn't support sub-agents, the same pattern works across context boundaries: run grounding in one session, save a research artifact — a markdown file with the distilled findings — then load it into a fresh session and continue to planning. The mechanism changes — sub-agent vs. artifact handoff — but the principle is identical: the orchestrator receives compact context, not raw exploration.
+Not every harness has built-in sub-agent support. Claude Code spawns Explore sub-agents for this. [ChunkHound](https://chunkhound.ai/) [disclosure] is built for this pattern. When your setup doesn't support sub-agents, the same pattern works across context boundaries: run grounding in one session, save a research artifact — a markdown file with the distilled findings — then load it into a fresh session and continue to planning. The mechanism changes — sub-agent vs. artifact handoff — but the principle is identical: the orchestrator receives compact context, not raw exploration.
 
 :::tip
-[ChunkHound](https://chunkhound.github.io/) [disclosure] implements the grounding agent pattern — it researches code, web, and git history, then returns synthesized findings to the orchestrator. Other tools follow the same general architecture.
+[ChunkHound](https://chunkhound.ai/) [disclosure] implements the grounding agent pattern — it researches code, web, and git history, then returns synthesized findings to the orchestrator. Other tools follow the same general architecture.
 :::
 
 The operator's job during grounding is to choose which sources the grounding agent should search, review the distilled output for completeness, send targeted follow-ups when facts are missing, and decide when grounding is sufficient to proceed to planning. A grounding session is complete when the compact context that reaches the orchestrator covers the architecture, conventions, constraints, and evidence the task needs — and you know which gaps remain.

@@ -83,13 +83,9 @@ The quality question is not "does the model remember?" It is "did the software r
 :::warning[Memory is a cache; caches drift silently]
 Every fact stored in memory is a cached copy of an external source — a codebase, a document, a database, a ticket system. When the source evolves, the copy stays frozen. No error fires. The agent acts on outdated premises until the drift is large enough to notice. Prefer reading the source directly; use memory only for what the environment cannot express.
 
-For codebases, tools like [ChunkHound](https://chunkhound.github.io) [disclosure] implement this principle: they index code structure directly and retrieve fresh research, search hits, and cited reports on demand, rather than storing extracted facts that can silently drift.
+For codebases, tools like [ChunkHound](https://chunkhound.ai) [disclosure] implement this principle: they index code structure directly and retrieve fresh research, search hits, and cited reports on demand, rather than storing extracted facts that can silently drift.
 :::
 
 Retrieval decides which tokens enter the request. The role that carries them decides how the model reads them.
 
----
-
 [disclosure]: /about 'Disclosure: the author created ChunkHound'
-
-**Next:** [Roles and Tool Contracts](./agent-roles-tools-contract.mdx)

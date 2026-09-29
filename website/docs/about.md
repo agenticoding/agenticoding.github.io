@@ -48,7 +48,7 @@ alumniOf: ['Google', 'Bar-Ilan University'],
 
 I'm **Ofri Wolfus**, Senior Software Architect at Applied Materials and an ex-Google engineer (Google APIs for Mac, WebKit renderer contributions, Chrome BiDi/RTL).
 
-I built [ChunkHound](https://chunkhound.github.io) because I needed a RAG solution that could handle a 100M+ LoC monorepo on my laptop — no servers, no ops, no GPUs. The one hard rule from the start: not a single line of code written by hand. Every feature, fix, and refactor was produced by an AI agent. That experiment became this book's foundation, then grew through real users, maintainer review, and production workflows.
+I built [ChunkHound](https://chunkhound.ai) because I needed a RAG solution that could handle a 100M+ LoC monorepo on my laptop — no servers, no ops, no GPUs. The one hard rule from the start: not a single line of code written by hand. Every feature, fix, and refactor was produced by an AI agent. That experiment became this book's foundation, then grew through real users, maintainer review, and production workflows.
 
 Prior to my current role, I was Co-Founder & CTO of Ovvio.io (real-time collaborative work management) and first employee at Photomyne, where I scaled cloud infrastructure to 100M photos and 10M installs and wrote on-device neural network inference pre-TensorFlow. I co-founded EasyFit Orthopedics, where I designed, built, and patented a smart prosthetic leg interface (WO2015103506A1) — hardware, electronics, and embedded software. I was also an early contributor to Growl and Adium, two foundational Mac open-source projects.
 
@@ -56,7 +56,7 @@ BS Computer Science, Bar-Ilan University. 2 patents. 20+ years across compiled l
 
 ## Open Source
 
-**[ChunkHound](https://chunkhound.github.io)** — Local-first codebase intelligence. Indexes code via AST-aware parsing, extracts architecture and patterns, and returns research-grade answers through MCP. Also handles web research — documentation, CVEs, changelogs, current information beyond training data. Runs entirely on your machine, scales to 100M+ LoC. Used as the reference implementation throughout this book. **1.4k GitHub stars.** ([GitHub](https://github.com/chunkhound/chunkhound))
+**[ChunkHound](https://chunkhound.ai)** — Local-first codebase intelligence. Indexes code via AST-aware parsing, extracts architecture and patterns, and returns research-grade answers through MCP. Also handles web research — documentation, CVEs, changelogs, current information beyond training data. Runs entirely on your machine, scales to 100M+ LoC. Used as the reference implementation throughout this book. **1.4k GitHub stars.** ([GitHub](https://github.com/chunkhound/chunkhound))
 
 **[GoatDB](https://goatdb.dev)** — I built GoatDB because agent-generated apps need a backend as simple as the agent's mental model. One TypeScript import — database, server, sync, offline — with a Git-style commit graph for conflict resolution. Ship a single Deno binary on a $5 VM. **570 GitHub stars.** ([GitHub](https://github.com/goatplatform/goatdb))
 

@@ -10,7 +10,7 @@ These MCP servers address the critical gaps in AI-assisted development workflows
 
 ### ChunkHound
 
-[ChunkHound](https://chunkhound.github.io) provides semantic code search and structured sub-agent research for large codebases.
+[ChunkHound](https://chunkhound.ai) provides semantic code search and structured sub-agent research for large codebases.
 
 **What it does:**
 
