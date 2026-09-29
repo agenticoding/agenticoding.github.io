@@ -1,6 +1,7 @@
 // Introduces the bracketed vector glyph — the same icon EmbeddingIndexDiagram
-// reuses for the model's output — at the first mention of "vector". One word in,
-// one vector out, so the reader has the vocabulary before the pipeline figure.
+// reuses for the model's output — at the first mention of "vector". A span of
+// text in, one vector out: the input is a context, not a single word, so the
+// reader has the vocabulary before the pipeline figure.
 
 import React, { useId } from 'react';
 import { ArrowMarker } from './diagramGeometry';
@@ -8,24 +9,26 @@ import { DIAGRAM_STROKE } from './diagramScale';
 import { VectorGlyph } from './VectorGlyph';
 import { VISUALLY_HIDDEN } from './visuallyHidden';
 
-/** The example word the chapter's similarity story is built on. */
-const WORD = 'cat';
+/** The example context the chapter's similarity story is built on — a span of
+ * text, because an embedding model reads the tokens around a word, not the word
+ * alone. */
+const CONTEXT = 'the cat sat';
 const GLYPH_SIZE = 30;
 
 const LAYOUT = {
-  width: 240,
+  width: 300,
   height: 74,
-  wordX: 32,
-  glyphX: 158,
+  contextX: 52,
+  glyphX: 208,
   glyphY: 17,
-  arrow: { x1: 58, x2: 146, y: 32 },
-  ellipsisX: 194,
+  arrow: { x1: 104, x2: 196, y: 32 },
+  ellipsisX: 244,
   baseline: 37,
   labelY: 68,
 } as const;
 
 const ARIA_LABEL =
-  'A word is encoded by an embedding model into a vector: an arrow turns the word "cat" into a bracketed column of numbers, shown as the same vector glyph the pipeline figure uses.';
+  'An embedding model encodes a span of text — a context, not a bare word — into one vector: an arrow turns the phrase "the cat sat" into a bracketed column of numbers, shown as the same vector glyph the pipeline figure uses.';
 
 type VectorGlyphIllustrationProps = {
   /** Spoken explanation the audiobook extractor reads statically; rendered only
@@ -58,14 +61,14 @@ export default function VectorGlyphIllustration({
           <ArrowMarker id={markerId} fill="var(--visual-indigo)" refX={0} />
         </defs>
         <text
-          x={LAYOUT.wordX}
+          x={LAYOUT.contextX}
           y={LAYOUT.baseline}
           textAnchor="middle"
           fontFamily="var(--font-mono-keyword)"
           fontSize="13"
           fill="var(--text-heading)"
         >
-          &quot;{WORD}&quot;
+          &quot;{CONTEXT}&quot;
         </text>
         <line
           x1={LAYOUT.arrow.x1}
@@ -86,8 +89,8 @@ export default function VectorGlyphIllustration({
         >
           …
         </text>
-        <IllustrationLabel x={LAYOUT.wordX} y={LAYOUT.labelY}>
-          text
+        <IllustrationLabel x={LAYOUT.contextX} y={LAYOUT.labelY}>
+          context
         </IllustrationLabel>
         <IllustrationLabel x={glyphCentre} y={LAYOUT.labelY}>
           vector

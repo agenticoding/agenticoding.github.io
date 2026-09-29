@@ -172,15 +172,27 @@ const config: Config = {
           },
           {
             from: '/retrieval-context-injection',
-            to: '/reliability-context-quality',
+            to: '/retrieval-augmented-generation',
           },
           {
             from: '/docs/retrieval-context-injection',
-            to: '/reliability-context-quality',
+            to: '/retrieval-augmented-generation',
           },
           {
             from: '/AI-Coding-Course/retrieval-context-injection',
-            to: '/reliability-context-quality',
+            to: '/retrieval-augmented-generation',
+          },
+          {
+            from: '/reliability-context-quality',
+            to: '/retrieval-augmented-generation',
+          },
+          {
+            from: '/docs/reliability-context-quality',
+            to: '/retrieval-augmented-generation',
+          },
+          {
+            from: '/AI-Coding-Course/reliability-context-quality',
+            to: '/retrieval-augmented-generation',
           },
         ],
         createRedirects(existingPath) {

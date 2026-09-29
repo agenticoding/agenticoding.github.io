@@ -146,6 +146,35 @@ test('Toolbox is the final category before About and has no chapter numbers', ()
   }
 });
 
+test('reliability-context-quality redirects to retrieval-augmented-generation', () => {
+  // The chapter was renamed; the old id must keep resolving via redirects
+  // (all three path prefixes) or external links break silently.
+  const config = readFileSync(
+    new URL('../../docusaurus.config.ts', import.meta.url),
+    'utf8'
+  );
+  for (const from of [
+    '/reliability-context-quality',
+    '/docs/reliability-context-quality',
+    '/AI-Coding-Course/reliability-context-quality',
+  ]) {
+    assert.ok(
+      config.includes(`from: '${from}'`),
+      `${from} redirect is missing`
+    );
+    assert.ok(
+      config.includes(
+        `from: '${from}',\n            to: '/retrieval-augmented-generation'`
+      ),
+      `${from} must redirect to retrieval-augmented-generation`
+    );
+  }
+  assert.ok(
+    chapters.some((chapter) => chapter.id === 'retrieval-augmented-generation'),
+    'renamed chapter id is missing from chapters.ts'
+  );
+});
+
 test('browser-contract LABEL_* constants stay in sync with chapters.ts labels', () => {
   // scripts/test-browser-contracts.cjs duplicates these strings with only a
   // comment enforcing sync; a rename must fail here (fast unit suite) rather

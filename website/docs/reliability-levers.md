@@ -43,4 +43,4 @@ premise can correlate failures across later steps.
 
 This propagation tendency is **failure stickiness**: the chance that a failed step makes a later dependent step more likely to fail. Reliable workflows control both baseline step quality and the distance bad state can travel.
 
-**Next:** [Context Quality](./reliability-context-quality.md)
+A bad premise can only propagate if it is in the window, so the second term is a context decision: supply the right reality, and do it without spending the model you hired to think. That is a delegation move — hand the finding to a worker you can afford — and it scales from a sub-agent to a retrieval system.

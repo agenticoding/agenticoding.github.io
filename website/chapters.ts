@@ -164,7 +164,7 @@ export const chapterGroups = [
         kind: 'chapter' as const,
       },
       {
-        id: 'reliability-context-quality',
+        id: 'retrieval-augmented-generation',
         kind: 'chapter' as const,
       },
       {
