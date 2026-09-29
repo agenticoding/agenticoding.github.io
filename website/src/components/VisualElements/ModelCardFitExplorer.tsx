@@ -15,6 +15,7 @@ import {
   compactChart,
   compactXTicks,
   layoutCurveLabels,
+  type ChartLayout,
 } from './LongContextBenchmarkChart';
 import { benchmarkRows, type BenchmarkRow } from './longContextBenchmarkData';
 import {
@@ -695,15 +696,24 @@ function ModalityGraphic({ profile }: { profile: ModalityProfile }) {
   );
 }
 
+// Compact chart hides its model label (see .compactChart .labelModel), so the
+// score — right-anchored at chart.labelX + 30 in CurveLabel — must clear the
+// 520-wide viewBox on its own. Pull the label column in so "NN.N%" is not
+// clipped at the right edge (default labelX + 30 lands 10px past the viewBox).
+const recallChart: ChartLayout = {
+  ...compactChart,
+  labelX: compactChart.width - 32,
+};
+
 function BenchmarkRecallGraphic({ row }: { row: BenchmarkRow }) {
-  const labels = layoutCurveLabels([row], compactChart).map((label) => ({
+  const labels = layoutCurveLabels([row], recallChart).map((label) => ({
     ...label,
     visible: true,
   }));
   return (
     <div className={styles.benchmarkRecallGraphic}>
       <BenchmarkChartSvg
-        chart={compactChart}
+        chart={recallChart}
         ticks={compactXTicks}
         rows={[row]}
         selectedIds={[row.id]}

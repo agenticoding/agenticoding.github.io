@@ -1,6 +1,10 @@
 import React from 'react';
 
-export const G = 8;
+import { DIAGRAM_GRID } from './diagramScale';
+
+/** Local alias for the single 8px base unit; not exported (consumers import
+    `DIAGRAM_GRID` from `./diagramScale` directly). */
+const G = DIAGRAM_GRID;
 export const FONT = {
   heading: 'var(--font-display)',
   body: 'var(--font-body)',

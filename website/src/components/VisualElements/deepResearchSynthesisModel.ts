@@ -21,7 +21,7 @@
 // composition described once; only the lane spacing and the exit insets differ.
 
 import { tokenTrainBeginOffsetMs } from './TokenTrainTiming.ts';
-import { TILE_GRID } from './diagramTileLayout.ts';
+import { DIAGRAM_GRID } from './diagramScale.ts';
 
 export type Point = { x: number; y: number };
 export type Box = Point & { width: number; height: number };
@@ -299,7 +299,7 @@ export function nodeLabelAt(mode: DiagramMode, id: GraphNodeId): Point {
   const inside = boxCenter(DEEP_RESEARCH_SYNTHESIS_LAYOUT[mode].exploration);
   const towardsInterior = at.x < inside.x ? 1 : -1;
   return {
-    x: at.x + towardsInterior * (labelWidth(id) / 2 + TILE_GRID),
+    x: at.x + towardsInterior * (labelWidth(id) / 2 + DIAGRAM_GRID),
     y: at.y + NODE_LABEL.offsetY,
   };
 }

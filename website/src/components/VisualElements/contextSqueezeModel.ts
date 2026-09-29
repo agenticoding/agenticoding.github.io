@@ -54,7 +54,9 @@ export function turnsAtTick(tick: number): number {
 }
 
 const BLOCK_MIN_HEIGHT = 20;
-const TURN_MIN_HEIGHT = 18;
+// Grid-legal floor: every rendered row height must be a DIAGRAM_HALF (4px)
+// multiple, so the foundation's snap cannot leave a row below its own floor.
+const TURN_MIN_HEIGHT = 20;
 
 function block(id: string, label: string, weight: number): SqueezeContextRow {
   return { id, label, weight, minHeight: BLOCK_MIN_HEIGHT };
@@ -119,3 +121,11 @@ export function promptZone(rows: readonly SqueezeContextRow[]): AttentionZone {
 export function promptAttention(rows: readonly SqueezeContextRow[]): number {
   return attentionAt(fractionOfRow('prompt', rows), windowFill(rows));
 }
+
+/** Fixed panel canvases (desktop, mobile). Squeeze is a long accumulation whose
+    empty state carries almost no content mass, so a ledger-derived canvas would
+    balloon; these stay fixed and clear the tallest state's floor budget.
+    Mirrored by `.stackClip` in ContextSqueezeDiagram.module.css (guarded by
+    contextWeightRows.test.ts). */
+export const STACK_HEIGHT = 440;
+export const MOBILE_STACK_HEIGHT = 400;

@@ -10,10 +10,18 @@ import type { TokenSequence } from './AnimatedTokenFlow';
 import type { TokenTrainTiming } from './TokenTrainTiming';
 import type { WorkingAgentActivation } from './WorkingAgentNode';
 import { ResponsiveDiagram } from './ResponsiveDiagram';
+import { DIAGRAM_SPACE, RICH_TILE_SCALE } from './diagramScale';
 import styles from './PlanningContractCheckpointDiagram.module.css';
 
 const ARIA_LABEL =
   'Planning contract checkpoint diagram: grounded facts assemble a draft execution contract. Human review either returns it for revision or approves the only path that enables agent execution.';
+
+// The review gate stacks two explicit detail lines; at the snapped 11px ramp they need
+// one extra detail line of height beyond `comfortableHeight` (see WorkflowAgentsWorkbench).
+const REVIEW_HEIGHT =
+  RICH_TILE_SCALE.comfortableHeight + DIAGRAM_SPACE.detailLineGap;
+const DESKTOP_GATE_Y = 124;
+const MOBILE_GATE_Y = 401;
 
 const FACTS = ['architecture', 'constraints', 'tests'] as const;
 const PLAN_ROWS = [
@@ -102,7 +110,7 @@ function DesktopDiagram() {
         laneOrientation="below"
       />
       <DiagramArrow
-        d="M 516 244 V 284 H 312 V 268"
+        d={`M 516 ${DESKTOP_GATE_Y + REVIEW_HEIGHT} V 284 H 312 V 268`}
         markerIdPrefix="planning-contract-desktop"
         tone="warning"
         label="revise"
@@ -113,7 +121,12 @@ function DesktopDiagram() {
       />
       <FactsBlock x={48} y={136} width={132} height={104} />
       <ContractCard x={212} y={108} width={200} height={160} />
-      <ReviewGate x={456} y={132} width={120} height={112} />
+      <ReviewGate
+        x={456}
+        y={DESKTOP_GATE_Y}
+        width={120}
+        height={REVIEW_HEIGHT}
+      />
       <ExecutionAgentTile x={632} y={124} width={112} height={128} />
     </svg>
   );
@@ -148,7 +161,7 @@ function MobileDiagram() {
         laneOrientation="below"
       />
       <Flow
-        d="M 170 513 L 170 558"
+        d={`M 170 ${MOBILE_GATE_Y + REVIEW_HEIGHT} L 170 558`}
         tokens={APPROVED_TOKENS}
         stroke="var(--visual-success)"
         tone="success"
@@ -159,7 +172,7 @@ function MobileDiagram() {
         laneOrientation="above"
       />
       <DiagramArrow
-        d="M 70 457 H 24 V 272 H 50"
+        d={`M 70 ${MOBILE_GATE_Y + REVIEW_HEIGHT / 2} H 24 V 272 H 50`}
         markerIdPrefix="planning-contract-mobile"
         tone="warning"
         label="revise"
@@ -170,7 +183,13 @@ function MobileDiagram() {
       />
       <FactsBlock x={70} y={56} width={200} height={94} compact />
       <ContractCard x={50} y={192} width={240} height={152} compact />
-      <ReviewGate x={70} y={401} width={200} height={112} compact />
+      <ReviewGate
+        x={70}
+        y={MOBILE_GATE_Y}
+        width={200}
+        height={REVIEW_HEIGHT}
+        compact
+      />
       <ExecutionAgentTile x={100} y={558} width={140} height={128} compact />
     </svg>
   );

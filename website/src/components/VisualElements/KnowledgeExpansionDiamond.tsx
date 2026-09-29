@@ -25,10 +25,6 @@ export default function KnowledgeExpansionDiamond() {
   // Arrow curve control - tighter offset keeps arrows closer to content
   const arrowCurveOffset = 90;
 
-  // Annotation x-positions - consistent margins from arrows
-  const leftAnnotationX = centerX - arrowCurveOffset - 12;
-  const rightAnnotationX = centerX + arrowCurveOffset + 12;
-
   // Helper function for quadratic bezier arrow paths
   const createArrowPath = (
     startX: number,
@@ -74,10 +70,6 @@ export default function KnowledgeExpansionDiamond() {
     specY + boxHeight,
     centerX + arrowCurveOffset
   );
-
-  // Annotation Y positions - centered in arrow gaps
-  const annotation1Y = specY + boxHeight + 42;
-  const annotation2Y = designY + boxHeight + 42;
 
   // Legend Y position
   const legendY = codeY + codeBoxHeight + 32;

@@ -37,7 +37,12 @@ export const STACK_BANDS: CompactionBand[] = [
   { label: 'debug thread', h: 42, tone: 'indigo' },
   { label: 'grep() ↔ 12K result', h: 24, tone: 'indigo' },
   { label: 'next-step state', h: 32, tone: 'indigo' },
-  { label: 'recent tail + task', h: 24, stroke: 'var(--border-emphasis)', fill: 'transparent' },
+  {
+    label: 'recent tail + task',
+    h: 24,
+    stroke: 'var(--border-emphasis)',
+    fill: 'transparent',
+  },
 ];
 
 // Summary tiles are short and violet — the chapter hue for AI
@@ -60,20 +65,44 @@ export const STACK_EVENTS: readonly StackEvent[] = [
   { band: 5, kind: 'shrink', freed: STACK_BANDS[5].h - SUMMARY_H },
 ];
 
-export const DELETED_BAND_INDICES: readonly number[] = STACK_EVENTS.filter((e) => e.kind === 'delete').map((e) => e.band);
+export const DELETED_BAND_INDICES: readonly number[] = STACK_EVENTS.filter(
+  (e) => e.kind === 'delete'
+).map((e) => e.band);
 
 // 1:1 thread → summary pairs, summarized one by one in stack order. Seeds
 // drive the deterministic token scatter (never Math.random — house convention).
 // Summarization removes most tokens, not all: each pair keeps a compressed
 // minority (survivors — the rightmost tokens of the row); the majority ejects.
 export const SUMMARY_PAIRS = [
-  { thread: 1, label: 'decisions summary', seed: 'compaction-line-decision', tokenCount: 5, survivors: 2 },
-  { thread: 3, label: 'discoveries summary', seed: 'compaction-line-debug', tokenCount: 5, survivors: 2 },
-  { thread: 5, label: 'next steps summary', seed: 'compaction-line-next-steps', tokenCount: 4, survivors: 1 },
+  {
+    thread: 1,
+    label: 'decisions summary',
+    seed: 'compaction-line-decision',
+    tokenCount: 5,
+    survivors: 2,
+  },
+  {
+    thread: 3,
+    label: 'discoveries summary',
+    seed: 'compaction-line-debug',
+    tokenCount: 5,
+    survivors: 2,
+  },
+  {
+    thread: 5,
+    label: 'next steps summary',
+    seed: 'compaction-line-next-steps',
+    tokenCount: 4,
+    survivors: 1,
+  },
 ] as const;
 
 export function summaryBand(pairIndex: number): CompactionBand {
-  return { label: SUMMARY_PAIRS[pairIndex].label, h: SUMMARY_H, tone: 'violet' };
+  return {
+    label: SUMMARY_PAIRS[pairIndex].label,
+    h: SUMMARY_H,
+    tone: 'violet',
+  };
 }
 
 export const HEADROOM_H = STACK_EVENTS.reduce((px, e) => px + e.freed, 0);
@@ -85,7 +114,10 @@ export function bandTop(index: number): number {
 
 // Cumulative space freed by events above a band — how far it slides up.
 export function slideDistanceBefore(bandIndex: number): number {
-  return STACK_EVENTS.filter((e) => e.band < bandIndex).reduce((px, e) => px + e.freed, 0);
+  return STACK_EVENTS.filter((e) => e.band < bandIndex).reduce(
+    (px, e) => px + e.freed,
+    0
+  );
 }
 
 // Final (post-compaction) geometry: deleted bands are gone, shrunk bands are
@@ -109,8 +141,16 @@ export interface LedgerEntry {
 }
 export const STATIC_LEDGER: readonly LedgerEntry[] = STACK_EVENTS.map((e) =>
   e.kind === 'delete'
-    ? { label: `${STACK_BANDS[e.band].label} — on disk`, h: STACK_BANDS[e.band].h, onDisk: true }
-    : { label: `${STACK_BANDS[e.band].label} → summary`, h: STACK_BANDS[e.band].h - SUMMARY_H, onDisk: false }
+    ? {
+        label: `${STACK_BANDS[e.band].label} — on disk`,
+        h: STACK_BANDS[e.band].h,
+        onDisk: true,
+      }
+    : {
+        label: `${STACK_BANDS[e.band].label} → summary`,
+        h: STACK_BANDS[e.band].h - SUMMARY_H,
+        onDisk: false,
+      }
 );
 
 // --- Token fates (act 2) ---
@@ -131,8 +171,14 @@ export interface EjectSpec {
 export function pairEjectSpecs(pairIndex: number): EjectSpec[] {
   const pair = SUMMARY_PAIRS[pairIndex];
   const discarded = pair.tokenCount - pair.survivors;
-  const dxs = seededTokenDrift(`${pair.seed}:x`, discarded, { minOffsetPx: 10, maxOffsetPx: 30 });
-  const dys = seededTokenDrift(`${pair.seed}:y`, discarded, { minOffsetPx: 60, maxOffsetPx: 110 });
+  const dxs = seededTokenDrift(`${pair.seed}:x`, discarded, {
+    minOffsetPx: 10,
+    maxOffsetPx: 30,
+  });
+  const dys = seededTokenDrift(`${pair.seed}:y`, discarded, {
+    minOffsetPx: 60,
+    maxOffsetPx: 110,
+  });
   return dxs.map((dx, j) => ({ dx, dy: -Math.abs(dys[j]) }));
 }
 
@@ -197,8 +243,12 @@ export const RESTORE_TOKENS_IN_MS = 450;
 export function pairContentEndMs(pairIndex: number): number {
   const start = PAIR_START_MS[pairIndex];
   const pair = SUMMARY_PAIRS[pairIndex];
-  const lastTokenEnd = (pair.tokenCount - pair.survivors - 1) * EJECT_STAGGER_MS + EJECT_TRAVEL_MS + EJECT_FADE_MS;
+  const lastTokenEnd =
+    (pair.tokenCount - pair.survivors - 1) * EJECT_STAGGER_MS +
+    EJECT_TRAVEL_MS +
+    EJECT_FADE_MS;
   const shrinkEnd = SHRINK_LEAD_MS + SHRINK_MS;
-  const summaryEnd = SHRINK_LEAD_MS + SHRINK_MS - SUMMARY_LEAD_MS + SUMMARY_FADE_MS;
+  const summaryEnd =
+    SHRINK_LEAD_MS + SHRINK_MS - SUMMARY_LEAD_MS + SUMMARY_FADE_MS;
   return start + Math.max(lastTokenEnd, shrinkEnd, summaryEnd);
 }

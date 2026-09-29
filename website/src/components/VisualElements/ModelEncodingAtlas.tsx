@@ -2,7 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { EmojiImage } from './ActorNodes';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import { ModelCallFrame, modelCallFrameVisualBounds } from './ModelCallFrame';
-import { DIAGRAM_STROKE } from './diagramScale';
+import {
+  DIAGRAM_GRID,
+  DIAGRAM_HALF,
+  DIAGRAM_STROKE,
+  SPACE,
+} from './diagramScale';
 import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './ModelEncodingAtlas.module.css';
 
@@ -11,32 +16,23 @@ const MOBILE_ACTIVE_PULSES = 5;
 const NODE_SIZE = 30;
 const NODE_PORT_OFFSET = NODE_SIZE / 2;
 
-// SVG mirrors DESIGN_SYSTEM.md spacing so geometry changes stay token-bound.
-const SPACE_1 = 8;
-const SPACE_2 = 16;
-const SPACE_3 = 24;
-const SPACE_4 = 32;
-const SPACE_5 = 40;
-const SPACE_6 = 48;
-const SPACE_7 = 56;
-const SPACE_8 = 64;
-const SPACE_10 = 80;
-const GRID = SPACE_1 / 2;
-const MIN_EDGE_SEPARATION = SPACE_2;
-const NODE_CLEARANCE = SPACE_2;
-const LABEL_CLEARANCE = SPACE_1;
-const FIELD_BOUNDARY_CLEARANCE = SPACE_1;
+// SVG spacing consumes the shared `--space-*` tokens from `diagramScale.ts`, so
+// geometry cannot drift from the design system.
+const MIN_EDGE_SEPARATION = SPACE['2'];
+const NODE_CLEARANCE = SPACE['2'];
+const LABEL_CLEARANCE = SPACE['1'];
+const FIELD_BOUNDARY_CLEARANCE = SPACE['1'];
 const FIELD_BOUNDARY_RUN_LIMIT = 9;
-const FIELD_PADDING = SPACE_3;
+const FIELD_PADDING = SPACE['3'];
 const FIELD_CONTENT_FIT = 0.98;
-const FIELD_LABEL_CLEARANCE = GRID;
+const FIELD_LABEL_CLEARANCE = DIAGRAM_HALF;
 const CONTENT_OFFSET: Record<Viewport, Point> = {
   desktop: { x: 20, y: -23 },
   mobile: { x: 0, y: 0 },
 };
 const BODY_RECENTER_OFFSET: Record<Viewport, Point> = {
-  desktop: { x: 0, y: SPACE_3 - GRID },
-  mobile: { x: 0, y: SPACE_3 - GRID },
+  desktop: { x: 0, y: SPACE['3'] - DIAGRAM_HALF },
+  mobile: { x: 0, y: SPACE['3'] - DIAGRAM_HALF },
 };
 
 type FieldId = 'knowledge' | 'action';
@@ -234,17 +230,27 @@ const EDGE_INFO: Record<EdgeId, Omit<Edge, 'd' | 'path'>> = {
 const VIEWPORT_LAYOUTS = {
   desktop: {
     viewBox: { x: 0, y: 0, width: 640, height: 376 },
-    surfaceInset: SPACE_2,
-    surfaceTopInset: SPACE_2 + GRID,
-    frame: { x: SPACE_4, y: SPACE_10 - GRID, width: 576, height: 244 },
-    eyebrow: { x: SPACE_5, y: SPACE_4 + GRID },
+    surfaceInset: SPACE['2'],
+    surfaceTopInset: SPACE['2'] + DIAGRAM_HALF,
+    frame: {
+      x: SPACE['4'],
+      y: SPACE['7'] - DIAGRAM_HALF,
+      width: 576,
+      height: 244,
+    },
+    eyebrow: { x: SPACE['5'], y: SPACE['4'] + DIAGRAM_HALF },
   },
   mobile: {
     viewBox: { x: 0, y: 0, width: 360, height: 612 },
-    surfaceInset: SPACE_1 + GRID,
-    surfaceTopInset: SPACE_2 + GRID,
-    frame: { x: SPACE_3 + GRID, y: SPACE_8, width: 304, height: 488 },
-    eyebrow: { x: SPACE_4, y: SPACE_5 },
+    surfaceInset: SPACE['1'] + DIAGRAM_HALF,
+    surfaceTopInset: SPACE['2'] + DIAGRAM_HALF,
+    frame: {
+      x: SPACE['3'] + DIAGRAM_HALF,
+      y: DIAGRAM_GRID * 8,
+      width: 304,
+      height: 488,
+    },
+    eyebrow: { x: SPACE['4'], y: SPACE['5'] },
   },
 } satisfies Record<
   Viewport,
@@ -300,47 +306,68 @@ const MOBILE_NODE_SLOTS: Record<NodeId, Point> = {
   validate: { x: 0.48, y: 0.38 },
 };
 
+// Visually verified: route corridors and minimum labels intentionally re-baseline off-grid values onto SPACE tokens.
 const ROUTES: Record<Viewport, Record<EdgeId, Route>> = {
   desktop: {
-    'facts-docs': route('right', 'left', SPACE_4, SPACE_4, -SPACE_2),
-    'facts-formats': route('right', 'top', SPACE_3, SPACE_3, 0, [
+    'facts-docs': route('right', 'left', SPACE['4'], SPACE['4'], -SPACE['2']),
+    'facts-formats': route('right', 'top', SPACE['3'], SPACE['3'], 0, [
       { x: 144, y: 176 },
       { x: 144, y: 204 },
       { x: 152, y: 204 },
     ]),
-    'docs-code': route('right', 'top', SPACE_5, SPACE_5, 0, [
+    'docs-code': route('right', 'top', SPACE['5'], SPACE['5'], 0, [
       { x: 248, y: 132 },
       { x: 248, y: 200 },
       { x: 272, y: 200 },
     ]),
-    'formats-code': route('right', 'left', SPACE_4, SPACE_4, SPACE_2, [
+    'formats-code': route('right', 'left', SPACE['4'], SPACE['4'], SPACE['2'], [
       { x: 256, y: 244 },
     ]),
-    'answer-repair': route('right', 'left', SPACE_6, SPACE_6, -SPACE_4),
-    'answer-ask': route('right', 'top', SPACE_4, SPACE_4, 0, [
+    'answer-repair': route(
+      'right',
+      'left',
+      SPACE['6'],
+      SPACE['6'],
+      -SPACE['4']
+    ),
+    'answer-ask': route('right', 'top', SPACE['4'], SPACE['4'], 0, [
       { x: 424, y: 140 },
       { x: 424, y: 204 },
       { x: 392, y: 204 },
     ]),
-    'ask-validate': route('right', 'left', SPACE_4, SPACE_4, SPACE_3, []),
-    'repair-validate': route('bottom', 'top', SPACE_3, SPACE_3, 0, [
+    'ask-validate': route(
+      'right',
+      'left',
+      SPACE['4'],
+      SPACE['4'],
+      SPACE['3'],
+      []
+    ),
+    'repair-validate': route('bottom', 'top', SPACE['3'], SPACE['3'], 0, [
       { x: 508, y: 212 },
       { x: 488, y: 212 },
     ]),
-    'docs-answer': route('right', 'left', SPACE_4, SPACE_4, -SPACE_2),
-    'formats-ask': route('top', 'top', SPACE_4, SPACE_4, SPACE_5, [
+    'docs-answer': route('right', 'left', SPACE['4'], SPACE['4'], -SPACE['2']),
+    'formats-ask': route('top', 'top', SPACE['4'], SPACE['4'], SPACE['5'], [
       { x: 408, y: 228 },
     ]),
-    'code-repair': route('right', 'left', SPACE_7, SPACE_7, -SPACE_4, [
+    'code-repair': route('right', 'left', SPACE['7'], SPACE['7'], -SPACE['4'], [
       { x: 308, y: 240 },
       { x: 308, y: 164 },
       { x: 492, y: 164 },
     ]),
-    'code-validate': route('bottom', 'bottom', SPACE_4, SPACE_4, SPACE_3, [
-      { x: 272, y: 320 },
-      { x: 488, y: 320 },
-    ]),
-    'facts-validate': route('left', 'right', SPACE_10, SPACE_10, 0, [
+    'code-validate': route(
+      'bottom',
+      'bottom',
+      SPACE['4'],
+      SPACE['4'],
+      SPACE['3'],
+      [
+        { x: 272, y: 320 },
+        { x: 488, y: 320 },
+      ]
+    ),
+    'facts-validate': route('left', 'right', SPACE['10'], SPACE['10'], 0, [
       { x: 68, y: 176 },
       { x: 68, y: 304 },
       { x: 532, y: 304 },
@@ -348,56 +375,82 @@ const ROUTES: Record<Viewport, Record<EdgeId, Route>> = {
     ]),
   },
   mobile: {
-    'facts-docs': route('right', 'left', SPACE_5, SPACE_5, -SPACE_3, [
+    'facts-docs': route('right', 'left', SPACE['5'], SPACE['5'], -SPACE['3'], [
       { x: 140, y: 176 },
       { x: 140, y: 184 },
       { x: 196, y: 184 },
     ]),
-    'facts-formats': route('right', 'left', SPACE_5, SPACE_5, -SPACE_2, [
-      { x: 120, y: 176 },
-      { x: 120, y: 260 },
-      { x: 68, y: 260 },
-    ]),
-    'docs-code': route('right', 'top', SPACE_5, SPACE_5, SPACE_1, [
+    'facts-formats': route(
+      'right',
+      'left',
+      SPACE['5'],
+      SPACE['5'],
+      -SPACE['2'],
+      [
+        { x: 120, y: 176 },
+        { x: 120, y: 260 },
+        { x: 68, y: 260 },
+      ]
+    ),
+    'docs-code': route('right', 'top', SPACE['5'], SPACE['5'], SPACE['1'], [
       { x: 236, y: 196 },
       { x: 236, y: 256 },
       { x: 168, y: 256 },
     ]),
-    'formats-code': route('right', 'left', SPACE_3, SPACE_3, -SPACE_1, [
-      { x: 152, y: 308 },
-    ]),
-    'answer-repair': route('right', 'top', SPACE_3, SPACE_3, 0, [
+    'formats-code': route(
+      'right',
+      'left',
+      SPACE['3'],
+      SPACE['3'],
+      -SPACE['1'],
+      [{ x: 152, y: 308 }]
+    ),
+    'answer-repair': route('right', 'top', SPACE['3'], SPACE['3'], 0, [
       { x: 284, y: 296 },
     ]),
-    'answer-ask': route('bottom', 'top', SPACE_4, SPACE_4, -SPACE_1, [
+    'answer-ask': route('bottom', 'top', SPACE['4'], SPACE['4'], -SPACE['1'], [
       { x: 228, y: 360 },
       { x: 180, y: 360 },
     ]),
-    'ask-validate': route('right', 'left', SPACE_4, SPACE_4, -SPACE_1, [
-      { x: 224, y: 396 },
-      { x: 224, y: 424 },
-    ]),
-    'repair-validate': route('right', 'right', SPACE_4, SPACE_4, -SPACE_3, [
-      { x: 312, y: 320 },
-      { x: 312, y: 424 },
-    ]),
-    'docs-answer': route('right', 'top', SPACE_5, SPACE_5, -SPACE_2, [
+    'ask-validate': route(
+      'right',
+      'left',
+      SPACE['4'],
+      SPACE['4'],
+      -SPACE['1'],
+      [
+        { x: 224, y: 396 },
+        { x: 224, y: 424 },
+      ]
+    ),
+    'repair-validate': route(
+      'right',
+      'right',
+      SPACE['4'],
+      SPACE['4'],
+      -SPACE['3'],
+      [
+        { x: 312, y: 320 },
+        { x: 312, y: 424 },
+      ]
+    ),
+    'docs-answer': route('right', 'top', SPACE['5'], SPACE['5'], -SPACE['2'], [
       { x: 256, y: 196 },
       { x: 256, y: 280 },
     ]),
-    'formats-ask': route('right', 'top', SPACE_4, SPACE_4, 0, [
+    'formats-ask': route('right', 'top', SPACE['4'], SPACE['4'], 0, [
       { x: 128, y: 308 },
       { x: 128, y: 356 },
       { x: 180, y: 356 },
     ]),
-    'code-repair': route('right', 'left', SPACE_5, SPACE_5, -SPACE_2, [
+    'code-repair': route('right', 'left', SPACE['5'], SPACE['5'], -SPACE['2'], [
       { x: 268, y: 316 },
     ]),
-    'code-validate': route('bottom', 'top', SPACE_8, SPACE_8, 0, [
+    'code-validate': route('bottom', 'top', SPACE['8'], SPACE['8'], 0, [
       { x: 168, y: 372 },
       { x: 268, y: 372 },
     ]),
-    'facts-validate': route('left', 'bottom', SPACE_8, SPACE_8, 0, [
+    'facts-validate': route('left', 'bottom', SPACE['8'], SPACE['8'], 0, [
       { x: 44, y: 176 },
       { x: 44, y: 444 },
       { x: 268, y: 444 },
@@ -462,23 +515,26 @@ function desktopFields(frame: LayoutBox): Field[] {
     x: snap(frame.width * 0.34),
     y: snap((frame.height - FIELD_PADDING) / 2),
   };
+  // Field centres and label insets are token-derived so the two ellipses and their
+  // captions stay aligned with the fixed route waypoints in ROUTES.desktop.
+  const fieldOffset = SPACE['7'] + DIAGRAM_HALF;
   return [
     field(
       'knowledge',
       'world + domain knowledge',
       'facts, concepts, artifacts',
-      { x: center.x - SPACE_10 - GRID, y: center.y },
+      { x: center.x - fieldOffset, y: center.y },
       radius,
-      { x: frame.x + SPACE_10 * 2, y: frame.y - SPACE_2 },
+      { x: frame.x + SPACE['10'], y: frame.y - SPACE['2'] },
       'middle'
     ),
     field(
       'action',
       'action patterns',
       'answers, revisions, validation',
-      { x: center.x + SPACE_10 + GRID, y: center.y },
+      { x: center.x + fieldOffset, y: center.y },
       radius,
-      { x: right(frame) - SPACE_10 * 2, y: frame.y - SPACE_2 },
+      { x: right(frame) - SPACE['10'], y: frame.y - SPACE['2'] },
       'middle'
     ),
   ];
@@ -492,17 +548,17 @@ function mobileFields(frame: LayoutBox): Field[] {
       'knowledge',
       'world + domain knowledge',
       'facts, concepts, artifacts',
-      { x: center.x - SPACE_3, y: frame.y + snap(frame.height * 0.39) },
+      { x: center.x - SPACE['3'], y: frame.y + snap(frame.height * 0.39) },
       radius,
-      { x: frame.x + SPACE_4, y: frame.y + SPACE_2 }
+      { x: frame.x + SPACE['4'], y: frame.y + SPACE['2'] }
     ),
     field(
       'action',
       'action patterns',
       'answers, revisions, validation',
-      { x: center.x + SPACE_3, y: frame.y + snap(frame.height * 0.62) },
+      { x: center.x + SPACE['3'], y: frame.y + snap(frame.height * 0.62) },
       radius,
-      { x: right(frame) - SPACE_4, y: bottom(frame) - SPACE_3 },
+      { x: right(frame) - SPACE['4'], y: bottom(frame) - SPACE['3'] },
       'end'
     ),
   ];
@@ -524,7 +580,7 @@ function field(
     center: snapPoint(center),
     radius: snapPoint(radius),
     label: snapPoint(label),
-    subtitleY: snap(label.y + SPACE_1 + GRID),
+    subtitleY: snap(label.y + SPACE['1'] + DIAGRAM_HALF),
     textAnchor,
   };
 }
@@ -862,13 +918,13 @@ function outsideSharedPortZone(a: Point, b: Point, node: Node) {
 
 function labelBox(viewport: Viewport, node: Node) {
   const point = nodeLabelPoint(viewport, node);
-  const width = Math.max(SPACE_5, node.label.length * 6);
+  const width = Math.max(SPACE['5'], node.label.length * 6);
   return {
     id: node.id,
     x: point.x - width / 2,
-    y: point.y - SPACE_1,
+    y: point.y - SPACE['1'],
     width,
-    height: SPACE_2,
+    height: SPACE['2'],
   };
 }
 
@@ -905,7 +961,7 @@ function textBox(
       : textAnchor === 'end'
         ? baseline.x - width
         : baseline.x;
-  return { x: left, y: baseline.y - SPACE_1, width, height: SPACE_2 };
+  return { x: left, y: baseline.y - SPACE['1'], width, height: SPACE['2'] };
 }
 
 function unionBox(a: LayoutBox, b: LayoutBox): LayoutBox {
@@ -976,7 +1032,7 @@ function containsNode(box: LayoutBox, node: Node) {
     node.x - radius >= box.x &&
     node.x + radius <= right(box) &&
     node.y - radius >= box.y &&
-    node.y + SPACE_6 <= bottom(box)
+    node.y + SPACE['6'] <= bottom(box)
   );
 }
 
@@ -1151,7 +1207,7 @@ function distance(a: Point, b: Point) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 function snap(value: number) {
-  return Math.round(value / GRID) * GRID;
+  return Math.round(value / DIAGRAM_HALF) * DIAGRAM_HALF;
 }
 function snapPoint(point: Point) {
   return { x: snap(point.x), y: snap(point.y) };
@@ -1266,11 +1322,11 @@ function mobileFieldLabelPoint(field: Field) {
   const x = snap(field.center.x);
   const y =
     field.id === 'knowledge'
-      ? snap(field.center.y - field.radius.y + SPACE_1)
-      : snap(field.center.y + field.radius.y * 0.86 + SPACE_3);
+      ? snap(field.center.y - field.radius.y + SPACE['1'])
+      : snap(field.center.y + field.radius.y * 0.86 + SPACE['3']);
   return {
     label: { x, y },
-    subtitleY: snap(y + SPACE_1 + GRID),
+    subtitleY: snap(y + SPACE['1'] + DIAGRAM_HALF),
     textAnchor: 'middle' as const,
   };
 }
@@ -1380,7 +1436,7 @@ function PatternNode({ node, viewport }: { node: Node; viewport: Viewport }) {
 
 function nodeLabelPoint(viewport: Viewport, node: Node) {
   return viewport === 'mobile' && node.id === 'answer'
-    ? { x: node.x - SPACE_3, y: node.y + 39 }
+    ? { x: node.x - SPACE['3'], y: node.y + 39 }
     : { x: node.x, y: node.y + 39 };
 }
 
@@ -1445,9 +1501,11 @@ function renderPulse(
 
 function ModelFrameLabel({
   surface,
+  frame,
   viewport,
 }: {
   surface: LayoutBox;
+  frame: LayoutBox;
   viewport: Viewport;
 }) {
   return (
@@ -1456,15 +1514,23 @@ function ModelFrameLabel({
       tabLabel={STORY_COPY.modelTitle}
       subtitle={STORY_COPY.modelSubtitle}
       subtitleX={boxCenter(surface).x}
-      subtitleY={modelSubtitleY(surface, viewport)}
+      subtitleY={modelSubtitleY(surface, frame, viewport)}
       stroke="var(--border-default)"
       rectClassName={styles.modelTab}
     />
   );
 }
 
-function modelSubtitleY(surface: LayoutBox, viewport: Viewport) {
-  return surface.y + (viewport === 'desktop' ? SPACE_2 + GRID : SPACE_5);
+// Desktop drops the caption below the surface inset; mobile hugs the (lower) frame
+// top so it clears the model-call-frame tab while staying on the token grid.
+function modelSubtitleY(
+  surface: LayoutBox,
+  frame: LayoutBox,
+  viewport: Viewport
+) {
+  return viewport === 'desktop'
+    ? surface.y + SPACE['2'] + DIAGRAM_HALF
+    : frame.y - DIAGRAM_HALF;
 }
 
 function AtlasSvg({
@@ -1487,7 +1553,11 @@ function AtlasSvg({
       aria-hidden="true"
       className={`${styles.diagram} ${className}`}
     >
-      <ModelFrameLabel surface={spec.surface} viewport={viewport} />
+      <ModelFrameLabel
+        surface={spec.surface}
+        frame={spec.modelFrame}
+        viewport={viewport}
+      />
       <g transform={bodyTransform(viewport)}>
         <FieldLabelLayer fields={spec.fields} viewport={viewport} />
         <g transform={contentTransform(viewport)}>

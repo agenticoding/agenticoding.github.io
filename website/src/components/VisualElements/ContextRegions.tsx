@@ -213,7 +213,7 @@ function useSceneLayout(rows: readonly RegionTile[], fallbackHeight: number) {
     const start = performance.now();
     let animation = 0;
     const animate = (now: number) => {
-      const progress = Math.min((now - start) / DURATION_MS, 1);
+      const progress = Math.min(Math.max((now - start) / DURATION_MS, 0), 1);
       const next = interpolateSceneFrame(from, target, ease(progress));
       current.current = next;
       setFrame(next);

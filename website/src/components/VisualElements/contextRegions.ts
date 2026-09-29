@@ -4,6 +4,7 @@
 // figure lays its tiles out through these helpers so min-heights, collapse
 // semantics, and zone membership behave identically everywhere.
 
+import { DIAGRAM_HALF } from './diagramScale.ts';
 import { zoneAtOffset, type AttentionZone } from './contextZones.ts';
 
 export type ContextRegionRow = {
@@ -64,9 +65,42 @@ function contentRows(rows: readonly ContextRegionRow[]) {
   return visibleRows(rows).filter((row) => !row.spacer);
 }
 
-// Weight shares with a readable px floor (generalized redistributeWithMinHeight).
-// Rows below the floor are pinned to it; the rest split the remaining height
-// by weight. The scene resolves the shares into exact animated rectangles.
+// Readable floors for every visible row, keyed by id.
+function rowFloors(
+  rows: readonly ContextRegionRow[],
+  minHeight: number
+): Record<string, number> {
+  return Object.fromEntries(
+    visibleRows(rows).map((row) => [row.id, row.minHeight ?? minHeight])
+  );
+}
+
+/** The floors a stack declares, before any height is available. A figure derives
+    its canvas from this (`stackHeight`), so it is also the loud failure point:
+    a canvas that cannot hold every floor means the canvas was guessed, not derived. */
+export function contentFloorHeight(
+  rows: readonly ContextRegionRow[],
+  minHeight = REGION_MIN_HEIGHT
+): number {
+  return Object.values(rowFloors(rows, minHeight)).reduce(
+    (sum, floor) => sum + floor,
+    0
+  );
+}
+
+// Snap DOWN to the sanctioned 4px half-step. Content only: floors are multiples
+// of DIAGRAM_HALF, so a snapped row can never fall back below its own floor.
+function snapDown(value: number) {
+  return Math.floor(value / DIAGRAM_HALF) * DIAGRAM_HALF;
+}
+
+// Exact pixel heights (single source of truth; no re-normalisation downstream).
+// Water-filling fixed point: pin every visible row whose proportional share of
+// the remaining pool falls below its floor, then re-split the residual pool
+// among the still-active rows by weight. Each pass pins at least one row, so it
+// terminates, and no pinned row can be re-scaled below its floor afterwards.
+// Heights snap to DIAGRAM_HALF; the rounding residue lands on the spacer so the
+// stack still sums to exactly `containerHeight`.
 export function layoutRows(
   rows: readonly ContextRegionRow[],
   containerHeight: number,
@@ -76,50 +110,62 @@ export function layoutRows(
   const totalWeight = visible.reduce((sum, row) => sum + row.weight, 0);
   if (totalWeight <= 0 || containerHeight <= 0) return {};
 
-  const minimums = visible.map((row) => row.minHeight ?? minHeight);
-  const rawHeights = visible.map(
-    (row) => (row.weight / totalWeight) * containerHeight
-  );
-  const belowMin = rawHeights.map((height, i) => height < minimums[i]);
-
-  if (!belowMin.some(Boolean)) {
-    return Object.fromEntries(visible.map((row) => [row.id, row.weight]));
+  const floors = rowFloors(visible, minHeight);
+  const pinnedFloor = contentFloorHeight(visible, minHeight);
+  if (pinnedFloor > containerHeight) {
+    throw new Error(
+      `layoutRows: ${pinnedFloor}px of readable floors cannot fit a ${containerHeight}px canvas`
+    );
   }
 
-  const reserved = minimums.reduce(
-    (total, minimum, i) => total + (belowMin[i] ? minimum : 0),
+  let active = [...visible];
+  let pool = containerHeight;
+  const heights: Record<string, number> = {};
+  for (;;) {
+    const weight = active.reduce((sum, row) => sum + row.weight, 0);
+    const below = active.filter(
+      (row) => (row.weight / weight) * pool < floors[row.id]
+    );
+    if (below.length === 0) break;
+    for (const row of below) {
+      heights[row.id] = floors[row.id];
+      pool -= floors[row.id];
+    }
+    const pinned = new Set(below.map((row) => row.id));
+    active = active.filter((row) => !pinned.has(row.id));
+  }
+
+  const weight = active.reduce((sum, row) => sum + row.weight, 0);
+  if (active.length === 0) return heights;
+  const spacer = active.find((row) => row.spacer);
+  for (const row of active) {
+    heights[row.id] = snapDown((row.weight / weight) * pool);
+  }
+  // Residue = whatever snapping withheld from the content rows. The spacer owns
+  // it (it is not content, so its height is the stack's free variable); without
+  // a spacer the heaviest row absorbs it so the stack still fills the canvas.
+  const snapped = active.reduce(
+    (sum, row) => sum + (row.spacer ? 0 : heights[row.id]),
     0
   );
-  const largeWeight = visible
-    .filter((_, i) => !belowMin[i])
-    .reduce((sum, row) => sum + row.weight, 0);
-  const remaining = Math.max(0, containerHeight - reserved);
-
-  const shares: Record<string, number> = {};
-  visible.forEach((row, i) => {
-    const height = belowMin[i]
-      ? minimums[i]
-      : largeWeight > 0
-        ? (row.weight / largeWeight) * remaining
-        : 0;
-    shares[row.id] = (height / containerHeight) * totalWeight;
-  });
-  return shares;
+  const residue = pool - snapped - (spacer ? heights[spacer.id] : 0);
+  const owner =
+    spacer ??
+    active.reduce((heavy, row) => (row.weight > heavy.weight ? row : heavy));
+  heights[owner.id] += residue;
+  return heights;
 }
 
 export function resolveRegionGeometry(
   rows: readonly ContextRegionRow[],
   height: number
 ): ResolvedRegionGeometry {
-  const shares = layoutRows(rows, height);
-  const total = Object.values(shares).reduce((sum, share) => sum + share, 0);
-  const rowHeights: Record<string, number> = {};
+  const rowHeights: Record<string, number> = layoutRows(rows, height);
   let top = 0;
   let first: number | null = null;
   let last = 0;
   for (const row of rows) {
-    const rowHeight = total > 0 ? (height * (shares[row.id] ?? 0)) / total : 0;
-    rowHeights[row.id] = rowHeight;
+    const rowHeight = rowHeights[row.id] ?? 0;
     if (rowHeight > 0 && !row.spacer) {
       first ??= top;
       last = top + rowHeight;

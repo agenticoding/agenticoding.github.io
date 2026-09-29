@@ -10,7 +10,13 @@ import {
   type TokenUnitSignal,
   type TokenUnitTone,
 } from './TokenUnit';
-import { DIAGRAM_TOKEN_SIZE } from './diagramScale';
+import {
+  DIAGRAM_GRID,
+  DIAGRAM_HALF,
+  DIAGRAM_ICON_SIZE,
+  DIAGRAM_TOKEN_SIZE,
+  SPACE,
+} from './diagramScale';
 
 type Tone = 'cyan' | 'indigo' | 'neutral' | 'violet';
 type TokenSpec = { modality: TokenUnitModality; signal?: TokenUnitSignal };
@@ -126,7 +132,7 @@ const LAYERS: Layer[] = [
 ];
 
 const DESKTOP_TOKEN_SIZE = DIAGRAM_TOKEN_SIZE.flow;
-const DESKTOP_TOKEN_STRIDE = 24;
+const DESKTOP_TOKEN_STRIDE = SPACE['3'];
 const MOBILE_TOKEN_SIZE = DIAGRAM_TOKEN_SIZE.staticMobile;
 const MOBILE_TOKEN_STRIDE = 20;
 
@@ -216,10 +222,12 @@ function LayerRow({
 }) {
   const x = mobile ? 44 : 172;
   const width = mobile ? 272 : 468;
-  const iconX = x + 18;
-  const textX = x + 64;
+  const iconX = x + SPACE['2'];
+  const textX = x + SPACE['6'];
   const tokenX = mobile ? x + 156 : x + 284;
-  const labelY = mobile ? layer.y + layer.h / 2 + 4 : layer.y + layer.h / 2 - 5;
+  const labelY = mobile
+    ? layer.y + layer.h / 2 + DIAGRAM_HALF
+    : layer.y + layer.h / 2 - DIAGRAM_HALF;
   return (
     <g>
       <rect
@@ -232,8 +240,11 @@ function LayerRow({
       <EmojiImage
         asset={EMOJI[layer.emoji]}
         x={iconX}
-        y={layer.y + Math.max(8, (layer.h - 28) / 2)}
-        size={28}
+        y={
+          layer.y +
+          Math.max(DIAGRAM_GRID, (layer.h - DIAGRAM_ICON_SIZE.secondary) / 2)
+        }
+        size={DIAGRAM_ICON_SIZE.secondary}
       />
       <text x={textX} y={labelY} className={styles.label}>
         {mobile ? mobileLabel(layer.label) : layer.label}

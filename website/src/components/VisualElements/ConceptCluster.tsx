@@ -1,13 +1,15 @@
 import { useId } from 'react';
+import clsx from 'clsx';
 import { EmojiImage } from './ActorNodes';
 import { DiagramTileSurface } from './DiagramTile';
 import {
   CONCEPT_BEAT_STEP_MS,
   CONCEPT_LABEL_GAP,
-  conceptBeatCss,
   conceptLabelBaseline,
 } from './conceptClusterGeometry';
-import { DIAGRAM_ICON_SIZE } from './diagramScale';
+import { arrivalBeatKeyframes } from './diagramBeat';
+import shared from './diagram.module.css';
+import { DIAGRAM_ICON_SIZE, DIAGRAM_SPACE, SPACE } from './diagramScale';
 import { delayStyle } from './diagramMotion';
 import type { EmojiAsset } from './emojiAssets';
 import styles from './ConceptCluster.module.css';
@@ -15,9 +17,9 @@ import styles from './ConceptCluster.module.css';
 // ConceptCluster — one tile of knowledge kinds, shared by every figure that shows
 // "the material this pipeline reads": GroundingDistillationDiagram's grounding
 // sources and EmbeddingIndexDiagram's corpus. The tile surface, the eyebrow/note
-// header, the item anatomy (bare OpenMoji with its one-word label beside it) and
-// the staggered arrival beat live here ONCE, so the two tiles read as the same
-// kind of object instead of two lookalikes.
+// header and the item anatomy (bare OpenMoji with its one-word label beside it)
+// live here ONCE, so the two tiles read as the same kind of object instead of two
+// lookalikes. The arrival beat itself is the book's shared beat (diagramBeat.ts).
 //
 // Callers own the placement table, because their tiles differ in size — the same
 // contract as ContextBand (shared anatomy, caller's geometry).
@@ -28,7 +30,7 @@ export type ConceptItem = { label: string; icon: EmojiAsset };
 export type ConceptPlacement = { x: number; y: number };
 
 /** The tile's own inner padding — the same 16 every other tile in the book uses. */
-const HEADER_PAD = 16;
+const HEADER_PAD = DIAGRAM_SPACE.tilePadding;
 
 type ConceptClusterProps = {
   x: number;
@@ -68,7 +70,7 @@ export function ConceptCluster({
   const beatName = `concept-beat-${useId().replace(/:/g, '')}`;
   return (
     <g>
-      <style>{conceptBeatCss(beatName, cycleMs)}</style>
+      <style>{arrivalBeatKeyframes(beatName, cycleMs)}</style>
       <DiagramTileSurface
         x={x}
         y={y}
@@ -80,7 +82,7 @@ export function ConceptCluster({
       />
       <text
         x={x + HEADER_PAD}
-        y={y + 24}
+        y={y + SPACE['3']}
         fill="var(--text-heading)"
         className={styles.eyebrow}
       >
@@ -158,7 +160,7 @@ function ConceptClusterItem({
 }) {
   return (
     <g
-      className={styles.item}
+      className={clsx(shared.arrivalBeat, shared.arrivalBeatSvg)}
       style={{
         animationName: beat.name,
         animationDuration: `${beat.cycleMs}ms`,

@@ -7,12 +7,8 @@ import {
   type ModelCallFrameTabAlign,
   modelCallFrameTab,
 } from './ModelCallFrameGeometry';
-import {
-  MODEL_CALL_FRAME_LAYOUT,
-  TILE_GRID,
-  voiceStyle,
-} from './diagramTileLayout';
-import { DIAGRAM_STROKE } from './diagramScale';
+import { MODEL_CALL_FRAME_LAYOUT, voiceStyle } from './diagramTileLayout';
+import { DIAGRAM_GRID, DIAGRAM_STROKE, SPACE } from './diagramScale';
 
 export {
   MODEL_CALL_FRAME_STROKE_OUTSET,
@@ -100,23 +96,24 @@ export function ModelCallFrame({
         className={rectClassName}
         vectorEffect="non-scaling-stroke"
       />
+      {/* Icon offset uses the sanctioned dense half-step (DIAGRAM_HALF). */}
       {tabSystemIcon === 'code' ? (
         <CodeSystemIcon
           x={tab.x + TAB_PADDING_X}
-          y={tab.y + TILE_GRID / 2}
+          y={tab.y + DIAGRAM_GRID / 2}
           size={TAB_ICON_SIZE}
         />
       ) : (
         <EmojiImage
           asset={tabIcon}
           x={tab.x + TAB_PADDING_X}
-          y={tab.y + TILE_GRID / 2}
+          y={tab.y + DIAGRAM_GRID / 2}
           size={TAB_ICON_SIZE}
         />
       )}
       <text
         x={tab.x + TAB_PADDING_X + TAB_ICON_SIZE + TAB_GAP}
-        y={tab.y + 21}
+        y={tab.y + DIAGRAM_GRID * 2.5}
         fill="var(--text-heading)"
         style={voiceStyle('spec', TITLE_FONT_SIZE, 600)}
       >
@@ -145,7 +142,7 @@ export function ModelCallFrame({
       {subtitle && (
         <text
           x={subtitleX ?? x + width / 2}
-          y={subtitleY ?? y + height - 24}
+          y={subtitleY ?? y + height - SPACE['3']}
           textAnchor="middle"
           fill="var(--text-muted)"
           style={voiceStyle('spec', DETAIL_FONT_SIZE, 400)}
@@ -158,9 +155,9 @@ export function ModelCallFrame({
 }
 
 function contentTitleY(y: number, height: number) {
-  return y + (height < 80 ? 42 : 48);
+  return y + (height < SPACE['7'] ? DIAGRAM_GRID * 5 : SPACE['5']);
 }
 
 function contentDetailY(y: number, height: number) {
-  return y + (height < 80 ? 58 : 70);
+  return y + (height < SPACE['7'] ? DIAGRAM_GRID * 7 : DIAGRAM_GRID * 8.5);
 }

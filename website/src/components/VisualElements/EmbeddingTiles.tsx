@@ -15,7 +15,13 @@ import { useId, type CSSProperties, type ReactNode } from 'react';
 import { EmojiImage } from './ActorNodes';
 import { ConceptChip, type ConceptItem } from './ConceptCluster';
 import { DiagramTileSurface } from './DiagramTile';
-import { DIAGRAM_ICON_SIZE } from './diagramScale';
+import {
+  DIAGRAM_GRID,
+  DIAGRAM_HALF,
+  DIAGRAM_ICON_SIZE,
+  DIAGRAM_SPACE,
+  SPACE,
+} from './diagramScale';
 import { tileToneVars } from './diagramTileLayout';
 import { EMOJI } from './emojiAssets';
 import { GearNode } from './GearNode';
@@ -121,8 +127,8 @@ export function EmbeddingModelTile({
       {gear && <style>{gearCss(name, gear)}</style>}
       <DiagramTileSurface {...tile} tone="model" weight={1.5} />
       <text
-        x={tile.x + 16}
-        y={tile.y + 26}
+        x={tile.x + DIAGRAM_SPACE.tilePadding}
+        y={tile.y + SPACE['3']}
         fill={MODEL_LABEL}
         className={styles.nodeEyebrow}
       >
@@ -137,7 +143,7 @@ export function EmbeddingModelTile({
       />
       <text
         x={cx}
-        y={tile.y + 102}
+        y={tile.y + DIAGRAM_GRID * 12.5}
         textAnchor="middle"
         fill="var(--text-heading)"
         className={styles.tileTitle}
@@ -159,7 +165,11 @@ export function EmbeddingModelTile({
       {copy.annotation && (
         <text
           x={cx}
-          y={tile.y + (compact ? tile.height + 20 : tile.height + 22)}
+          y={
+            tile.y +
+            tile.height +
+            (compact ? DIAGRAM_GRID * 2.5 : DIAGRAM_GRID * 3)
+          }
           textAnchor="middle"
           fill={MODEL_LABEL}
           className={styles.annotationLabel}
@@ -203,7 +213,7 @@ export function VectorIndexTile({
       <ProximityGraph region={region} compact={compact} spec={spec} />
       <text
         x={region.x + region.width / 2}
-        y={region.y + region.height + 18}
+        y={region.y + region.height + SPACE['2']}
         textAnchor="middle"
         fill="var(--text-muted)"
         className={styles.noteText}
@@ -246,8 +256,8 @@ function VectorIndexFraming({
   return (
     <g>
       <text
-        x={tile.x + 16}
-        y={tile.y + 26}
+        x={tile.x + DIAGRAM_SPACE.tilePadding}
+        y={tile.y + SPACE['3']}
         fill={SYSTEM_LABEL}
         className={styles.nodeEyebrow}
       >
@@ -276,13 +286,13 @@ function StoredOnceFraming({
     <g>
       <EmojiImage
         asset={EMOJI.database}
-        x={tile.x + 16}
-        y={tile.y + (compact ? 42 : 40)}
+        x={tile.x + DIAGRAM_SPACE.tilePadding}
+        y={tile.y + DIAGRAM_GRID * 5}
         size={DIAGRAM_ICON_SIZE.secondary}
       />
       <text
-        x={tile.x + 46}
-        y={tile.y + 58}
+        x={tile.x + DIAGRAM_GRID * 5.5}
+        y={tile.y + DIAGRAM_GRID * 7}
         fill="var(--text-heading)"
         className={styles.tileTitle}
       >
@@ -291,8 +301,16 @@ function StoredOnceFraming({
       {facts.map((line, index) => (
         <text
           key={line}
-          x={compact ? tile.x + 46 : tile.x + 16}
-          y={tile.y + (compact ? 74 + index * 14 : 74)}
+          x={
+            compact
+              ? tile.x + DIAGRAM_GRID * 5.5
+              : tile.x + DIAGRAM_SPACE.tilePadding
+          }
+          y={
+            tile.y +
+            DIAGRAM_GRID * 9 +
+            (compact ? index * DIAGRAM_GRID * 1.5 : 0)
+          }
           fill="var(--text-muted)"
           className={styles.noteText}
         >
@@ -314,21 +332,21 @@ function ProvenanceStrip({
   compact?: boolean;
   items: readonly ConceptItem[];
 }) {
-  const step = (tile.width - 32) / items.length;
+  const step = (tile.width - SPACE['4']) / items.length;
   return (
     <g>
       {items.map((item, index) => (
         <ConceptChip
           key={item.label}
           item={item}
-          x={tile.x + 16 + index * step}
-          y={tile.y + (compact ? 44 : 42)}
+          x={tile.x + DIAGRAM_SPACE.tilePadding + index * step}
+          y={tile.y + (compact ? DIAGRAM_GRID * 5.5 : DIAGRAM_GRID * 5)}
           iconSize={DIAGRAM_ICON_SIZE.tertiary}
         />
       ))}
       <text
-        x={tile.x + 16}
-        y={tile.y + (compact ? 80 : 78)}
+        x={tile.x + DIAGRAM_SPACE.tilePadding}
+        y={tile.y + (compact ? SPACE['7'] : DIAGRAM_GRID * 9.5)}
         fill="var(--text-muted)"
         className={styles.noteText}
       >
@@ -1011,14 +1029,18 @@ type DotLabel = { x: number; y: number; anchor: 'start' | 'end' | 'middle' };
 function dotLabel(dot: ScatterDot, region: Region, glyph: number): DotLabel {
   const pos = dotAt(dot, region);
   if (dot.role === 'far')
-    return { x: pos.x + glyph / 2 + 10, y: pos.y + 3, anchor: 'start' };
+    return {
+      x: pos.x + glyph / 2 + DIAGRAM_GRID,
+      y: pos.y + DIAGRAM_HALF,
+      anchor: 'start',
+    };
   const partner = NEIGHBOUR_PAIR.find((id) => id !== dot.id);
   const anchor =
     partner && dotAt(dotById(partner), region).x > pos.x ? 'end' : 'start';
-  const offset = glyph / 2 + 10;
+  const offset = glyph / 2 + DIAGRAM_GRID;
   return {
     x: pos.x + (anchor === 'end' ? -offset : offset),
-    y: pos.y + 3,
+    y: pos.y + DIAGRAM_HALF,
     anchor,
   };
 }

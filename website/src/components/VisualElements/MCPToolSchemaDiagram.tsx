@@ -11,6 +11,7 @@ import {
 } from './ContextRegions.tsx';
 import {
   CATALOG_LIMITS,
+  STACK_HEIGHT,
   contextContentWeight,
   eagerSchemasZone,
   eagerRows,
@@ -41,7 +42,6 @@ import {
 // inactive mix slots collapse in place. No idle animation.
 
 const DEFAULT_CATALOG_TOOLS = 20;
-const STACK_HEIGHT = 264;
 
 // Type grammar for tile accents (tiles themselves stay neutral): cyan =
 // harness payload (core tools, startup prefix, schemas), emphasis = the
@@ -107,7 +107,6 @@ function ContextPanel({
         fallbackHeight={STACK_HEIGHT}
         fillRatio={fillRatio}
         className={styles.stackClip}
-        stackClassName={styles.stack}
         companionClassName={styles.zoneStrip}
         renderCompanion={(frame) => (
           <ContextZoneStrip

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { DiagramArrow, DiagramArrowMarkers } from './DiagramArrow';
 import { DiagramTile } from './DiagramTile';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
-import { PROCESS_TILE_SCALE } from './diagramScale';
+import { DIAGRAM_GRID, PROCESS_TILE_SCALE } from './diagramScale';
 import type { DiagramTone } from './diagramTileLayout';
 import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './HarnessContextLoop.module.css';
@@ -14,7 +14,33 @@ const CARD = PROCESS_TILE_SCALE.tile;
 const MOBILE_CARD = PROCESS_TILE_SCALE.mobileTile;
 const EXIT_TILE = PROCESS_TILE_SCALE.exitTile;
 const MOBILE_EXIT_TILE = PROCESS_TILE_SCALE.mobileExitTile;
-const DESKTOP_VIEW = { width: 720, height: 416 } as const;
+
+// The snapped 13/11 tile ramp overflows the 192×80 process tile: a 208-wide column
+// clears the 13px title, and one extra detail line (96 tall) fits the 11px detail's
+// three wrapped lines. Both desktop rows share these tile metrics.
+const DESKTOP_TILE_WIDTH = DIAGRAM_GRID * 26; // 208
+const DESKTOP_TILE_HEIGHT = CARD.height + PROCESS_TILE_SCALE.detailLineGap; // 96
+const DESKTOP_GAP = DIAGRAM_GRID * 2; // 16
+const DESKTOP_MARGIN = DIAGRAM_GRID * 4; // 32
+const DESKTOP_COLUMN = DESKTOP_TILE_WIDTH + DESKTOP_GAP; // 224
+const DESKTOP_X = [
+  DESKTOP_MARGIN,
+  DESKTOP_MARGIN + DESKTOP_COLUMN,
+  DESKTOP_MARGIN + 2 * DESKTOP_COLUMN,
+] as const; // 32 / 256 / 480
+const DESKTOP_ROW1_Y = DIAGRAM_GRID * 8; // 64
+const DESKTOP_ROW2_Y = DESKTOP_ROW1_Y + DESKTOP_TILE_HEIGHT + DIAGRAM_GRID * 7; // 216
+const DESKTOP_EXIT_Y = DESKTOP_ROW2_Y + DESKTOP_TILE_HEIGHT + DIAGRAM_GRID * 5; // 352
+const DESKTOP_ROW1_CENTER = DESKTOP_ROW1_Y + DESKTOP_TILE_HEIGHT / 2; // 112
+const DESKTOP_ROW2_CENTER = DESKTOP_ROW2_Y + DESKTOP_TILE_HEIGHT / 2; // 264
+const DESKTOP_ROW1_BOTTOM = DESKTOP_ROW1_Y + DESKTOP_TILE_HEIGHT; // 160
+const DESKTOP_ROW2_BOTTOM = DESKTOP_ROW2_Y + DESKTOP_TILE_HEIGHT; // 312
+const DESKTOP_MID_X = DESKTOP_X[0] + DESKTOP_TILE_WIDTH / 2; // 136
+const DESKTOP_RIGHT_X = DESKTOP_X[2] + DESKTOP_TILE_WIDTH / 2; // 584
+const DESKTOP_VIEW = {
+  width: 720,
+  height: DESKTOP_EXIT_Y + EXIT_TILE.height + DESKTOP_MARGIN, // 448
+} as const;
 const MOBILE_VIEW = { width: 320, height: 704 } as const;
 const LOOP_BEAT_MS = 900;
 const ARROW_TONES = [
@@ -95,8 +121,15 @@ const STEPS = [
 
 const DESKTOP_STEPS: readonly Step[] = STEPS.map((step, i) => ({
   ...step,
-  x: [32, 264, 496, 496, 264, 32][i],
-  y: [64, 64, 64, 200, 200, 200][i],
+  x: DESKTOP_X[[0, 1, 2, 2, 1, 0][i]],
+  y: [
+    DESKTOP_ROW1_Y,
+    DESKTOP_ROW1_Y,
+    DESKTOP_ROW1_Y,
+    DESKTOP_ROW2_Y,
+    DESKTOP_ROW2_Y,
+    DESKTOP_ROW2_Y,
+  ][i],
 }));
 
 const MOBILE_STEPS: readonly Step[] = STEPS.map((step, i) => ({
@@ -177,6 +210,7 @@ function ExitTile({
 
 function DesktopDiagram() {
   const markerIdPrefix = 'hcl-desktop';
+  const rightEdge = (col: number) => DESKTOP_X[col] + DESKTOP_TILE_WIDTH;
   return (
     <svg
       viewBox={`0 0 ${DESKTOP_VIEW.width} ${DESKTOP_VIEW.height}`}
@@ -194,39 +228,55 @@ function DesktopDiagram() {
       >
         context → model output → validated action → observation → context
       </text>
-      <Arrow d="M 224 104 H 264" markerIdPrefix={markerIdPrefix} tone="model" />
       <Arrow
-        d="M 456 104 H 496"
+        d={`M ${rightEdge(0)} ${DESKTOP_ROW1_CENTER} H ${DESKTOP_X[1]}`}
+        markerIdPrefix={markerIdPrefix}
+        tone="model"
+      />
+      <Arrow
+        d={`M ${rightEdge(1)} ${DESKTOP_ROW1_CENTER} H ${DESKTOP_X[2]}`}
         markerIdPrefix={markerIdPrefix}
         tone="warning"
       />
       <Arrow
-        d="M 592 144 V 200"
+        d={`M ${DESKTOP_RIGHT_X} ${DESKTOP_ROW1_BOTTOM} V ${DESKTOP_ROW2_Y}`}
         markerIdPrefix={markerIdPrefix}
         tone="system"
       />
       <Arrow
-        d="M 496 240 H 456"
+        d={`M ${DESKTOP_X[2]} ${DESKTOP_ROW2_CENTER} H ${rightEdge(1)}`}
         markerIdPrefix={markerIdPrefix}
         tone="context"
       />
-      <Arrow d="M 264 240 H 224" markerIdPrefix={markerIdPrefix} />
       <Arrow
-        d="M 128 200 V 144"
+        d={`M ${DESKTOP_X[1]} ${DESKTOP_ROW2_CENTER} H ${rightEdge(0)}`}
         markerIdPrefix={markerIdPrefix}
-        label="iterate"
-        labelX={144}
-        labelY={176}
       />
       <Arrow
-        d="M 128 280 V 320"
+        d={`M ${DESKTOP_MID_X} ${DESKTOP_ROW2_Y} V ${DESKTOP_ROW1_BOTTOM}`}
+        markerIdPrefix={markerIdPrefix}
+        label="iterate"
+        labelX={DESKTOP_MID_X + DIAGRAM_GRID * 2}
+        labelY={DESKTOP_ROW1_BOTTOM + DIAGRAM_GRID * 4}
+      />
+      <Arrow
+        d={`M ${DESKTOP_MID_X} ${DESKTOP_ROW2_BOTTOM} V ${DESKTOP_EXIT_Y}`}
         markerIdPrefix={markerIdPrefix}
         tone="success"
       />
       {DESKTOP_STEPS.map((step) => (
-        <Card key={step.n} {...step} />
+        <Card
+          key={step.n}
+          {...step}
+          width={DESKTOP_TILE_WIDTH}
+          height={DESKTOP_TILE_HEIGHT}
+        />
       ))}
-      <ExitTile x={32} y={320} />
+      <ExitTile
+        x={DESKTOP_X[0]}
+        y={DESKTOP_EXIT_Y}
+        width={DESKTOP_TILE_WIDTH}
+      />
     </svg>
   );
 }

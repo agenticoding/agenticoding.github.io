@@ -29,11 +29,18 @@ export function markerAttrs(
   };
 }
 
-export const DIAGRAM_ARROW_TIP_TRIM =
-  DIAGRAM_MARKER.size * DIAGRAM_STROKE.connector;
+/** Rendered arrowhead length along the path: the marker scales with the stroke
+ *  (`markerUnits` defaults to `strokeWidth`), so a thinner connector needs a
+ *  shorter trim to keep the tip the same distance from its target. */
+export function arrowTipTrim(strokeWidth: number) {
+  return DIAGRAM_MARKER.size * strokeWidth;
+}
+
+export const DIAGRAM_ARROW_TIP_TRIM = arrowTipTrim(DIAGRAM_STROKE.connector);
 
 // Keep a terminal segment so orient="auto" always has a usable tangent.
-const MAX_TERMINAL_TRIM_RATIO = 0.5;
+/** Longest trim a terminal leg may give up, as a share of its own length. */
+export const MAX_TERMINAL_TRIM_RATIO = 0.5;
 
 type Point = { x: number; y: number };
 

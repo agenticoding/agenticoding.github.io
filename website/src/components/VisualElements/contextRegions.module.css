@@ -10,7 +10,11 @@
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: none;
-  position: relative;
+  /* Positioning is a seam, not an invariant: a consumer that places the stack
+     itself (fanout rails) sets --context-stack-position instead of trying to
+     beat this rule, which it cannot — equal specificity means the later file
+     always wins, so an override here would be an order-dependent coin flip. */
+  position: var(--context-stack-position, relative);
 }
 
 .regionStack::-webkit-scrollbar {

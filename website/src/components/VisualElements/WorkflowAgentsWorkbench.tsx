@@ -10,6 +10,7 @@ import { ModelCallFrame } from './ModelCallFrame';
 import { centerIn } from './diagramGeometry';
 import { delayStyle } from './diagramMotion';
 import {
+  DIAGRAM_SPACE,
   DIAGRAM_STROKE,
   DIAGRAM_TOKEN_SIZE,
   RICH_TILE_SCALE,
@@ -59,6 +60,12 @@ const WORKFLOW_STEPS = [
   'draft',
   'verify',
 ] as const;
+// Top-row tiles wrap their detail to two lines at the snapped 11px ramp, so the row
+// is one detail line taller than the single-line `comfortableHeight`.
+const DESKTOP_ROW_HEIGHT =
+  RICH_TILE_SCALE.comfortableHeight + DIAGRAM_SPACE.detailLineGap;
+const MOBILE_TALL_CARD_HEIGHT =
+  RICH_TILE_SCALE.mobileCard.height + DIAGRAM_SPACE.detailLineGap;
 const DESKTOP_STEP_X = 293;
 const DESKTOP_STEP_Y = 310;
 const DESKTOP_STEP_GAP = 80;
@@ -106,6 +113,9 @@ function tokenTone(tone: Tone) {
   if (tone === 'model') return 'violet';
   return tone;
 }
+
+const DESKTOP_ROW_BOTTOM = 104 + DESKTOP_ROW_HEIGHT;
+const DESKTOP_ROW_CENTER = 104 + DESKTOP_ROW_HEIGHT / 2;
 
 function desktopCallX(stepIndex: number) {
   return DESKTOP_STEP_X + stepIndex * DESKTOP_STEP_GAP + 2;
@@ -310,7 +320,7 @@ function DesktopNodes() {
         x={48}
         y={104}
         width={152}
-        height={112}
+        height={DESKTOP_ROW_HEIGHT}
         tone="neutral"
         icon={EMOJI.plug}
         eyebrow="INPUT"
@@ -323,7 +333,7 @@ function DesktopNodes() {
         x={236}
         y={104}
         width={248}
-        height={112}
+        height={DESKTOP_ROW_HEIGHT}
         tone="system"
         systemIcon="code"
         eyebrow="DETERMINISTIC CODE"
@@ -334,7 +344,13 @@ function DesktopNodes() {
         weight={1.5}
       />
       <WorkflowSurface />
-      <ReviewGate x={536} y={104} width={184} height={112} step={5} />
+      <ReviewGate
+        x={536}
+        y={104}
+        width={184}
+        height={DESKTOP_ROW_HEIGHT}
+        step={5}
+      />
     </g>
   );
 }
@@ -532,7 +548,7 @@ function DesktopConnectors() {
   return (
     <g>
       <Arrow
-        d="M 200 160 H 236"
+        d={`M 200 ${DESKTOP_ROW_CENTER} H 236`}
         tone="system"
         step={2}
         tokens={CODE_PAIR}
@@ -540,7 +556,7 @@ function DesktopConnectors() {
         size={TOKEN_FLOW_SIZE}
       />
       <Arrow
-        d="M 360 216 V 270"
+        d={`M 360 ${DESKTOP_ROW_BOTTOM} V 270`}
         tone="system"
         step={2}
         tokens={CODE_PAIR}
@@ -552,7 +568,7 @@ function DesktopConnectors() {
         labelY={294}
       />
       <Arrow
-        d="M 628 270 V 216"
+        d={`M 628 270 V ${DESKTOP_ROW_BOTTOM}`}
         tone="warning"
         step={5}
         tokens={CODE_PAIR}
@@ -666,7 +682,7 @@ function MobileNodes() {
         x={52}
         y={224}
         width={WORKBENCH_SCALE.mobileRichCard.width}
-        height={WORKBENCH_SCALE.mobileRichCard.height}
+        height={MOBILE_TALL_CARD_HEIGHT}
         tone="system"
         systemIcon="code"
         eyebrow="DETERMINISTIC CODE"
@@ -696,11 +712,10 @@ function MobileWorkflowSurface() {
         y={368}
         width={236}
         height={388}
-        tabLabel="DETERMINISTIC WORKFLOW"
+        tabLabel="WORKFLOW"
         tabSystemIcon="code"
         fill="var(--visual-bg-cyan)"
         stroke="var(--visual-cyan)"
-        tabWidth={228}
         rectClassName={styles.vectorStroke}
       />
       {WORKFLOW_STEPS.map((label, i) => (
@@ -739,7 +754,7 @@ function MobileConnectors() {
         size={MOBILE_TOKEN_FLOW_SIZE}
       />
       <Arrow
-        d="M 170 336 V 368"
+        d={`M 170 ${224 + MOBILE_TALL_CARD_HEIGHT} V 368`}
         tone="system"
         step={2}
         tokens={CODE_PAIR}

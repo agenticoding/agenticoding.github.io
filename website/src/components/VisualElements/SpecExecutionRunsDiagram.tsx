@@ -9,6 +9,7 @@ import {
   WORKFLOW_TOKEN_STAGGER,
   WorkflowLoopGraphic,
 } from './WorkflowLoopGraphic';
+import { RICH_TILE_SCALE } from './diagramScale';
 import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './SpecExecutionRunsDiagram.module.css';
 
@@ -20,6 +21,15 @@ const SPEC_TOKENS = [
 ] as const satisfies TokenSequence;
 
 type Layout = { x: number; y: number; width: number; height: number };
+
+// WorkflowLoopGraphic authors its loop from y=0 (grounding tile at y=48) and is built to
+// render without a transform (see OperatorCycleDiagram). The approval band sits above
+// that origin, so it is authored at negative y in the same space and the viewBox origin
+// is raised to include it. One coordinate system keeps every edge/arrow anchor exact.
+const TILE_HEIGHT = RICH_TILE_SCALE.comfortableHeight;
+const DESKTOP_BAND_Y = -128;
+const MOBILE_APPROVAL_Y = -224;
+const MOBILE_SPEC_Y = -96;
 
 export default function SpecExecutionRunsDiagram() {
   return (
@@ -37,7 +47,7 @@ function DesktopDiagram() {
   return (
     <svg
       className={`${styles.diagram} ${styles.desktopDiagram}`}
-      viewBox="0 0 760 624"
+      viewBox="0 -160 760 624"
       role="img"
       aria-label={ARIA_LABEL}
     >
@@ -46,11 +56,8 @@ function DesktopDiagram() {
         tones={['neutral', 'success']}
       />
       <DesktopApproval markerIdPrefix="spec-runs-desktop" />
-      <SpecFlow d="M 428 120 V 160 H 380 V 208" />
-      <WorkflowLoopGraphic
-        transform="translate(0 160)"
-        returnLabel="current code"
-      />
+      <SpecFlow d="M 484 -16 V 16 H 380 V 48" />
+      <WorkflowLoopGraphic returnLabel="current code" />
     </svg>
   );
 }
@@ -59,7 +66,7 @@ function MobileDiagram() {
   return (
     <svg
       className={`${styles.diagram} ${styles.mobileDiagram}`}
-      viewBox="0 0 360 830"
+      viewBox="0 -256 360 896"
       role="img"
       aria-label={ARIA_LABEL}
     >
@@ -68,12 +75,8 @@ function MobileDiagram() {
         tones={['neutral', 'success']}
       />
       <MobileApproval markerIdPrefix="spec-runs-mobile" />
-      <SpecFlow d="M 180 200 V 238" />
-      <WorkflowLoopGraphic
-        layout="mobile"
-        transform="translate(0 190)"
-        returnLabel="current code"
-      />
+      <SpecFlow d="M 180 16 V 48" />
+      <WorkflowLoopGraphic layout="mobile" returnLabel="current code" />
     </svg>
   );
 }
@@ -81,23 +84,33 @@ function MobileDiagram() {
 function DesktopApproval({ markerIdPrefix }: { markerIdPrefix: string }) {
   return (
     <>
-      <OperatorNode x={40} y={60} size={40} />
+      <OperatorNode x={40} y={DESKTOP_BAND_Y + 44} size={40} />
       <DiagramArrow
-        d="M 80 80 H 104"
+        d={`M 80 ${DESKTOP_BAND_Y + 64} H 104`}
         markerIdPrefix={markerIdPrefix}
         tone="neutral"
       />
-      <ApprovalGate x={104} y={40} width={176} height={80} />
+      <ApprovalGate
+        x={104}
+        y={DESKTOP_BAND_Y}
+        width={208}
+        height={TILE_HEIGHT}
+      />
       <DiagramArrow
-        d="M 280 80 H 328"
+        d={`M 312 ${DESKTOP_BAND_Y + 64} H 368`}
         markerIdPrefix={markerIdPrefix}
         tone="success"
         label="approved"
-        labelX={292}
-        labelY={68}
+        labelX={316}
+        labelY={DESKTOP_BAND_Y + 52}
         labelClassName={styles.flowLabel}
       />
-      <FeatureSpec x={328} y={40} width={200} height={80} />
+      <FeatureSpec
+        x={368}
+        y={DESKTOP_BAND_Y}
+        width={232}
+        height={TILE_HEIGHT}
+      />
     </>
   );
 }
@@ -105,23 +118,35 @@ function DesktopApproval({ markerIdPrefix }: { markerIdPrefix: string }) {
 function MobileApproval({ markerIdPrefix }: { markerIdPrefix: string }) {
   return (
     <>
-      <OperatorNode x={20} y={40} size={40} />
+      <OperatorNode x={20} y={MOBILE_APPROVAL_Y + 36} size={40} />
       <DiagramArrow
-        d="M 60 60 H 76"
+        d={`M 60 ${MOBILE_APPROVAL_Y + 56} H 76`}
         markerIdPrefix={markerIdPrefix}
         tone="neutral"
       />
-      <ApprovalGate x={76} y={20} width={264} height={80} compact />
+      <ApprovalGate
+        x={76}
+        y={MOBILE_APPROVAL_Y}
+        width={264}
+        height={TILE_HEIGHT}
+        compact
+      />
       <DiagramArrow
-        d="M 208 100 V 120"
+        d={`M 208 ${MOBILE_APPROVAL_Y + TILE_HEIGHT} V ${MOBILE_SPEC_Y}`}
         markerIdPrefix={markerIdPrefix}
         tone="success"
         label="approved"
         labelX={218}
-        labelY={114}
+        labelY={MOBILE_APPROVAL_Y + TILE_HEIGHT + 10}
         labelClassName={styles.flowLabel}
       />
-      <FeatureSpec x={56} y={120} width={248} height={80} compact />
+      <FeatureSpec
+        x={56}
+        y={MOBILE_SPEC_Y}
+        width={248}
+        height={TILE_HEIGHT}
+        compact
+      />
     </>
   );
 }

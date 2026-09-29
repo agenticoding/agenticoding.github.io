@@ -417,7 +417,7 @@ function Bar({
 function ErrorBar({
   chart,
   point,
-  x,
+  x: _x,
   y,
 }: {
   chart: ChartLayout;

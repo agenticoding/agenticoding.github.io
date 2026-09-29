@@ -3,7 +3,6 @@ import styles from './SystemBoundaryDiagram.module.css';
 
 // Shared constants
 const ARROW_GAP = 8;
-const VIEWBOX_PADDING = 25;
 
 interface ArrowDef {
   from: string;

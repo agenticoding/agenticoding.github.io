@@ -12,6 +12,7 @@ import {
   BIG_FILE_WEIGHT,
   LOOP_TICKS,
   SMALL_FILE_WEIGHT,
+  STACK_HEIGHT,
   TURN_COUNT,
   TURN_INTERVAL_MS,
   squeezeRows,
@@ -40,8 +41,6 @@ import {
 // the outcome (verdict lines fade in) → reset. Reduced motion renders the
 // complete end-state statically: the initial tick IS the end of the loop
 // and no interval ever starts.
-
-const STACK_HEIGHT = 440;
 
 // Accent-only type grammar (tiles themselves neutral): cyan = harness
 // payload (system/tools/file), emphasis = the human prompt, indigo = turn

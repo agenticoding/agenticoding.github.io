@@ -1,4 +1,9 @@
 import type { CSSProperties } from 'react';
+import {
+  DIAGRAM_GRID,
+  DIAGRAM_SPACE,
+  TILE_TYPE,
+} from './diagramScale.ts';
 
 export type DiagramTone =
   | 'context'
@@ -14,24 +19,19 @@ export type DiagramTone =
   | 'magenta';
 export type DiagramVoice = 'display' | 'human' | 'ai' | 'spec' | 'keyword';
 
-export const TILE_GRID = 8;
 export const TILE_LAYOUT = {
-  padding: TILE_GRID * 2,
-  iconGap: 14,
-  detailLineGap: 14,
-  dividerGap: 12,
-  iconSize: { desktop: 40, mobile: 32, compact: 24 },
+  padding: DIAGRAM_SPACE.tilePadding,
 } as const;
 
 export const MODEL_CALL_FRAME_LAYOUT = {
-  tabIconSize: TILE_GRID * 3,
-  tabHeight: TILE_GRID * 4,
-  tabGap: TILE_GRID,
-  tabLabelCharWidth: TILE_GRID,
-  tabPaddingX: TILE_GRID,
-  framePaddingX: TILE_GRID * 2,
-  titleFontSize: 13,
-  detailFontSize: 11,
+  tabIconSize: DIAGRAM_GRID * 3,
+  tabHeight: DIAGRAM_GRID * 4,
+  tabGap: DIAGRAM_GRID,
+  tabLabelCharWidth: DIAGRAM_GRID,
+  tabPaddingX: DIAGRAM_GRID,
+  framePaddingX: DIAGRAM_GRID * 2,
+  titleFontSize: TILE_TYPE.title,
+  detailFontSize: TILE_TYPE.detail,
 } as const;
 
 const TONE_ALIASES: Record<DiagramTone, string> = {

@@ -101,6 +101,22 @@
   animation: actEnter 300ms var(--ease-enter) both;
 }
 
+/* Arrival beat — the book's one "this element is being touched" scale pulse.
+   Timing lives here; the keyframe is generated per figure by diagramBeat.ts (its
+   percentages need the figure's own cycle) and applied inline as
+   animation-name/duration/delay. Scale only, so the beat reads as a touch rather
+   than a fade. */
+.arrivalBeat {
+  transform-origin: center;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+/* SVG consumers scale about their own ink box; HTML consumers use the box default. */
+.arrivalBeatSvg {
+  transform-box: fill-box;
+}
+
 /* ── Reduced-motion master block ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .node,
@@ -126,6 +142,11 @@
   }
   .actEntered {
     animation: none;
+  }
+  .arrivalBeat {
+    /* !important: the keyframe name is applied inline (animationName), which
+       otherwise outranks this class and keeps the beat running. */
+    animation: none !important;
   }
   .workerNode,
   .workerLabel {

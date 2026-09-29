@@ -1,9 +1,9 @@
 import React, { useId } from 'react';
 
 import { OperatorNode } from './ActorNodes';
+import { DIAGRAM_GRID as G } from './diagramScale';
 import {
   Arrow,
-  G,
   Marker,
   Step,
   TextLine,

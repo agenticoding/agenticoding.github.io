@@ -8,7 +8,7 @@ import {
   modelCallFrameTab,
   ModelCallFrame,
 } from './ModelCallFrame';
-import { TILE_GRID } from './diagramTileLayout';
+import { DIAGRAM_GRID } from './diagramScale';
 import { seededTokenTrain } from './TokenTrainSequence';
 import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './AgentWorkStabilityDiagram.module.css';
@@ -36,7 +36,7 @@ const DESKTOP_FRAME = { x: 200, y: 112, width: 400, height: 296 };
 const MOBILE_FRAME = { x: 16, y: 160, width: 308, height: 352 };
 const DESKTOP_TAB_WIDTH = 216;
 const MOBILE_TAB_WIDTH = 212;
-const PRESSURE_ARROW_GRID = TILE_GRID;
+const PRESSURE_ARROW_GRID = DIAGRAM_GRID;
 const STABILIZER_HEIGHT = 24;
 const WORKING_CONTEXT_OFFSET = 80;
 const EVIDENCE_OFFSET = { desktop: 240, mobile: 272 } as const;

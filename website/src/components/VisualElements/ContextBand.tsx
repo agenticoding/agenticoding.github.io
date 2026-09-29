@@ -1,3 +1,4 @@
+import { DIAGRAM_GRID, DIAGRAM_HALF } from './diagramScale';
 import { tileToneVars, voiceStyle } from './diagramTileLayout';
 import type { DiagramTone } from './diagramTileLayout';
 
@@ -86,7 +87,14 @@ export function ContextBandShape({
         stroke={band.stroke}
         strokeWidth={1}
       />
-      <rect x={x} y={y} width={3} height={spec.h} rx={0} fill={band.stroke} />
+      <rect
+        x={x}
+        y={y}
+        width={DIAGRAM_HALF}
+        height={spec.h}
+        rx={0}
+        fill={band.stroke}
+      />
     </>
   );
 }
@@ -107,9 +115,9 @@ export function ContextBandLabel({
     ? spec.labelAlign === 'center'
     : spec.dashed === true;
   const anchor = centered ? 'middle' : undefined;
-  const labelX = centered ? x + w / 2 : x + 8;
+  const labelX = centered ? x + w / 2 : x + DIAGRAM_GRID;
   // With a note, the label/note pair is visually centered as a unit.
-  const labelY = y + spec.h / 2 + (spec.note ? -6 : 0);
+  const labelY = y + spec.h / 2 + (spec.note ? -DIAGRAM_HALF : 0);
   return (
     <>
       <text

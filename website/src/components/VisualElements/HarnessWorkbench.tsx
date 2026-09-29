@@ -11,12 +11,15 @@ import { GearNode } from './GearNode';
 import { ModelCallFrame } from './ModelCallFrame';
 
 import {
+  DIAGRAM_GRID,
+  DIAGRAM_HALF,
+  DIAGRAM_SPACE,
   DIAGRAM_STROKE,
   DIAGRAM_TOKEN_SIZE,
   RICH_TILE_SCALE,
   WORKBENCH_SCALE,
 } from './diagramScale';
-import { MODEL_CALL_FRAME_LAYOUT, TILE_GRID } from './diagramTileLayout';
+import { MODEL_CALL_FRAME_LAYOUT } from './diagramTileLayout';
 import { ResponsiveDiagram } from './ResponsiveDiagram';
 import styles from './HarnessWorkbench.module.css';
 
@@ -121,25 +124,32 @@ const HARNESS_TOKEN_TIMING = {
 const FINAL_GATE_START_MS = 9400;
 const TOKEN_FLOW_SIZE = DIAGRAM_TOKEN_SIZE.flow;
 const DESKTOP_NODE_Y = 104;
+// Top-row tiles wrap their detail to two lines at the snapped 11px ramp, so the row
+// is one detail line taller than the single-line `comfortableHeight`.
+const DESKTOP_ROW_HEIGHT =
+  RICH_TILE_SCALE.comfortableHeight + DIAGRAM_SPACE.detailLineGap;
 const DESKTOP_SCOPE = {
   x: 48,
   y: DESKTOP_NODE_Y,
   width: 184,
-  height: 112,
+  height: DESKTOP_ROW_HEIGHT,
 } as const;
 const DESKTOP_AGENT = {
   x: 280,
   y: DESKTOP_NODE_Y,
   width: 216,
-  height: 112,
+  height: DESKTOP_ROW_HEIGHT,
 } as const;
 const DESKTOP_TOOLS = { x: 284, y: 260, width: 220 } as const;
 const DESKTOP_GATE = {
   x: 536,
   y: DESKTOP_NODE_Y,
   width: 184,
-  height: 112,
+  height: DESKTOP_ROW_HEIGHT,
 } as const;
+// The row is one detail line taller than the 11px single-line height, and the two
+// horizontal connectors meet it at its centre.
+const DESKTOP_ROW_CENTER = DESKTOP_NODE_Y + DESKTOP_SCOPE.height / 2;
 const DESKTOP_AGENT_CENTER_X = DESKTOP_AGENT.x + DESKTOP_AGENT.width / 2;
 const DESKTOP_AGENT_RIGHT_X = DESKTOP_AGENT.x + DESKTOP_AGENT.width;
 const MOBILE_AGENT = { x: 52, y: 234, width: 236, height: 100 } as const;
@@ -211,15 +221,15 @@ function HarnessAgent({
   step: FlowStep;
 }) {
   const compact = height <= 100;
-  const gearSize = compact ? TILE_GRID * 4 : 36;
-  const gearX = compact ? x + width / 2 - gearSize / 2 : x + TILE_GRID * 3;
-  const gearY = compact ? y + TILE_GRID * 4 : y + TILE_GRID * 5;
-  const labelX = compact ? x + width / 2 : gearX + gearSize + TILE_GRID * 2;
+  const gearSize = compact ? DIAGRAM_GRID * 4 : 36;
+  const gearX = compact ? x + width / 2 - gearSize / 2 : x + DIAGRAM_GRID * 3;
+  const gearY = compact ? y + DIAGRAM_GRID * 4 : y + DIAGRAM_GRID * 5;
+  const labelX = compact ? x + width / 2 : gearX + gearSize + DIAGRAM_GRID * 2;
   const labelAnchor = compact ? 'middle' : 'start';
   const titleY = compact
-    ? y + TILE_GRID * 9 + TILE_GRID / 2
-    : y + TILE_GRID * 7 + TILE_GRID / 2;
-  const detailY = titleY + TILE_GRID * 2 + (compact ? 0 : TILE_GRID / 2);
+    ? y + DIAGRAM_GRID * 9 + DIAGRAM_HALF
+    : y + DIAGRAM_GRID * 7 + DIAGRAM_HALF;
+  const detailY = titleY + DIAGRAM_GRID * 2 + (compact ? 0 : DIAGRAM_HALF);
 
   return (
     <g>
@@ -327,7 +337,7 @@ function StageLabel({
         {id}
       </text>
       <text
-        x={x + TILE_GRID * 3}
+        x={x + DIAGRAM_GRID * 3}
         y={y}
         className={styles.stageText}
         fill="var(--text-muted)"
@@ -339,7 +349,7 @@ function StageLabel({
 }
 
 function stageLabelYAboveFrameTab(frameY: number) {
-  return frameY - MODEL_CALL_FRAME_LAYOUT.tabHeight / 2 - TILE_GRID;
+  return frameY - MODEL_CALL_FRAME_LAYOUT.tabHeight / 2 - DIAGRAM_GRID;
 }
 
 function ToolSurface({
@@ -535,7 +545,7 @@ function DesktopLabels() {
       </text>
       <StageLabel x={52} y={84} id="01" label="scope" />
       <StageLabel
-        x={DESKTOP_AGENT.x + TILE_GRID}
+        x={DESKTOP_AGENT.x + DIAGRAM_GRID}
         y={stageLabelYAboveFrameTab(DESKTOP_AGENT.y)}
         id="02"
         label="choose"
@@ -571,7 +581,7 @@ function DesktopConnectors() {
   return (
     <g>
       <Arrow
-        d={`M ${DESKTOP_SCOPE.x + DESKTOP_SCOPE.width} 160 H ${DESKTOP_AGENT.x}`}
+        d={`M ${DESKTOP_SCOPE.x + DESKTOP_SCOPE.width} ${DESKTOP_ROW_CENTER} H ${DESKTOP_AGENT.x}`}
         tone="model"
         step={2}
         tokens={CONTEXT_TOKEN_SEQUENCE}
@@ -593,7 +603,7 @@ function DesktopConnectors() {
       {RETURN_STARTS.map((startDelayMs) => (
         <Arrow
           key={`desktop-return-${startDelayMs}`}
-          d={`M ${DESKTOP_AGENT_CENTER_X + TILE_GRID * 4} ${DESKTOP_TOOLS.y} V ${DESKTOP_AGENT.y + DESKTOP_AGENT.height}`}
+          d={`M ${DESKTOP_AGENT_CENTER_X + DIAGRAM_GRID * 4} ${DESKTOP_TOOLS.y} V ${DESKTOP_AGENT.y + DESKTOP_AGENT.height}`}
           tone="system"
           step={5}
           tokens={OBSERVATION_TOKEN_SEQUENCE}
@@ -611,7 +621,7 @@ function DesktopConnectors() {
         />
       ))}
       <Arrow
-        d={`M ${DESKTOP_AGENT_RIGHT_X} 160 H ${DESKTOP_GATE.x}`}
+        d={`M ${DESKTOP_AGENT_RIGHT_X} ${DESKTOP_ROW_CENTER} H ${DESKTOP_GATE.x}`}
         tone="warning"
         step={4}
         tokens={FINAL_GATE_TOKEN_SEQUENCE}

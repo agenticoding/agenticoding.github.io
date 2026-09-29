@@ -10,7 +10,12 @@ import {
 } from './AnimatedTokenFlow';
 import type { EmojiAsset } from './emojiAssets';
 import type { TokenTrainStagger, TokenTrainTiming } from './TokenTrainTiming';
-import { ArrowMarker, trainLaneOffset, trimPathEnd } from './diagramGeometry';
+import {
+  ArrowMarker,
+  arrowTipTrim,
+  trainLaneOffset,
+  trimPathEnd,
+} from './diagramGeometry';
 import { DIAGRAM_STROKE, DIAGRAM_TOKEN_SIZE } from './diagramScale';
 import type { TokenUnitTone } from './TokenUnit';
 
@@ -220,7 +225,10 @@ function ArrowTrain({
       </defs>
       <TrainBody
         {...props}
-        d={trimPathEnd(props.d)}
+        d={trimPathEnd(
+          props.d,
+          arrowTipTrim(props.strokeWidth ?? DIAGRAM_STROKE.connector)
+        )}
         markerEnd={`url(#${arrowMarkerId})`}
         traveler={traveler}
       />

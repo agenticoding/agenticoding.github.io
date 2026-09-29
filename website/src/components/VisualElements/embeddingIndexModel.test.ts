@@ -72,11 +72,10 @@ import {
 import { RESTORE_MS } from './compactionLineModel.ts';
 import { DIAGRAM_ICON_SIZE, DIAGRAM_TOKEN_SIZE } from './diagramScale.ts';
 import {
-  CONCEPT_BEAT,
   CONCEPT_BEAT_STEP_MS,
   CONCEPT_LABEL_ROOM,
-  conceptBeatCss,
 } from './conceptClusterGeometry.ts';
+import { ARRIVAL_BEAT, arrivalBeatKeyframes } from './diagramBeat.ts';
 import { EMOJI, emojiDisplaySize } from './emojiAssets.ts';
 
 // Mirrors trainLaneOffset (diagramGeometryCore): a train rides half a chip plus the
@@ -436,7 +435,7 @@ test('the corpus answers before its chunks leave', () => {
   const lastItemStarts = CONCEPT_BEAT_STEP_MS * (CORPUS_CONCEPTS.length - 1);
   assert.equal(
     FLOW_START_MS.corpus,
-    lastItemStarts + CONCEPT_BEAT.windowMs,
+    lastItemStarts + ARRIVAL_BEAT.windowMs,
     'the train departs mid-beat'
   );
   assert.ok(FLOW_START_MS.corpus < GEAR_BEAT.startMs);
@@ -447,13 +446,13 @@ test('the corpus answers before its chunks leave', () => {
 test('the cluster beat keeps its own window on any cycle', () => {
   const percentages = (css: string) => css.match(/[\d.]+%/g) ?? [];
   assert.notDeepEqual(
-    percentages(conceptBeatCss('beat', 7427)),
-    percentages(conceptBeatCss('beat', 12345))
+    percentages(arrivalBeatKeyframes('beat', 7427)),
+    percentages(arrivalBeatKeyframes('beat', 12345))
   );
   const windowPct = (cycleMs: number) =>
-    `${((CONCEPT_BEAT.windowMs / cycleMs) * 100).toFixed(2)}%`;
+    `${((ARRIVAL_BEAT.windowMs / cycleMs) * 100).toFixed(2)}%`;
   assert.ok(
-    conceptBeatCss('beat', 7427).includes(
+    arrivalBeatKeyframes('beat', 7427).includes(
       `${windowPct(7427)}, 100% { transform: scale(1); }`
     ),
     'the beat does not end at its own window'

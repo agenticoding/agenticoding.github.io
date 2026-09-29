@@ -120,7 +120,7 @@
   --context-companion-width: 72px;
   flex: 1;
   min-width: 0;
-  height: 264px;
+  height: 352px;
 }
 
 .panel .stackClip {
@@ -256,8 +256,13 @@
   }
 
   .desktopTitle,
-  .panelTradeoff,
-  .zoneStrip {
+  .panelTradeoff {
+    display: none;
+  }
+
+  /* Compound selector: the companion's display is owned by the shared scene, so
+     a bare class here would only win while the bundler happens to emit it last. */
+  .panel .zoneStrip {
     display: none;
   }
 
@@ -267,7 +272,7 @@
 
   .panel .stackClip {
     --context-companion-width: 0px;
-    height: 264px;
+    height: 352px;
   }
 
   .catalogPanel {

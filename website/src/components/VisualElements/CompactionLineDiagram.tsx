@@ -211,7 +211,15 @@ function DeleteBand({ band, y }: { band: CompactionBand; y: number }) {
 // the surviving minority rises into the summary slot, the rect shrinks toward
 // the top edge, the label fades, and the short summary tile cross-fades in —
 // all layers stacked at the same slot.
-function ThreadBand({ band, y, pairIndex }: { band: CompactionBand; y: number; pairIndex: number }) {
+function ThreadBand({
+  band,
+  y,
+  pairIndex,
+}: {
+  band: CompactionBand;
+  y: number;
+  pairIndex: number;
+}) {
   const tokens = pairTokens(pairIndex);
   const specs = pairEjectSpecs(pairIndex);
   const survivors = SUMMARY_PAIRS[pairIndex].survivors;
@@ -219,7 +227,10 @@ function ThreadBand({ band, y, pairIndex }: { band: CompactionBand; y: number; p
   const rowW = tokens.length * TOKEN_SIZE + (tokens.length - 1) * TOKEN_GAP;
   const rowX = STACK_X + STACK_W - 10 - rowW;
   const tokenY = y + band.h / 2 - TOKEN_SIZE / 2;
-  const shrinkStyle: StoryStyle = { '--sy': SUMMARY_H / band.h, animationName: KF.shrink[pairIndex] };
+  const shrinkStyle: StoryStyle = {
+    '--sy': SUMMARY_H / band.h,
+    animationName: KF.shrink[pairIndex],
+  };
   const summary = summaryBand(pairIndex);
   // Synthetic remainder lands at the survivors' exact positions: both rows are
   // right-aligned, so summaryRowX = rowX + discarded tokens' width and the
@@ -231,12 +242,23 @@ function ThreadBand({ band, y, pairIndex }: { band: CompactionBand; y: number; p
       <g className={styles.shrink} style={shrinkStyle}>
         <ContextBandShape x={STACK_X} y={y} w={STACK_W} spec={band} />
       </g>
-      <g className={styles.threadLabel} style={{ animationName: KF.threadLabel[pairIndex] }}>
+      <g
+        className={styles.threadLabel}
+        style={{ animationName: KF.threadLabel[pairIndex] }}
+      >
         <ContextBandLabel x={STACK_X} y={y} w={STACK_W} spec={band} />
       </g>
       {tokens.map((token, j) => {
         const unit = (
-          <TokenUnit x={rowX + j * (TOKEN_SIZE + TOKEN_GAP)} y={tokenY} width={TOKEN_SIZE} height={TOKEN_SIZE} tone="indigo" modality={token.modality} signal={token.signal} />
+          <TokenUnit
+            x={rowX + j * (TOKEN_SIZE + TOKEN_GAP)}
+            y={tokenY}
+            width={TOKEN_SIZE}
+            height={TOKEN_SIZE}
+            tone="indigo"
+            modality={token.modality}
+            signal={token.signal}
+          />
         );
         if (j < discarded) {
           const spec = specs[j];
@@ -247,7 +269,11 @@ function ThreadBand({ band, y, pairIndex }: { band: CompactionBand; y: number; p
             animationName: KF.eject[pairIndex],
           };
           return (
-            <g key={`${token.modality}-${j}`} className={styles.eject} style={ejectStyle}>
+            <g
+              key={`${token.modality}-${j}`}
+              className={styles.eject}
+              style={ejectStyle}
+            >
               {unit}
             </g>
           );
@@ -257,12 +283,19 @@ function ThreadBand({ band, y, pairIndex }: { band: CompactionBand; y: number; p
           animationName: KF.survivor[pairIndex],
         };
         return (
-          <g key={`${token.modality}-${j}`} className={styles.survivor} style={survivorStyle}>
+          <g
+            key={`${token.modality}-${j}`}
+            className={styles.survivor}
+            style={survivorStyle}
+          >
             {unit}
           </g>
         );
       })}
-      <g className={styles.summary} style={{ animationName: KF.summary[pairIndex] }}>
+      <g
+        className={styles.summary}
+        style={{ animationName: KF.summary[pairIndex] }}
+      >
         <ContextBandShape x={STACK_X} y={y} w={STACK_W} spec={summary} />
         <ContextBandLabel x={STACK_X} y={y} w={STACK_W} spec={summary} />
         {Array.from({ length: survivors }, (_, i) => (
@@ -302,7 +335,8 @@ function renderStackFrom(index: number): React.ReactNode {
   const pairIndex = SUMMARY_PAIRS.findIndex((p) => p.thread === index);
   const slideStyle: StoryStyle = {
     '--slide': `${event.freed}px`,
-    animationName: event.kind === 'delete' ? KF.slideDelete : KF.slideShrink[pairIndex],
+    animationName:
+      event.kind === 'delete' ? KF.slideDelete : KF.slideShrink[pairIndex],
   };
   return (
     <g key={band.label}>
@@ -344,15 +378,39 @@ function StaticScene() {
   let ledgerY = BAND_Y1 - HEADROOM_H;
   return (
     <g className={styles.staticScene}>
-      <ContextBandShape x={STACK_X} y={finalTop(0)} w={STACK_W} spec={STACK_BANDS[0]} />
-      <ContextBandLabel x={STACK_X} y={finalTop(0)} w={STACK_W} spec={STACK_BANDS[0]} />
+      <ContextBandShape
+        x={STACK_X}
+        y={finalTop(0)}
+        w={STACK_W}
+        spec={STACK_BANDS[0]}
+      />
+      <ContextBandLabel
+        x={STACK_X}
+        y={finalTop(0)}
+        w={STACK_W}
+        spec={STACK_BANDS[0]}
+      />
       {SUMMARY_PAIRS.map((pair, k) => {
         const summary = summaryBand(k);
-        const summaryRowX = STACK_X + STACK_W - 10 - (pair.survivors * TOKEN_SIZE + (pair.survivors - 1) * TOKEN_GAP);
+        const summaryRowX =
+          STACK_X +
+          STACK_W -
+          10 -
+          (pair.survivors * TOKEN_SIZE + (pair.survivors - 1) * TOKEN_GAP);
         return (
           <g key={pair.label}>
-            <ContextBandShape x={STACK_X} y={finalTop(pair.thread)} w={STACK_W} spec={summary} />
-            <ContextBandLabel x={STACK_X} y={finalTop(pair.thread)} w={STACK_W} spec={summary} />
+            <ContextBandShape
+              x={STACK_X}
+              y={finalTop(pair.thread)}
+              w={STACK_W}
+              spec={summary}
+            />
+            <ContextBandLabel
+              x={STACK_X}
+              y={finalTop(pair.thread)}
+              w={STACK_W}
+              spec={summary}
+            />
             {Array.from({ length: pair.survivors }, (_, i) => (
               <TokenUnit
                 key={i}
@@ -368,12 +426,27 @@ function StaticScene() {
           </g>
         );
       })}
-      <ContextBandShape x={STACK_X} y={finalTop(STACK_BANDS.length - 1)} w={STACK_W} spec={STACK_BANDS[STACK_BANDS.length - 1]} />
-      <ContextBandLabel x={STACK_X} y={finalTop(STACK_BANDS.length - 1)} w={STACK_W} spec={STACK_BANDS[STACK_BANDS.length - 1]} />
+      <ContextBandShape
+        x={STACK_X}
+        y={finalTop(STACK_BANDS.length - 1)}
+        w={STACK_W}
+        spec={STACK_BANDS[STACK_BANDS.length - 1]}
+      />
+      <ContextBandLabel
+        x={STACK_X}
+        y={finalTop(STACK_BANDS.length - 1)}
+        w={STACK_W}
+        spec={STACK_BANDS[STACK_BANDS.length - 1]}
+      />
       {STATIC_LEDGER.map((entry) => {
         const ly = ledgerY;
         ledgerY += entry.h;
-        const spec: CompactionBand = { label: entry.label, h: entry.h, dashed: true, labelAlign: 'left' };
+        const spec: CompactionBand = {
+          label: entry.label,
+          h: entry.h,
+          dashed: true,
+          labelAlign: 'left',
+        };
         return (
           <g key={entry.label} opacity={0.45}>
             <ContextBandShape x={STACK_X} y={ly} w={STACK_W} spec={spec} />
@@ -390,10 +463,28 @@ function StaticScene() {
 function Legend() {
   return (
     <>
-      <text className={styles.legend} style={{ animationName: KF.legendDeleted }} x={VW / 2 - 10} y={272} textAnchor="end" fontSize={9.5} fontFamily={MONO_KEYWORD} fill="var(--text-muted)">
+      <text
+        className={styles.legend}
+        style={{ animationName: KF.legendDeleted }}
+        x={VW / 2 - 10}
+        y={272}
+        textAnchor="end"
+        fontSize={9.5}
+        fontFamily={MONO_KEYWORD}
+        fill="var(--text-muted)"
+      >
         deleted pairs stay on disk ·
       </text>
-      <text className={styles.legend} style={{ animationName: KF.legendSummary }} x={VW / 2 + 10} y={272} textAnchor="start" fontSize={9.5} fontFamily={MONO_KEYWORD} fill="var(--text-muted)">
+      <text
+        className={styles.legend}
+        style={{ animationName: KF.legendSummary }}
+        x={VW / 2 + 10}
+        y={272}
+        textAnchor="start"
+        fontSize={9.5}
+        fontFamily={MONO_KEYWORD}
+        fill="var(--text-muted)"
+      >
         summaries are lossy — one by one
       </text>
     </>
@@ -424,10 +515,26 @@ export default function CompactionLineDiagram() {
       style={rootStyle}
     >
       <TimingStyles />
-      <text x={STACK_X} y={24} fontSize={10} fontFamily={MONO_KEYWORD} fill="var(--text-muted)" letterSpacing="0.06em">
+      <text
+        x={STACK_X}
+        y={24}
+        fontSize={10}
+        fontFamily={MONO_KEYWORD}
+        fill="var(--text-muted)"
+        letterSpacing="0.06em"
+      >
         CONTEXT WINDOW
       </text>
-      <rect x={52} y={32} width={316} height={226} rx={0} fill="none" stroke="var(--border-default)" strokeWidth={1} />
+      <rect
+        x={52}
+        y={32}
+        width={316}
+        height={226}
+        rx={0}
+        fill="none"
+        stroke="var(--border-default)"
+        strokeWidth={1}
+      />
       <g className={styles.animatedScene}>
         {renderStackFrom(0)}
         <Headroom />

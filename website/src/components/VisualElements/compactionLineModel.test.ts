@@ -78,8 +78,14 @@ test('chapter tone grammar: conversation data is indigo, AI synthesis is violet'
 });
 
 test('freed space: 48 deleted + 74 summarized = 122 headroom', () => {
-  const deleted = STACK_EVENTS.filter((e) => e.kind === 'delete').reduce((px, e) => px + e.freed, 0);
-  const shrunk = STACK_EVENTS.filter((e) => e.kind === 'shrink').reduce((px, e) => px + e.freed, 0);
+  const deleted = STACK_EVENTS.filter((e) => e.kind === 'delete').reduce(
+    (px, e) => px + e.freed,
+    0
+  );
+  const shrunk = STACK_EVENTS.filter((e) => e.kind === 'shrink').reduce(
+    (px, e) => px + e.freed,
+    0
+  );
   assert.equal(deleted, 48);
   assert.equal(shrunk, 74);
   assert.equal(HEADROOM_H, 122);
@@ -103,10 +109,15 @@ test('final stack is contiguous and leaves exactly HEADROOM_H at the bottom', ()
 });
 
 test('static ledger restacks the freed space exactly, fates labeled', () => {
-  assert.equal(STATIC_LEDGER.reduce((px, e) => px + e.h, 0), HEADROOM_H);
+  assert.equal(
+    STATIC_LEDGER.reduce((px, e) => px + e.h, 0),
+    HEADROOM_H
+  );
   assert.equal(STATIC_LEDGER.filter((e) => e.onDisk).length, 2);
   for (const e of STATIC_LEDGER) {
-    assert.ok(e.onDisk ? e.label.includes('on disk') : e.label.includes('→ summary'));
+    assert.ok(
+      e.onDisk ? e.label.includes('on disk') : e.label.includes('→ summary')
+    );
   }
 });
 

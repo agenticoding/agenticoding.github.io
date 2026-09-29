@@ -1,6 +1,12 @@
 import React from 'react';
 import { DiagramTileSurface } from './DiagramTile';
-import { DIAGRAM_GRID, DIAGRAM_ICON_SIZE } from './diagramScale';
+import {
+  DIAGRAM_GRID,
+  DIAGRAM_HALF,
+  DIAGRAM_ICON_SIZE,
+  SPACE,
+  TILE_TYPE,
+} from './diagramScale';
 import { delayStyle } from './diagramMotion';
 import {
   tileToneVars,
@@ -30,7 +36,7 @@ type AgentTileTextClasses = {
   detail?: string;
 };
 
-const CONTEXT_CHIP_ROW_GAP = 22;
+const CONTEXT_CHIP_ROW_GAP = DIAGRAM_GRID * 2.5;
 
 type ContextClasses = {
   eyebrow?: string;
@@ -102,8 +108,8 @@ export function ContextAgentTile(props: ContextAgentTileProps) {
       <ContextTileHeader {...props} />
       <ContextTiles
         tiles={props.contextTiles}
-        x={props.x + 14}
-        y={props.y + 62}
+        x={props.x + DIAGRAM_GRID * 1.5}
+        y={props.y + DIAGRAM_GRID * 7.5}
         width={props.width - 28}
         classes={contextClasses}
       />
@@ -129,8 +135,8 @@ function AgentTileSurface(props: AgentTileProps) {
 function ContextTileHeader(props: ContextAgentTileProps) {
   return (
     <>
-      <HeaderText {...props} y={props.y + 26} field="eyebrow" />
-      <HeaderText {...props} y={props.y + 46} field="detail" />
+      <HeaderText {...props} y={props.y + SPACE['3']} field="eyebrow" />
+      <HeaderText {...props} y={props.y + DIAGRAM_GRID * 5.5} field="detail" />
     </>
   );
 }
@@ -141,7 +147,7 @@ function HeaderText(
   const className = props.contextClasses?.[props.field];
   return (
     <text
-      x={props.x + 14}
+      x={props.x + DIAGRAM_GRID * 1.5}
       y={props.y}
       fill={
         props.field === 'eyebrow' ? 'var(--text-heading)' : 'var(--text-muted)'
@@ -211,7 +217,7 @@ function ContextChipRect({
       x={x}
       y={y}
       width={width}
-      height={18}
+      height={SPACE['2']}
       fill="var(--surface-page)"
       stroke="var(--border-subtle)"
       className={classes?.tileRect}
@@ -233,11 +239,15 @@ function ContextChipText({
 }) {
   return (
     <text
-      x={x + 10}
+      x={x + DIAGRAM_GRID}
       y={y + 13}
       fill="var(--text-body)"
       className={classes?.tileText}
-      style={classes?.tileText ? undefined : voiceStyle('keyword', 11, 600)}
+      style={
+        classes?.tileText
+          ? undefined
+          : voiceStyle('keyword', TILE_TYPE.detail, 600)
+      }
     >
       {tile.label}
     </text>
@@ -258,7 +268,9 @@ function AgentTileLabels(
         y={props.layout.titleY}
         fill="var(--text-heading)"
         className={className}
-        style={className ? undefined : voiceStyle('display', 13, 700)}
+        style={
+          className ? undefined : voiceStyle('display', TILE_TYPE.title, 700)
+        }
       >
         {props.title}
       </CenteredText>
@@ -336,7 +348,11 @@ function agentTileLayout(
   requestedIconSize: number
 ): AgentTileLayout {
   const centerX = x + width / 2;
-  const eyebrowY = y + height - DIAGRAM_GRID * (hasDetail ? 5.25 : 4);
+  // Lifted to clear the title and detail baselines stacked beneath it (= 42px).
+  const eyebrowY =
+    y +
+    height -
+    (hasDetail ? DIAGRAM_GRID * 5 + DIAGRAM_HALF / 2 : DIAGRAM_GRID * 4);
   const contentTop = y + DIAGRAM_GRID;
   const contentBottom = eyebrowY - DIAGRAM_GRID;
   const availableHeight = contentBottom - contentTop;
@@ -349,9 +365,16 @@ function agentTileLayout(
     iconY,
     agentTop: iconY - visualHeight / 2,
     agentBottom: iconY + visualHeight / 2,
-    detailY: y + height - DIAGRAM_GRID * 1.25,
+    // One grid plus a 2px optical inset, so descenders clear the tile border (= 10px).
+    detailY: y + height - (DIAGRAM_GRID + DIAGRAM_HALF / 2),
     eyebrowY,
-    titleY: y + height - DIAGRAM_GRID * (hasDetail ? 2.75 : 1.5),
+    // Holds the title-to-eyebrow rhythm with detail present, else a fixed lift (= 22px / 12px).
+    titleY:
+      y +
+      height -
+      (hasDetail
+        ? DIAGRAM_GRID * 2 + DIAGRAM_HALF + DIAGRAM_HALF / 2
+        : DIAGRAM_GRID * 1.5),
   };
 }
 
@@ -361,7 +384,7 @@ function fitAgentIconSize(requestedSize: number, availableHeight: number) {
     size > DIAGRAM_ICON_SIZE.secondary &&
     workingAgentVisualHeight(size) > availableHeight
   ) {
-    size -= DIAGRAM_GRID / 2;
+    size -= DIAGRAM_HALF;
   }
   return size;
 }

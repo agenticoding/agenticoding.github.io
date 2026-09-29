@@ -3,6 +3,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import { Prism } from 'prism-react-renderer';
 import styles from './ContextStreamBlock.module.css';
 import { EMOJI, type EmojiAsset, emojiSrc } from './emojiAssets';
+import { DIAGRAM_ICON_SIZE } from './diagramScale';
 import type { Role, ContextEntry } from './contextStreamData';
 
 interface Props {
@@ -161,8 +162,8 @@ export default function ContextStreamBlock({
               <img
                 src={emojiSrc(emojiBase, config.emoji)}
                 alt=""
-                width={14}
-                height={14}
+                width={DIAGRAM_ICON_SIZE.tertiary}
+                height={DIAGRAM_ICON_SIZE.tertiary}
                 style={{
                   display: 'block',
                   ...(config.nudgeY

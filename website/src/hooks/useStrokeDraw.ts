@@ -31,7 +31,7 @@ export function useStrokeDraw(
     lenRef.current = len;
     el.style.strokeDasharray = `${len}`;
     el.style.strokeDashoffset = `${len}`;
-  }, []);
+  }, [ref]);
 
   return usePhaseProgress(phase, start, end, (t) => {
     const el = ref.current;

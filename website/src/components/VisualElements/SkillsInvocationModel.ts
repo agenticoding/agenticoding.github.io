@@ -21,6 +21,7 @@ import {
   MIX_ROW_WEIGHT,
   block,
   contextContentWeight,
+  ledgerCanvas,
   mixRow,
   tileAttention as sharedTileAttention,
   windowFill as sharedWindowFill,
@@ -174,3 +175,14 @@ export function matchedSkillZone(catalogSkills: number): AttentionZone {
 export function discardedSkillZone(catalogSkills: number): AttentionZone {
   return zoneOfRow('near-match', autoRows(catalogSkills));
 }
+
+/** One stable canvas for the whole catalog slider — the tallest state's floor
+    budget, never a hand-picked 264px. Mirrored by `.stackClip` (desktop and
+    mobile) in SkillsInvocationDiagram.module.css. */
+export const STACK_HEIGHT = ledgerCanvas(
+  Array.from(
+    { length: CATALOG_LIMITS.max - CATALOG_LIMITS.min + 1 },
+    (_, step) => CATALOG_LIMITS.min + step
+  ).flatMap((catalog) => [manualRows(catalog), autoRows(catalog)]),
+  WINDOW_CAPACITY
+);

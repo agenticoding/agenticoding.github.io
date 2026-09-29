@@ -8,12 +8,18 @@ import {
   MIX_ROW_WEIGHT,
   block,
   contextContentWeight,
+  floorCanvas,
   mixRow,
   tileAttention as sharedTileAttention,
   windowFill as sharedWindowFill,
   withHeadroom,
   type WeightContextRow,
 } from './contextWeightRows.ts';
+import {
+  FLOW_ROW_MIN_HEIGHT,
+  dispatchRowId,
+  synthesisRowId,
+} from './subAgentFanoutFlow.ts';
 
 export { BLOCK_WEIGHT, MIX_ROW_WEIGHT, contextContentWeight };
 
@@ -35,10 +41,14 @@ export type SubAgentProfile = {
 };
 
 export const SUB_AGENT_PROFILES: readonly SubAgentProfile[] = [
-  { task: 'trace auth flow', privateUnits: 78, synthesisWeight: 14 },
+  { task: 'trace auth', privateUnits: 78, synthesisWeight: 14 },
   { task: 'map API routes', privateUnits: 54, synthesisWeight: 10 },
-  { task: 'audit dependencies', privateUnits: 90, synthesisWeight: 16 },
-  { task: 'profile hot paths', privateUnits: 66, synthesisWeight: 12 },
+  // Task strings double as the rail identity and the ledger row label, so they
+  // must stay within one line of the rail identity measure (`IDENTITY_MEASURE`
+  // in subAgentFanoutFlow: 14 chars at --text-xs Argon), otherwise the identity
+  // wraps past its rail height or the rail drops it.
+  { task: 'audit deps', privateUnits: 90, synthesisWeight: 16 },
+  { task: 'scan hot paths', privateUnits: 66, synthesisWeight: 12 },
 ];
 
 export type SubAgentContextRow = WeightContextRow;
@@ -49,31 +59,45 @@ function profileAt(index: number): SubAgentProfile {
   return profile;
 }
 
+function dispatchRow(index: number): SubAgentContextRow {
+  return mixRow(
+    dispatchRowId(index),
+    `${index + 1} · dispatch`,
+    DISPATCH_WEIGHT,
+    FLOW_ROW_MIN_HEIGHT
+  );
+}
+
+function synthesisRow(index: number): SubAgentContextRow {
+  const profile = profileAt(index);
+  return mixRow(
+    synthesisRowId(index),
+    `${index + 1} · ${profile.task}`,
+    profile.synthesisWeight,
+    FLOW_ROW_MIN_HEIGHT
+  );
+}
+
+/** One stage's rows: every caller fires together, then every caller answers.
+    This is the one causal order — every width reads the same ledger, so the
+    rail assignment must never invent a second order. */
 function stageRows(stage: readonly number[]): SubAgentContextRow[] {
-  return [
-    ...stage.map((index) =>
-      mixRow(`dispatch-${index}`, `${index + 1} · dispatch`, DISPATCH_WEIGHT)
-    ),
-    ...stage.map((index) => {
-      const profile = profileAt(index);
-      return mixRow(
-        `synthesis-${index}`,
-        `${index + 1} · ${profile.task}`,
-        profile.synthesisWeight
-      );
-    }),
-  ];
+  return [...stage.map(dispatchRow), ...stage.map(synthesisRow)];
 }
 
 // Stack order is the causal root-call timeline. The final pair shares both
 // dispatch and return stages; no satellite ever becomes a dispatch source.
+// The parallel pair fires together then answers together, so its two dispatch
+// rows and its two synthesis rows are adjacent — one row order at every width.
+// Every parent row is one flow-lane tall (`FLOW_ROW_MIN_HEIGHT`), so a request
+// and its synthesis each own the band their glyph train rides.
 export function parentRows(): SubAgentContextRow[] {
   return withHeadroom(
     [
-      block('harness', HARNESS_LABEL),
-      block('prompt', PROMPT_LABEL),
+      block('harness', HARNESS_LABEL, BLOCK_WEIGHT, FLOW_ROW_MIN_HEIGHT),
+      block('prompt', PROMPT_LABEL, BLOCK_WEIGHT, FLOW_ROW_MIN_HEIGHT),
       ...ROOT_SCHEDULE.flatMap(stageRows),
-      block('final', FINAL_RESPONSE_LABEL),
+      block('final', FINAL_RESPONSE_LABEL, BLOCK_WEIGHT, FLOW_ROW_MIN_HEIGHT),
     ],
     WINDOW_CAPACITY
   );
@@ -126,3 +150,57 @@ export function synthesisUnits(): number {
 export function compressionRatio(): number {
   return internalUnits() / synthesisUnits();
 }
+
+/** The ledger canvas = the rows' own floor budget (`floorCanvas`), never a
+    hand-picked pixel height and deliberately NOT `stackHeight`: this ledger
+    spends its height on readable rows (each row carries its flow lane), so the
+    window's spare capacity is not drawn as a void. One canvas at every width
+    (they render the same rows), mirrored by `.stackClip` in the module
+    stylesheet (guarded by the flow test). */
+export const PARENT_STACK_HEIGHT = floorCanvas(parentRows());
+
+// ── Causal loop ───────────────────────────────────────────────────────────
+// Motion replays the schedule above and nothing else: the root issues a stage's
+// calls, each call travels to its sub-agent, that sub-agent works, then its
+// synthesis travels back. Every beat is a PHASE into one loop (a positive CSS
+// `animation-delay` means "this beat happens N ms into the cycle"), so the
+// stylesheet mirrors the numbers below — subAgentFanoutFlow.test.ts fails if a
+// mirror drifts, and the amplitudes come from the documented idle-motion
+// parameters rather than being invented per figure.
+
+/** One full causal loop. */
+export const FLOW_LOOP_MS = 11000;
+/** Token journey along one leg — also the moment a dispatch lands on its actor. */
+export const FLOW_TRAVEL_MS = 560;
+export const FLOW_FADE_MS = 120;
+/** Stages fire one after another; every caller answers this long after its call. */
+const STAGE_STRIDE_MS = 3000;
+const RETURN_AFTER_MS = 1900;
+
+function callStage(index: number): number {
+  const stage = ROOT_SCHEDULE.findIndex((callers) =>
+    callers.some((caller) => caller === index)
+  );
+  if (stage < 0)
+    throw new RangeError(`no schedule stage fires caller ${index}`);
+  return stage;
+}
+
+/** When the root issues a caller's dispatch. */
+export function dispatchDelayMs(index: number): number {
+  return callStage(index) * STAGE_STRIDE_MS;
+}
+
+/** When that caller's synthesis leaves — the end of its work. */
+export function synthesisDelayMs(index: number): number {
+  return dispatchDelayMs(index) + RETURN_AFTER_MS;
+}
+
+/** When the caller becomes active: its dispatch has landed on it. */
+export function workDelayMs(index: number): number {
+  return dispatchDelayMs(index) + FLOW_TRAVEL_MS;
+}
+
+/** How long a sub-agent works — dispatch arrival to synthesis departure. The same
+    for every caller, which is what lets one keyframe window serve all four. */
+export const WORK_WINDOW_MS = RETURN_AFTER_MS - FLOW_TRAVEL_MS;

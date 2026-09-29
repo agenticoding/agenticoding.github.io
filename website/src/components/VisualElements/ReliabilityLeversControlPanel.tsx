@@ -1,9 +1,9 @@
 import React, { useId } from 'react';
 
+import { DIAGRAM_GRID as G } from './diagramScale';
 import {
   Arrow,
   Card,
-  G,
   Marker,
   TextLine,
   svgStyle,

@@ -3,7 +3,6 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import {
   EMOJI,
   OPENMOJI_VIEWBOX_SIZE,
-  centeredEmojiOffset,
   emojiDisplaySize,
   type EmojiAsset,
   emojiSrc,
@@ -31,6 +30,10 @@ export interface EmojiImageProps {
   x: number;
   y: number;
   size?: number;
+  /** Scales the drawn glyph inside its nominal `size` box without moving the box, so a
+      caller can match an asset's VISUAL weight to its neighbours while the reserved
+      icon column (and therefore the text column) stays put. 1 = as drawn. */
+  scale?: number;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -40,16 +43,21 @@ export function EmojiImage({
   x,
   y,
   size = 40,
+  scale = 1,
   className,
   style,
 }: EmojiImageProps) {
   const base = useBaseUrl('/img/emoji');
-  const displaySize = emojiDisplaySize(size);
-  const offset = centeredEmojiOffset(size);
+  const displaySize = emojiDisplaySize(size) * scale;
+  // Centre the drawn box on the nominal box's centre, so `scale` shrinks the glyph in
+  // place. Emoji SVG boxes carry uneven transparent margins, so every caller positions
+  // against the nominal box, never the ink.
+  const centerX = x + size / 2;
+  const centerY = y + size / 2;
   return (
     <svg
-      x={x - offset}
-      y={y - offset}
+      x={centerX - displaySize / 2}
+      y={centerY - displaySize / 2}
       width={displaySize}
       height={displaySize}
       viewBox={`0 0 ${OPENMOJI_VIEWBOX_SIZE} ${OPENMOJI_VIEWBOX_SIZE}`}

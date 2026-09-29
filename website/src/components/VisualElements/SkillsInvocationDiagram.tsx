@@ -11,6 +11,7 @@ import {
 } from './ContextRegions.tsx';
 import {
   CATALOG_LIMITS,
+  STACK_HEIGHT,
   autoRows,
   contextContentWeight,
   discardedSkillZone,
@@ -43,7 +44,6 @@ import {
 // wrong-path rows collapse in place. No idle animation.
 
 const DEFAULT_CATALOG_SKILLS = 6;
-const STACK_HEIGHT = 264;
 
 // Type grammar for tile accents (tiles themselves stay neutral): cyan =
 // harness payload (core tools, discovery metadata), emphasis = the human

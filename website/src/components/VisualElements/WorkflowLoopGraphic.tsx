@@ -1,7 +1,11 @@
 import React, { type ReactNode } from 'react';
 import { EMOJI } from './emojiAssets';
 import { DiagramTile } from './DiagramTile';
-import { DIAGRAM_TOKEN_SIZE, RICH_TILE_SCALE } from './diagramScale';
+import {
+  DIAGRAM_GRID,
+  DIAGRAM_TOKEN_SIZE,
+  RICH_TILE_SCALE,
+} from './diagramScale';
 import { tileToneVars, type DiagramTone } from './diagramTileLayout';
 import { TokenArrowTrain } from './TokenArrowTrain';
 import { seededTokenTrain } from './TokenTrainSequence';
@@ -36,7 +40,7 @@ type WorkflowLoopGraphicProps = {
   returnLabel?: string;
 };
 
-const G = 8;
+const G = DIAGRAM_GRID;
 const TILE_W = 23 * G;
 const TILE_H = RICH_TILE_SCALE.comfortableHeight;
 const TILES: TileSpec[] = [

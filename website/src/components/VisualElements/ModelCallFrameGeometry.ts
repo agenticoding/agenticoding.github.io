@@ -1,5 +1,5 @@
-import { DIAGRAM_STROKE } from './diagramScale.ts';
-import { MODEL_CALL_FRAME_LAYOUT, TILE_GRID } from './diagramTileLayout.ts';
+import { DIAGRAM_GRID, DIAGRAM_STROKE } from './diagramScale.ts';
+import { MODEL_CALL_FRAME_LAYOUT } from './diagramTileLayout.ts';
 
 export type ModelCallFrameBounds = {
   x: number;
@@ -65,7 +65,7 @@ function tabX(
     }
     return x + (frameWidth - tabWidth) / 2;
   }
-  return x + TILE_GRID * 3;
+  return x + DIAGRAM_GRID * 3;
 }
 
 function autoTabWidth(label: string) {

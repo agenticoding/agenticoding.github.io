@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   contentExtent,
+  contentFloorHeight,
   exitingContextRegions,
   layoutRows,
   REGION_MIN_HEIGHT,
@@ -9,27 +10,26 @@ import {
   zoneOfRow,
   type ContextRegionRow,
 } from './contextRegions.ts';
+import { DIAGRAM_HALF } from './diagramScale.ts';
 
 const rows = (...weights: number[]): ContextRegionRow[] =>
   weights.map((weight, i) => ({ id: `r${i}`, weight }));
 
-test('layoutRows shares sum to the total weight', () => {
-  const input = rows(100, 300, 600);
-  const total = 1000;
-  const shares = layoutRows(input, 500);
-  const sum = Object.values(shares).reduce((s, v) => s + v, 0);
-  assert.ok(Math.abs(sum - total) < 1e-9);
+function total(heights: Record<string, number>) {
+  return Object.values(heights).reduce((sum, height) => sum + height, 0);
+}
+
+test('layoutRows fills its canvas exactly', () => {
+  const heights = layoutRows(rows(100, 300, 600), 500);
+  assert.ok(Math.abs(total(heights) - 500) < 1e-9);
 });
 
 test('layoutRows enforces the readable min-height floor', () => {
-  // Tiny row would get 10px raw; it must be pinned to the floor while the
-  // large row absorbs the difference.
-  const input = rows(10, 990);
-  const shares = layoutRows(input, 500);
-  const tinyHeight = (shares.r0 / 1000) * 500;
-  assert.equal(tinyHeight, REGION_MIN_HEIGHT);
-  const largeHeight = (shares.r1 / 1000) * 500;
-  assert.ok(Math.abs(largeHeight - (500 - REGION_MIN_HEIGHT)) < 1e-9);
+  // Tiny row would get 5px raw; the water-filling fixed point pins it and lets
+  // the large row absorb the difference.
+  const heights = layoutRows(rows(10, 990), 500);
+  assert.equal(heights.r0, REGION_MIN_HEIGHT);
+  assert.equal(heights.r1, 500 - REGION_MIN_HEIGHT);
 });
 
 test('layoutRows respects per-row minHeight overrides', () => {
@@ -37,20 +37,64 @@ test('layoutRows respects per-row minHeight overrides', () => {
     { id: 'buffer', weight: 10, minHeight: 40 },
     { id: 'rest', weight: 990 },
   ];
-  const shares = layoutRows(input, 500);
-  assert.equal((shares.buffer / 1000) * 500, 40);
+  const heights = layoutRows(input, 500);
+  assert.equal(heights.buffer, 40);
+  assert.equal(heights.rest, 460);
 });
 
-test('collapsed and zero-weight rows get no share', () => {
+test('collapsed and zero-weight rows get no height', () => {
   const input: ContextRegionRow[] = [
     { id: 'gone', weight: 500, collapsed: true },
     { id: 'empty', weight: 0 },
     { id: 'live', weight: 500 },
   ];
-  const shares = layoutRows(input, 500);
-  assert.equal(shares.gone, undefined);
-  assert.equal(shares.empty, undefined);
-  assert.equal(shares.live, 500);
+  const heights = layoutRows(input, 500);
+  assert.equal(heights.gone, undefined);
+  assert.equal(heights.empty, undefined);
+  assert.equal(heights.live, 500);
+});
+
+test('layoutRows throws when the declared floors cannot fit the canvas', () => {
+  assert.throws(
+    () => layoutRows(rows(1, 1, 1, 1), 40),
+    /readable floors cannot fit/
+  );
+  assert.equal(contentFloorHeight(rows(1, 1, 1, 1)), 4 * REGION_MIN_HEIGHT);
+});
+
+test('every row clears its floor and every content height is a 4px multiple', () => {
+  // Wide spread (this is the regime the old single-pass clamp inverted).
+  const input: ContextRegionRow[] = [
+    { id: 'block', weight: 18, minHeight: 24 },
+    { id: 'pin', weight: 4, minHeight: 16 },
+    { id: 'mid', weight: 14, minHeight: 16 },
+    { id: 'big', weight: 18, minHeight: 24 },
+    { id: 'headroom', weight: 40, minHeight: 0, spacer: true },
+  ];
+  const heights = layoutRows(input, 128);
+  for (const row of input) {
+    assert.ok(
+      heights[row.id] >= (row.minHeight ?? REGION_MIN_HEIGHT),
+      `${row.id} fell below its floor`
+    );
+    assert.equal(
+      heights[row.id] % DIAGRAM_HALF,
+      0,
+      `${row.id} off the 4px grid`
+    );
+  }
+  assert.ok(Math.abs(total(heights) - 128) < 1e-9);
+});
+
+test('redistribution is monotonic: heavier rows never render shorter', () => {
+  const input: ContextRegionRow[] = [
+    { id: 'a', weight: 4, minHeight: 16 },
+    { id: 'b', weight: 14, minHeight: 16 },
+    { id: 'c', weight: 18, minHeight: 24 },
+  ];
+  const heights = layoutRows(input, 96);
+  assert.ok(heights.a <= heights.b);
+  assert.ok(heights.b <= heights.c);
 });
 
 test('exiting context regions retain their last geometry', () => {
@@ -76,13 +120,6 @@ test('exiting context regions retain their last geometry', () => {
   ]);
 });
 
-test('redistribution is monotonic: heavier rows stay taller', () => {
-  const input = rows(50, 200, 800);
-  const shares = layoutRows(input, 400);
-  assert.ok(shares.r0 <= shares.r1);
-  assert.ok(shares.r1 <= shares.r2);
-});
-
 test('resolved geometry fills its bounded viewport while spacers stay outside content', () => {
   const height = 400;
   const geometry = resolveRegionGeometry(
@@ -94,13 +131,7 @@ test('resolved geometry fills its bounded viewport while spacers stay outside co
     height
   );
   assert.equal(geometry.rowHeights.tiny, REGION_MIN_HEIGHT);
-  assert.equal(
-    Object.values(geometry.rowHeights).reduce(
-      (sum, rowHeight) => sum + rowHeight,
-      0
-    ),
-    height
-  );
+  assert.ok(Math.abs(total(geometry.rowHeights) - height) < 1e-9);
   assert.equal(geometry.contentTop, 0);
   assert.equal(
     geometry.contentBottom,

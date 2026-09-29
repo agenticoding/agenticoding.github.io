@@ -17,6 +17,7 @@ import {
   MIX_ROW_WEIGHT,
   block,
   contextContentWeight,
+  ledgerCanvas,
   mixRow,
   tileAttention as sharedTileAttention,
   windowFill as sharedWindowFill,
@@ -198,3 +199,14 @@ export function tileAttention(
 export function eagerSchemasZone(catalogTools: number): AttentionZone {
   return zoneOfRow('schemas', eagerRows(catalogTools));
 }
+
+/** One stable canvas for the whole catalog slider — the tallest state's floor
+    budget, never a hand-picked 264px. Mirrored by `.stackClip` (desktop and
+    mobile) in MCPToolSchemaDiagram.module.css. */
+export const STACK_HEIGHT = ledgerCanvas(
+  Array.from(
+    { length: CATALOG_LIMITS.max - CATALOG_LIMITS.min + 1 },
+    (_, step) => CATALOG_LIMITS.min + step
+  ).flatMap((catalog) => [eagerRows(catalog), lazyRows(catalog)]),
+  WINDOW_CAPACITY
+);
