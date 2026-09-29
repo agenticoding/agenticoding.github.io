@@ -29,6 +29,8 @@ export type NarrationScript = {
   /** Heading id → human title, so section labels (ID3 chapters) never show a slug. */
   headings: HeadingInfo[];
   segments: Segment[];
+  /** Author-declared terms that must survive the ASR transcript, beyond the auto-classified ones. */
+  requiredTerms?: string[];
 };
 
 export type AudioMark = {

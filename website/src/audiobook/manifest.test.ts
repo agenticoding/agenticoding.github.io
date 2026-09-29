@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import test from 'node:test';
 import { AUDIO_DOC_IDS } from './docs.ts';
-import { loadDialogue } from './dialogue.ts';
+import { loadDialogue } from './dialogueScript.ts';
 import { type AudioManifest, validateManifest } from './schemas.ts';
 
 const AUDIO_DIR = new URL('../../static/audio/', import.meta.url);
@@ -73,3 +73,29 @@ test('manifest chapter keys are real documents', { skip: NO_MANIFEST }, () => {
   );
   assert.deepEqual(unknown, []);
 });
+
+// Every dialogue script on disk (including exercises/) must have a manifest
+// entry, or the chapter renders audio nobody can play back.
+test(
+  'every dialogue script on disk has a manifest entry',
+  { skip: NO_MANIFEST },
+  () => {
+    const manifest = readManifest();
+    const dialogueDir = new URL('../../audio/dialogue/', import.meta.url);
+    const ids: string[] = [];
+    const collect = (dir: URL, prefix: string): void => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (entry.isDirectory())
+          collect(new URL(`${entry.name}/`, dir), `${prefix}${entry.name}/`);
+        else if (entry.name.endsWith('.json'))
+          ids.push(`${prefix}${entry.name.slice(0, -'.json'.length)}`);
+      }
+    };
+    collect(dialogueDir, '');
+    assert.ok(ids.length > 0, 'no dialogue scripts found on disk');
+    assert.deepEqual(
+      ids.filter((id) => !(id in manifest.chapters)),
+      []
+    );
+  }
+);

@@ -9,8 +9,16 @@ import remarkGfm from 'remark-gfm';
 import remarkMdx from 'remark-mdx';
 import remarkParse from 'remark-parse';
 import { unified } from 'unified';
+import { visualDeixisHits } from './deixis.ts';
+import { drawnLabelHits, drawnLabelProblem } from './drawnLabels.ts';
 import { createHeadingReader, type HeadingInfo } from './headings.ts';
-import { attrWasExpression, type MdNode, stringAttr, textOf } from './mdast.ts';
+import {
+  attrWasExpression,
+  expressionAttr,
+  type MdNode,
+  stringAttr,
+  textOf,
+} from './mdast.ts';
 import {
   paragraphText,
   type NormalizeContext,
@@ -18,12 +26,24 @@ import {
   violation,
   type Violations,
 } from './normalize.ts';
-import { isHtmlTag, ruleFor } from './rules.ts';
+import { isHtmlTag, ruleFor, visualComponentOf } from './rules.ts';
 import type { Anchor } from './schemas.ts';
 
 export type Block =
   | { kind: 'prose'; text: string; anchor: Anchor }
-  | { kind: 'figure'; text: string; label: string; anchor: Anchor }
+  /**
+   * Two extra fields, both read by guards and never spoken: `caption` is the page text
+   * under the figure (redundancy hint) and `visual` the component that paints it, which
+   * declares the drawn labels the narration must not name.
+   */
+  | {
+      kind: 'figure';
+      text: string;
+      label: string;
+      anchor: Anchor;
+      caption?: string;
+      visual?: string;
+    }
   | { kind: 'code'; text: string; label: string; anchor: Anchor };
 
 export type Extraction = {
@@ -230,7 +250,84 @@ function codeNarration(state: State, node: MdNode): string | null {
     );
     return null;
   }
+  narrationDeixis(state, node, pairs.narration);
   return pairs.narration;
+}
+
+/**
+ * Narration is audio-only, so a visual reference points a listener at nothing.
+ * Fatal, like every other narration defect: the fix is re-voicing the idea, and
+ * no later stage can repair it. Vocabulary lives in `AUDIO_CONFIG.deixis`.
+ */
+function narrationDeixis(state: State, node: MdNode, text: string): void {
+  visualDeixisHits(text).forEach((phrase) =>
+    violation(
+      state.ctx,
+      node,
+      `narration references "${phrase}": a listener cannot see the page — voice the idea it carries, not the visual`
+    )
+  );
+}
+
+/**
+ * Narration that names words the figure draws is a walkthrough, not an explanation.
+ * Fatal: the listener hears a label they cannot see. The drawn text is declared once,
+ * in `figureDrawnLabels.ts`, beside the component that paints it.
+ */
+function narrationDrawnLabels(
+  state: State,
+  node: MdNode,
+  visual: string | undefined,
+  text: string
+): void {
+  drawnLabelHits(visual, text).forEach((label) =>
+    violation(state.ctx, node, `narration ${drawnLabelProblem(label)}`)
+  );
+}
+
+/**
+ * Which component paints a figure: the visual child of a `DiagramFrame`, or the node
+ * itself when it narrates its own artwork. Aliases are resolved (`rules.ts`), so a
+ * diagram imported under another name keeps the guard keyed on its real artwork.
+ * A `DiagramFrame` resolving to no known visual is fatal: deixis still runs, but the
+ * drawn-label guard is blind, so the figure would lint as clean while unlabeled.
+ */
+function visualOf(
+  state: State,
+  node: MdNode,
+  name: string
+): string | undefined {
+  const child = (node.children ?? []).find(
+    (kid) =>
+      kid.type === 'mdxJsxFlowElement' && !!visualComponentOf(kid.name ?? '')
+  );
+  if (child?.name) return visualComponentOf(child.name);
+  const visual = visualComponentOf(name);
+  // Own-artwork `narrate` components omit `visual` by design: only a `DiagramFrame` is a defect.
+  if (!visual && name === 'DiagramFrame')
+    violation(
+      state.ctx,
+      node,
+      '<DiagramFrame> resolves to no known visual: the drawn-label guard is blind (deixis still runs)'
+    );
+  return visual;
+}
+
+/**
+ * Visible caption text. Authors write it as JSX (`caption={<>…</>}`, sometimes
+ * `caption={'…'}`) or a plain string, so the expression is stripped statically — only
+ * the redundancy hint reads it, and the spoken text stays in `narration`.
+ */
+function captionText(node: MdNode): string | undefined {
+  const plain = stringAttr(node, 'caption');
+  if (plain) return sanitizeText(plain);
+  const expression = expressionAttr(node, 'caption');
+  if (!expression) return undefined;
+  const text = expression
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/[{}]/g, ' ')
+    .replace(/^[\s'"`]+|[\s'"`]+$/g, '');
+  return sanitizeText(text) || undefined;
 }
 
 function codeBlock(state: State, node: MdNode): void {
@@ -271,16 +368,22 @@ function component(state: State, node: MdNode): void {
 function pushFigure(state: State, node: MdNode, name: string): void {
   const anchor: Anchor = { kind: 'figure', index: state.figureIndex++ };
   const narration = stringAttr(node, 'narration');
-  if (narration) {
-    state.blocks.push({
-      kind: 'figure',
-      text: sanitizeText(narration),
-      label: stringAttr(node, 'title') ?? name,
-      anchor,
-    });
+  if (!narration) {
+    violation(state.ctx, node, narrationProblem(node, name));
     return;
   }
-  violation(state.ctx, node, narrationProblem(node, name));
+  const visual = visualOf(state, node, name);
+  const caption = captionText(node);
+  narrationDeixis(state, node, narration);
+  narrationDrawnLabels(state, node, visual, narration);
+  state.blocks.push({
+    kind: 'figure',
+    text: sanitizeText(narration),
+    label: stringAttr(node, 'title') ?? name,
+    anchor,
+    ...(caption ? { caption } : {}),
+    ...(visual ? { visual } : {}),
+  });
 }
 
 const narrationProblem = (node: MdNode, name: string): string =>

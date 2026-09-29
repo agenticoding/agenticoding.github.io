@@ -57,6 +57,26 @@ test('a transcript that drops a critical term is flagged', () => {
   );
 });
 
+test('author-declared plain terms extend the required set', () => {
+  assert.deepEqual(criticalTerms("counting r's in strawberry"), []);
+  assert.deepEqual(
+    missingCriticalTerms(
+      "counting r's in strawberry",
+      'counting rs in a word',
+      ['strawberry']
+    ),
+    ['strawberry']
+  );
+  assert.deepEqual(
+    missingCriticalTerms(
+      "counting r's in strawberry",
+      'counting rs in strawberry',
+      ['strawberry']
+    ),
+    []
+  );
+});
+
 test('separator-bearing terms survive ASR joining or respacing, but plain terms stay strict', () => {
   const reference = 'Hand over the trade-offs it cannot guess.';
   assert.deepEqual(
@@ -87,5 +107,24 @@ test('a numeric range is its endpoints, so "to" is not a dropped term', () => {
   assert.deepEqual(
     missingCriticalTerms('70–85% of the bill.', '50 to 60 percent of the bill'),
     ['70', '85']
+  );
+});
+
+test('a dotted title and a possessive are orthography, not a dropped term', () => {
+  const spoken =
+    'meaning buys you doctor pay retrieves physician salary although the two share no words';
+  const heard =
+    "meaning buys you. Dr. Pay retrieves physician's salary, although the two share no words.";
+  assert.deepEqual(
+    missingCriticalTerms(spoken, heard, ['doctor pay', 'physician salary']),
+    []
+  );
+  // Guard: a bare acronym that only looks like the title stays distinct.
+  assert.deepEqual(missingCriticalTerms('the DR plan', 'the doctor plan'), [
+    'DR',
+  ]);
+  assert.deepEqual(
+    missingCriticalTerms('ordinary stack: Node.js, React, SQLite', 'ordinary stack, no .js, React, SQLite'),
+    []
   );
 });

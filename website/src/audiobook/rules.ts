@@ -51,6 +51,15 @@ function visualComponents(): Set<string> {
   return visualNames;
 }
 
+/**
+ * The component that paints a figure's artwork, or undefined when the name is not a
+ * visual component. A VisualElements file is never a re-export shim (enforced by
+ * `rules.test.ts`), so the painting component is the named one — no alias resolution.
+ */
+export function visualComponentOf(component: string): string | undefined {
+  return visualComponents().has(component) ? component : undefined;
+}
+
 /** Undefined means "unknown component": the coverage test fails loudly on those. */
 export function ruleFor(component: string): NodeRule | undefined {
   if (component === 'DiagramFrame') return { kind: 'frame' };

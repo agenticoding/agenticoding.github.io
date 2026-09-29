@@ -4,7 +4,7 @@
  * One serializer keeps git diffs reviewable and lets the golden test compare
  * regenerated scripts byte-for-byte with what is committed. `sha256` lives here
  * (not in hash.ts) because a content hash is only ever taken over this canonical
- * form — and so hash.ts and dialogue.ts can both hash without importing each other.
+ * form — co-locating them makes that coupling explicit and keeps hash.ts dependency-free.
  */
 import { createHash } from 'node:crypto';
 

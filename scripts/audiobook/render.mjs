@@ -12,7 +12,7 @@
  * in `inlineData` — no server-side WAV/MP3.
  */
 import { AUDIO_CONFIG } from '../../website/src/audiobook/config.ts';
-import { dialogueTranscript, roleLabel } from '../../website/src/audiobook/dialogue.ts';
+import { dialogueTranscript, roleLabel } from '../../website/src/audiobook/dialogueScript.ts';
 import { gemini, withRetry } from './report.mjs';
 
 const MIME_RATE = /rate=(\d+)/;

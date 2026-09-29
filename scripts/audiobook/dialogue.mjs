@@ -10,7 +10,7 @@
  */
 import { rmSync } from 'node:fs';
 import { AUDIO_CONFIG } from '../../website/src/audiobook/config.ts';
-import { chunkTurns, turnSliceBounds, turnStartMs } from '../../website/src/audiobook/dialogue.ts';
+import { chunkTurns, turnSliceBounds, turnStartMs } from '../../website/src/audiobook/dialogueScript.ts';
 import { dialogueChunkCacheKey } from '../../website/src/audiobook/hash.ts';
 import { renderDialogueChunk } from './render.mjs';
 import { cacheFile, exists, log, pcmBytesForMs, pcmDurationMs, readBytes, readJsonIfExists, table, transcribe, warn, writeFile, writeJson } from './report.mjs';

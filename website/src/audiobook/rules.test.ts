@@ -130,3 +130,22 @@ test('every component the docs narrate directly renders its own figure target', 
   });
   assert.deepEqual(bad, []);
 });
+
+// The drawn-label guard is keyed on the component that paints the artwork and reads its
+// drawn labels from `figureDrawnLabels.ts`. A bare re-export shim paints nothing, so it
+// would silently disarm the guard for the art it forwards — forbid shims rather than
+// resolve them (a real component that paints would carry its own labels entry).
+const PURE_RE_EXPORT =
+  /^\s*export\s*\{\s*default\s*\}\s*from\s*'\.\/[\w-]+'\s*;?\s*$/;
+
+test('no visual component is a bare re-export shim', () => {
+  const shims = visualNames().filter((name) =>
+    PURE_RE_EXPORT.test(
+      readFileSync(
+        new URL(`../components/VisualElements/${name}.tsx`, import.meta.url),
+        'utf8'
+      )
+    )
+  );
+  assert.deepEqual(shims, []);
+});

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { dialogueTranscript } from './dialogue.ts';
+import { dialogueTranscript } from './dialogueScript.ts';
 import { dialogueChunkCacheKey, promptCacheKey } from './hash.ts';
 
 const turns = (

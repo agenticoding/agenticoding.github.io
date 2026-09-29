@@ -33,6 +33,21 @@ export const figureIndexes = (mdx: string): number[] =>
   );
 
 /**
+ * The real echo/golden turn texts shared by `redundancy.test.ts` and `lexical.test.ts`:
+ * the verbatim token-list echo from how-llms-work t19/t20, and the user-blessed `sam`
+ * paraphrase (t33/t34) that must pass. Shared because both suites assert the same two
+ * poles — the echo fires, the paraphrase passes — and the text is one real fixture.
+ */
+export const ECHO_A =
+  "Now tokens. They're the units the model processes and emits: a word, a subword, punctuation, an image patch, an audio frame, or a tool-call structure, depending on the modality.";
+export const ECHO_B =
+  "And a token is not a word. It's whatever unit the model actually reads and writes: a word, part of a word, punctuation, an image patch, an audio frame, or a tool call.";
+export const PARAPHRASE_A =
+  'And while the most common answer keeps improving with more thinking, any single run gets less predictable.';
+export const PARAPHRASE_B =
+  "So more thinking doesn't remove the variance. It moves the center of the answers in the right direction, while any single run wanders further.";
+
+/**
  * The canonical fence for the live-flag contract: narration prose whose `live`
  * token Docusaurus promotes to a playground. Shared because renderFlags.test.ts
  * asserts the vendor promotes exactly what extract.test.ts asserts we reject.

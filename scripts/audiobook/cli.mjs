@@ -11,15 +11,23 @@
 import { AUDIO_CONFIG, assertRenderConfig } from '../../website/src/audiobook/config.ts';
 import { AUDIO_DOC_IDS, chapterMeta } from '../../website/src/audiobook/docs.ts';
 import {
-  chunkTurns,
   dialogueBloatWarnings,
+} from '../../website/src/audiobook/dialogueCoverage.ts';
+import {
+  dialogueLexicalHits,
+  docRedundancyProblems,
+} from '../../website/src/audiobook/dialogueLexical.ts';
+import {
+  chunkTurns,
   hardViolations,
-  isDialogueChapter,
   isDriftViolation,
   loadDialogue,
-  loadDialogueFile,
   narrationOverlapWarnings,
-} from '../../website/src/audiobook/dialogue.ts';
+} from '../../website/src/audiobook/dialogueScript.ts';
+import {
+  isDialogueChapter,
+  loadDialogueFile,
+} from '../../website/src/audiobook/dialogueTypes.ts';
 import { criticalTerms } from '../../website/src/audiobook/wer.ts';
 import { dialogueStream, chunkState, discardChunk, printDialoguePlan } from './dialogue.mjs';
 import { encodeChapter } from './encode.mjs';
@@ -185,11 +193,13 @@ const withId = (id, problem) => (problem.startsWith(`${id}:`) ? problem : `${id}
 /**
  * Dialogue lint: extraction + structural/term coverage + drift + chunk cap are
  * hard failures (they mean the script is not the source); section bloat is a
- * WARN line that does not fail.
+ * WARN line that does not fail. Drift is fatal here — lint runs on authored
+ * text, never on lagging audio — while build/verify only warn on it.
  */
 function lintDialogue(id, loaded) {
   const chunks = chunkTurns(loaded.script.segments, AUDIO_CONFIG.dialogue.maxChunkChars);
   const problems = [...loaded.violations, ...chunkProblems(chunks)];
+  loaded.warnings.forEach((warning) => warn('lint', `WARN  ${warning}`));
   dialogueBloatWarnings(chapterMeta(id), loadDialogueFile(id)).forEach((warning) => warn('lint', `WARN  ${warning}`));
   log('lint', `${id}: ${problems.length} problem(s) across ${loaded.script.segments.length} turns in ${chunks.length} chunk(s)`);
   // Problems are not echoed here: `main` prints every chapter problem once as `FAIL` lines.
@@ -202,8 +212,12 @@ function printSource(id) {
   console.log(`chapter ${id}: ${meta.title}`);
   meta.headings.forEach((heading) => console.log(`  heading ${heading.id} → ${heading.title}`));
   meta.blocks.forEach((block, index) => console.log(`  block ${index} ${block.kind} ${JSON.stringify(block.anchor)} ${block.text}`));
-  console.log(`  criticalTerms ${[...new Set(criticalTerms(meta.blocks.map((block) => block.text).join(' ')))].join(', ')}`);
+  const data = loadDialogueFile(id);
+  const declared = (data?.declaredCriticalTerms ?? []).map((entry) => entry.term);
+  console.log(`  criticalTerms ${[...new Set([...criticalTerms(meta.blocks.map((block) => block.text).join(' ')), ...declared])].join(', ')}`);
   narrationOverlapWarnings(meta).forEach((warning) => warn('source', `WARN  ${warning}`));
+  docRedundancyProblems(id, meta).forEach((warning) => warn('source', `WARN  ${warning}`));
+  if (data) dialogueLexicalHits(id, data).filter((hit) => hit.score > 0).slice(0, 5).forEach((hit) => warn('source', `WARN  lexical ${hit.a} and ${hit.b} (${hit.distance} turn(s) apart): ${Math.round(hit.score * 100)}% shared content${hit.phrase ? ' [shared phrase]' : ''} (${hit.shared.slice(0, 8).join(', ')})`));
 }
 
 async function runChapter(id, options) {
@@ -274,13 +288,11 @@ function preflightOrExit(options) {
 }
 
 /**
- * `--all` build/verify skips chapters without a committed dialogue script instead
- * of failing them one by one: audio legitimately lags the text, so an unauthored
- * chapter is not an error. An explicitly named unauthored chapter still fails loudly
- * in `loadChapter`. The skip is announced, never silent.
+ * `--all` skips chapters without committed dialogue; explicit chapter selection
+ * still reaches `loadChapter` and fails loudly when unauthored.
  */
 function authoredScope(run) {
-  if (run.options.command !== 'build' && run.options.command !== 'verify') return run.ids;
+  if (!run.options.all || !['build', 'verify', 'lint'].includes(run.options.command)) return run.ids;
   const authored = run.ids.filter(isDialogueChapter);
   const skipped = run.ids.length - authored.length;
   if (skipped) log(run.options.command, `skipping ${skipped} unauthored chapter(s)`);

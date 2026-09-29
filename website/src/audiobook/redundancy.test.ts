@@ -2,30 +2,25 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   dialogueRedundancyProblems,
-  narrationOverlapWarnings,
-  type DialogueFile,
-} from './dialogue.ts';
+  docRedundancyProblems,
+} from './dialogueLexical.ts';
+import { narrationOverlapWarnings } from './dialogueScript.ts';
+import type { DialogueFile } from './dialogueTypes.ts';
+import { buildCorpus } from './lexical.ts';
 import type { ChapterMeta } from './docs.ts';
 import type { Block } from './extract.ts';
-import { longestContentRun, redundancyHits } from './redundancy.ts';
-
-/** The real how-llms-work t19/t20 echo: adjacent turns that restate the token list. */
-const ECHO_A =
-  "Now tokens. They're the units the model processes and emits: a word, a subword, punctuation, an image patch, an audio frame, or a tool-call structure, depending on the modality.";
-const ECHO_B =
-  "And a token is not a word. It's whatever unit the model actually reads and writes: a word, part of a word, punctuation, an image patch, an audio frame, or a tool call.";
+import {
+  longestContentRun,
+  redundancyHits,
+  sharesContentTrigram,
+} from './redundancy.ts';
+import { ECHO_A, ECHO_B, PARAPHRASE_A, PARAPHRASE_B } from './testing.ts';
 
 /** The real how-llms-work t13/t17 defect: the figure narration re-lists the prose outputs. */
 const NARRATION_ECHO_A =
   'Exactly. The output is one predicted next token, which immediately becomes part of the next context. That single loop is the mechanism behind every fluent paragraph, code patch, tool call, or chain of steps the model emits.';
 const NARRATION_ECHO_B =
   'A fluent paragraph, a code patch, a tool call, a chain of steps — each is only that one small step repeating.';
-
-/** The intended `sam` restatement (t29/t30): same idea, different words — not a repeat. */
-const PARAPHRASE_A =
-  'And while the most common answer keeps improving with more thinking, any single run gets less predictable.';
-const PARAPHRASE_B =
-  "So more thinking doesn't remove the variance. It moves the center of the answers in the right direction, while any single run wanders further.";
 
 const turn = (id: string, text: string): DialogueFile['turns'][number] => ({
   id,
@@ -62,6 +57,16 @@ test('longestContentRun catches the narration echo the old run-based guard misse
 
 test('longestContentRun ignores meaning: the intended paraphrase shares no long run', () => {
   assert.ok(longestContentRun(PARAPHRASE_A, PARAPHRASE_B).length < 20);
+});
+
+test('sharesContentTrigram finds a reused phrase and ignores scattered words', () => {
+  assert.ok(sharesContentTrigram(PARAPHRASE_A, PARAPHRASE_B));
+  assert.ok(
+    !sharesContentTrigram(
+      'The stored vector is compared against every candidate vector inside the index.',
+      'Every candidate inside the index gets compared to the stored vector.'
+    )
+  );
 });
 
 test('redundancyHits flags a content repeat but never the intended paraphrase', () => {
@@ -141,4 +146,104 @@ test('narrationOverlapWarnings stays quiet when the narration adds a new idea', 
     },
   ];
   assert.deepEqual(narrationOverlapWarnings(metaOf(blocks)), []);
+});
+
+// The caption is printed under the figure while the narration is spoken: restating it
+// out loud says the same thing twice. A hint only — page text and spoken text overlap.
+test('narrationOverlapWarnings flags a figure narration that restates its own caption', () => {
+  const blocks: Block[] = [
+    {
+      kind: 'figure',
+      text: 'The selected token is appended to the context, then the same loop runs again to produce the next token.',
+      label: 'Loop',
+      anchor: { kind: 'figure', index: 0 },
+      caption:
+        'The selected token is appended to the context, then the loop runs again for the next token.',
+    },
+  ];
+  const warnings = narrationOverlapWarnings(metaOf(blocks));
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0]!, /figure 0 restates its own caption/);
+});
+
+test('narrationOverlapWarnings stays quiet when the caption only labels the parts', () => {
+  const blocks: Block[] = [
+    {
+      kind: 'figure',
+      text: 'Nothing in the wording tells you which answer was forced true, so validate outside the model.',
+      label: 'Logic',
+      anchor: { kind: 'figure', index: 0 },
+      caption: 'A rule path on the left, a probability landscape on the right.',
+    },
+  ];
+  assert.deepEqual(narrationOverlapWarnings(metaOf(blocks)), []);
+});
+
+const docCorpus = (blocks: Block[]): ReturnType<typeof buildCorpus> =>
+  buildCorpus([
+    ...blocks.map((block) => block.text),
+    'Embeddings map text to vectors; retrieval is a nearest neighbour lookup.',
+    'Attention pools at the edges of the window and fades in the middle.',
+    'A workflow agent owns the loop and calls the model at bounded junctions.',
+    'Context is the smallest set of high-signal tokens a task depends on.',
+    'A sub-agent finds and compresses; the frontier model only thinks.',
+  ]);
+
+test('docRedundancyProblems fails a figure narration that restates the prose beside it', () => {
+  const blocks: Block[] = [
+    {
+      kind: 'prose',
+      text: 'Tokens are the units the model processes and emits: a word, subword, punctuation, image patch, audio frame, or tool-call structure.',
+      anchor: { kind: 'heading', id: 'intro' },
+    },
+    {
+      kind: 'figure',
+      text: 'A token is not a word. It is whatever unit the model reads and writes: a word, part of a word, punctuation, an image patch, an audio frame, or a tool call.',
+      label: 'Token types',
+      anchor: { kind: 'figure', index: 0 },
+    },
+  ];
+  const meta = metaOf(blocks);
+  const problems = docRedundancyProblems('demo', meta, docCorpus(blocks));
+  assert.ok(problems.length >= 1, 'the doc echo must be reported');
+  assert.match(problems[0]!, /figure 0 narration/);
+});
+
+test('docRedundancyProblems reports the same fact repeated across two prose sections', () => {
+  const blocks: Block[] = [
+    {
+      kind: 'prose',
+      text: 'The index is built once and paid for once, so every later query is nearly free.',
+      anchor: { kind: 'heading', id: 'a' },
+    },
+    {
+      kind: 'prose',
+      text: 'Because the index is built once and paid for once, a later query costs almost nothing.',
+      anchor: { kind: 'heading', id: 'b' },
+    },
+  ];
+  const meta = metaOf(blocks);
+  const problems = docRedundancyProblems('demo', meta, docCorpus(blocks));
+  assert.ok(problems.length >= 1, 'the prose repeat must be reported');
+  assert.match(problems[0]!, /prose/);
+});
+
+test('docRedundancyProblems passes a narration that adds a new idea', () => {
+  const blocks: Block[] = [
+    {
+      kind: 'prose',
+      text: 'Tokens are the units the model processes and emits.',
+      anchor: { kind: 'heading', id: 'intro' },
+    },
+    {
+      kind: 'figure',
+      text: 'Attention weighs every other position, so a bank beside a river reads differently than beside an account.',
+      label: 'Attention',
+      anchor: { kind: 'figure', index: 0 },
+    },
+  ];
+  assert.deepEqual(
+    docRedundancyProblems('demo', metaOf(blocks), docCorpus(blocks)),
+    []
+  );
 });

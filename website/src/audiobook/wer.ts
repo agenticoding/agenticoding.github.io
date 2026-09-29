@@ -28,6 +28,28 @@ export function normalizeForWer(text: string): string {
   return cleaned.split(' ').filter(Boolean).join(' ');
 }
 
+/**
+ * Spellings ASR uses for a sound the author wrote plainly: a dotted title
+ * (`Dr.` for "doctor"), a possessive (`physician's` for "physician"), and
+ * `no .js` for `Node.js`. All are orthography, so a term match must see through
+ * them or a correctly spoken plain phrase reads as dropped. The dot is the signal:
+ * a bare `DR` acronym is not a title and stays distinct. Extend the pattern only on
+ * evidence.
+ */
+const foldAsrOrthography = (text: string): string =>
+  text
+    .replace(/\bDr\.\s*/gi, 'doctor ')
+    .replace(/\bno\s*\.js\b/gi, 'node.js')
+    .replace(/([\p{L}\p{N}])['’]s\b/giu, '$1');
+
+/**
+ * Term matching uses the shared normalization plus the ASR-orthography fold.
+ * Kept private to `missingCriticalTerms` (not `normalizeForWer`) so WER,
+ * redundancy, deixis and alignment keep their calibrated tokenization.
+ */
+const normalizeForTerm = (text: string): string =>
+  normalizeForWer(foldAsrOrthography(text));
+
 const wordsOf = (text: string): string[] => (text ? text.split(' ') : []);
 
 export function wordErrorRate(reference: string, hypothesis: string): number {
@@ -69,23 +91,25 @@ export function criticalTerms(text: string): string[] {
 /** Separator-bearing terms (`trade-offs`, `useDoc()`) may be joined or respaced by ASR. */
 const SEPARATED_TERM = /[_.()-]/;
 const squeezed = (text: string): string =>
-  normalizeForWer(text).replace(/ /g, '');
+  normalizeForTerm(text).replace(/ /g, '');
 
 /**
  * A dropped term counts as missing unless it survives as a whole phrase, or — for
  * terms that carry separators — as the same characters in any separator layout
  * (`trade-offs` matches `tradeoffs` and `trade offs`). Plain terms stay strict so
- * a short acronym can never match inside an unrelated word.
+ * a short acronym can never match inside an unrelated word. `extraTerms` are
+ * author-declared plain words (e.g. a quoted example) the classifier cannot see.
  */
 export function missingCriticalTerms(
   reference: string,
-  hypothesis: string
+  hypothesis: string,
+  extraTerms: string[] = []
 ): string[] {
-  const heardPhrase = ` ${normalizeForWer(hypothesis)} `;
+  const heardPhrase = ` ${normalizeForTerm(hypothesis)} `;
   const heardSqueezed = squeezed(hypothesis);
-  return [...new Set(criticalTerms(reference))]
+  return [...new Set([...criticalTerms(reference), ...extraTerms])]
     .filter((term) => {
-      if (heardPhrase.includes(` ${normalizeForWer(term)} `)) return false;
+      if (heardPhrase.includes(` ${normalizeForTerm(term)} `)) return false;
       return !(
         SEPARATED_TERM.test(term) && heardSqueezed.includes(squeezed(term))
       );

@@ -60,6 +60,19 @@ export const attrWasExpression = (node: MdNode, name: string): boolean => {
   return value !== null && typeof value === 'object';
 };
 
+/**
+ * Raw source inside an `{…}` attribute expression, e.g. a `caption={<>…</>}`.
+ *
+ * remark-mdx keeps the expression as text (its parsed tree lives in `data.estree`),
+ * which is what a static strip needs — see `captionText` in `extract.ts`.
+ */
+export function expressionAttr(node: MdNode, name: string): string | undefined {
+  const value = (node.attributes ?? []).find(
+    (attr) => attr.name === name
+  )?.value;
+  return value && typeof value === 'object' ? value.value : undefined;
+}
+
 export const locationOf = (node: MdNode): string =>
   node.position
     ? `${node.position.start.line}:${node.position.start.column}`

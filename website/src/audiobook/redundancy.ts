@@ -9,20 +9,38 @@ export type RedundancyHit = {
   distance: number;
 };
 
-/** Function words every turn shares; they carry no fact, so they never count as overlap. */
+/**
+ * Function words every turn shares; they carry no fact, so they never count as overlap.
+ * Kept deliberately narrow to closed-class words: pronouns, auxiliaries/modals, determiners,
+ * prepositions and conjunctions. Content-bearing adverbs and subordinators (`any`, `every`,
+ * `how`, `now`, `because`) stay OUT — they carry meaning inside phrases ("any single run"),
+ * and filtering them broke the phrase/trigram calibration the lexical gate depends on.
+ */
 const FUNCTION_WORDS = new Set(
-  `a an and are as at be been but by do does for from had has have he her his i if in into is it its
-   more most no not of on or our she so than that the their them then there these they this those to
-   up was we were what when where which while who why will with would you your`.split(
-    /\s+/
-  )
+  `a am an and are as at be been being but by can could did do does done for from had has have he her
+   his him i if in into is it its may me might mine more most must my no nor not of on or our ours she
+   shall should so than that the their theirs them then there these they this those to up us was we were
+   what when where which while who why will with would you your yours`.split(/\s+/)
+);
+
+/** normalizeForWer removes apostrophes; restore common contraction stems before filtering. */
+const FUNCTION_CONTRACTIONS = new Set(
+  `aint arent cant couldnt didnt doesnt dont hadnt hasnt havent isnt mightnt mustnt shant shouldnt
+   wasnt werent wont wouldnt youre youve youll youd hes shes its theyre theyve theyll theyd
+   were weve well wed im ive ill id thats theres heres whos whats wheres whens whys
+   hows whens wheres lets`.split(/\s+/)
 );
 
 /** Content tokens: the words that carry the fact, minus the function words above. */
 export const contentTokens = (text: string): string[] =>
   normalizeForWer(text)
     .split(' ')
-    .filter((word) => word.length > 1 && !FUNCTION_WORDS.has(word));
+    .filter(
+      (word) =>
+        (word.length > 1 || /\d/.test(word)) &&
+        !FUNCTION_WORDS.has(word) &&
+        !FUNCTION_CONTRACTIONS.has(word)
+    );
 
 /** Sørensen–Dice overlap of two texts' content-word sets (length-tolerant, 0..1). */
 export function contentDice(a: string, b: string): number {
@@ -55,6 +73,27 @@ export function longestContentRun(a: string, b: string): string {
     previous = current;
   }
   return left.slice(best.end - best.length, best.end);
+}
+
+/** Content trigrams: the smallest phrase that carries a fact's wording. */
+const contentTrigrams = (text: string): Set<string> => {
+  const words = contentTokens(text);
+  const grams = new Set<string>();
+  for (let i = 0; i + 3 <= words.length; i += 1)
+    grams.add(words.slice(i, i + 3).join(' '));
+  return grams;
+};
+
+/**
+ * Whether two turns reuse a ≥3-word content phrase — a real wording repeat, not the
+ * scattered jargon every same-topic turn shares. This is the phrase the sanctioned
+ * `sam` restatement keeps (`any single run`), and it is what separates a paraphrase
+ * from a vocabulary echo at the same cosine score.
+ */
+export function sharesContentTrigram(a: string, b: string): boolean {
+  const right = contentTrigrams(b);
+  for (const gram of contentTrigrams(a)) if (right.has(gram)) return true;
+  return false;
 }
 
 /**

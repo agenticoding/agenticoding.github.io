@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { chapters, toolboxEntries } from '../../chapters.ts';
 import { extractDoc, type Block } from './extract.ts';
-import { sha256 } from './serialize.ts';
+import { sha256, toCanonicalJson } from './serialize.ts';
 import type { HeadingInfo } from './headings.ts';
 
 /** Every document in book order: chapters.ts is the single source of truth. */
@@ -31,6 +31,30 @@ export type ChapterMeta = {
 };
 
 /**
+ * Hash of the SPOKEN source only: block text, block anchors, and heading ids/titles.
+ * Page-only fields (figure `caption`, guard `visual`, frontmatter, nav footers) are
+ * excluded, so a purely visual edit never flags the audio stale. Anchors are included
+ * because a figure/code reorder shifts playback alignment.
+ */
+export const spokenSourceHash = (
+  blocks: readonly Block[],
+  headings: readonly HeadingInfo[]
+): string =>
+  sha256(
+    toCanonicalJson({
+      headings: headings.map((heading) => ({
+        id: heading.id,
+        title: heading.title,
+      })),
+      blocks: blocks.map((block) => ({
+        kind: block.kind,
+        text: block.text,
+        anchor: block.anchor,
+      })),
+    })
+  );
+
+/**
  * The canonical spoken source for one chapter: exactly what the extractor sees,
  * before any authored dialogue. This is the ground truth `audio:dialogue:source`
  * prints and every coverage check measures against. `title` is the doc's
@@ -44,7 +68,7 @@ export function chapterMeta(id: string): ChapterMeta {
   return {
     title: extraction.frontmatterTitle ?? id,
     headings: extraction.headings,
-    sourceHash: sha256(source),
+    sourceHash: spokenSourceHash(extraction.blocks, extraction.headings),
     blocks: extraction.blocks,
     violations: extraction.violations,
   };

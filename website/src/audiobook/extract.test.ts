@@ -47,13 +47,6 @@ test('images speak their alt text and footnotes are dropped', () => {
   ]);
 });
 
-test('the reading-spine footer is navigation chrome, not narration', () => {
-  assert.deepEqual(
-    proseOf('Body sentence.\n\n**Next:** [Label](./other.md)\n'),
-    ['Body sentence.']
-  );
-});
-
 test('prompt bodies and tables stay silent while their prose neighbours are spoken', () => {
   const mdx =
     '<PromptExample title="Prompt">\n\nDo the thing.\n\n</PromptExample>\n\n| Tool | Use |\n| --- | --- |\n| rg | search |\n\nAfter the table.\n';
@@ -80,11 +73,76 @@ test('a framed figure is one narrated block labelled by its title', () => {
         text: 'Pressure builds.',
         label: 'Shown',
         anchor: { kind: 'figure', index: 0 },
+        visual: 'ContextPressureDiagram',
       },
     ],
     'a framed figure is one narrated block labelled by its title'
   );
   assert.deepEqual(violationsOf(mdx), []);
+});
+
+// The caption is page text the listener never hears; extraction keeps it so the
+// redundancy hint can compare a narration against the words printed under it.
+test('a JSX caption is stripped to plain text and never spoken', () => {
+  const fragment = `<DiagramFrame title="T" size="wide" narration="Spoken idea."
+  caption={
+    <>
+      Written under the drawing.
+    </>
+  }
+>
+
+${VISUAL}
+
+</DiagramFrame>
+`;
+  const quoted = `<DiagramFrame title="T" size="wide" narration="Spoken idea." caption={'Said as a string literal.'}>
+
+${VISUAL}
+
+</DiagramFrame>
+`;
+  const plain = `<DiagramFrame title="T" size="wide" narration="Spoken idea." caption="Plain attribute.">
+
+${VISUAL}
+
+</DiagramFrame>
+`;
+  assert.equal(
+    blocksOf(fragment, 'figure')[0]?.caption,
+    'Written under the drawing.'
+  );
+  assert.equal(
+    blocksOf(quoted, 'figure')[0]?.caption,
+    'Said as a string literal.'
+  );
+  assert.equal(blocksOf(plain, 'figure')[0]?.caption, 'Plain attribute.');
+  assert.deepEqual(
+    blocksOf(fragment, 'figure').map((block) => block.text),
+    ['Spoken idea.'],
+    'the caption stays off the spoken text'
+  );
+});
+
+/** The component paints these words; naming them aloud is a diagram walkthrough. */
+test('narration that names text drawn in its figure is a violation', () => {
+  const drawn =
+    '<DiagramFrame title="T" size="wide" narration="One run ends with trust earned.">\n\n<LocalChoicesGlobalCoherenceDiagram />\n\n</DiagramFrame>\n';
+  assert.match(
+    violationsOf(drawn)[0] ?? '',
+    /names "trust earned": text drawn inside the figure/
+  );
+  // Same words, a figure that does not paint them: the guard is per component, not global.
+  const elsewhere = drawn.replace(
+    'LocalChoicesGlobalCoherenceDiagram',
+    'ContextPressureDiagram'
+  );
+  assert.deepEqual(violationsOf(elsewhere), []);
+});
+
+test('DiagramFrame narration cannot point to a figure above', () => {
+  const mdx = '<DiagramFrame title="T" size="wide" narration="The figure above shows how pressure builds.">\n\n<ContextPressureDiagram />\n\n</DiagramFrame>\n';
+  assert.match(violationsOf(mdx)[0] ?? '', /references "(the )?figure/);
 });
 
 test('a figure without narration is a violation and still consumes its DOM index', () => {

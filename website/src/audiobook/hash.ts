@@ -1,5 +1,5 @@
 import { AUDIO_CONFIG, type SpeakerRole } from './config.ts';
-import { dialogueTranscript } from './dialogue.ts';
+import { dialogueTranscript } from './dialogueScript.ts';
 import { sha256 } from './serialize.ts';
 
 /**
