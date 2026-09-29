@@ -84,7 +84,7 @@ test('browser-contract deep-link chapters stay stable (test-browser-contracts.cj
   // these chapters; a rename should fail here (fast unit suite) rather than in
   // the slow browser suite.
   const lastNumbered = chapters.at(-2); // -1 is About (afterGroups)
-  assert.equal(lastNumbered?.id, 'agent-knowledge-cache');
+  assert.equal(lastNumbered?.id, 'exercises/tic-tac-toe/overview');
   assert.equal(isNumbered(lastNumbered!), true);
   assert.equal(chapterGroups[0].chapters.at(-1)!.id, 'workflow-agents');
 });
@@ -193,6 +193,7 @@ test('browser-contract LABEL_* constants stay in sync with chapters.ts labels', 
   assert.equal(extractLabel('LABEL_FOUNDATIONS'), chapterGroups[0].label);
   assert.equal(extractLabel('LABEL_DIRECTING'), chapterGroups[1].label);
   assert.equal(extractLabel('LABEL_SHIPPING'), chapterGroups[3].label);
+  assert.equal(extractLabel('LABEL_EXERCISES'), chapterGroups[4].label);
   // About's sidebar label is the standalone doc's frontmatter title.
   assert.equal(
     extractLabel('LABEL_ABOUT'),

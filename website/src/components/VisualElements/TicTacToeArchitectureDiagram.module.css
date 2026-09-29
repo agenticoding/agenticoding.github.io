@@ -1,0 +1,71 @@
+/* Layout only. Visibility of the two responsive variants is owned by
+   ResponsiveDiagram.module.css; these selectors must not set `display`. */
+/* max-width equals the desktop viewBox width, the house rule every sibling figure
+   follows: the SVG renders 1:1 so the authored font/stroke/icon sizes land at their
+   nominal values instead of being scaled up by the container. */
+.container {
+  container-type: inline-size;
+  display: block;
+  margin-inline: auto;
+  max-width: 696px;
+}
+
+.diagram {
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  font-feature-settings: var(--font-mono-features);
+}
+
+.desktopDiagram {
+  max-width: 696px;
+}
+
+.mobileDiagram {
+  max-width: 360px;
+}
+
+/* Shared beat timing. Each animated role reads one keyframe from the schedule
+   injected by the component, so the whole loop follows the turn model. */
+.serverPulse,
+.turnMark,
+.clickHand,
+.winLine {
+  animation-duration: var(--cycle-ms);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-delay: var(--delay, 0ms);
+}
+
+/* Canonical values. With motion disabled these are the authoritative figure: the
+   whole game played out on all three boards, with its winning row held. */
+.serverPulse {
+  opacity: 0;
+}
+
+/* The click is motion, not a state: with motion off it must not be in the figure. */
+.clickHand {
+  opacity: 0;
+}
+
+.turnMark,
+.winLine {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* `!important` is required: the component sets animationName INLINE, and an
+     inline declaration outranks any normal stylesheet rule — without it the loop
+     keeps running at the near-zero duration motion-tokens.css pins, and the boards
+     land on an arbitrary frame instead of the canonical figure. */
+  .serverPulse,
+  .turnMark,
+  .clickHand,
+  .winLine {
+    animation: none !important;
+  }
+
+  /* Pinning every animated property to its canonical value is what the base rules
+     above already do: the completed game on all three boards, no server pulse. */
+}

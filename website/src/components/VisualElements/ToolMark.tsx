@@ -20,6 +20,9 @@ type ToolMarkProps = {
   darkImageTone?: 'lift';
   // Optional asset with colors selected for the dark theme.
   darkSrc?: string;
+  // Frameless, `--icon-md` variant that blends a mark into body text (bullets,
+  // prose) instead of presenting it as a standalone app tile.
+  inline?: boolean;
 };
 
 // Neutral 48px tile rendering an official tool logo. Decorative only: the
@@ -32,6 +35,7 @@ export default function ToolMark({
   imageFrame = false,
   darkImageTone,
   darkSrc,
+  inline = false,
 }: ToolMarkProps) {
   const url = useBaseUrl(src);
   const darkUrl = useBaseUrl(darkSrc ?? src);
@@ -43,7 +47,11 @@ export default function ToolMark({
   return (
     <span
       aria-hidden="true"
-      className={clsx(styles.frame, darkSrc && styles.withDarkImage)}
+      className={clsx(
+        styles.frame,
+        inline && styles.inlineFrame,
+        darkSrc && styles.withDarkImage
+      )}
     >
       {mode === 'image' ? (
         <>

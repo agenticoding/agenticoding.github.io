@@ -240,6 +240,12 @@ export const chapterGroups = [
       },
     ],
   },
+  {
+    label: 'Exercises',
+    chapters: [
+      { id: 'exercises/tic-tac-toe/overview', kind: 'chapter' as const },
+    ],
+  },
 ] as const;
 
 const groupedChapters = chapterGroups.flatMap((group) => [...group.chapters]);

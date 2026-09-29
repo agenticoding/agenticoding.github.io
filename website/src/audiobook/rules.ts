@@ -26,11 +26,15 @@ export const SKIP: Record<string, string> = {
   GitHubProjectSource: 'navigation chrome (repository star badge)',
 };
 
-/** Visual components outside VisualElements/ that still own their spoken explanation. */
+/** Components outside VisualElements/ that own their spoken explanation and render a player anchor. */
 const NARRATE = new Set<string>([
   'HomepageVisualPreview',
   'PromptComparison',
   'PromptAnatomy',
+  // StackList is a link list, not a figure, but its setup links are audio-relevant:
+  // the narration is the spoken setup walk-through, and the anchor lets the player
+  // highlight the list when the setup turn plays.
+  'StackList',
 ]);
 
 const VISUALS_DIR = new URL('../components/VisualElements/', import.meta.url);

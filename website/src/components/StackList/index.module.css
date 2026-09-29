@@ -1,0 +1,49 @@
+/* Stack list — composition follows the design system's proximity grouping:
+   tight spacing inside an entry (4px) and a ≥2× step between entries (16px),
+   with no borders so the group never exceeds the border budget. */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--space-1);
+  align-items: start;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0h);
+  min-width: 0;
+}
+
+.name {
+  color: var(--text-heading);
+  font-weight: 600;
+}
+
+.desc {
+  margin: 0;
+  color: var(--text-body);
+}
+
+/* Action label — design-system technical/mechanical voice (Krypton):
+   setup/CLI affordances read as mechanics, not prose. Kept off the prose line
+   by the flex column; its line box clears the 24×24 CSS px WCAG 2.2 AA floor. */
+.setup {
+  align-self: flex-start;
+  font-family: var(--font-mono-keyword);
+  font-feature-settings: var(--font-mono-features);
+}
+
+.arrow {
+  margin-inline-start: var(--space-0h);
+}

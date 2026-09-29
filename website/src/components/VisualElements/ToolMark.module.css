@@ -9,6 +9,24 @@
   border: 1px solid var(--border-default);
 }
 
+/* Frameless variant that blends a mark into running text rather than
+   presenting it as a standalone app tile. */
+.inlineFrame {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  margin-inline-end: 0.2em;
+  vertical-align: -0.2em;
+  background: none;
+  border: none;
+}
+
+.inlineFrame .mark,
+.inlineFrame .image,
+.inlineFrame .darkImage {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
 .mark {
   width: var(--icon-lg);
   height: var(--icon-lg);
