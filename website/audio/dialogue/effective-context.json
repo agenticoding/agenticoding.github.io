@@ -1,0 +1,189 @@
+{
+  "chapterId": "effective-context",
+  "sourceHash": "157aaff6a6c1881c12c29d5c339641ed0806ba0ff108f88da510d0ed7993dffd",
+  "describedLiterals": [
+    {
+      "term": "AKJSs89sal",
+      "reason": "arbitrary benchmark example literal; the voice describes it as a short random prefix"
+    }
+  ],
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Effective Context. Last chapter we landed on the fact that at inference the weights never move — the context you hand the model is the only thing you're actually steering. Which raises the obvious operational question: if the window is advertised in the millions of tokens, how much of it can you actually lean on?"
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "And that question has a wrong answer built into it. A big window number feels like headroom, so teams design around it, then discover mid-project that the model stopped attending to the thing they placed deep in the middle."
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "So we'll do three things. Separate what's advertised from what survives under load. Understand what the retrieval tests actually measure. And see who grades those numbers — because the same model can arrive with two very different scores depending on who ran the test."
+    },
+    {
+      "id": "t4",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-number-on-the-box" },
+      "text": "Start with a concrete case. Qwen 3.8 Max advertises a 1M token window, and on independent long-context testing the decline is steep: recall drops about threefold between 128K and 512K — 92.3 percent down to 29.7 percent. The advertised figure tells you what the model will accept. It says nothing about how much of your input it still uses reliably at that length."
+    },
+    {
+      "id": "t5",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-number-on-the-box" },
+      "text": "That's the distinction worth naming. Advertised context is how many tokens a model takes in. Effective context is how many of those tokens it keeps working from once the window is genuinely loaded. Marketing folds those two into a single number, and the fold always flatters the model."
+    },
+    {
+      "id": "t6",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-number-on-the-box" },
+      "text": "So the window size is a capacity spec, and I'm shopping for reliability. Which means I shouldn't compare window sizes at all — I should compare how quickly each model degrades as I feed it more."
+    },
+    {
+      "id": "t7",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-number-on-the-box" },
+      "text": "Right — and the evidence comes from one benchmark, run the same way for everyone. Context Arena puts every model through an identical long-context test under a single scoring function, and publishes the results. Models nobody has measured independently simply aren't in the comparison."
+    },
+    {
+      "id": "t8",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "Here's what those measurements show once you stop reading a single score off the box. Recall doesn't collapse all at once — it holds steady for a long stretch, then gives way, and for a model like Qwen the last stretch goes fastest: from 256K to 512K its recall more than halves, sitting at 67.7 percent at the earlier mark. And some models carry no reading at all at 1M — not a failed score, just unmeasured. GPT-5.6 from OpenAI and Claude Opus 4.6 top out at 512K."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "And the comparison across labs is the part that changes how you shop. At a short length the frontier looks interchangeable — the top labs land within a few points of one another. Push toward half a million tokens and the field splits wide: Google's Gemini 3.7 Flash holds most of its recall, OpenAI's GPT-5.6 stays strong, while Anthropic's Claude Opus 5 and Alibaba's Qwen 3.8 Max fall two to three times further. Only Google is measured with strong recall at the full window. The smaller families — Mistral Medium, Poolside Laguna, Claude Haiku, the older Grok 4.20 — never clear the bar even at short lengths. That's the overview: at short context every lab looks equal, and the field only separates at the length you actually run."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "That's the trap I'd walk into by only testing at a comfortable length. Everyone looks fine when the window is barely used. The decision I actually care about is which family still answers when the window is genuinely full — and by that standard the ranking looks nothing like the marketing."
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "long-context-benchmarks-show-the-tradeoff"
+      },
+      "text": "Worth being precise about what recall even is here. It isn't a fixed property listed on a model card. Architecture and training decide what a model can distinguish, but your harness sets the conditions — how much thinking effort it's allowed, how long the context is, and how much similar material it has to tell apart. The measured result is that combination, not the model alone."
+    },
+    {
+      "id": "t12",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "long-context-benchmarks-show-the-tradeoff"
+      },
+      "text": "There's a mechanism and there's an outcome, and it's worth keeping them apart. The position-based attention research explains how a model spreads its focus across a long context. This recall measurement is the outcome: an answer is hidden somewhere in the window, and the model has to find it and reproduce it exactly. Because reproduction is strict, a model that scores low can still summarize or extract perfectly well — the score is a floor on one capability, not a verdict on the model."
+    },
+    {
+      "id": "t13",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "long-context-benchmarks-show-the-tradeoff"
+      },
+      "text": "So a low recall number doesn't mean the model is useless. It means I can't rely on it to reproduce something verbatim from deep inside a large window. Those are different jobs, and I should staff them differently."
+    },
+    {
+      "id": "t14",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "long-context-benchmarks-show-the-tradeoff"
+      },
+      "text": "Exactly. And this is why adding more can make things worse instead of better. These models aren't databases — they have to preserve identity, position, and relationships well enough to answer you later. An agent pulling back an old decision, an API contract, a tool result, a file detail, or a user constraint needs recall that still holds at its operating length. That point is its effective context limit, and it is not the API maximum. It's one input to choosing a production model, next to task quality, latency, and cost."
+    },
+    {
+      "id": "t15",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "long-context-benchmarks-show-the-tradeoff"
+      },
+      "text": "So for recall-dependent work I'm not buying a ceiling, I'm buying reliability that holds where I operate. A huge window whose recall falls off fast is worse than a smaller one that keeps its grip."
+    },
+    {
+      "id": "t16",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-test-eight-poems-about-penguins" },
+      "text": "Now the test itself, because what it asks for explains the numbers. the v2 revision of MRCR builds a long synthetic conversation where the phrase write a poem about penguins appears eight times, each answered with a different poem, surrounded by look-alike distractors. Then it asks for one precise edit: prepend a short random prefix to the fifth poem, and add nothing else."
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-test-eight-poems-about-penguins" },
+      "text": "The model has to find all eight, order them correctly, pick the fifth, and reproduce it, scored by string similarity with partial credit. Miss the hash prefix and the score is zero. This is not needle-in-a-haystack. NIAH hides one conspicuous fact in filler. MRCR hides eight near-identical candidates and demands that you discriminate between them in order — which is far closer to how an agent actually runs."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-test-eight-poems-about-penguins" },
+      "text": "So the hard part isn't spotting a needle, it's telling eight look-alikes apart and keeping them in the right order. That's exactly the failure I see in long agent sessions — it doesn't lose the information, it loses track of which version is the current one."
+    },
+    {
+      "id": "t19",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-test-eight-poems-about-penguins" },
+      "text": "And that reframes what the score means. The model isn't solving anything in this test — it's echoing back text it was just handed, and copying is about the easiest job you can give an LLM. It still never gets it perfectly right, because an LLM doesn't copy: it guesses, word by word, what probably comes next, and reproducing a poem is a long chain of those guesses where every one has to be correct. One wrong guess anywhere changes the answer. That's local prediction with global consequences, and the hash prefix is exactly where a wrong guess is most likely — a short, odd, meaningless string with nothing around it to anchor it."
+    },
+    {
+      "id": "t20",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-test-eight-poems-about-penguins" },
+      "text": "The test only looks pristine because it runs in a clean room — nothing else in the window, so the model gets the front, the strongest part of its attention. Real windows are never that tidy. By the time the system prompt, the tool definitions, and the project notes have claimed the front, your task sits further back, in the weaker middle. You can't stop the machine from guessing. You can only set up the room so the guess lands — which is what context engineering is for."
+    },
+    {
+      "id": "t21",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-test-eight-poems-about-penguins" },
+      "text": "So even a clean, simple copy task reveals the cost of a predicting machine. Which tells me the low numbers we saw aren't a flaw in the benchmark — they're the honest price of asking a predictor to reproduce."
+    },
+    {
+      "id": "t22",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "who-grades-the-homework" },
+      "text": "Which brings us to who's grading, because that changes the number as much as the model does. Everyone runs MRCR differently — their own effort modes, their own anchors, their own averaging — so a cumulative average up to 128K is a genuinely different quantity from a pointwise score at 128K. Several labs publish no length-stratified evaluation at all."
+    },
+    {
+      "id": "t23",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "who-grades-the-homework" },
+      "text": "And MRCR is only one corner of the landscape. OAI-MRCR, GraphWalks, RULER, and LongMemEval ask different questions, so you pick the benchmark that matches your workload. For MRCR specifically, Context Arena runs them all through the same DeepMind harness and publishes both the results and the code — a single test rig, so what's left in the data is the models."
+    },
+    {
+      "id": "t24",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "who-grades-the-homework" },
+      "text": "Read vendor cards the same way, because a vendor number often isn't even the same quantity as the measured one. Anthropic's card reports about a third more than the harness finds — 91.9 percent at 256K, where the independent measurement comes back at 69.1 percent. Google's numbers, by contrast, reproduce: 84.9 and 26.3 on the card come back as 85.1 and 25.9 measured. When a number exists only under vendor conventions, treat it as a claim, and select on what an independent test measures."
+    },
+    {
+      "id": "t25",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "who-grades-the-homework" },
+      "text": "So a number without a stated method is marketing. If two labs both report the same headline number, I can't tell whether they ran the same test — and that means I can't compare them at all."
+    },
+    {
+      "id": "t26",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-takeaway" },
+      "text": "The takeaway is that the usable part of a window is a range, not a number, and every model has its own. If your workload routinely reaches 512K, 1M, or beyond, measured evidence narrows the shortlist fast. Below 128K, the field is close enough that quality, speed, and price decide — and several compact and specialized models already do well there. None of this makes context management obsolete. Grounding covers retrieval and RAG as system levers, and the attention-shape problem is covered operationally elsewhere in the book."
+    },
+    {
+      "id": "t27",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Let me pull it together. The window on the box is a capacity figure; what matters is how much recall survives across the span I really use, so I compare how models degrade rather than how large they claim to be. That decline doesn't happen all at once — it holds for a while, then breaks — and once I push deep into the window the frontier separates sharply. The retrieval test asks the model to copy text exactly, which is why even a clean-room result is imperfect. Vendor numbers stay claims until an independent harness reproduces them. And because nothing in the model changes at inference time, the context I feed it stays the one lever I hold."
+    }
+  ]
+}

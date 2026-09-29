@@ -1,0 +1,192 @@
+{
+  "chapterId": "context-files",
+  "sourceHash": "c26ae747cd49d4e657b294769770e5de252f363cb3deb6bca64c474195bdaf51",
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "context-files" },
+      "text": "Context files are markdown documents injected between the system prompt and your input. They give an agent project memory without the same explanation every session: architecture, conventions, build commands, constraints."
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "context-files" },
+      "text": "So it's memory that shows up before I say a word. What's the catch?"
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "context-files" },
+      "text": "The catch is mechanical. On every call, the loop rebuilds the window and re-injects the file ahead of your prompt. That's the promise: it sits in the fixed prefix, always in front of the model, so nothing has to be re-explained or fetched on demand."
+    },
+    {
+      "id": "t4",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "context-files" },
+      "text": "And the price is that same fact seen from the other side."
+    },
+    {
+      "id": "t5",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "context-files" },
+      "text": "Exactly. Because it sits before your prompt, its size sets how far the task drifts once the loop starts appending turns behind it. Keep it small and the prompt stays close to the front of the window, where attention is strongest. Let it grow and you shove that same prompt into the dead center."
+    },
+    {
+      "id": "t6",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "context-files" },
+      "text": "So the file always arrives. The tradeoff is where it leaves my task."
+    },
+    {
+      "id": "t7",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "Here's the trap, and this time it's about your own file."
+    },
+    {
+      "id": "t8",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "Same task, same loop, same steps — the only difference is how big the context file is when the session starts. A lean one keeps your task in the strong band from beginning to end."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "A bloated one eats most of the window before the work even starts. Then the loop piles its own output on top, and your task sinks into the middle — buried under everything the agent did after you asked."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "But buried isn't gone. It's still in the window; I just can't count on the agent to hold it accurately anymore. It can echo the gist, not the details — and since every step is a guess, the longer that goes on, the more the work drifts from what I asked."
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "So which file are we actually talking about? In practice, it's AGENTS.md. It's the industry standard: plain Markdown, used by over 60,000 open-source projects, and governed by the Linux Foundation's Agentic AI Foundation. Every major coding agent reads it natively."
+    },
+    {
+      "id": "t12",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "Which makes it powerful — and, I'd guess, dangerous for exactly the same reason."
+    },
+    {
+      "id": "t13",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "Yes. An AGENTS.md isn't scoped to one session, one task, or one tool. It enters the fixed prefix of every call, for every agent that touches the repository, on every task, and for everyone who clones it later. Change one line and you've changed how all of them behave, immediately, with nothing in the test suite to catch it."
+    },
+    {
+      "id": "t14",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "No source file has that kind of reach."
+    },
+    {
+      "id": "t15",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "And because it sits in that prefix, ahead of every prompt, its size is a shared cost rather than a private one. A single conversation drifts on its own; a shared AGENTS.md does that to every conversation at once. Every added token pushes every contributor's prompt further from the primacy edge and deeper toward the dead center."
+    },
+    {
+      "id": "t16",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "So a bloated file doesn't slow one agent down. It degrades all of them, on every task, for as long as it stays bloated."
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "Which is why AGENTS.md is the most important file in the repo to audit, review, and keep minimal — more than any code file. It's always on, it silently steers every agent, and one vague or stale line degrades everything downstream."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "And when the file and the code disagree?"
+    },
+    {
+      "id": "t19",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "agentsmd-is-the-standard" },
+      "text": "The agent follows the file, even when the file is wrong. So treat it as a public interface: human-reviewed, held under version control, and pruned the moment it goes stale."
+    },
+    {
+      "id": "t20",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "Which brings us to writing one. The best way to start is not to write one at all. Work on the project with your agent first and let the file earn its lines. You can't know in advance what an agent will get wrong in your repository, and a rule written on speculation is a guess that bloats the prefix without changing behavior."
+    },
+    {
+      "id": "t21",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "So don't speculate. Wait for evidence."
+    },
+    {
+      "id": "t22",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "Add a line only when a mistake repeats. One wrong turn is noise; the same wrong turn across tasks is a signal. When it recurs, write the smallest instruction that names the offender and the fix — the exact command, the forbidden path, the convention the code doesn't express — and nothing more."
+    },
+    {
+      "id": "t23",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "Because only rules earned from real failures actually change behavior."
+    },
+    {
+      "id": "t24",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "Then prune. Models improve, and a rule that corrected last year's model may be redundant today — internalized, or guarding code that no longer exists. So re-read the file periodically and delete whatever no longer earns its place. An AGENTS.md that only ever grows is exactly the bloat that buries the original ask under everything that follows."
+    },
+    {
+      "id": "t25",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "And if I'm tempted to patch a recurring mistake with yet another rule?"
+    },
+    {
+      "id": "t26",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "Reach for it last. AGENTS.md is a last resort, not a first fix. A recurring mistake usually points at the code: an invariant the types don't capture, a function that's hard to find, a name that misleads. Clean, well-documented code is easier for any agent to get right, and tool-driven retrieval lets it fetch the answer on demand at codebase scale instead of hauling it through every prompt."
+    },
+    {
+      "id": "t27",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "Both fix the root cause and keep context efficient. The knowledge gets paid for only when it's needed, not by every agent on every call."
+    },
+    {
+      "id": "t28",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "So add a line only for what the code and the tools still can't resolve. Now, one warning before you trust any of this. Context files are injected straight into the system prompt, which makes them an attack surface — so keep them minimal, version-controlled, and code-reviewed like any other code. Rules File Backdoor attacks hide instructions in Unicode or evasion tricks a reviewer skims past."
+    },
+    {
+      "id": "t29",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "And the tools don't always gate them."
+    },
+    {
+      "id": "t30",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "writing-an-agentsmd" },
+      "text": "Right. A context file can be read before any trust decision, so a freshly cloned repository's AGENTS.md may reach the prompt before you've approved the project. pi, for example, loads context files regardless of project trust — the pi security docs spell that out. Treat an unfamiliar AGENTS.md as executable content, not documentation."
+    },
+    {
+      "id": "t31",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Let me put the whole thing back together. A context file is prepaid memory that loads with every call, so its bulk decides how long your actual task stays in view. A small startup file kept it in view; a bulky one let it slip toward the center. AGENTS.md is everywhere, which is also why a careless line there reaches everyone. So you earn rules from repeated failures, cut the ones that stopped paying rent, prefer fixing the code, and treat the file as untrusted input until you've read it."
+    }
+  ]
+}

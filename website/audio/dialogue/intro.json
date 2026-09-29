@@ -1,6 +1,6 @@
 {
   "chapterId": "intro",
-  "sourceHash": "c77d1a9b88be05fe2cde9a3e1835961b4befa36e12a4eb66e4acd1a9d9aac3fe",
+  "sourceHash": "caa4efeb0e57864c8c53c27c49a460b833c748b9d07fbb83422843dfc12f19b9",
   "turns": [
     {
       "id": "t1",
@@ -65,13 +65,13 @@
     {
       "id": "t11",
       "speaker": "alex",
-      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "anchor": { "kind": "heading", "id": "the-operators-job" },
       "text": "And the open-source part: everything here is something I can read, run, and change myself, with nobody steering the answers toward a product."
     },
     {
       "id": "t12",
       "speaker": "sam",
-      "anchor": { "kind": "heading", "id": "learn-to-run-the-machine" },
+      "anchor": { "kind": "heading", "id": "the-operators-job" },
       "text": "Right. The book, the tools it references, and everything built around them are 100% open source, community-backed projects with no commercial agenda. No paid tiers, no enterprise licenses, nothing to buy."
     },
     {

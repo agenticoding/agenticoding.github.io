@@ -1,0 +1,330 @@
+{
+  "chapterId": "retrieval-augmented-generation",
+  "sourceHash": "b42b2170743c92620d1eb703c938e4b23233bf97f7a524a798ed722cec6bbb87",
+  "declaredCriticalTerms": [
+    {
+      "term": "cat",
+      "reason": "half of the named similarity pair the geometry argument is built on; losing it erases the concrete example"
+    },
+    {
+      "term": "feline",
+      "reason": "the near neighbour in the named similarity pair; the example is meaningless without both sides"
+    },
+    {
+      "term": "rocket",
+      "reason": "the far neighbour that contrasts with the close pair; the example needs the negative case"
+    },
+    {
+      "term": "doctor pay",
+      "reason": "the named query in the search-by-meaning example; the payoff is that it retrieves words it does not share"
+    },
+    {
+      "term": "physician salary",
+      "reason": "the passage that query retrieves; the example exists to show zero word overlap"
+    },
+    {
+      "term": "provenance",
+      "reason": "the synthesis invariant; a paraphrase would drop the requirement that claims trace to sources"
+    },
+    {
+      "term": "recall",
+      "reason": "the retrieval metric the approximation/multi-hop arguments are traded against; the chapter's own term of art"
+    }
+  ],
+  "describedLiterals": [
+    {
+      "term": "200MB",
+      "reason": "the ear hears 'two hundred megabytes'; the glued SI unit is the spelling the ASR gate cannot reproduce, so the literal is described while the number itself stays spoken"
+    }
+  ],
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": null
+      },
+      "text": "Retrieval-Augmented Generation. The whole chapter turns on one thing: hand the finding to a cheap worker, and let the expensive model only think. A sub-agent does it, RAG does it with an index, deep research does it on a loop — one idea, pushed further each time."
+    },
+    {
+      "id": "t2",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "delegate-the-finding"
+      },
+      "text": "Asking a frontier model to read your entire repository is like asking a senior architect to photocopy the plans. It works, but it burns the judgment you hired. You already know this fix as sub-agent delegation: the looking happens in another window, and only a synthesis comes back. And the looking is two jobs, neither of which needs a frontier model. Agentic search fans out and follows the trail across the web, the repository, or a linked graph — and that last one is not a metaphor: a repository is a graph of imports and calls, a knowledge base is facts wired to facts, and GraphWalk is the benchmark built to measure that walk. Summarization compresses what came back into the few facts that matter."
+    },
+    {
+      "id": "t3",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "delegate-the-finding"
+      },
+      "text": "So the expensive model never touches the pile. The cheap one does the searching and the compressing, and the frontier model just reads the page it is handed."
+    },
+    {
+      "id": "t4",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "delegate-the-finding"
+      },
+      "text": "That is the trade: the small model supplies the reach, the big one supplies the judgment. The gain isn't the lookup itself — it's everything the frontier model is spared: sifting the corpus, ranking the candidates, holding the noise."
+    },
+    {
+      "id": "t5",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "delegate-the-finding"
+      },
+      "text": "So the win is a cleaner handoff: the digging happens somewhere else, and the reasoning model only ever sees the distilled result. The open question is whether that holds up as the material keeps growing."
+    },
+    {
+      "id": "t6",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "rag-the-same-delegation-scaled"
+      },
+      "text": "The opening move is delegation, and RAG is that same move, scaled. A language model already carries the layers that turn text into numbers — strip away everything else, and what remains is a compact model you can operate on its own. Marry it to the database's old trick of pre indexing, and you get RAG: it pulls the relevant pieces out of a very large knowledge base without reading all of it. Scaling the delegation means accepting a less capable searcher in exchange for effort spent up front."
+    },
+    {
+      "id": "t7",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "rag-the-same-delegation-scaled"
+      },
+      "text": "So nothing new gets invented — the delegation just becomes cheaper and more patient. One half builds the searchable structure up front; the other consults it once a query lands. And whatever comes back can only be as good as the preparation that organized it."
+    },
+    {
+      "id": "t8",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "embeddings-meaning-becomes-distance"
+      },
+      "text": "To search by meaning, meaning first has to become a number. An embedding model maps text to a dense vector — a coordinate where distance is relatedness. Related text lands close: cat scores 0.91 against feline and only 0.06 against rocket. Language becomes geometry, and relatedness becomes arithmetic."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "figure",
+        "index": 0
+      },
+      "text": "Pin down one term first. A token is what the model reads; a vector is a long list of numbers it computes from that token, hundreds of them, standing in for meaning rather than spelling it out. An embedding model produces exactly that from a context — the tokens around a word matter as much as the word. Every later comparison in the pipeline works on those computed numbers, never on the original strings."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "figure",
+        "index": 0
+      },
+      "text": "So the text you typed never travels through the system. What travels is the numerical stand-in derived from it — and that's the object every stage stores, ranks, and matches."
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "embeddings-meaning-becomes-distance"
+      },
+      "text": "Finding look-alikes stops being a semantic puzzle and becomes proximity — and proximity is old, settled territory. The same idea already powers reverse image search, a storefront's recommended shelf, and sorting a photo library by whose face is in it. Retrieval just borrows the trick: once every item is positioned, nearness is a measurement rather than a reading."
+    },
+    {
+      "id": "t12",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "figure",
+        "index": 1
+      },
+      "text": "Here is what the build buys. Every item already holds a place before anyone asks, so the machine measures instead of weighing prose against prose — a judgement it can repeat without going back to the source. The whole collection collapses into a table of numbers a calculation can walk. That is the point of an index: the reading cost is paid once."
+    },
+    {
+      "id": "t13",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "figure",
+        "index": 1
+      },
+      "text": "One caveat, though: none of those places are frozen. Edit the underlying text and the shifted entries have to be worked out again. And each fresh ask still needs its own vector before anything matches."
+    },
+    {
+      "id": "t14",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "embeddings-meaning-becomes-distance"
+      },
+      "text": "The model doing this is small enough not to be the bottleneck and cheap enough not to show up on the bill. Embedding is a commodity: Google's EmbeddingGemma fits a competitive model in under 200 megabytes of RAM, Qwen's Qwen 3 Embedding 8 B ships as open weights you can run for free, and Voyage's hosted Voyage 4 Lite bills 0.02 dollars per million tokens. Generation is a different economy: a frontier model like Claude Opus 5 charges 5 dollars per million tokens to read the same text and 25 to write it. Embedding the whole corpus is a rounding error, and you pay it once."
+    },
+    {
+      "id": "t15",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "embeddings-meaning-becomes-distance"
+      },
+      "text": "That price holds because questions and documents are processed independently by the same encoder, so the document side can be done in advance. The rest of the setup is filing: slice the corpus into passages, run each through the encoder, and keep the results in a structure built for quick lookup — in practice an HNSW graph."
+    },
+    {
+      "id": "t16",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "semantic-search-finding-the-nearest-few"
+      },
+      "text": "Now the read side — the payoff of the scaled delegation. The costly preparation is behind you, so asking costs almost nothing. That ask has to go through the identical encoder that placed the corpus — coordinates from different encoders sit in different worlds, so crossing them tells you nothing. Then it's one question put to the store: which of you sits nearest this point? Those neighbours, and the text behind them, come back as candidates. That's what meaning buys you: doctor pay retrieves physician salary although the two share no words."
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "figure",
+        "index": 2
+      },
+      "text": "The math inverts here. Preparing is the sunk cost; using it is nearly free. Finding stops being a special event and becomes a routine step — cheap enough to run before every model call, not once a session. That is the line between paying to look and paying to think."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "figure",
+        "index": 2
+      },
+      "text": "So the costly part happened in advance, and asking just dips into what's on hand. The heavy library never moves; only the question is new."
+    },
+    {
+      "id": "t19",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "semantic-search-finding-the-nearest-few"
+      },
+      "text": "At toy scale the index could compare the query against every vector and take the closest. At corpus scale that linear scan is too slow, so the index is built for approximate nearest neighbour — ANN — search: it returns the nearest few it can find quickly rather than the exact nearest few. That's the trade: recall for latency, and the dial between recall and latency is most of what approximate top k means in practice."
+    },
+    {
+      "id": "t20",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "semantic-search-finding-the-nearest-few"
+      },
+      "text": "So precision gets spent to buy speed, and the operator decides how much. Worth saying out loud, too: none of this makes retrieval the more accurate option — it makes it the cheaper, faster one."
+    },
+    {
+      "id": "t21",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "semantic-search-finding-the-nearest-few"
+      },
+      "text": "The economics are the ones a database taught long ago: build the organizing structure up front, then each read is a short hop instead of a full sweep. That is what earns retrieval its place — a small model fetches a handful of passages, and the reader spends attention on those rather than on the entire library. Weighted against pouring everything into a long context, this is the leaner, more focused option; it is not automatically the truer one."
+    },
+    {
+      "id": "t22",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "deep-research-the-same-delegation-iterated"
+      },
+      "text": "A single lookup answers a narrow thing against a collection you already shaped. Deep research answers a question whose clues are scattered across material nobody has gathered. Peel off the branding and the shape is constant: an exploration stage pulls candidate reality together, and a synthesis stage turns it into a reply. Exploration is a stage, not a call. It runs several arms at once — meaning lookup, literal keyword matching for the exact identifier or the uncommon name, and an LLM that reads what came back and picks the next thread. On multi hop questions that alternation beats one fixed query."
+    },
+    {
+      "id": "t23",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "deep-research-the-same-delegation-iterated"
+      },
+      "text": "So exploration gathers, and the model steers it turn by turn. The arms miss different things — one follows sense, the other matches exact strings — so real systems run both."
+    },
+    {
+      "id": "t24",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "figure",
+        "index": 3
+      },
+      "text": "Two phases, and they nest. Exploration casts wide: it can use the indexed lookup we just built as one arm, along with keyword lookups and the reasoning loop, trading precision for recall to pull a candidate subset out of a corpus far larger than any window. Synthesis takes that subset and compresses it accurately into the answer, narrowing and ordering for precision and keeping the chain of provenance intact. The second phase only works if the first brought back the right pieces."
+    },
+    {
+      "id": "t25",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "figure",
+        "index": 3
+      },
+      "text": "So the gather stage is allowed to be greedy — better to bring back one spare piece than miss a needed one. The narrowing comes later, and every statement that survives has to be answerable with a source."
+    },
+    {
+      "id": "t26",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "deep-research-the-same-delegation-iterated"
+      },
+      "text": "The cut decides what earns a place in the window, and the constraint isn't capacity — it's attention: past a point, stacking more evidence lowers quality instead of raising it, the attention curve read as a budget. So the real work is selection: rerank, dedupe, order, and compress so the strongest material sits where the model actually reads, summarizing in parallel and merging when the pile still overflows one pass. And the chain of provenance must survive: every claim should trace to its source, because even the best systems fully support barely half their citations."
+    },
+    {
+      "id": "t27",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "deep-research-the-same-delegation-iterated"
+      },
+      "text": "Most chat tools already ship this under a toggle: ask the sprawling question and wait. What returns is written and tightly edited. Underneath, the loop is code — a workflow agent owns the budget and the stopping rule, and calls the model at bounded checkpoints to judge what's missing and to write. The orchestrator only ever sees the conclusion; the raw pile never reaches it."
+    },
+    {
+      "id": "t28",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "deep-research-the-same-delegation-iterated"
+      },
+      "text": "What travels is the recipe, not the website. Point the same machinery at a codebase, a ticket queue, or a shelf of PDFs, swap search hits for symbols and line ranges, and the shape holds. ChunkHound — a sister project of this book — runs it locally over code, git history, and the web, so nothing leaves the developer's laptop. That scale costs minutes, not milliseconds, and touches hundreds of documents rather than a handful. For a small, self contained ask, a single lookup already settles it; reach for a deep run only when one pass can't."
+    },
+    {
+      "id": "t29",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "deep-research-the-same-delegation-iterated"
+      },
+      "text": "So the payoff is breadth, not turnaround. You point it at an investigation you can't scope up front, never at a factual gap a single step would close."
+    },
+    {
+      "id": "t30",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "dedicate-an-agent-to-retrieval"
+      },
+      "text": "These aren't a menu you pick from once — they're stages, and a workflow climbs them as it grows. Each one answers whatever the last stage couldn't handle, and the pattern holds: more of the finding happens before the thinking window, and less guesswork gets in."
+    },
+    {
+      "id": "t31",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "dedicate-an-agent-to-retrieval"
+      },
+      "text": "The strongest form wraps all three in one grounding agent — the same delegation, aimed at a single task instead of a general one. It is a workflow agent whose only job is retrieval for this assignment. It knows what's being asked, runs both arms, and hands the main agent a compact, sourced selection to act on, so the digging is never billed to the thinking. A generic retriever guesses at relevance; a task scoped one is aimed at it."
+    },
+    {
+      "id": "t32",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "dedicate-an-agent-to-retrieval"
+      },
+      "text": "So you don't pick a rung by taste — you pick it by what's breaking. One window, and you delegate the finding. Too much corpus for one pass, and you index it. A question you can't scope at all, and you dedicate a research agent to feeding the main one. And the honest part holds throughout: every claim still traces to a source that was actually retrieved."
+    }
+  ]
+}

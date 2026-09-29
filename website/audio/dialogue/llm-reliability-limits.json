@@ -1,0 +1,273 @@
+{
+  "chapterId": "llm-reliability-limits",
+  "sourceHash": "b3fa36aad22b87b23429613581ff6f46dbf9728a1a891b774467b4217d4eb6a1",
+  "declaredCriticalTerms": [
+    {
+      "term": "strawberry",
+      "reason": "the named letter-counting example the tip turns on; paraphrasing it away erases the concrete case a listener needs to recognise"
+    }
+  ],
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": null
+      },
+      "text": "Why LLMs Fail. We've mapped the engine and how training shapes it. Now the question an operator can't put off: if the model is only predicting the next token, why does its work still come out wrong — and what do you actually do about that?"
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": null
+      },
+      "text": "Because fluent output makes trust feel earned when it isn't. I can't read correctness off the text, so I have to understand where these failures come from before I can guard against them."
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": null
+      },
+      "text": "Three moves. First, probability imitates logic without becoming logic. Second, human mistakes and model mistakes leave different clues. Third, local token choices compound into global outcomes."
+    },
+    {
+      "id": "t4",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "probability-is-not-logic"
+      },
+      "text": "Start with the machinery. A logical system derives conclusions from explicit premises. If the premises hold and the rules are valid, the conclusion follows — correctness is built into the process. An LLM does not store a set of claims, prove new ones, and check whether the result is true. It learned which tokens, structures, and responses tend to follow others, and at inference it generates the continuation that fits the context."
+    },
+    {
+      "id": "t5",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "probability-is-not-logic"
+      },
+      "text": "So nothing here is being verified as true. There's no proof step happening underneath the fluent answer. It's continuing a pattern that looked right in training."
+    },
+    {
+      "id": "t6",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "figure",
+        "index": 0
+      },
+      "text": "A logical system is causal. You hand it a state, it applies explicit rules, and the answer follows from them — same inputs, same result, cause to effect. An LLM is stochastic. It predicts one token, then the next, and each step is drawn from a probability distribution over what plausibly follows, so the answer is sampled rather than derived. Both can produce text that reads like reasoning, but only one of them was caused to be true."
+    },
+    {
+      "id": "t7",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "figure",
+        "index": 0
+      },
+      "text": "So the difference isn't how the answer reads, it's the kind of process behind it. One is a derivation I can replay and re-check; the other is a draw from a distribution I can't audit from the text. With the model, the proof has to come from somewhere other than the model."
+    },
+    {
+      "id": "t8",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "probability-is-not-logic"
+      },
+      "text": "That's why the model can produce a proof-shaped explanation, a confident technical claim, a realistic API call, or a clean architecture argument. Those forms are common in its training data, so it reproduces them. The form can be logical even when the process is not."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "probability-is-not-logic"
+      },
+      "text": "Correct answers happen when the probable continuation also matches reality. Wrong ones happen when a plausible continuation diverges from it. The model can't tell the difference, so treat every response as a candidate artifact: judge the shape first, then validate the content — run the tests, check the citation, inspect the interface, verify the constraint, reproduce the result."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "probability-is-not-logic"
+      },
+      "text": "So the second half is the real work. The model hands me a draft that looks finished; whether it's true is a separate question, and I have to settle it with something outside the model."
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "human-and-llm-errors-leave-different-clues"
+      },
+      "text": "Compare that with how people fail. Human mistakes usually leave clues — a knowledge gap, fatigue, a skimmed requirement, a bias. Collect those over time and they form predictable error funnels: a junior engineer struggles with distributed systems, a tired reviewer misses subtle bugs. Those patterns tell a team where to concentrate review."
+    },
+    {
+      "id": "t12",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "human-and-llm-errors-leave-different-clues"
+      },
+      "text": "But people make mistakes all the time — exhausted, ill, distracted, or working an agenda where my failure is convenient. So what actually separates that from the model?"
+    },
+    {
+      "id": "t13",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "human-and-llm-errors-leave-different-clues"
+      },
+      "text": "The cause. A person's mistake always has one, and that account sits apart from the answer itself. A model's error arrives without an equivalent human-style account. The system that just produced a flawless architecture analysis can add 2 + 2 and get 5 in the next sentence, and nothing in the answer tells you why. It may correlate with training coverage, task shape, context quality, or inference setup, but the answer won't say which."
+    },
+    {
+      "id": "t14",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "human-and-llm-errors-leave-different-clues"
+      },
+      "text": "So I can't calibrate trust the way I would with a teammate. With a person, past patterns tell me which work to double-check. Here I need evidence from outside the interaction."
+    },
+    {
+      "id": "t15",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "figure",
+        "index": 1
+      },
+      "text": "And that difference decides where you can act. A person's error is causal, so it can be studied: name the cause and you can put a guard on it — change the process and that error stops recurring. A model's output is stochastic: the same input can land differently on another run, and some of that spread is irreducible noise. There is no single cause to guard, so there's nothing upstream to patch."
+    },
+    {
+      "id": "t16",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "figure",
+        "index": 1
+      },
+      "text": "So the human fix is upstream — remove the condition that produced the error. The model has no such condition to remove, so the fix is downstream: tests, tool output, a second source, a reproduction — something that can fail loudly when the model is confidently wrong."
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "human-and-llm-errors-leave-different-clues"
+      },
+      "text": "One warning about the tests people reach for. Counting letters or doing arithmetic looks like a clean check on understanding, but models process tokens, not characters or exact numbers. To count correctly the system has to write code, pull the exact input from your prompt, execute it, and reproduce the output — a multi-step pipeline where every stage can break. What that measures is tool-use orchestration, not comprehension. A model that stumbles counting r's in strawberry can still weigh architecture trade-offs well."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "human-and-llm-errors-leave-different-clues"
+      },
+      "text": "Which kills difficulty as a trust signal. Easy for a human doesn't mean safe for the model, and hard doesn't mean dangerous."
+    },
+    {
+      "id": "t19",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "human-and-llm-errors-leave-different-clues"
+      },
+      "text": "So don't trust an LLM because the task looks easy to you. A brilliant design analysis doesn't make the next step — a trivial constraint check — safe. Longer chains give an unchecked mistake more chances to influence what follows. Validate at phase boundaries, before unverified state can leak forward. And more context doesn't remove the problem: extra material to condition on still isn't logic. The model can weight the wrong evidence, miss a constraint, or follow a locally plausible pattern instead of the globally correct one."
+    },
+    {
+      "id": "t20",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "human-and-llm-errors-leave-different-clues"
+      },
+      "text": "So the checkpoints are doing the real work. I trust the phase, not the confidence, and I prove it at the boundary before anything downstream depends on it."
+    },
+    {
+      "id": "t21",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "local-prediction-global-consequences"
+      },
+      "text": "Now the sharper operational consequence. Every token is chosen as the best local continuation, but the finished response has to hold together globally. Those two goals can pull against each other."
+    },
+    {
+      "id": "t22",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "local-prediction-global-consequences"
+      },
+      "text": "Local good and global good aren't the same target. A string of reasonable steps can still land somewhere I never wanted."
+    },
+    {
+      "id": "t23",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "figure",
+        "index": 2
+      },
+      "text": "Think of a butterfly effect inside one answer. A step can be entirely sound in its moment and still sit a fraction off the truth — and nothing after it stays put. That tiny offset pulls the next choice toward it, which pulls the one after, so the error compounds instead of cancelling. Two runs can leave the same starting point, look right at every stage, and arrive in completely different places. The final answer was never selected; one early step that was right for its moment was enough to decide it."
+    },
+    {
+      "id": "t24",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "figure",
+        "index": 2
+      },
+      "text": "So the run that ends somewhere wrong never made an obviously wrong move — every step was defensible where it stood. That's why I can't review the steps in isolation. The drift only shows up against the destination I actually needed."
+    },
+    {
+      "id": "t25",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "local-prediction-global-consequences"
+      },
+      "text": "And a wrong token doesn't stay local. It becomes context for every prediction that follows, shifting what looks probable next. Output can also turn self-reinforcing: a repeated phrase, a false premise, or a malformed plan becomes evidence for continuing the same direction, which makes that direction easier to keep going."
+    },
+    {
+      "id": "t26",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "local-prediction-global-consequences"
+      },
+      "text": "When a run starts repeating itself or defending bad state, stop it. Remove the problematic context, restate the verified state, and resume from that boundary. The model might recover on its own, but asking it to check its own work is just another generation; recovery gets more reliable when the loop receives external feedback — tool results, code execution, tests, retrieved sources."
+    },
+    {
+      "id": "t27",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": "local-prediction-global-consequences"
+      },
+      "text": "And restarting works because the weights never moved. I didn't teach it anything; I changed what it could see."
+    },
+    {
+      "id": "t28",
+      "speaker": "alex",
+      "anchor": {
+        "kind": "heading",
+        "id": "local-prediction-global-consequences"
+      },
+      "text": "Which is the real point. During inference the parameters are fixed, so context is the model's only working state. How much of it stays usable as it grows is the next question."
+    },
+    {
+      "id": "t29",
+      "speaker": "sam",
+      "anchor": {
+        "kind": "heading",
+        "id": null
+      },
+      "text": "Let me pull it together. A likely-looking answer can wear the shape of a proof, but the shape guarantees nothing, so fluent output is a draft, not a verdict. A model's failures don't come with the causal trail a person's do, which is why the evidence has to come from outside it. Small early picks cascade into a global result, so I stop a bad run and restart from what I've verified. And since the weights hold still, the context I hand it is the only thing I'm actually steering."
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "chapterId": "exercises/tic-tac-toe/overview",
+  "sourceHash": "12f0317c7647b236e32a2f69fd5e59c79e03ab306e83b96943329b7bef32cda9",
+  "declaredCriticalTerms": [
+    {
+      "term": "candidate",
+      "reason": "the figure's core idea: a locally rendered mark is provisional until the server rules"
+    }
+  ],
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "Stand at the edge of this one. You're going to take a small system — a realtime, server-authoritative tic-tac-toe — from a rough idea all the way to a merged pull request, and you'll drive it the way the rest of the book prescribes. The prize isn't the game. It's the ability to move any feature through a spec the agent answers to, bounded runs backed by evidence, a critical review, and a change you own."
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": null },
+      "text": "So what I keep is the process, not the code. The same route should work on the next feature, and the one after that."
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "why-this-project" },
+      "text": "The game is chosen because you can forget it. Everyone knows the rules already, so nothing goes to the mechanics, and the budget goes to the workflow. Nobody expects you to be an architect or a visual designer — those calls get researched and decided with the agent. That's the first lesson made live: an open question turned into an approved decision."
+    },
+    {
+      "id": "t4",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "why-this-project" },
+      "text": "And it's still a genuine system underneath: two clients, one authority, durable state, and failures that actually happen — a dropped socket, a taken seat, a malformed message. What keeps validation sane is that the game is finite, nine moves at most, so you can replay every possibility. No accounts means no identity system to design, and that's what leaves it real but finishable in a single workday."
+    },
+    {
+      "id": "t5",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-game-youll-build" },
+      "text": "Two people open the same link and trade turns on a three by three grid. No account, and nothing asks for one. The home page mints a game and hands you its own URL; opening someone else's drops you into the first free seat, X then O; a cookie remembers your seat, so a refresh puts you back; and a third visitor is turned away."
+    },
+    {
+      "id": "t6",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-game-youll-build" },
+      "text": "Then comes the rule that changes everything: the board lives on the server. I click, and all I'm really doing is sending a move. The server rules on whether it's legal, works out the position, and sends a state-push that carries the decided board to the whole match. My browser draws what it's given, and no more."
+    },
+    {
+      "id": "t7",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "Here's the shape to hold. Two seats, one authority, one record. A seat sees its own move the instant it clicks, but that mark is a candidate, provisional until the authority rules on it. Only the server settles what's real, and only the record keeps it."
+    },
+    {
+      "id": "t8",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "So the local view is a preview, never the truth. Play happens at the edge, the decision happens in the middle, and that's the architecture in one line."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-game-youll-build" },
+      "text": "Every change lands in an append-only event log in SQLite with a strictly increasing sequence number, next to the current state. The log is the durable record; the state is only what gets sent. A browser whose connection drops reconnects with backoff, reports the last number it saw, and receives everything after it, in order. A laptop that sleeps mid-game wakes on exactly the position the others are looking at. Because the match is bounded, the whole history is the recovery window — no snapshots, no trimming."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-game-youll-build" },
+      "text": "The hard part isn't writing the recovery. It's proving recovery is deterministic — and that's the first question the spec has to settle."
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-game-youll-build" },
+      "text": "What you end up with is the thing you build: a small workspace in four modules. Pure rules, a durable history that survives a restart mid-match, a server that owns that history and the live connections, and a client that draws what it is told. Underneath is an ordinary stack — Node.js, React, SQLite. And alongside it, a suite that pins the ordering guarantees."
+    },
+    {
+      "id": "t12",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-game-youll-build" },
+      "text": "So the guarantee is the deliverable, not the feature. The position can always be rebuilt, and there's a test that says so."
+    },
+    {
+      "id": "t13",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-stack-youll-install" },
+      "text": "Now the other stack, the one you install rather than build. It's the harness: a deliberate commitment, not a menu. This book's CLI Coding Agents ranks the field and puts pi first, vendor-independent and extension-first. The exercise runs on that pick, with ChunkHound and pi schematic, purpose-built to apply the book's techniques rather than illustrate them. Full disclosure: both are by this book's author. pi ships no memory, no research tools, and no sub-agents; the harness adds each back as an extension."
+    },
+    {
+      "id": "t14",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-stack-youll-install" },
+      "text": "So the game is the job, the harness is the bench I do it on. I'm installing the exact toolchain the book was written against, and the add-ons are what give it memory and its grounding."
+    },
+    {
+      "id": "t15",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 1 },
+      "text": "One step has to happen away from the audio: setup. These are links, and links want a desktop. Sit down at this page and work through each Setup control before you start — the whole stack installed and answering, nothing missing."
+    },
+    {
+      "id": "t16",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 1 },
+      "text": "So the first real task is a pause, not a prompt. I'll install all five and confirm each one responds — pi mcp adapter and agent browser included — and only then start."
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-stack-youll-install" },
+      "text": "Then it all goes to work. The next chapter routes each task to a fitting model, delegates through spawn for isolation, and keeps the context window small with the notebook and handoff. Only then does the exercise turn to the game — the four-phase workflow of ground, plan, execute, and validate needs everything answering before the spec means anything."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-stack-youll-install" },
+      "text": "Right. Tools first, then the work itself."
+    }
+  ]
+}
