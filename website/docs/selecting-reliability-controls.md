@@ -26,5 +26,3 @@ missing facts, poor work shape, generation variance, and propagation risk.
 </DiagramFrame>
 
 Production workflows rarely pull one lever in isolation. A [spec](./spec-driven-development.md) supplies context and a review boundary, [validation](./validation.md) judges retries and verifies execution, [sub-agents](./sub-agent-delegation.md) change orchestration and isolate context, and [context compaction](./context-compaction.md) manages what carries over between runs. Match each control to a failure mode — more context, decomposition, retries, or review are not universally safer.
-
-**Next:** [Spec-Driven Development](./spec-driven-development.md)

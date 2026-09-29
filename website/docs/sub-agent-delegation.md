@@ -48,5 +48,3 @@ caption={
 These are token-cost tradeoffs in exchange for delegation and specialization — the right tradeoff when per-agent optimization improves outcome quality faster than the added token spend costs.
 
 Sub-agents are ideal for delegating independent research, multi-file analysis, and exploratory tasks to the agent best suited for each slice, and for generating independent plans or implementations across specialized models when you want to compare options before applying one result.
-
-**Next:** [Context Compaction](./context-compaction.md)

@@ -42,7 +42,3 @@ Spec-driven development strengthens the team's review process rather than replac
 - **Gap analysis is disciplined comparison.** Ask what the spec established, what the code does, what is missing or extra, and what authorized each deviation.
 - **Depth should match risk.** A reversible change may need one comparison and CI. Reserve line-by-line diff review for changes where consequences justify the cost.
 - **Stale specs are harmful.** Update the spec when decisions change; do not force future runs to reconcile a knowingly outdated artifact.
-
----
-
-**Next:** [Spec Lifecycle](./spec-lifecycle.md)

@@ -55,7 +55,3 @@ The four phases are a control system, and each phase addresses a specific limita
 This is the operator loop. You are not trying to personally type every line or review every token. You are designing the conditions under which useful artifacts are likely — grounding the right context, planning the right units, scheduling bounded execution, then verifying the result from enough angles to own it.
 
 A prompt shapes one interaction. This module shows where those interactions fit in the operator loop — the verification phase after [grounding](./workflow-grounding.md), [planning](./workflow-planning.md), and [execution](./workflow-execution.md).
-
----
-
-**Next:** [Context Engineering](./context-engineering.mdx)

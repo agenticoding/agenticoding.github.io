@@ -34,7 +34,3 @@ This maps directly to the controls in [Reliability Levers](./reliability-levers.
 - **Release continues validation.** Canary exposure, telemetry, review, and rollback update the operating profile after launch.
 - **Field signals are validation inputs, not post-launch anecdotes.** Confirmed production failures and newly observed usage belong in the operating profile and regression corpus.
 - **Validation should change the workflow.** Map each finding to the right repair loop — re-ground, re-plan, generate-and-judge, add a human checkpoint, or encode the finding as a deterministic regression.
-
----
-
-**Next:** [Writing Agent-Friendly Code](./agent-friendly-code.md)

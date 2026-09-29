@@ -45,7 +45,3 @@ Do not use an LLM judge as the only gate when a deterministic check can express 
 - **Noise is inherent; bias is addressable.** Design atomic, evidence-backed rubrics; calibrate against human labels; randomize positional bias. Treat repeated measurement as how you estimate noise, not as a flaw.
 - **Sample for accuracy.** When the consequence of a false accept is high, run multiple independent judges across model families and aggregate by majority vote.
 - **Version the instrument.** Pin the judge model, rubric, and prompt; recalibrate on change; allow `needs_review` rather than forcing a verdict.
-
----
-
-**Next:** [Human Acceptance and Discovery](./human-acceptance-discovery.md)

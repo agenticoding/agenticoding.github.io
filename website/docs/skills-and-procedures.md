@@ -48,5 +48,3 @@ The format itself is standardized. `SKILL.md` — YAML frontmatter carrying a na
 Those caps are the tell: the catalog listing is not free. Procedure metadata consumes context budget before any workflow runs, which is why harnesses bound it at 1–2% of the window. Exceeding the cap does not stop the matching — the model keeps matching against truncated or missing descriptions, which is exactly how the near match in the figure above happens. A broad catalog degrades the descriptions the model needs to pick correctly. This is the procedure-side analogue of MCP schema pressure: different payload, same design problem.
 
 The practical framing: **AGENTS.md** holds what the agent should always know — architecture, conventions, constraints. **Skills** hold what the agent should know how to do — specific workflows loaded on demand, with the invocation path controlling who decides which one runs.
-
-**Next:** [Sub-Agent Delegation](./sub-agent-delegation.md)

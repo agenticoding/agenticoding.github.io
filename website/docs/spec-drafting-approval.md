@@ -60,7 +60,3 @@ Drafting cycles depend on the case. A familiar, reversible change may need one p
 [^2]: Buçinca, Malaya, and Gajos — 199-participant experiment. [doi:10.1145/3449287](https://doi.org/10.1145/3449287)
 
 [^3]: Lee et al. — 319 knowledge workers, 936 examples. [doi:10.1145/3706598.3713778](https://doi.org/10.1145/3706598.3713778)
-
----
-
-**Next:** [Spec Execution](./spec-execution.md)

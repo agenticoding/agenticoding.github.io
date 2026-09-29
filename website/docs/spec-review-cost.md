@@ -193,7 +193,3 @@ The useful question is not "How long should a spec be?" It is "Can the responsib
 - **Shape follows review cost.** The right spec is the smallest artifact that preserves intent and risky boundaries. Format, length, and drafting process should follow the case rather than a canonical template.
 - **Length changes the review burden.** A compact spec can still expose intent, limits, and evidence. A longer spec can coordinate more uncertainty, but omissions and contradictions become harder to detect. The added structure must earn that cost.
 - **The question is reviewer comprehension, not token count.** Can the responsible reviewers still understand and challenge this intent? When the answer is no, split the change, add structure, or shorten the artifact.
-
----
-
-**Next:** [Spec Drafting and Approval](./spec-drafting-approval.md)

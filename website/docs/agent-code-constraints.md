@@ -74,7 +74,3 @@ Rather than manually managing discoverability strategies, configure your agent t
 
 - **Co-locate constraints, create semantic bridges when necessary** — Scattered code compounds into harder-to-navigate codebases. When separation is required (DRY), use explicit comments pointing to related files.
 - **Automate discoverability through prompting** — Add instructions to AGENTS.md that make agents automatically add semantic bridges and follow patterns, turning discoverability into a self-reinforcing system.
-
----
-
-**Next:** [Agent Code Guardrails](./agent-code-guardrails.md)

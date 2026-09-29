@@ -29,7 +29,3 @@ The workflow is cyclic because agent failures have different causes. Missing loc
 The goal is not to make the first pass perfect. The goal is to know which phase failed, route the work back to the right point, and keep the agent operating inside boundaries you understand.
 
 This matters more than it sounds. Even with perfect grounding, perfect planning, and disciplined execution, you are operating a stochastic system. The agent is governed by probabilities, not logic. It will make random mistakes — at the wrong time, in unexpected places, and usually where you are least looking. This is not a bug in your process. It is the nature of the beast. Embrace it, expect it, and build your workflow to catch and correct those failures rather than trying to eliminate them.
-
----
-
-**Next:** [Grounding](./workflow-grounding.md)

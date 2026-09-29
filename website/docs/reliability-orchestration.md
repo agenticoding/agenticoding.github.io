@@ -29,5 +29,3 @@ unnecessary dependent transformations and handoffs.
 Orchestration also removes dependencies. Run independent research in parallel sub-agents rather than one long serial thread. Separate implementation from review when they need different judgment. Stop before code turns a human decision into structure. [Sub-agents](./sub-agent-delegation.md#sub-agents) change orchestration by letting a single task be decomposed across multiple specialized agents — each running on the LLM and system prompt optimized for its slice — rather than overloading one context, isolating noisy work and reducing dependency length in the parent chain.
 
 This lever does not fix missing facts or an unclear success condition. Better shape only helps when each unit is grounded and judgeable.
-
-**Next:** [Sample, Then Select](./reliability-independent-retries.md)

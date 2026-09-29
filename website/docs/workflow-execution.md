@@ -32,7 +32,3 @@ An approved plan gives the agent a clear target. The right monitoring depth depe
 Use the lightest approach that gives you enough confidence. If the task is clear and easy to check, letting it run creates time to review another plan, prepare the next task, or validate finished work. If the agent will make decisions you need to own, stay close. For longer work, rotate through the active tabs: look at the latest actions, confirm the direction, and move on unless the agent needs help.
 
 The productivity gain is not that every agent task finishes faster than a skilled human would finish it. It comes from using the time between those check-ins for other useful work, without losing sight of what each agent is building.
-
----
-
-**Next:** [Validation](./workflow-validation-feedback.md)

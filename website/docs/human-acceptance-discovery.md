@@ -40,7 +40,3 @@ For example, an agent exploring checkout may discover that rapid navigation afte
 - **Humans own acceptance.** Automation prepares evidence; the person responsible for the outcome decides whether the evidence is sufficient. This is where designers and product managers sit alongside engineers.
 - **Situated judgment is irreplaceable.** Deterministic checks and LLM judges cannot weigh product feel, brand tone, or domain trade-offs — the human decides.
 - **Use agent variance for discovery, not regression.** Explore credible operational stress with bounded blast radius, reproduce confirmed findings, and encode them as deterministic checks.
-
----
-
-**Next:** [Continuous Validation](./continuous-validation.md)

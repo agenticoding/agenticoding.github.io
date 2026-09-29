@@ -32,5 +32,3 @@ independent and a separate signal can select the best candidate.
 </DiagramFrame>
 
 For rate limiting, retry the bounded plan or implementation step—not the entire contaminated workflow. This lever does not repair weak grounding, bad task shape, or a missing review boundary.
-
-**Next:** [Human Checkpoints](./reliability-hitl-checkpoints.md)

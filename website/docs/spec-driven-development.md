@@ -57,7 +57,3 @@ The right shape is the smallest artifact that preserves the intent and the risky
 - **Human ownership attaches to decisions, not documents.** Approval establishes ownership only when responsible humans see and choose significant boundaries and additions.
 - **A spec is a checkpoint, not a template.** Its shape and length follow uncertainty, risk, and review cost. The right spec is the smallest artifact that preserves intent and risky boundaries.
 - **Specs and plans control different scopes.** The spec coordinates the whole change; each plan controls one grounded execution run.
-
----
-
-**Next:** [Spec Review Cost](./spec-review-cost.md)

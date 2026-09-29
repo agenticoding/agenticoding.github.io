@@ -41,7 +41,3 @@ If web search discovered a pattern the operating profile did not anticipate, add
 - **Evidence must be representative.** Test realistic workflows, data, dependency failures, and recovery behavior — not convenient internals alone.
 - **Protect promises, not construction.** A deterministic check should remain valid after an internal refactor. Checks coupled to implementation details impose a repair tax every time the code improves.
 - **Research what's known before defining the profile.** Web search surfaces industry failure modes, conventions, and anti-patterns that production traces won't reveal until after an incident.
-
----
-
-**Next:** [LLM Judges](./llm-judges.md)

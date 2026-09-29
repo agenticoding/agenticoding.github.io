@@ -34,5 +34,3 @@ Drag the catalog control: it changes installed breadth, not what the representat
 Switch the Tool Search outcome. A direct match takes the short path. A near match loads a wrong schema, produces a false call and result, then retries. The wrong-path artifacts remain in history and occupy the attention valley even after the correct schemas load. The crossover therefore depends on schema size, task breadth, result breadth, and selection quality—not catalog size alone.
 
 **Takeaway:** the more your catalog behaves like infrastructure, the more you should optimize for what stays out of the valley instead of immediate tool visibility. The same logic applies one layer up to reusable procedures: if a workflow library is broad, discover it cheaply and load the full instructions only when needed. The same automation-versus-reliability tradeoff applies here.
-
-**Next:** [Skills and Procedures](./skills-and-procedures.md)

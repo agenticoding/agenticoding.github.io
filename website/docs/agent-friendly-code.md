@@ -54,7 +54,3 @@ Both problems feed the same exponential curve. When you accept a random AI error
 - **You are the quality circuit breaker** — Code review prevents negative compounding. Accepting bad patterns lets them enter pattern context for future agents. Rejecting them breaks the negative feedback loop.
 
 [^1]: GitClear (2025) - Analysis of 211 million lines of code (2020-2024) showing 8-fold increase in duplicated code blocks in AI-generated code. Source: [LeadDev: How AI-generated code accelerates technical debt](https://leaddev.com/technical-direction/how-ai-generated-code-accelerates-technical-debt)
-
----
-
-**Next:** [Agent Code Constraints](./agent-code-constraints.md)

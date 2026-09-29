@@ -31,6 +31,7 @@ const docusaurusBin = path.resolve(
 const LABEL_FOUNDATIONS = "Foundations"; // chapterGroups[0].label
 const LABEL_DIRECTING = "Directing Agent Work"; // chapterGroups[1].label
 const LABEL_SHIPPING = "Shipping Agent Work"; // chapterGroups[3].label
+const LABEL_EXERCISES = "Exercises"; // chapterGroups[4].label
 const LABEL_ABOUT = "About"; // standaloneChapters.afterGroups[0] -> sidebar title
 // chapterGroups[0].chapters[0].id — the SSR fallback target of the Foundations
 // category link when JavaScript is disabled.
@@ -129,6 +130,19 @@ async function captureFailure(page, name) {
 }
 
 const DESKTOP_VIEWPORT = { width: 1440, height: 900 };
+// Below this width the band yields to the dock (the player's 997px breakpoint).
+const DOCK_VIEWPORT = { width: 390, height: 844 };
+
+// A check that needs the dock swaps the viewport and restores the desktop one whatever the
+// body does, so a mid-check failure cannot leak the mobile viewport into the next check.
+async function withDockViewport(page, fn) {
+  await page.setViewport({ ...DOCK_VIEWPORT, deviceScaleFactor: 1 });
+  try {
+    return await fn();
+  } finally {
+    await page.setViewport({ ...DESKTOP_VIEWPORT, deviceScaleFactor: 1 });
+  }
+}
 
 // Long CSS transitions would race every geometry assertion, so inspectors that
 // measure layout freeze animations.
@@ -711,32 +725,31 @@ async function waitForActiveChapterInScroller(page, description) {
   }
 }
 
-async function clickReadingSpineNext(page) {
+async function clickPaginatorNext(page) {
   const clicked = await page.evaluate(() => {
-    const footer = [...document.querySelectorAll("article p")].find((p) =>
-      p.textContent?.trim().startsWith("Next:"),
+    const link = document.querySelector(
+      "nav.pagination-nav a.pagination-nav__link--next",
     );
-    const link = footer?.querySelector("a");
     if (!link) return false;
     link.click();
     return true;
   });
-  if (!clicked) fail("reading-spine Next footer link was not found");
+  if (!clicked) fail("paginator Next link was not found");
 }
 
 // Deep-link contract: loading a chapter deep in the last group must
 // auto-expand its category and scroll the real scroller to the active link.
 async function assertDeepLinkAutoScrolls(page) {
-  await page.goto(siteUrl("/agent-knowledge-cache"), {
+  await page.goto(siteUrl("/exercises/tic-tac-toe/overview"), {
     waitUntil: "domcontentloaded",
   });
   await waitForPaint(page);
   await waitForHydrated(page);
   await waitForCategoryState(
     page,
-    LABEL_SHIPPING,
+    LABEL_EXERCISES,
     true,
-    `deep link did not auto-expand ${LABEL_SHIPPING}`,
+    `deep link did not auto-expand ${LABEL_EXERCISES}`,
   );
   await waitForActiveChapterInScroller(
     page,
@@ -744,10 +757,10 @@ async function assertDeepLinkAutoScrolls(page) {
   );
 }
 
-// Cross-group SPA contract: the reading-spine footer of the last chapter of a
+// Cross-group SPA contract: the paginator's Next link from the last chapter of a
 // group expands the next group, collapses the previous one (accordion), and
 // keeps the target chapter visible.
-async function assertReadingSpineAccordion(page) {
+async function assertPaginatorAccordion(page) {
   await page.goto(siteUrl("/workflow-agents"), {
     waitUntil: "domcontentloaded",
   });
@@ -759,7 +772,7 @@ async function assertReadingSpineAccordion(page) {
     true,
     "workflow-agents did not expand Foundations",
   );
-  await clickReadingSpineNext(page);
+  await clickPaginatorNext(page);
   await waitForCategoryState(
     page,
     LABEL_DIRECTING,
@@ -785,7 +798,7 @@ async function inspectActiveChapterScroll() {
     async (page) => {
       await emulateReducedMotion(page);
       await assertDeepLinkAutoScrolls(page);
-      await assertReadingSpineAccordion(page);
+      await assertPaginatorAccordion(page);
     },
   );
 }
@@ -1655,14 +1668,24 @@ async function headlineStations(page, marks) {
   return stations;
 }
 
-// Which heading the clock sits in. Parking just inside a section's start lets the store land
-// on it, and the seek's timeupdate has to reach the store before it is read.
-async function parkedHeadline(page, marks) {
-  const [first] = await headlineStations(page, marks);
-  if (!first) return null; // a chapter the narration never headlines has no heading to name
-  await seekTo(page, first.startMs + 250);
+// Park just inside a station's start so the store lands on it: the seek's timeupdate has to
+// reach the store before the status text is read.
+async function parkOnStation(page, station) {
+  await seekTo(page, station.startMs + 250);
   await pause(400);
-  return first.title;
+}
+
+// The status text names the heading being narrated at EVERY station, not only the one the
+// chapter opens on: a heading the reader authored with `'`, `&`, `<`, `>`, or `"` reaches the
+// text consumer re-escaped, and the shipped leak sat at a later station of a paragraph heading.
+// Returns the stations, in narration order, so callers can reuse them.
+async function parkedStations(page, surface, marks) {
+  const stations = await headlineStations(page, marks);
+  for (const station of stations) {
+    await parkOnStation(page, station);
+    await assertStatusHeading(page, surface, station.title);
+  }
+  return stations;
 }
 
 // The reader's own wording for a heading id, off the heading the page renders for it.
@@ -1711,16 +1734,16 @@ async function assertStatusOpener(page, surface, marks) {
 async function verifyAudioStatus(page, surface, marks) {
   const before = await surfaceHeight(page, surface.container);
   if (before === null) fail(`no ${surface.container} holds the status text`);
-  const expected = await parkedHeadline(page, marks);
-  if (expected === null) return;
-  await assertStatusHeading(page, surface, expected);
+  const [first] = await parkedStations(page, surface, marks);
+  if (!first) return; // a chapter the narration never headlines has no heading to name
+  await parkOnStation(page, first); // fitting and row behaviour are checked on the first station
   await assertStatusFits(page, surface);
   await assertStatusOpener(page, surface, marks);
   await assertStatusLeavesControlsPut(page, surface, marks);
   const after = await surfaceHeight(page, surface.container);
   if (Math.abs(after - before) > 0.5)
     fail(
-      `${surface.name} grew from ${before}px to ${after}px while naming "${expected}"`,
+      `${surface.name} grew from ${before}px to ${after}px while naming "${first.title}"`,
     );
 }
 
@@ -1875,8 +1898,7 @@ async function assertStatusLeavesControlsPut(page, surface, marks) {
   if (opener) stations.unshift(opener); // the chapter-title line must hold the row too
   const samples = [];
   for (const station of stations) {
-    await seekTo(page, station.startMs + 250);
-    await pause(400); // the seek's timeupdate has to reach the store
+    await parkOnStation(page, station);
     samples.push({
       title: station.title,
       boxes: await readRowBoxes(page, surface.status),
@@ -2342,11 +2364,8 @@ function readingSeconds(text) {
 // Invariant 1, mobile half: below the 997px breakpoint the same scrubber lives in
 // the dock, and the desktop band is not the surface the reader gets.
 async function verifyDockScrubber(page, chapter, marks) {
-  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
-  try {
-    await openChapter(page, chapter.route);
-    await waitForAudioReady(page);
-    await seekTo(page, 0);
+  await withDockViewport(page, async () => {
+    await openChapterAtStart(page, chapter.route);
     await verifyAudioStatus(page, DOCK_STATUS_SURFACE, marks);
     await assertScrubberSurface(page, DOCK_SCRUBBER, chapter, "mobile dock");
     const band = await readScrubberSurface(page, BAND_SCRUBBER);
@@ -2360,16 +2379,20 @@ async function verifyDockScrubber(page, chapter, marks) {
       "mobile dock",
     );
     await verifyScrubberBattery(page, DOCK_CONTROLS, chapter, "mobile dock");
-  } finally {
-    await page.setViewport({ ...DESKTOP_VIEWPORT, deviceScaleFactor: 1 });
-  }
+  });
+}
+
+// Open a chapter with its audio metadata loaded and parked at the start. Headless Chromium
+// stalls the audio clock while unmuted, so every drive of the store goes through `seekTo`,
+// which mutes.
+async function openChapterAtStart(page, route) {
+  await openChapter(page, route);
+  await waitForAudioReady(page);
+  await seekTo(page, 0);
 }
 
 async function verifyBandPlaybackContract(page, chapter, marks) {
-  await openChapter(page, chapter.route);
-  await waitForAudioReady(page);
-  // Headless Chromium stalls the audio clock while unmuted.
-  await seekTo(page, 0);
+  await openChapterAtStart(page, chapter.route);
   await page.click(AUDIO_PLAY);
   await verifyAudioHooksStayInPlayerSurfaces(page);
   await assertNoRateControls(page);
@@ -2446,6 +2469,55 @@ async function verifyPlaybackSurfaces(page, chapter, manifest) {
   );
 }
 
+// Characters `escape-html` re-escapes into references (`&#39;`, `&amp;`, ...): a text consumer
+// that skips decoding leaks the reference to the reader instead of the reader's own heading.
+const ESCAPABLE_HEADING = /['&"<>]/;
+
+// The first manifested chapter, in narration order, whose article renders a heading carrying an
+// escapable character. The manifest carries heading ids only, so the reader's own words come off
+// the page; `measured` already resolved every chapter to a route that renders it.
+async function firstEscapableHeading(page, measured, manifest) {
+  for (const chapter of measured) {
+    await openChapter(page, chapter.route);
+    const stations = await headlineStations(page, manifest[chapter.key].marks);
+    const match = stations.find((station) =>
+      ESCAPABLE_HEADING.test(station.title),
+    );
+    if (match) return { chapter, title: match.title };
+  }
+  return null;
+}
+
+// Both surfaces answer the status text with one component, so the chosen chapter is named
+// station by station on whichever surface the reader has.
+async function verifyStatusOnBothSurfaces(page, chapter, manifest) {
+  const marks = manifest[chapter.key].marks;
+  await openChapterAtStart(page, chapter.route);
+  await parkedStations(page, SIDEBAR_STATUS_SURFACE, marks);
+  await withDockViewport(page, async () => {
+    await openChapterAtStart(page, chapter.route);
+    await parkedStations(page, DOCK_STATUS_SURFACE, marks);
+  });
+}
+
+// A status text that names an escaped heading shows the reference, not the reader's words. The
+// main status pass runs on the first manifested chapter, whose headings may all be plain, so
+// this walks the manifest for one that is not — and skips with a reason when a book has none.
+async function inspectEscapableHeadingStatus(page, measured, manifest) {
+  const first = await firstEscapableHeading(page, measured, manifest);
+  if (!first) {
+    console.log(
+      `escapable-heading status pass skipped: no narrated chapter renders a heading with ${ESCAPABLE_HEADING.source}`,
+    );
+    return null;
+  }
+  await verifyStatusOnBothSurfaces(page, first.chapter, manifest);
+  console.log(
+    `escapable-heading status pass: ${first.chapter.route} names "${first.title}" at every station on both surfaces`,
+  );
+  return first;
+}
+
 async function inspectSidebarAudioBand() {
   await withPage("inspectSidebarAudioBand", DESKTOP_VIEWPORT, async (page) => {
     await emulateReducedMotion(page);
@@ -2469,6 +2541,10 @@ async function inspectSidebarAudioBand() {
       durationMs: manifest[measured[0].key].durationMs,
     };
     await verifyPlaybackSurfaces(page, chapter, manifest);
+    await withRetry(
+      () => inspectEscapableHeadingStatus(page, measured, manifest),
+      "inspectEscapableHeadingStatus",
+    );
     console.log(
       `audio band contract verified on ${measured
         .map((entry) => entry.route)

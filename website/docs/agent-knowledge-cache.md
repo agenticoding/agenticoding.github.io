@@ -49,7 +49,3 @@ The moment you commit extracted knowledge, every code change requires documentat
 ## Key Takeaways
 
 - **Avoid knowledge cache anti-patterns** — Code research tools extract architectural knowledge dynamically from source code every time. Saving extracted knowledge to .md files creates unnecessary caches that become stale. Commit the WHY as decision records; let code research handle the HOW.
-
----
-
-**Next:** [About](/about)

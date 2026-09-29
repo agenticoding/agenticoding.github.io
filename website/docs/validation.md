@@ -49,7 +49,3 @@ Four classes of technique — **deterministic checks**, **LLM judges**, **manual
 - **Validation establishes an operational claim.** Define intended use, credible stress, and tolerance before choosing checks. The throughput/accuracy tradeoff is a product decision with engineering consequences — everyone at the table owns the calibration.
 - **Generated artifacts are candidates.** Probability does not guarantee they survive their operating conditions. The question is always "how confident should we be?" not "does it pass?"
 - **Use a portfolio, not a single oracle.** Deterministic checks, LLM judges, humans, and exploration each reveal different failures. Cover your blind spots deliberately.
-
----
-
-**Next:** [Validation Evidence Portfolios](./validation-evidence-portfolios.md)

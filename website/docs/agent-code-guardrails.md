@@ -38,7 +38,3 @@ These constraint IDs (C-001, I-001) originate in spec constraint tables and migr
 
 - **Comments as agent-critical sections (use sparingly)** — For genuinely high-risk code (authentication, cryptography, payments, PII), write comments as prompts using imperative directives (NEVER, MUST, ALWAYS) to create deliberate friction. Overuse is counterproductive.
 - **Constraint IDs migrate from spec to code** — When specs use IDs like C-001 or I-001, agents inline them into code comments during implementation. The code then carries the constraint rule, making it safe to delete the spec.
-
----
-
-**Next:** [Knowledge Cache](./agent-knowledge-cache.md)

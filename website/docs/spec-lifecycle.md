@@ -30,7 +30,3 @@ This resolves deliberate duplication without imposing one destination for every 
 - **Location and lifecycle are design choices.** Make authority, update rules, and the eventual handoff explicit.
 - **Lifecycle follows the spec's purpose.** A delivery spec closes after implementation; an RFC may remain as a historical record; a policy spec continues alongside code.
 - **Hand off deliberately.** When implementation becomes the operational authority, put enforceable behavior in code, keep rationale near the code, and retain broader decisions where they still matter.
-
----
-
-**Next:** [Validation](./validation.md)

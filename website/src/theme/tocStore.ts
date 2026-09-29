@@ -72,9 +72,38 @@ export function useTocEntries(): TocEntry[] {
   );
 }
 
-function headingText(value: string): string {
-  return tocHeadingHtml(value)
-    .replace(/<[^>]*>/g, '')
+/**
+ * `TOCItem.value` is HTML, never text: Docusaurus escapes every text node in a heading with
+ * `escape-html` (@docusaurus/mdx-loader/lib/remark/toc/utils.js), and micromark has already
+ * resolved any reference the author wrote — so these six are the complete set a text consumer
+ * can receive. `&#x27;` covers the numeric form React's own escaping emits.
+ */
+const HTML_REFERENCES: Record<string, string> = {
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&#39;': "'",
+  '&#x27;': "'",
+};
+
+function decodeEntities(value: string): string {
+  return value.replace(
+    /&(?:amp|lt|gt|quot|#39|#x27);/g,
+    (reference) => HTML_REFERENCES[reference]
+  );
+}
+
+/**
+ * The plain-text half of the TOC-value contract — `tocHeadingHtml` is the markup half. Tags
+ * come off before references are decoded, the reverse of escaping, so a heading that writes
+ * `&lt;code&gt;` keeps its literal text instead of losing it as markup.
+ *
+ * The result lands in button labels, live-region announcements and the dock, where heading
+ * markup and its references would both be wrong.
+ */
+export function headingText(value: string): string {
+  return decodeEntities(tocHeadingHtml(value).replace(/<[^>]*>/g, ''))
     .replace(/\s+/g, ' ')
     .trim();
 }

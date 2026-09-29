@@ -31,5 +31,3 @@ a validated artifact—not when it rubber-stamps a noisy thread.
 The highest-leverage checkpoints sit at phase boundaries: after grounding, before implementation, after implementation, before merge, and before irreversible actions. A fresh phase should start from the reviewed artifact rather than burying approval in the existing thread. The [manual handoff pattern](./context-compaction.md#context-compaction) provides that reset.
 
 This lever does not fix work with no clear review surface. Shrink or split the artifact until a human can judge it quickly.
-
-**Next:** [Selecting Reliability Controls](./selecting-reliability-controls.md)

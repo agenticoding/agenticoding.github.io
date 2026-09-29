@@ -36,8 +36,4 @@ If you don't provide context explicitly, the agent will gather it on its own —
 
 There is a deeper reason to ground explicitly. The agent doesn't know what it doesn't know. It will assume it has everything at hand while missing critical knowledge — the naming convention that isn't documented, the constraint from a reverted PR, the integration point in a different service. Worse, the big picture often isn't fully encoded anywhere: why this product choice was made, what alternatives were considered and ruled out, which business constraints shape the solution space, what the team already tried and abandoned. When you ground explicitly, you're filling both kinds of gaps — the ones scattered across the codebase and the ones buried in Slack threads, emails, presentations, and support tickets.
 
----
-
 [disclosure]: /about 'Disclosure: the author created ChunkHound'
-
-**Next:** [Planning](./workflow-planning.md)

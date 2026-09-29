@@ -68,15 +68,13 @@ test('exactly one beforeGroups entry occupies index 0 so section numbers stay st
   );
 });
 
-test('first numbered chapter is how-llms-work (intro Next link depends on this)', () => {
-  // The intro page's "Next:" link points at the first numbered chapter. If the
-  // first numbered chapter changes, that link must be updated with it.
+test('first numbered chapter is how-llms-work', () => {
+  // Numbering is dense 1-indexed and the intro (unnumbered) precedes it. The
+  // intro's Next link comes from the Docusaurus paginator, which is derived
+  // from the sidebar order, so it tracks this automatically instead of being
+  // hand-linked from intro.mdx.
   const firstNumbered = chapters.find(isNumbered);
-  assert.equal(
-    firstNumbered?.id,
-    'how-llms-work',
-    'intro.mdx Next link "LLMs Demystified" is coupled to this chapter ID'
-  );
+  assert.equal(firstNumbered?.id, 'how-llms-work');
 });
 
 test('browser-contract deep-link chapters stay stable (test-browser-contracts.cjs depends on them)', () => {

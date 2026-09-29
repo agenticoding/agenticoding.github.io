@@ -172,7 +172,6 @@ function heading(state: State, node: MdNode): void {
 
 function paragraph(state: State, node: MdNode): void {
   const text = sanitizeText(paragraphText(node, state.ctx)).trim();
-  if (/^Next:/.test(text)) return; // reading-spine footer is navigation chrome
   push(state, text);
 }
 

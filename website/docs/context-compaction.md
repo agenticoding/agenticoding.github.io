@@ -34,5 +34,3 @@ Auto-compaction trades usable context for a safety margin you don't need when yo
 
 Reclaim the buffer for actual work. Compact only when you choose to — at phase boundaries — and always externalize anything that must survive exactly.
 :::
-
-**Next:** [Reliability Levers](./reliability-levers.md)
