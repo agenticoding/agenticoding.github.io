@@ -51,6 +51,12 @@ jobs:
       - name: Audit responsive diagrams
         run: npm run audit:responsive-diagrams
 
+      - name: Audit context regions
+        run: npm run audit:context-regions
+
+      - name: Lint audiobook dialogue
+        run: npm run audio:dialogue:lint
+
       - name: Refresh GitHub star counts
         # Unauthenticated (60 req/hr/IP). The fetcher merges per repo and keeps
         # the committed snapshot on failure, so a rate-limited deploy still
