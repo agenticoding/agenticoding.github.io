@@ -1,95 +1,30 @@
 # Agentic Coding
 
-A comprehensive online course for experienced software engineers to master AI-assisted development.
+**A field guide to AI agents you can stand behind.**
 
-## Overview
+A free, open-source technical reference for people who build software with AI agents. It replaces ad-hoc prompting with a repeatable method: understand what the model actually is, direct the work so the agent builds what you meant, verify results with something other than the agent itself, and own what ships.
 
-This course teaches systematic approaches to using AI coding assistants effectively in professional software development. Built with [Docusaurus](https://docusaurus.io/), it includes interactive code examples, hands-on exercises, and production-ready patterns.
+**[Read it free at agenticoding.ai](https://agenticoding.ai)**
 
-**Live Course:** [https://agenticoding.ai](https://agenticoding.ai)
+## Who it's for
 
-## Course Structure
+Engineers, designers, and product managers who already use AI coding tools and want production-grade outcomes — not demos or prompt tricks. Strong software fundamentals help; no ML background required.
 
-The course is organized into three modules with 10 hands-on lessons:
+## It practices what it teaches
 
-1. **[Fundamentals](website/docs/fundamentals)** - Mental models and architecture (Lessons 1-2)
-2. **[Methodology](website/docs/methodology)** - Prompting, grounding, workflow design (Lessons 3-5)
-3. **[Practical Techniques](website/docs/practical-techniques)** - Onboarding, planning, testing (Lessons 6-8)
-
-## Behind the Scenes
-
-**This course practices what it teaches.** The entire curriculum was developed using the AI-assisted workflows and techniques you'll learn in the course itself.
-
-Every module was planned, researched, drafted, and refined through systematic prompting, agentic research, and iterative validation—following the exact methodology outlined in the lessons.
-
-### Multi-Format Content Generation
-
-The course includes three formats for different learning styles, all generated using AI automation:
-
-- **Written Lessons**: Interactive MDX content with live code examples and hands-on exercises
-- **Written Lessons**: Interactive MDX content with live code examples and hands-on exercises
-
-All AI-generated content includes full transparency—metadata, frontmatter, and generation details are documented.
-
-**Why this matters:** If these techniques can produce production-grade training material on their own application, they're robust enough for your codebase. This isn't marketing—it's validation through real-world application.
-
-## Prerequisites
-
-- Strong programming fundamentals
-- Professional development experience
-- Understanding of software architecture and design patterns
-- Access to AI coding tools (GitHub Copilot, Claude, ChatGPT, or similar)
+Every chapter was planned, drafted, reviewed, and refined by AI agents, using the exact methodology it describes — grounding, planning, validation, and context management. Its reference implementation is [ChunkHound](https://chunkhound.ai), an open-source codebase-intelligence tool built the same way. A method that can write its own book can run your codebase.
 
 ## Local Development
 
-### Installation
-
 ```bash
-cd website
-npm install
+cd website && npm install   # install
+npm start                   # dev server → http://localhost:3000
+npm test                    # unit tests
+npm run build               # production build
 ```
 
-### Development Server
+## Contributing
 
-```bash
-npm start
-```
+Issues and pull requests are welcome.
 
-This starts a local development server at `http://localhost:3000/`. Most changes are reflected live without restarting the server.
-
-### Build
-
-```bash
-npm run build
-```
-
-Generates static content in the `website/build` directory, ready for deployment.
-
-### Test Production Build
-
-```bash
-npm run serve
-```
-
-Serves the production build locally for testing.
-
-## Features
-
-- **Interactive Code Examples** - Live code editing with `@docusaurus/theme-live-codeblock`
-- **Full-Text Search** - Local search powered by `@easyops-cn/docusaurus-search-local`
-- **Custom Interactive Components** - Visual elements like GroundingComparison for conceptual clarity
-- **GitHub Pages Deployment** - Automated deployment via GitHub Actions
-
-## Technology Stack
-
-### Site Infrastructure
-- **[Docusaurus 3](https://docusaurus.io/)** - Static site generator
-- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe configuration
-- **[MDX](https://mdxjs.com/)** - Markdown with React components
-- **[Prism](https://prismjs.com/)** - Syntax highlighting
-- **[GitHub Actions](https://github.com/features/actions)** - CI/CD
-- **Node.js** - Automation scripts for content pipeline
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
+MIT licensed. © Ofri Wolfus
