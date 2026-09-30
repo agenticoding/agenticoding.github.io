@@ -16,7 +16,8 @@
  */
 import { linearityProblems } from '../../website/src/audiobook/artifacts.ts';
 import { AUDIO_CONFIG } from '../../website/src/audiobook/config.ts';
-import { asInt16, FFMPEG, log, measureChapter, PCM_HEAD, PCM_INPUT, pcmBytesForMs, runTool } from './report.mjs';
+import { FFMPEG, measureChapter, PCM_HEAD, PCM_INPUT, pcmBytesForMs, runTool } from './report.mjs';
+import { asInt16, log } from './primitives.mjs';
 
 const PCM_OUTPUT = [...PCM_HEAD, '-'];
 

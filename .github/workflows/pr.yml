@@ -47,6 +47,11 @@ jobs:
       - name: Audit context regions
         run: npm run audit:context-regions
 
+      # Website tests run first without the provider SDK; the CLI's static imports
+      # require scripts/ dependencies even for its credential-free lint command.
+      - name: Install audiobook CLI dependencies
+        run: npm ci --prefix ../scripts
+
       - name: Lint audiobook dialogue
         run: npm run audio:dialogue:lint
 

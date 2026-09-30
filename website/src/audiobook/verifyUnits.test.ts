@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { AUDIO_CONFIG } from './config.ts';
 import type { TurnPitch } from './voice.ts';
@@ -6,7 +7,55 @@ import {
   attachVoiceProblems,
   turnPitches,
   unitRequiredTerms,
-} from '../../../scripts/audiobook/verify.mjs';
+} from '../../../scripts/audiobook/verifyUnits.mjs';
+
+// The verifyUnits module graph must never reach the provider SDK: the website
+// suite runs before scripts/ deps are installed in CI, so a static SDK import
+// anywhere in this graph fails the test file. Walk the graph instead of relying
+// on that install order alone; literal dynamic imports must stay outside it too.
+const importSpecifiers = (source: string): string[] =>
+  [
+    ...source.matchAll(
+      /(?:\bfrom\s+|\bimport\s*(?:\(\s*|\s+))['"]([^'"]+)['"]/g
+    ),
+  ].map(([, specifier]) => specifier);
+const importsProvider = (specifier: string): boolean =>
+  specifier === '@google/genai' || specifier.startsWith('@google/genai/');
+
+const importGraph = (entry: URL): string[] => {
+  const visited = new Set<string>();
+  const walk = (file: URL): void => {
+    if (visited.has(file.pathname)) return;
+    visited.add(file.pathname);
+    for (const specifier of importSpecifiers(readFileSync(file, 'utf8')))
+      if (specifier.startsWith('.')) walk(new URL(specifier, file));
+      else visited.add(specifier);
+  };
+  walk(entry);
+  return [...visited];
+};
+
+test('the verifyUnits module graph never reaches the provider SDK', () => {
+  const audiobook = new URL('../../../scripts/audiobook/', import.meta.url);
+  const graph = [
+    ...importGraph(new URL('verifyUnits.mjs', audiobook)),
+    ...importGraph(new URL('primitives.mjs', audiobook)),
+  ];
+  assert.ok(
+    !graph.some(importsProvider),
+    'graph must not import @google/genai'
+  );
+  assert.ok(
+    !graph.some((file) => file.endsWith('report.mjs')),
+    'graph must not import report.mjs'
+  );
+});
+
+test('the graph guard recognizes literal dynamic SDK subpath imports', () => {
+  assert.ok(
+    importSpecifiers("await import('@google/genai/web')").some(importsProvider)
+  );
+});
 
 // The verify unit is the render unit: each chunk is gated only on the terms it
 // actually speaks, so a chapter-level required term must not fail a chunk that
@@ -38,8 +87,7 @@ test('unitRequiredTerms matches case- and punctuation-insensitively', () => {
 // turnPitches tags every part with its owning render unit: unitId is what the
 // build's re-roll loop discards, so a misattributed turn would retry the wrong take.
 // Silence keeps the test on the real DSP path with a deterministic null pitch.
-const silence = (): Buffer =>
-  Buffer.alloc(AUDIO_CONFIG.sourceSampleRate * 2);
+const silence = (): Buffer => Buffer.alloc(AUDIO_CONFIG.sourceSampleRate * 2);
 
 test('turnPitches attributes every part to its owning render unit', () => {
   const stream = {
@@ -61,6 +109,11 @@ test('turnPitches attributes every part to its owning render unit', () => {
       ['c1', 'c1-sam', 'sam'],
       ['c2', 'c2-alex', 'alex'],
     ]
+  );
+  // The silence contract the comment above relies on: no pitch detected.
+  assert.deepEqual(
+    turns.map((turn: TurnPitch) => turn.pitchHz),
+    [null, null, null]
   );
 });
 

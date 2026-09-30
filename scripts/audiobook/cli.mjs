@@ -32,7 +32,8 @@ import { criticalTerms } from '../../website/src/audiobook/wer.ts';
 import { dialogueStream, chunkState, discardChunk, printDialoguePlan } from './dialogue.mjs';
 import { encodeChapter } from './encode.mjs';
 import { masterStream } from './master.mjs';
-import { CACHE_DIR, chapterMp3, exists, log, MANIFEST_FILE, readJsonIfExists, requireApiKey, seconds, table, warn } from './report.mjs';
+import { CACHE_DIR, chapterMp3, exists, MANIFEST_FILE, readJsonIfExists, requireApiKey, seconds, table } from './report.mjs';
+import { log, warn } from './primitives.mjs';
 import { printVerification, verifyChapter, verifyProblems } from './verify.mjs';
 
 const COMMANDS = { '--build': 'build', '--verify': 'verify', '--list': 'list', '--lint': 'lint', '--source': 'source' };

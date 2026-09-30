@@ -1,14 +1,15 @@
 /**
- * Shared primitives for the local-only audio stages (render, verify, stitch,
- * encode).
+ * Shared report/pipeline helpers for the local-only audio stages (render,
+ * verify, stitch, encode).
  *
- * Every stage needs the artifact layout, the cache reader and the same stdout
- * shape, so all three live here; duplicating any of them would let the stages
- * drift. The Gemini provider seam (client, retry, WAV wrap, ASR) lives here too
- * because render/dialogue TTS and verify/dialogue ASR share it; the ffmpeg
- * encoder stays in encode.mjs.
+ * Every stage needs the artifact layout and the cache reader, so both live
+ * here; duplicating either would let the stages drift. The Gemini provider seam
+ * (client, retry, WAV wrap, ASR) lives here too because render/dialogue TTS and
+ * verify/dialogue ASR share it; the ffmpeg encoder stays in encode.mjs.
  *
- * All of it is local-only tooling: nothing here is imported by the website build.
+ * Provider-free helpers (PCM view, stdout shape) live in primitives.mjs so the
+ * website unit tests can import them without this module's `@google/genai`.
+ * Nothing here is imported by the website build.
  */
 import { GoogleGenAI } from '@google/genai';
 import { spawnSync } from 'node:child_process';
@@ -44,13 +45,6 @@ export const exists = (file) => existsSync(file);
 const readJson = (file) => JSON.parse(readFileSync(file, 'utf8'));
 export const readJsonIfExists = (file) => (existsSync(file) ? readJson(file) : undefined);
 export const readBytes = (file) => readFileSync(file);
-/**
- * Copy of s16le PCM as int16 samples: sample math without a per-sample Buffer read. The copy keeps
- * this correct for any byteOffset alignment, which a zero-copy view would not be.
- */
-export const asInt16 = (pcm) =>
-  new Int16Array(pcm.buffer.slice(pcm.byteOffset, pcm.byteOffset + (pcm.byteLength >> 1 << 1)));
-
 /** Every artifact is written through here so directories can never be forgotten. */
 export function writeFile(file, data) {
   mkdirSync(dirname(file.pathname), { recursive: true });
@@ -172,9 +166,6 @@ export function runTool(tool, args, input) {
   if (result.error || result.status !== 0) throw new Error(describeFailure(tool, result));
   return { stdout: result.stdout, stderr: String(result.stderr) };
 }
-
-export const log = (stage, message) => console.log(`[${stage}] ${message}`);
-export const warn = (stage, message) => console.warn(`[${stage}] ${message}`);
 
 /**
  * The one PCM stream shape the whole pipeline speaks (24 kHz 16-bit mono), shared

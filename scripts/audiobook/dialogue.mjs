@@ -13,7 +13,8 @@ import { AUDIO_CONFIG } from '../../website/src/audiobook/config.ts';
 import { chunkTurns, turnSliceBounds, turnStartMs } from '../../website/src/audiobook/dialogueScript.ts';
 import { dialogueChunkCacheKey } from '../../website/src/audiobook/hash.ts';
 import { renderDialogueChunk } from './render.mjs';
-import { cacheFile, exists, log, pcmBytesForMs, pcmDurationMs, readBytes, readJsonIfExists, table, transcribe, warn, writeFile, writeJson } from './report.mjs';
+import { cacheFile, exists, pcmBytesForMs, pcmDurationMs, readBytes, readJsonIfExists, table, transcribe, writeFile, writeJson } from './report.mjs';
+import { log, warn } from './primitives.mjs';
 
 export function chunkState(turns, force = false) {
   const cacheKey = dialogueChunkCacheKey(turns);
