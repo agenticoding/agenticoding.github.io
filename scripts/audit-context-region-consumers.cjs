@@ -19,8 +19,12 @@ const root = path.resolve(
   "components",
   "VisualElements",
 );
+// The one owner of the foundation filename: the contract test reuses it and
+// guards its exact on-disk case, because a wrong-case path only fails on the
+// case-sensitive CI disk, not on the maintainer's macOS checkout.
+const FOUNDATION_FILE = "contextRegions.module.css";
 const foundationCss = fs.readFileSync(
-  path.join(root, "ContextRegions.module.css"),
+  path.join(root, FOUNDATION_FILE),
   "utf8",
 );
 
@@ -284,8 +288,10 @@ function main() {
 if (require.main === module) main();
 
 module.exports = {
+  FOUNDATION_FILE,
   SEAM,
   collectRules,
+  foundationCss,
   specificity,
   propertiesOf,
   overrideFailures,

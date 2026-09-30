@@ -1,12 +1,19 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 import audit from '../../../../scripts/audit-context-region-consumers.cjs';
 
 // Exercises the audit's pure checks directly: a consumer override is decided by
 // specificity and value, never by bundle order, so the allow/deny contract can
 // be pinned without touching the real stylesheets.
-const { collectRules, overrideFailures, propertiesOf, seamFailures } = audit;
+const {
+  FOUNDATION_FILE,
+  collectRules,
+  foundationCss,
+  overrideFailures,
+  propertiesOf,
+  seamFailures,
+} = audit;
 
 const owned = (css: string, foundationClass: string) =>
   propertiesOf(collectRules(css), foundationClass);
@@ -63,15 +70,23 @@ test('the stack seam requires an inset', () => {
   assert.deepEqual(seamFailures('Demo', 'mine', placed), []);
 });
 
+// The audit reads the foundation by name, and a wrong-case name still resolves
+// on macOS but not on the case-sensitive CI disk. Pin the exact on-disk case.
+test('the foundation filename matches its on-disk case', () => {
+  const entries = readdirSync(new URL('.', import.meta.url));
+  assert.ok(
+    entries.includes(FOUNDATION_FILE),
+    `${FOUNDATION_FILE} is not the exact on-disk filename`
+  );
+});
+
 test('the real fanout consumer clears the audit over the real stylesheets', () => {
   // The same pure checks as above, but over the actual files on disk: the
   // foundation plus the SubAgentFanoutDiagram consumer with the exact role
   // classes its <ContextRegionScene> usage hands over (className,
   // stackClassName, companionClassName). Zero failures, or the audit CLI
   // would fail the same way.
-  const foundation = collectRules(
-    readFileSync(new URL('./ContextRegions.module.css', import.meta.url), 'utf8')
-  );
+  const foundation = collectRules(foundationCss);
   const consumer = collectRules(
     readFileSync(
       new URL('./SubAgentFanoutDiagram.module.css', import.meta.url),
