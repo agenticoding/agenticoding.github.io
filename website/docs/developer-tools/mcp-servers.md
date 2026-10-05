@@ -34,6 +34,14 @@ uv tool install chunkhound
 
 Requires Python 3.10+ and the uv package manager. See [ChunkHound on GitHub](https://github.com/chunkhound/chunkhound) for API key configuration and setup details.
 
+ChunkHound exposes its tools over stdio. Register it with pi's built-in MCP client:
+
+```bash narration="One command registers ChunkHound with pi. The server talks stdio, so pi launches the chunkhound binary itself and keeps it out of the prompt until research asks for it."
+pi mcp add chunkhound -- chunkhound mcp
+```
+
+MCP is a built-in extension in pi 1.0, so no adapter package is involved. Server tools default to `codemode` exposure: their schemas stay out of the fixed prompt, and `codemode` scripts or `tool_search` reach them on demand. See [pi MCP servers](https://pi.dev/docs/latest/mcp) for configuration, exposure modes, and OAuth.
+
 ChunkHound also handles web research — searching documentation, CVEs, changelogs, and current information beyond training data. Multi-source grounding is described in [Grounding](/workflow-grounding#phase-1-grounding).
 
 ## Browser Automation

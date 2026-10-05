@@ -24,7 +24,7 @@ That steering is the other side of the axis. A harness that controls the model h
 
 **Why:**
 
-- **Start with primitives:** pi deliberately ships without built-in MCP, subagents, planning, or permission workflows. Build only the capabilities your task needs instead of carrying someone else's product decisions.
+- **Start with primitives:** pi deliberately ships without built-in subagents, planning, or an opinionated permission workflow. MCP, codemode, and tool_search are built in, yet each stays off the fixed prompt until a task reaches for it. Build only the capabilities your task needs instead of carrying someone else's product decisions.
 - **Token-efficient:** A ~1k-token core — system prompt plus four tools, loaded on demand — spends almost nothing on the harness, so per-turn cost sits far below the sealed harnesses and nearly the whole attention budget goes to the task.
 - **Extension-first architecture:** TypeScript extensions, skills, prompt templates, themes, and packages let you compose a task-specific agent without forking its core.
 - **Provider independence:** Use frontier, gateway, subscription-backed, or local models without rebuilding your workflow around one vendor. `/login` offers built-in OAuth for ChatGPT Plus/Pro (Codex), Claude Pro/Max, and GitHub Copilot subscriptions.

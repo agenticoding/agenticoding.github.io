@@ -13,6 +13,8 @@ Every tool the agent can call ships with a schema: name, description, parameters
 
 The cost is structural: every tool schema is serialized as JSON with repeated type annotations, nested `required` arrays, and verbose natural-language descriptions. A typical tool runs 300–600 tokens; complex API tools like GitHub's file operations hit 1,000–2,000. These costs compound quickly across multi-server setups. The governing rule is simple: **small, high-frequency toolsets favor eager loading; large, broad catalogs favor deferred loading.**
 
+pi 1.0 applies that rule per server instead of per client. Its built-in MCP client gives each server an `exposure` mode: `codemode` (the default) keeps schemas out of the prompt and lets scripts call tools directly, `deferred` hides them until `tool_search` loads a match, `direct` declares a small hot set up front, and `hidden` keeps tools unreachable (use it only for experimental or internal servers that should never appear in the prompt). A `codemode` or `deferred` server still appears in the system prompt — as a one-line summary, not its full catalog.
+
 ### Eager vs Deferred Loading
 
 Eager loading keeps calls simple because the model already has the schema when it starts planning. Deferred loading protects the startup prompt, but every deferred tool depends on probabilistic candidate selection. Catalog breadth controls how much eager schema mass enters the prefix; task breadth controls how many schemas the work actually needs; selection quality controls whether discovery takes a wrong path. They are separate variables.
@@ -25,9 +27,9 @@ narration="Two ways to pay for tool schemas. Load them eagerly and every schema 
 caption={
 'Tool Search saves prefix tokens, but a near match can leave wrong schemas, calls, and results in the context middle.'
 }
->
-  <MCPToolSchemaDiagram />
-</DiagramFrame>
+
+>   <MCPToolSchemaDiagram />
+> </DiagramFrame>
 
 Drag the catalog control: it changes installed breadth, not what the representative task needs. The task always requires two schemas. Eager loading puts the full catalog in the fixed prefix; deferred loading exposes only schemas selected at runtime and keeps the remainder out of the request.
 
