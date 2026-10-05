@@ -1,6 +1,6 @@
 {
   "chapterId": "exercises/tic-tac-toe/overview",
-  "sourceHash": "12f0317c7647b236e32a2f69fd5e59c79e03ab306e83b96943329b7bef32cda9",
+  "sourceHash": "d66788e7cb7f89b80005b985eeb2f0017663bb56f263bd5a887276e63a824e9e",
   "declaredCriticalTerms": [
     {
       "term": "candidate",
@@ -84,7 +84,7 @@
       "id": "t13",
       "speaker": "alex",
       "anchor": { "kind": "heading", "id": "the-stack-youll-install" },
-      "text": "Now the other stack, the one you install rather than build. It's the harness: a deliberate commitment, not a menu. This book's CLI Coding Agents ranks the field and puts pi first, vendor-independent and extension-first. The exercise runs on that pick, with ChunkHound and pi schematic, purpose-built to apply the book's techniques rather than illustrate them. Full disclosure: both are by this book's author. pi ships no memory, no research tools, and no sub-agents; the harness adds each back as an extension."
+      "text": "Now the other stack, the one you install rather than build. It's the harness: a deliberate commitment, not a menu. This book's CLI Coding Agents ranks the field and puts pi first, vendor-independent and extension-first. The exercise runs on that pick, with ChunkHound and pi schematic, purpose-built to apply the book's techniques rather than illustrate them. Full disclosure: both are by this book's author. pi 1.0 now ships MCP, codemode, and tool search built in, so a server's tools stay out of the prompt until a script reaches for them. What the harness still adds is the rest: sub-agents, memory, and a research pipeline."
     },
     {
       "id": "t14",
@@ -102,7 +102,7 @@
       "id": "t16",
       "speaker": "sam",
       "anchor": { "kind": "figure", "index": 1 },
-      "text": "So the first real task is a pause, not a prompt. I'll install all five and confirm each one responds — pi mcp adapter and agent browser included — and only then start."
+      "text": "So the first real task is a pause, not a prompt. I'll get each piece running and confirm it answers — the agent, the code research server, the browser — and only then start."
     },
     {
       "id": "t17",

@@ -1,0 +1,276 @@
+{
+  "chapterId": "workflow-planning",
+  "sourceHash": "3fbd2ee269dbd219526287e9cc84c219d5c9c587f3d9a31801a211b1e6c2ad1b",
+  "turns": [
+    {
+      "id": "t1",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "Grounding hands the agent facts. It never settles the shape of the change. The agent can hold the pattern, the constraint, and the tests, and still not know which trade-off you want, what's out of scope, or which boundary must not move."
+    },
+    {
+      "id": "t2",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "So the moment execution starts, those calls get made inside the diff. That's the most expensive place to find out you meant something else."
+    },
+    {
+      "id": "t3",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "And that's why planning is the pause between knowing and doing. A plan does two jobs, and they aren't the same job."
+    },
+    {
+      "id": "t4",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "The first is decomposition. It cuts the task into units, and every unit names what goes in, what comes out, and the signal that proves it done."
+    },
+    {
+      "id": "t5",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "That job needs no judge. It pays off by holding the agent inside one bounded unit, and by showing which units can run at once."
+    },
+    {
+      "id": "t6",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "The second job is the gate. Approval lands before a line of code exists, so a wrong direction gets rejected while changing it is still cheap."
+    },
+    {
+      "id": "t7",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "But a gate is worth exactly what its reviewer is worth. Reviewers agree only moderately on what's risky. In one study, upfront approval constrained unplanned actions, yet left unlisted safeguards unaddressed and inhibited scrutiny later on."
+    },
+    {
+      "id": "t8",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "Right. And a plan nobody judges isn't a weak gate. It isn't a gate at all."
+    },
+    {
+      "id": "t9",
+      "speaker": "alex",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "So the consequence is that approval is the unlock. If review can only rubber-stamp, the plan is theatre. If it can send the draft back, a wrong shape never reaches code."
+    },
+    {
+      "id": "t10",
+      "speaker": "sam",
+      "anchor": { "kind": "figure", "index": 0 },
+      "text": "Then the gate has to be able to say no. What does that look like on an actual task?"
+    },
+    {
+      "id": "t11",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "Take an everyday change: put a promo-code field on checkout. Scope is the half only you can settle — where it goes, whether codes stack with other offers, what a bad code does. The existing pricing rules are the boundary that must not move."
+    },
+    {
+      "id": "t12",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "phase-2-plan-orchestrate" },
+      "text": "Then the unit is the part reality can check: one field, one page, with a test proving a valid code applies and a bad one is rejected. Then you stop. Predicting later steps spends plan length on work the agent should do in the code."
+    },
+    {
+      "id": "t13",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-price-of-planning" },
+      "text": "Now the price. The plan is text that enters the window before any execution step, and it cuts both ways."
+    },
+    {
+      "id": "t14",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-price-of-planning" },
+      "text": "How does it cut both ways?"
+    },
+    {
+      "id": "t15",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-price-of-planning" },
+      "text": "It keeps the goal in front of the model. Naming the objective holds generation on one target, so a long run wanders less."
+    },
+    {
+      "id": "t16",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-price-of-planning" },
+      "text": "And the cost of that?"
+    },
+    {
+      "id": "t17",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "the-price-of-planning" },
+      "text": "Bad news: it pushes back everything that follows. Grounding and reasoning already claimed part of the window, and the plan sits on top of that and never leaves, so later work ends up behind it. Let it balloon, and execution slides into the middle of a long context, where recall is thinnest. Long-context recall falls as input grows. Both effects grow with size, so keep the restatement short and honest, expand only the next unit, and fetch the rest back when the work needs it."
+    },
+    {
+      "id": "t18",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "the-price-of-planning" },
+      "text": "So it's a bet on attention. A short plan keeps the goal in view, and a long one pushes the actual work into the weak middle."
+    },
+    {
+      "id": "t19",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "Planning isn't free. It costs tokens, latency, and a commitment to a shape you haven't validated. Three conditions pay that back."
+    },
+    {
+      "id": "t20",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "Start with the task itself."
+    },
+    {
+      "id": "t21",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "Early mistakes compound only on long work. On a two-line change, planning is overhead. On a chain where each step leans on the one before it, a bad first move doesn't stay local, and everything built on it inherits the error. The payoff is lookahead: the agent sees the shape before it commits."
+    },
+    {
+      "id": "t22",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "So plan when a mistake would echo forward. What's the second condition?"
+    },
+    {
+      "id": "t23",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "The work has to split into units you can check or run independently. Give each unit its own way to fail loudly, and a broken step stays contained instead of spreading through the run. Independent units can also run at once."
+    },
+    {
+      "id": "t24",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "That leaves the judge. What has to hold for it to be worth anything?"
+    },
+    {
+      "id": "t25",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "Two things must hold. One: the plan arrives in a form the judge can actually read. Compile each claim into the shape of a check. A test executes code. A type checker reads a signature. A predicate over constraints reads what the plan asserts. Not one of them reads a sentence."
+    },
+    {
+      "id": "t26",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "So one field on checkout with a test for a valid and an expired code gives a check something to run. But 'pricing rules must not move' gives it nothing."
+    },
+    {
+      "id": "t27",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "Right, until you bind that line — to a predicate, no change under pricing/, or to a question: does this change pricing rules, yes or no. That binding is your work, and it comes first, because prose-to-formal translation is the weak link; reported semantic correctness runs between 24% and 35%."
+    },
+    {
+      "id": "t28",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "And when the check is a judgment, not a fact?"
+    },
+    {
+      "id": "t29",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "Then declare questions over the plan state and let a typed decision model answer with probabilities. What comes back: a question a person can read, an answer the code can branch on, a confidence you can threshold. Scorers are easy to fool by deletion. A typed-state gate refused release on all 26 omission-optimized routes. Refusal, not a better score, is what you want from a gate."
+    },
+    {
+      "id": "t30",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "Second thing: the answer has to predict success. A judge that waves almost anything through is worse than no judge. Generate ten plans and it picks the best-sounding one, not the one that works, so the extra tries buy confidence, not correctness. Switch verification off and a planning agent's success rate drops 12.9 points. The win lives in the check, not the plan, because a plan is only as good as its checker. LLM Judges works through that choice."
+    },
+    {
+      "id": "t31",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-a-plan-earns-its-keep" },
+      "text": "So it earns its keep when the task is long, the units are checkable, and something credible can read the plan and be right. And the payoff is the checker, not the prose."
+    },
+    {
+      "id": "t32",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-to-skip-planning" },
+      "text": "Invert those conditions, and the same tests tell you when to skip."
+    },
+    {
+      "id": "t33",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-to-skip-planning" },
+      "text": "Where does it go wrong first?"
+    },
+    {
+      "id": "t34",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-to-skip-planning" },
+      "text": "No judge, no gate. Let the planner grade its own plan and you've made the common autonomous-loop mistake. Self-critique with no external signal can't rescue a bad plan; it collapses performance, because the model can't tell its errors from its preferences. The wider evidence is one-sided: models struggle to self-correct without outside feedback, and sometimes get worse for trying. A plan that neither breaks down the work nor reaches a credible judge spends context and buys nothing, so one-shot the task and keep the whole thing in front of the model."
+    },
+    {
+      "id": "t35",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-to-skip-planning" },
+      "text": "Second, a plan kept around after it's stopped being useful. A plan is a bet on how the work will unfold. Hold onto it once the environment contradicts it and the bet turns into sunk cost: the agent defends the plan rather than revising it, and an early, hard-to-reverse choice gets amplified for the rest of the run. Past a point that shifts with task difficulty, more planning stops helping and starts hurting, and the curve bends down the way it does for reasoning length. Keep the plan provisional, and re-plan on whatever the run learns."
+    },
+    {
+      "id": "t36",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-to-skip-planning" },
+      "text": "And a judge nobody audited. A gate is an instrument, and instruments drift."
+    },
+    {
+      "id": "t37",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-to-skip-planning" },
+      "text": "Right. Verdicts move with the model version underneath them, and they get more permissive as agents get more capable. A panel that shares evidence also shares its blind spots. Verifier errors leave no trace inside the loop, so sample the gate's calls against what actually shipped — LLM Judges."
+    },
+    {
+      "id": "t38",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "when-to-skip-planning" },
+      "text": "Handing chunks of a plan to parallel sub-agents looks like scale. In practice it fragments the implicit decisions — style, boundaries, naming — into work no one downstream can reconcile. Delegation is for independent threads, not for a plan you never made consistent. And on small, obvious work, planning is pure overhead."
+    },
+    {
+      "id": "t39",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "when-to-skip-planning" },
+      "text": "So I skip when no credible reader exists, when the plan has outlived the world it assumed, when the gate was never checked, and when splitting the plan would split the decisions too."
+    },
+    {
+      "id": "t40",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "planning-is-complete-when" },
+      "text": "Two questions decide completion. First, is there a credible judge that can read the plan? If a test, a predicate, or a declared question can turn it down, the gate buys early rejection of a bad direction. If nothing outside the planner can judge it, there's no gate at all. Keep the plan as decomposition, or skip it."
+    },
+    {
+      "id": "t41",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "planning-is-complete-when" },
+      "text": "And the second question?"
+    },
+    {
+      "id": "t42",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "planning-is-complete-when" },
+      "text": "Is revising cheap? If a step of adapting is enough, the plan is a scaffold. If adapting means a fresh start, it's a trap. When both are true, gate early and re-plan on every verdict. When neither holds, skip the plan and one-shot the task."
+    },
+    {
+      "id": "t43",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "planning-is-complete-when" },
+      "text": "Measured head to head, planning every time degrades long-horizon performance, while never planning caps it. So the best setting is somewhere in the middle, picked per task. Placement matters as much as frequency. Models dump their thinking into the first turn and then assemble the plan with nothing left, so push the reasoning to the decision points — after a tool returns, before the plan is locked — and that's where the payoff lands."
+    },
+    {
+      "id": "t44",
+      "speaker": "alex",
+      "anchor": { "kind": "heading", "id": "planning-is-complete-when" },
+      "text": "So planning is done when execution can begin from a stated contract, judged where a judge exists, rather than an open-ended conversation. Task sizing and phase-boundary review are Shaping the Work and Human Checkpoints."
+    },
+    {
+      "id": "t45",
+      "speaker": "sam",
+      "anchor": { "kind": "heading", "id": "planning-is-complete-when" },
+      "text": "Let me put it together. Planning earns its cost when the work is long enough to compound a mistake, the pieces can be verified on their own, and a credible reader can reject a bad direction early. It's waste when no such reader exists, when you cling past its usefulness, when the gate drifts un-audited, or when a split plan fragments decisions nobody can reconcile. So keep the plan short, provisional, and judged, and pay for it only when the check is real."
+    }
+  ]
+}

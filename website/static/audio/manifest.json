@@ -700,8 +700,8 @@
         "alex": "Kore",
         "sam": "Charon"
       },
-      "narrationHash": "b9037e310d2f792d0e3a18645c91e24f178b657fd57135c1d277bed8800a05b0",
-      "durationMs": 329702,
+      "narrationHash": "f8f699911a0b719b9052cb316b90ef19e9ad69e4d663ab419783fd7b0c7a4be6",
+      "durationMs": 345062,
       "sampleRate": 44100,
       "bitrateKbps": 64,
       "lufs": -23.3,
@@ -852,7 +852,7 @@
         },
         {
           "startMs": 229211,
-          "endMs": 263711,
+          "endMs": 276311,
           "segmentId": "t13",
           "label": "alex",
           "anchor": {
@@ -862,8 +862,8 @@
           "speaker": "alex"
         },
         {
-          "startMs": 263711,
-          "endMs": 275011,
+          "startMs": 276311,
+          "endMs": 287911,
           "segmentId": "t14",
           "label": "sam",
           "anchor": {
@@ -873,8 +873,8 @@
           "speaker": "sam"
         },
         {
-          "startMs": 275011,
-          "endMs": 290011,
+          "startMs": 287911,
+          "endMs": 304511,
           "segmentId": "t15",
           "label": "alex",
           "anchor": {
@@ -884,8 +884,8 @@
           "speaker": "alex"
         },
         {
-          "startMs": 290011,
-          "endMs": 303611,
+          "startMs": 304511,
+          "endMs": 316311,
           "segmentId": "t16",
           "label": "sam",
           "anchor": {
@@ -895,8 +895,8 @@
           "speaker": "sam"
         },
         {
-          "startMs": 303611,
-          "endMs": 327011,
+          "startMs": 316311,
+          "endMs": 341911,
           "segmentId": "t17",
           "label": "alex",
           "anchor": {
@@ -906,8 +906,8 @@
           "speaker": "alex"
         },
         {
-          "startMs": 327011,
-          "endMs": 329702,
+          "startMs": 341911,
+          "endMs": 345062,
           "segmentId": "t18",
           "label": "sam",
           "anchor": {
@@ -2913,6 +2913,528 @@
           "anchor": {
             "kind": "heading",
             "id": "dedicate-an-agent-to-retrieval"
+          },
+          "speaker": "sam"
+        }
+      ]
+    },
+    "workflow-planning": {
+      "file": "workflow-planning.mp3",
+      "modelId": "gemini-2.5-pro-preview-tts",
+      "speakers": {
+        "alex": "Kore",
+        "sam": "Charon"
+      },
+      "narrationHash": "1c4c98b9fc15849b51ba308b5dd3481bb3fa7bbb5a05c7c033e7ec0903886b5f",
+      "durationMs": 626713,
+      "sampleRate": 44100,
+      "bitrateKbps": 64,
+      "lufs": -23.2,
+      "truePeakDb": -3.5,
+      "marks": [
+        {
+          "startMs": 0,
+          "endMs": 1000,
+          "segmentId": "t0",
+          "label": "Planning",
+          "anchor": {
+            "kind": "heading",
+            "id": null
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 1000,
+          "endMs": 17000,
+          "segmentId": "t1",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 17000,
+          "endMs": 25900,
+          "segmentId": "t2",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 25900,
+          "endMs": 34800,
+          "segmentId": "t3",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 34800,
+          "endMs": 45600,
+          "segmentId": "t4",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 45600,
+          "endMs": 54400,
+          "segmentId": "t5",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 54400,
+          "endMs": 64400,
+          "segmentId": "t6",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 64400,
+          "endMs": 80400,
+          "segmentId": "t7",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 80400,
+          "endMs": 86500,
+          "segmentId": "t8",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 86500,
+          "endMs": 99300,
+          "segmentId": "t9",
+          "label": "alex",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 99300,
+          "endMs": 104600,
+          "segmentId": "t10",
+          "label": "sam",
+          "anchor": {
+            "kind": "figure",
+            "index": 0
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 104600,
+          "endMs": 122200,
+          "segmentId": "t11",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 122200,
+          "endMs": 138300,
+          "segmentId": "t12",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "phase-2-plan-orchestrate"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 138300,
+          "endMs": 146700,
+          "segmentId": "t13",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "the-price-of-planning"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 146700,
+          "endMs": 148700,
+          "segmentId": "t14",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "the-price-of-planning"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 148700,
+          "endMs": 158100,
+          "segmentId": "t15",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "the-price-of-planning"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 158100,
+          "endMs": 159800,
+          "segmentId": "t16",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "the-price-of-planning"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 159800,
+          "endMs": 192700,
+          "segmentId": "t17",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "the-price-of-planning"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 192700,
+          "endMs": 200600,
+          "segmentId": "t18",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "the-price-of-planning"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 200600,
+          "endMs": 209800,
+          "segmentId": "t19",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 209800,
+          "endMs": 211900,
+          "segmentId": "t20",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 211900,
+          "endMs": 232100,
+          "segmentId": "t21",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 232100,
+          "endMs": 236291,
+          "segmentId": "t22",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 236291,
+          "endMs": 251691,
+          "segmentId": "t23",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 251691,
+          "endMs": 256091,
+          "segmentId": "t24",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 256091,
+          "endMs": 275291,
+          "segmentId": "t25",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 275291,
+          "endMs": 284691,
+          "segmentId": "t26",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 284691,
+          "endMs": 305791,
+          "segmentId": "t27",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 305791,
+          "endMs": 308691,
+          "segmentId": "t28",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 308691,
+          "endMs": 335391,
+          "segmentId": "t29",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 335391,
+          "endMs": 365891,
+          "segmentId": "t30",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 365891,
+          "endMs": 376191,
+          "segmentId": "t31",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-a-plan-earns-its-keep"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 376191,
+          "endMs": 380291,
+          "segmentId": "t32",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-to-skip-planning"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 380291,
+          "endMs": 381991,
+          "segmentId": "t33",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-to-skip-planning"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 381991,
+          "endMs": 418891,
+          "segmentId": "t34",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-to-skip-planning"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 418891,
+          "endMs": 453591,
+          "segmentId": "t35",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-to-skip-planning"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 453591,
+          "endMs": 458782,
+          "segmentId": "t36",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-to-skip-planning"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 458782,
+          "endMs": 478782,
+          "segmentId": "t37",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-to-skip-planning"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 478782,
+          "endMs": 502182,
+          "segmentId": "t38",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-to-skip-planning"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 502182,
+          "endMs": 513282,
+          "segmentId": "t39",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "when-to-skip-planning"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 513282,
+          "endMs": 534382,
+          "segmentId": "t40",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "planning-is-complete-when"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 534382,
+          "endMs": 536082,
+          "segmentId": "t41",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "planning-is-complete-when"
+          },
+          "speaker": "sam"
+        },
+        {
+          "startMs": 536082,
+          "endMs": 553282,
+          "segmentId": "t42",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "planning-is-complete-when"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 553282,
+          "endMs": 581382,
+          "segmentId": "t43",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "planning-is-complete-when"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 581382,
+          "endMs": 597982,
+          "segmentId": "t44",
+          "label": "alex",
+          "anchor": {
+            "kind": "heading",
+            "id": "planning-is-complete-when"
+          },
+          "speaker": "alex"
+        },
+        {
+          "startMs": 597982,
+          "endMs": 626713,
+          "segmentId": "t45",
+          "label": "sam",
+          "anchor": {
+            "kind": "heading",
+            "id": "planning-is-complete-when"
           },
           "speaker": "sam"
         }
