@@ -511,6 +511,23 @@ function inspectNoJavaScriptSidebar(html) {
     fail(`${LABEL_FOUNDATIONS} SSR fallback points to ${foundation.href}`);
 }
 
+// The cover promises the book's freshness, chapters their own: the homepage
+// footer must read "Book last updated" while a chapter reads "Last updated".
+// Static-HTML check (same fetch style as the no-JavaScript contract above):
+// a stray label elsewhere cannot satisfy it, and no browser JS is needed.
+async function inspectLastUpdatedLabels() {
+  const home = await (await fetch(siteUrl())).text();
+  if (!home.includes("Book last updated"))
+    fail('homepage footer is missing the "Book last updated" label');
+  if (!/dateModified/.test(home))
+    fail("homepage footer is missing its <time dateModified> element");
+  const chapter = await (await fetch(siteUrl(FOUNDATIONS_FIRST_DOC))).text();
+  if (!chapter.includes("Last updated"))
+    fail(`${FOUNDATIONS_FIRST_DOC} footer is missing the "Last updated" label`);
+  if (chapter.includes("Book last updated"))
+    fail(`${FOUNDATIONS_FIRST_DOC} footer must not use the book label`);
+}
+
 // Asserts each count is rendered server-side from the committed snapshot, tied
 // to its "stars" label so a stray number elsewhere cannot satisfy the check.
 async function inspectNoJavaScriptStars(html) {
@@ -2565,6 +2582,7 @@ async function inspectNavigationContracts(routes) {
     () => inspectNoJavaScriptHomepage(),
     "inspectNoJavaScriptHomepage",
   );
+  await withRetry(() => inspectLastUpdatedLabels(), "inspectLastUpdatedLabels");
   await withRetry(() => inspectSidebarNavigation(), "inspectSidebarNavigation");
   await withRetry(
     () => inspectMobileDrawerSidebar(),

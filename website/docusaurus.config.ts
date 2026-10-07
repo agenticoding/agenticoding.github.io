@@ -1,6 +1,11 @@
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import { lightTheme, darkTheme } from './src/prism-theme';
+import {
+  applyBookLastUpdate,
+  getBookLastUpdatedAt,
+  shouldInjectBookDate,
+} from './src/utils/bookLastUpdated';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -93,6 +98,30 @@ const config: Config = {
 
   markdown: {
     mermaid: true,
+    // WHY: the homepage must show when the BOOK changed, not when `intro.mdx`
+    // changed. The git-derived book date rides the documented `last_update`
+    // front-matter override, which takes precedence over the per-file git date.
+    // Other docs keep their own per-file date.
+    // Production only: Docusaurus simulates per-file dates in dev for speed, so
+    // injecting the real book date there would make the homepage disagree with
+    // every chapter. Skip it in dev and let all pages share the dev fallback.
+    parseFrontMatter: async ({
+      filePath,
+      fileContent,
+      defaultParseFrontMatter,
+    }) => {
+      const parsed = await defaultParseFrontMatter({ filePath, fileContent });
+      // Path check runs first: `getBookLastUpdatedAt()` spawns git, so only
+      // resolve it for the one page that uses it (memoized after first call).
+      if (shouldInjectBookDate(process.env.NODE_ENV, filePath)) {
+        applyBookLastUpdate(
+          parsed.frontMatter,
+          filePath,
+          getBookLastUpdatedAt()
+        );
+      }
+      return parsed;
+    },
     // Fail CI on broken anchors too — silent warn lets stale cross-references ship.
     hooks: {
       onBrokenMarkdownLinks: 'throw',
