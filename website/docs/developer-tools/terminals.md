@@ -13,6 +13,16 @@ The terminal is the foundation—pairing it with [modern CLI tools](/developer-t
 
 Modern terminals offer IDE-level features—GPU acceleration, programmable layouts, rich scripting, and extensive customization—that legacy terminals can't match. For multi-agent workflows, these capabilities translate directly to productivity: smooth handling of rapid output streams, programmable session management, and visual customization for tracking different contexts.
 
+## <ToolMark src="/img/terminal-logos/rex.png" mode="image" /> Rex (beta) {#rex}
+
+[**Rex**](https://www.superlogical.com) is a terminal emulator and multiplexer in one native application from Superlogical, the company founded by Ghostty creator Mitchell Hashimoto. It builds on libghostty, the MIT-licensed terminal library from the Ghostty project. Instead of running tmux inside a terminal, Rex runs a long-lived server that holds sessions while connected clients attach to them. Access is invite-only through the beta waitlist.
+
+**Key differentiators:** Sessions outlive the app and the device—close the laptop, reconnect elsewhere, and the work is still there. Multiple clients can attach to one session, and live sharing is built in. Rex ships an agent skill (`rex skill setup`) that teaches Claude Code, Codex, OpenCode, and Pi to open tabs and splits, run commands, read terminal screens, and control connected apps through a scriptable `rex` CLI with JSON output. The Program Status Protocol (OSC 7501) lets programs declare `idle`, `working`, `blocked`, `done`, or `error`, so agent state becomes explicit instead of inferred from output. Lua scripting covers configuration and automation.
+
+**Best suited for:** Developers running several coding agents in parallel who need sessions that survive client restarts. Agents that should drive the terminal directly—open panes, run commands, read results—instead of asking the human to copy output. macOS users already in the Ghostty ecosystem, and teams that want self-hosted persistent sessions without tmux.
+
+**Trade-offs:** Beta access is invite-only via the waitlist. Testers get the macOS client; Linux and FreeBSD servers are available, while Linux, Windows, and iOS clients exist but are not yet in testing. On macOS the app bundles its own local server, so it works as a drop-in terminal without separate setup; the ecosystem is still young compared with tmux. Status reporting works with Pi out of the box, and other programs and agent harnesses can emit OSC 7501 to get the same native state display. Rex is free, requires no account, and can be fully self-hosted, though Superlogical has not yet announced its commercialization plan.
+
 ## <ToolMark src="/img/terminal-logos/ghostty.svg" luminance /> Ghostty {#ghostty}
 
 [**Ghostty**](https://ghostty.org) is a native, GPU-accelerated terminal written in Zig by Mitchell Hashimoto (HashiCorp co-founder), publicly released in December 2024. It follows a "zero configuration philosophy" while providing extensive customization through simple key-value config files.
