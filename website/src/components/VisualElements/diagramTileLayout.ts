@@ -1,9 +1,5 @@
 import type { CSSProperties } from 'react';
-import {
-  DIAGRAM_GRID,
-  DIAGRAM_SPACE,
-  TILE_TYPE,
-} from './diagramScale.ts';
+import { DIAGRAM_GRID, DIAGRAM_SPACE, TILE_TYPE } from './diagramScale.ts';
 
 export type DiagramTone =
   | 'context'
