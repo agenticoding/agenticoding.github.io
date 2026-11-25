@@ -1,0 +1,3118 @@
+{
+  "meta": {
+    "guide": "open-weight-models-nov-2026.md",
+    "sourceUrl": "https://github.com/agenticoding/agenticoding.github.io/blob/main/open-weight-models-nov-2026.md",
+    "checkedThrough": "2026-11-19",
+    "contextStops": [65536, 131072, 262144, 524288, 1048576]
+  },
+  "families": [
+    {
+      "id": "workstation",
+      "label": "Workstation",
+      "vendor": "nvidia"
+    },
+    {
+      "id": "spark",
+      "label": "DGX Spark",
+      "vendor": "nvidia"
+    },
+    {
+      "id": "datacenter",
+      "label": "NVIDIA node",
+      "vendor": "nvidia"
+    },
+    {
+      "id": "amd",
+      "label": "AMD",
+      "vendor": "amd"
+    },
+    {
+      "id": "apple",
+      "label": "Apple Silicon",
+      "vendor": "apple"
+    }
+  ],
+  "engines": [
+    {
+      "id": "vllm",
+      "label": "vLLM",
+      "group": "general",
+      "platforms": ["nvidia", "amd", "apple"]
+    },
+    {
+      "id": "sglang",
+      "label": "SGLang",
+      "group": "general",
+      "platforms": ["nvidia", "amd"]
+    },
+    {
+      "id": "trtllm",
+      "label": "TensorRT-LLM",
+      "group": "general",
+      "platforms": ["nvidia"]
+    },
+    {
+      "id": "llamacpp",
+      "label": "llama.cpp",
+      "group": "general",
+      "platforms": ["nvidia", "amd", "apple"]
+    },
+    {
+      "id": "ollama",
+      "label": "Ollama",
+      "group": "general",
+      "platforms": ["nvidia", "amd", "apple"]
+    },
+    {
+      "id": "mlx",
+      "label": "MLX",
+      "group": "general",
+      "platforms": ["nvidia", "apple"]
+    },
+    {
+      "id": "ktransformers",
+      "label": "KTransformers",
+      "group": "general",
+      "platforms": ["nvidia", "amd"]
+    },
+    {
+      "id": "tokenspeed",
+      "label": "TokenSpeed",
+      "group": "general",
+      "platforms": ["nvidia", "amd"]
+    },
+    {
+      "id": "deepinfer",
+      "label": "DeepInfer",
+      "group": "general",
+      "platforms": ["nvidia"]
+    },
+    {
+      "id": "atom",
+      "label": "ATOM + AITER",
+      "group": "general",
+      "platforms": ["amd"]
+    },
+    {
+      "id": "docker",
+      "label": "Docker Model Runner",
+      "group": "general",
+      "platforms": ["nvidia", "amd", "apple"]
+    },
+    {
+      "id": "transformers",
+      "label": "Transformers",
+      "group": "general",
+      "platforms": ["nvidia", "amd", "apple"]
+    },
+    {
+      "id": "dwarfstar",
+      "label": "DwarfStar",
+      "group": "specialized",
+      "platforms": ["nvidia", "amd", "apple"]
+    },
+    {
+      "id": "warp",
+      "label": "WARP",
+      "group": "specialized",
+      "platforms": ["apple"]
+    },
+    {
+      "id": "gr8",
+      "label": "gr8",
+      "group": "specialized",
+      "platforms": ["nvidia"]
+    },
+    {
+      "id": "delta",
+      "label": "Delta",
+      "group": "specialized",
+      "platforms": ["nvidia"]
+    },
+    {
+      "id": "pulsar",
+      "label": "Pulsar",
+      "group": "specialized",
+      "platforms": ["nvidia"]
+    },
+    {
+      "id": "colibri",
+      "label": "Colibrì",
+      "group": "specialized",
+      "platforms": ["apple"]
+    },
+    {
+      "id": "ljqinfer",
+      "label": "ljqinfer",
+      "group": "specialized",
+      "platforms": ["nvidia"]
+    },
+    {
+      "id": "pulsarmlx",
+      "label": "PulsarMLX",
+      "group": "specialized",
+      "platforms": ["apple"]
+    },
+    {
+      "id": "executorch",
+      "label": "ExecuTorch",
+      "group": "general",
+      "platforms": ["apple"]
+    }
+  ],
+  "hardware": [
+    {
+      "id": "rtx4090",
+      "label": "RTX 4090",
+      "family": "workstation",
+      "devices": 1,
+      "screenGib": 22,
+      "nominalGib": 24,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rtx5090",
+      "label": "RTX 5090",
+      "family": "workstation",
+      "devices": 1,
+      "screenGib": 30,
+      "nominalGib": 32,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rtx5090-2",
+      "label": "2× RTX 5090",
+      "family": "workstation",
+      "devices": 2,
+      "screenGib": 60,
+      "nominalGib": 64,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 4,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rtx5090-4",
+      "label": "4× RTX 5090",
+      "family": "workstation",
+      "devices": 4,
+      "screenGib": 120,
+      "nominalGib": 128,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 8,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rtx-pro-5000",
+      "label": "RTX PRO 5000",
+      "family": "workstation",
+      "devices": 1,
+      "screenGib": 46,
+      "nominalGib": 48,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rtx-pro-6000",
+      "label": "RTX PRO 6000",
+      "family": "workstation",
+      "devices": 1,
+      "screenGib": 94,
+      "nominalGib": 96,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rtx3090",
+      "label": "RTX 3090",
+      "family": "workstation",
+      "devices": 1,
+      "screenGib": 22,
+      "nominalGib": 24,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rtx5060ti",
+      "label": "RTX 5060 Ti",
+      "family": "workstation",
+      "devices": 1,
+      "screenGib": 14,
+      "nominalGib": 16,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rtx3060",
+      "label": "RTX 3060",
+      "family": "workstation",
+      "devices": 1,
+      "screenGib": 10,
+      "nominalGib": 12,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "spark",
+      "label": "DGX Spark",
+      "family": "spark",
+      "devices": 1,
+      "screenGib": 107,
+      "nominalGib": 128,
+      "caveat": null,
+      "unified": true,
+      "reserveGib": 21,
+      "bandwidthGBs": 273,
+      "interconnect": "ConnectX-7",
+      "hostGib": null
+    },
+    {
+      "id": "spark-2",
+      "label": "2× DGX Spark",
+      "family": "spark",
+      "devices": 2,
+      "screenGib": 214,
+      "nominalGib": 256,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": true,
+      "reserveGib": 42,
+      "bandwidthGBs": 273,
+      "interconnect": "ConnectX-7",
+      "hostGib": null
+    },
+    {
+      "id": "spark-4",
+      "label": "4× DGX Spark",
+      "family": "spark",
+      "devices": 4,
+      "screenGib": 428,
+      "nominalGib": 512,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": true,
+      "reserveGib": 84,
+      "bandwidthGBs": 273,
+      "interconnect": "ConnectX-7",
+      "hostGib": null
+    },
+    {
+      "id": "h100",
+      "label": "H100 80 GB",
+      "family": "datacenter",
+      "devices": 1,
+      "screenGib": 70,
+      "nominalGib": 80,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 10,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h100-2",
+      "label": "2× H100 80 GB",
+      "family": "datacenter",
+      "devices": 2,
+      "screenGib": 140,
+      "nominalGib": 160,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 20,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h100-4",
+      "label": "4× H100 80 GB",
+      "family": "datacenter",
+      "devices": 4,
+      "screenGib": 280,
+      "nominalGib": 320,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 40,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h100-8",
+      "label": "8× H100 80 GB",
+      "family": "datacenter",
+      "devices": 8,
+      "screenGib": 560,
+      "nominalGib": 640,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 80,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h100-16",
+      "label": "16× H100 80 GB",
+      "family": "datacenter",
+      "devices": 16,
+      "screenGib": 1120,
+      "nominalGib": 1280,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 160,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h100-32",
+      "label": "32× H100 80 GB",
+      "family": "datacenter",
+      "devices": 32,
+      "screenGib": 2240,
+      "nominalGib": 2560,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 320,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h200",
+      "label": "H200 141 GB",
+      "family": "datacenter",
+      "devices": 1,
+      "screenGib": 125,
+      "nominalGib": 141,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 16,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h200-2",
+      "label": "2× H200 141 GB",
+      "family": "datacenter",
+      "devices": 2,
+      "screenGib": 250,
+      "nominalGib": 282,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 32,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h200-4",
+      "label": "4× H200 141 GB",
+      "family": "datacenter",
+      "devices": 4,
+      "screenGib": 500,
+      "nominalGib": 564,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 64,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h200-8",
+      "label": "8× H200 141 GB",
+      "family": "datacenter",
+      "devices": 8,
+      "screenGib": 1000,
+      "nominalGib": 1128,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 128,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h200-16",
+      "label": "16× H200 141 GB",
+      "family": "datacenter",
+      "devices": 16,
+      "screenGib": 2000,
+      "nominalGib": 2256,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 256,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "h200-32",
+      "label": "32× H200 141 GB",
+      "family": "datacenter",
+      "devices": 32,
+      "screenGib": 4000,
+      "nominalGib": 4512,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 512,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "b200",
+      "label": "B200",
+      "family": "datacenter",
+      "devices": 1,
+      "screenGib": 160,
+      "nominalGib": 180,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 20,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": 1862.6
+    },
+    {
+      "id": "b200-2",
+      "label": "2× B200",
+      "family": "datacenter",
+      "devices": 2,
+      "screenGib": 320,
+      "nominalGib": 360,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 40,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": 1862.6
+    },
+    {
+      "id": "b200-4",
+      "label": "4× B200",
+      "family": "datacenter",
+      "devices": 4,
+      "screenGib": 640,
+      "nominalGib": 720,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 80,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": 1862.6
+    },
+    {
+      "id": "b200-8",
+      "label": "8× B200",
+      "family": "datacenter",
+      "devices": 8,
+      "screenGib": 1280,
+      "nominalGib": 1440,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 160,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": 1862.6
+    },
+    {
+      "id": "b200-16",
+      "label": "16× B200",
+      "family": "datacenter",
+      "devices": 16,
+      "screenGib": 2560,
+      "nominalGib": 2880,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 320,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": 3725.2
+    },
+    {
+      "id": "b200-32",
+      "label": "32× B200",
+      "family": "datacenter",
+      "devices": 32,
+      "screenGib": 5120,
+      "nominalGib": 5760,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 640,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": 7450.4
+    },
+    {
+      "id": "gb200",
+      "label": "GB200",
+      "family": "datacenter",
+      "devices": 1,
+      "screenGib": 160,
+      "nominalGib": 180,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 20,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb200-2",
+      "label": "2× GB200",
+      "family": "datacenter",
+      "devices": 2,
+      "screenGib": 320,
+      "nominalGib": 360,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 40,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb200-4",
+      "label": "4× GB200",
+      "family": "datacenter",
+      "devices": 4,
+      "screenGib": 640,
+      "nominalGib": 720,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 80,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb200-8",
+      "label": "8× GB200",
+      "family": "datacenter",
+      "devices": 8,
+      "screenGib": 1280,
+      "nominalGib": 1440,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 160,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb200-16",
+      "label": "16× GB200",
+      "family": "datacenter",
+      "devices": 16,
+      "screenGib": 2560,
+      "nominalGib": 2880,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 320,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb200-32",
+      "label": "32× GB200",
+      "family": "datacenter",
+      "devices": 32,
+      "screenGib": 5120,
+      "nominalGib": 5760,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 640,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "b300",
+      "label": "B300",
+      "family": "datacenter",
+      "devices": 1,
+      "screenGib": 230,
+      "nominalGib": 262.5,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 32.5,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "b300-2",
+      "label": "2× B300",
+      "family": "datacenter",
+      "devices": 2,
+      "screenGib": 460,
+      "nominalGib": 525,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 65,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "b300-4",
+      "label": "4× B300",
+      "family": "datacenter",
+      "devices": 4,
+      "screenGib": 920,
+      "nominalGib": 1050,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 130,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "b300-8",
+      "label": "8× B300",
+      "family": "datacenter",
+      "devices": 8,
+      "screenGib": 1840,
+      "nominalGib": 2100,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 260,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "b300-16",
+      "label": "16× B300",
+      "family": "datacenter",
+      "devices": 16,
+      "screenGib": 3680,
+      "nominalGib": 4200,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 520,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "b300-32",
+      "label": "32× B300",
+      "family": "datacenter",
+      "devices": 32,
+      "screenGib": 7360,
+      "nominalGib": 8400,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 1040,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb300",
+      "label": "GB300",
+      "family": "datacenter",
+      "devices": 1,
+      "screenGib": 230,
+      "nominalGib": 262.5,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 32.5,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb300-2",
+      "label": "2× GB300",
+      "family": "datacenter",
+      "devices": 2,
+      "screenGib": 460,
+      "nominalGib": 525,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 65,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb300-4",
+      "label": "4× GB300",
+      "family": "datacenter",
+      "devices": 4,
+      "screenGib": 920,
+      "nominalGib": 1050,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 130,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb300-8",
+      "label": "8× GB300",
+      "family": "datacenter",
+      "devices": 8,
+      "screenGib": 1840,
+      "nominalGib": 2100,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 260,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb300-16",
+      "label": "16× GB300",
+      "family": "datacenter",
+      "devices": 16,
+      "screenGib": 3680,
+      "nominalGib": 4200,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 520,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "gb300-32",
+      "label": "32× GB300",
+      "family": "datacenter",
+      "devices": 32,
+      "screenGib": 7360,
+      "nominalGib": 8400,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": false,
+      "reserveGib": 1040,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rx7900xtx",
+      "label": "RX 7900 XTX 24 GB",
+      "family": "amd",
+      "devices": 1,
+      "screenGib": 22,
+      "nominalGib": 24,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "rx9070",
+      "label": "RX 9070 16 GB",
+      "family": "amd",
+      "devices": 1,
+      "screenGib": 14,
+      "nominalGib": 16,
+      "caveat": null,
+      "unified": false,
+      "reserveGib": 2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "apple-m4-32",
+      "label": "M4 32 GB",
+      "family": "apple",
+      "devices": 1,
+      "screenGib": 24,
+      "nominalGib": 32,
+      "caveat": null,
+      "unified": true,
+      "reserveGib": 8,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "apple-m5-pro-64",
+      "label": "M5 Pro 64 GB",
+      "family": "apple",
+      "devices": 1,
+      "screenGib": 56,
+      "nominalGib": 64,
+      "caveat": null,
+      "unified": true,
+      "reserveGib": 8,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "apple-m4-max",
+      "label": "M4 Max 128 GB",
+      "family": "apple",
+      "devices": 1,
+      "screenGib": 115.2,
+      "nominalGib": 128,
+      "caveat": null,
+      "unified": true,
+      "reserveGib": 12.8,
+      "bandwidthGBs": 546,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "apple-m5-max-128",
+      "label": "M5 Max 128 GB",
+      "family": "apple",
+      "devices": 1,
+      "screenGib": 115.2,
+      "nominalGib": 128,
+      "caveat": null,
+      "unified": true,
+      "reserveGib": 12.8,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "apple-m1-ultra-128",
+      "label": "M1 Ultra 128 GB",
+      "family": "apple",
+      "devices": 1,
+      "screenGib": 115.2,
+      "nominalGib": 128,
+      "caveat": null,
+      "unified": true,
+      "reserveGib": 12.8,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "apple-m3-ultra-512",
+      "label": "M3 Ultra 512 GB",
+      "family": "apple",
+      "devices": 1,
+      "screenGib": 460.8,
+      "nominalGib": 512,
+      "caveat": null,
+      "unified": true,
+      "reserveGib": 51.2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "apple-m5-ultra-512",
+      "label": "M5 Ultra 512 GB",
+      "family": "apple",
+      "devices": 1,
+      "screenGib": 460.8,
+      "nominalGib": 512,
+      "caveat": null,
+      "unified": true,
+      "reserveGib": 51.2,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "mi355x",
+      "label": "MI355X",
+      "family": "amd",
+      "devices": 1,
+      "screenGib": null,
+      "nominalGib": 288,
+      "caveat": "The guide publishes no memory figure here.",
+      "unified": false,
+      "reserveGib": 28.8,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "mi350x",
+      "label": "MI350X",
+      "family": "amd",
+      "devices": 1,
+      "screenGib": null,
+      "nominalGib": 288,
+      "caveat": "The guide publishes no memory figure here.",
+      "unified": false,
+      "reserveGib": 28.8,
+      "bandwidthGBs": null,
+      "interconnect": null,
+      "hostGib": null
+    },
+    {
+      "id": "apple-m5-max-128-2",
+      "label": "2× M5 Max 128 GB",
+      "family": "apple",
+      "devices": 2,
+      "screenGib": 230.4,
+      "nominalGib": 256,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": true,
+      "reserveGib": 25.6,
+      "bandwidthGBs": null,
+      "interconnect": "Thunderbolt 5",
+      "hostGib": null
+    },
+    {
+      "id": "apple-m5-ultra-512-2",
+      "label": "2× M5 Ultra 512 GB",
+      "family": "apple",
+      "devices": 2,
+      "screenGib": 921.6,
+      "nominalGib": 1024,
+      "caveat": "Devices × memory is an aggregate, not a placement proof.",
+      "unified": true,
+      "reserveGib": 102.4,
+      "bandwidthGBs": null,
+      "interconnect": "Thunderbolt 5",
+      "hostGib": null
+    }
+  ],
+  "models": [
+    {
+      "id": "gemma-4-e2b",
+      "name": "Gemma 4 E2B",
+      "lab": "Google",
+      "country": "United States",
+      "runtimeMemory": "?",
+      "contextCap": "128K",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "llama.cpp, vLLM, SGLang, Ollama, TensorRT-LLM",
+      "params": "5.1B (2.3B effective, PLE)",
+      "modalities": {
+        "input": ["text", "image", "audio", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "3.35 GB Q4_0, text-only",
+      "sourceUrl": "https://huggingface.co/google/gemma-4-E2B",
+      "pathLabel": "llama.cpp Q4_0",
+      "pathEngineId": "llamacpp",
+      "engineIds": ["trtllm", "llamacpp", "ollama", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 6.5,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 6.9,
+        "subtotal": false
+      },
+      "nativeContext": "128K",
+      "nativeTokens": 131072,
+      "candidates": [
+        {
+          "deviceId": "rtx4090",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "gemma-4-e4b",
+      "name": "Gemma 4 E4B",
+      "lab": "Google",
+      "country": "United States",
+      "runtimeMemory": "?",
+      "contextCap": "128K",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "llama.cpp, vLLM, SGLang, Ollama, TensorRT-LLM",
+      "params": "8B (4.5B effective, PLE)",
+      "modalities": {
+        "input": ["text", "image", "audio", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "5.15 GB Q4_0, text-only; 11.51 GB W4A16",
+      "sourceUrl": "https://huggingface.co/google/gemma-4-E4B",
+      "pathLabel": "llama.cpp Q4_0",
+      "pathEngineId": "llamacpp",
+      "engineIds": ["trtllm", "llamacpp", "ollama", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 8.8,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 9.8,
+        "subtotal": false
+      },
+      "nativeContext": "128K",
+      "nativeTokens": 131072,
+      "candidates": [
+        {
+          "deviceId": "rtx4090",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "gemma-4-12b",
+      "name": "Gemma 4 12B",
+      "lab": "Google",
+      "country": "United States",
+      "runtimeMemory": "?; raw FP16 KV ~4.63 GB with bounded sliding windows",
+      "contextCap": "256K",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "llama.cpp, vLLM, SGLang, Ollama, TensorRT-LLM",
+      "params": "11.95B dense",
+      "modalities": {
+        "input": ["text", "image", "audio", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "6.98 GB Q4_0, text-only",
+      "sourceUrl": "https://huggingface.co/google/gemma-4-12B",
+      "pathLabel": "llama.cpp Q4_0",
+      "pathEngineId": "llamacpp",
+      "engineIds": ["trtllm", "llamacpp", "ollama", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 11,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 14,
+        "subtotal": false
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "rtx4090",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "gpt-oss-20b",
+      "name": "gpt-oss-20b",
+      "lab": "OpenAI",
+      "country": "United States",
+      "runtimeMemory": "?; local GGUF fit estimated below",
+      "contextCap": "128K",
+      "speedNote": "225.22 ± 0.10 out, RTX 4090 llama.cpp MXFP4 GGUF `tg128`; 132.4 out, RX 9070 family, Ollama MXFP4",
+      "license": "Apache-2.0",
+      "enginesListed": "llama.cpp, vLLM, Ollama, LM Studio, Transformers, SGLang, TensorRT-LLM, TokenSpeed",
+      "params": "21B / 3.6B",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "13.76 GB native MXFP4 tensors; 12.11 GB MXFP4 GGUF",
+      "sourceUrl": "https://huggingface.co/openai/gpt-oss-20b/blob/main/README.md#L25-L41",
+      "pathLabel": "llama.cpp MXFP4",
+      "pathEngineId": "llamacpp",
+      "engineIds": [
+        "trtllm",
+        "tokenspeed",
+        "transformers",
+        "llamacpp",
+        "ollama",
+        "sglang",
+        "vllm"
+      ],
+      "specializedIds": ["pulsar"],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 15.8,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 17.3,
+        "subtotal": false
+      },
+      "nativeContext": "128K",
+      "nativeTokens": 131072,
+      "candidates": [
+        {
+          "deviceId": "rtx4090",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "gemma-4-26b-a4b",
+      "name": "Gemma 4 26B-A4B",
+      "lab": "Google",
+      "country": "United States",
+      "runtimeMemory": "?; raw FP16 KV ~5.58 GB with bounded sliding windows",
+      "contextCap": "256K",
+      "speedNote": "119 / 82 / 64 out at 4K / 128K / 256K, RTX 3090 llama.cpp Q4; 128 out in a separate Q4_K_XL test",
+      "license": "Apache-2.0",
+      "enginesListed": "llama.cpp, vLLM, SGLang, Ollama, TensorRT-LLM",
+      "params": "25.2B / 3.8B",
+      "modalities": {
+        "input": ["text", "image", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "14.44 GB Q4_0, text-only",
+      "sourceUrl": "https://huggingface.co/google/gemma-4-26B-A4B",
+      "pathLabel": "llama.cpp Q4_0",
+      "pathEngineId": "llamacpp",
+      "engineIds": ["trtllm", "llamacpp", "ollama", "sglang", "vllm"],
+      "specializedIds": ["pulsar"],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 18,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 21.7,
+        "subtotal": false
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "rtx4090",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "qwen3-8-27b",
+      "name": "Qwen3.8-27B",
+      "lab": "Alibaba",
+      "country": "China",
+      "runtimeMemory": "?; raw full-attention FP8 KV ~8.59 GB at 262,144 / ~32.77 GB at 1M, before recurrent state",
+      "contextCap": "262,144; YaRN to 1,000,000",
+      "speedNote": "95.5 out with MTP / 47.7 without, RTX 4090, Ollama 0.34.4 Q4_K_M, 512-token output",
+      "license": "Apache-2.0",
+      "enginesListed": "Transformers, vLLM, SGLang, TokenSpeed, Ollama, llama.cpp",
+      "params": "27B dense VL",
+      "modalities": {
+        "input": ["text", "image", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "16.56 GB UD-Q4_K_M; fit uses the separate 17.66 GB UD-Q4_K_XL artifact",
+      "sourceUrl": "https://computingforgeeks.com/run-qwen3-8-27b-locally/#run-the-qwen3-8-27b-gguf-with-llama-cpp",
+      "pathLabel": "llama.cpp UD-Q4_K_XL, Q4_0 KV",
+      "pathEngineId": "llamacpp",
+      "engineIds": [
+        "tokenspeed",
+        "transformers",
+        "llamacpp",
+        "ollama",
+        "sglang",
+        "vllm"
+      ],
+      "specializedIds": ["ljqinfer"],
+      "layouts": [],
+      "configs": [
+        {
+          "engineId": "vllm",
+          "label": "NVFP4, RTX 5090 profile",
+          "devices": 1,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 32768,
+          "diskGib": null,
+          "speed": null,
+          "note": "A launch cap; the 4090 GGUF test uses a different quant",
+          "sourceUrl": "https://github.com/vllm-project/recipes/blob/e42b40144a05b8dd0dd2bab1bbbf92681ac8f063/models/Qwen/Qwen3.8-27B.yaml#L201-L261"
+        },
+        {
+          "engineId": "vllm",
+          "label": "NVFP4, one RTX PRO 6000 or Spark",
+          "devices": 1,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 262144,
+          "diskGib": null,
+          "speed": null,
+          "note": "YaRN remains a separate launch profile",
+          "sourceUrl": "https://github.com/vllm-project/recipes/blob/e42b40144a05b8dd0dd2bab1bbbf92681ac8f063/models/Qwen/Qwen3.8-27B.yaml#L201-L261"
+        }
+      ],
+      "need64k": {
+        "gib": 20.6,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 23.9,
+        "subtotal": false
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "rtx4090",
+          "devices": 1
+        }
+      ],
+      "mtp": {
+        "kind": "mtp",
+        "params": null,
+        "gib": null,
+        "estimate": false,
+        "includedInFit": true,
+        "resident": true,
+        "note": "1 MTP layer ships in the checkpoint",
+        "sourceUrl": "https://huggingface.co/Qwen/Qwen3.8-27B/blob/main/config.json"
+      }
+    },
+    {
+      "id": "qwen3-6-35b-a3b",
+      "name": "Qwen3.6-35B-A3B",
+      "lab": "Alibaba",
+      "country": "China",
+      "runtimeMemory": "?; raw full-attention FP8 KV ~2.68 GB at 262,144 / ~10.34 GB at 1.01M, before recurrent state",
+      "contextCap": "262,144; YaRN to 1,010,000",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "Transformers, vLLM, SGLang, Ollama, llama.cpp",
+      "params": "35B / 3B",
+      "modalities": {
+        "input": ["text", "image", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "22.13 GB UD-Q4_K_M; separate NVFP4 deployment in the fit table",
+      "sourceUrl": "https://github.com/vllm-project/recipes/blob/e42b40144a05b8dd0dd2bab1bbbf92681ac8f063/models/Qwen/Qwen3.6-35B-A3B.yaml#L122-L227",
+      "pathLabel": "vLLM NVFP4, FP8 KV",
+      "pathEngineId": "vllm",
+      "engineIds": ["transformers", "llamacpp", "ollama", "sglang", "vllm"],
+      "specializedIds": ["pulsar"],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 22.4,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 24.3,
+        "subtotal": true
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "rtx5090",
+          "devices": 1
+        },
+        {
+          "deviceId": "rtx-pro-6000",
+          "devices": 1
+        }
+      ],
+      "mtp": {
+        "kind": "mtp",
+        "params": null,
+        "gib": null,
+        "estimate": false,
+        "includedInFit": true,
+        "resident": true,
+        "note": "1 MTP layer ships in the checkpoint",
+        "sourceUrl": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B/blob/main/config.json"
+      }
+    },
+    {
+      "id": "arete-27b",
+      "name": "Arete-27B",
+      "lab": "Nous Research",
+      "country": "United States",
+      "runtimeMemory": "?",
+      "contextCap": "262,144 inference; 64K SFT",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "vLLM and SGLang via Qwen architecture; community llama.cpp GGUF",
+      "params": "27B dense",
+      "modalities": {
+        "input": ["text", "image"],
+        "output": ["text"]
+      },
+      "checkpoint": "17.20 GB Q4_K_M",
+      "sourceUrl": "https://huggingface.co/NousResearch/Arete-27B/blob/main/README.md#L27-L41",
+      "pathLabel": "llama.cpp Q4_K_M",
+      "pathEngineId": "llamacpp",
+      "engineIds": ["llamacpp", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 23,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 35,
+        "subtotal": false
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "rtx5090",
+          "devices": 1
+        },
+        {
+          "deviceId": "rtx-pro-5000",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "laguna-xs-2-1",
+      "name": "Laguna XS 2.1",
+      "lab": "Poolside",
+      "country": "United States",
+      "runtimeMemory": "?",
+      "contextCap": "256K",
+      "speedNote": "95.4 → 76.7 out/user at 1K → 32K prompts, 128 output tokens, M5 Max 128 GB, oMLX 8-bit, c1",
+      "license": "OpenMDW-1.1",
+      "enginesListed": "vLLM, SGLang, TensorRT-LLM, Transformers, llama.cpp, MLX, Ollama",
+      "params": "33B / 3B",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "21.58 GB NVFP4 / 35.32 GB FP8; 20.27 GB publisher Q4_K_M GGUF",
+      "sourceUrl": "https://huggingface.co/poolside/Laguna-XS-2.1-GGUF/tree/main",
+      "pathLabel": "llama.cpp Q4_K_M",
+      "pathEngineId": "llamacpp",
+      "engineIds": [
+        "trtllm",
+        "transformers",
+        "llamacpp",
+        "ollama",
+        "sglang",
+        "vllm",
+        "mlx"
+      ],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [
+        {
+          "engineId": "vllm",
+          "label": "BF16, 256K cap",
+          "devices": 1,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 262144,
+          "diskGib": null,
+          "speed": null,
+          "note": "Separate from the GGUF path",
+          "sourceUrl": "https://recipes.vllm.ai/poolside/Laguna-XS-2.1"
+        }
+      ],
+      "need64k": {
+        "gib": 24.5,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 32,
+        "subtotal": false
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "rtx5090",
+          "devices": 1
+        },
+        {
+          "deviceId": "rtx-pro-5000",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "muse-glimmer-30b",
+      "name": "Muse Glimmer 30B",
+      "lab": "Meta",
+      "country": "United States",
+      "runtimeMemory": "?; 128K NVFP4 recipe on one RTX 5090",
+      "contextCap": "128K default",
+      "speedNote": "74.9 → 233.4 out/user, RTX 5090 llama.cpp K-Quant-17GB, c1, without → with DFlash; M4 Max ExecuTorch 23.7 → 37.8",
+      "license": "Apache-2.0",
+      "enginesListed": "llama.cpp, vLLM, ExecuTorch, SGLang, Ollama",
+      "params": "29.6B dense, incl. vision",
+      "modalities": {
+        "input": ["text", "image"],
+        "output": ["text"]
+      },
+      "checkpoint": "~17 GB K-Quant artifact; Meta targets ≥24 GB VRAM for that GGUF path",
+      "sourceUrl": "https://github.com/vllm-project/recipes/blob/main/models/meta-models/Muse-Glimmer-30B.yaml#L291-L302",
+      "pathLabel": "vLLM NVFP4, BF16 KV",
+      "pathEngineId": "vllm",
+      "engineIds": ["executorch", "llamacpp", "ollama", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 24.6,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 25.4,
+        "subtotal": true
+      },
+      "nativeContext": "128K",
+      "nativeTokens": 131072,
+      "candidates": [
+        {
+          "deviceId": "rtx5090",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "gemma-4-31b",
+      "name": "Gemma 4 31B",
+      "lab": "Google",
+      "country": "United States",
+      "runtimeMemory": "?; raw FP16 KV ~22.31 GB with bounded sliding windows",
+      "contextCap": "256K",
+      "speedNote": "34 / 31 / 30 out at 4K / 32K / ~45K, RTX 3090 llama.cpp Q4",
+      "license": "Apache-2.0",
+      "enginesListed": "llama.cpp, vLLM, SGLang, Ollama, TensorRT-LLM",
+      "params": "30.7B dense",
+      "modalities": {
+        "input": ["text", "image", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "17.65 GB Q4_0, text-only",
+      "sourceUrl": "https://huggingface.co/google/gemma-4-31B",
+      "pathLabel": "llama.cpp Q4_0",
+      "pathEngineId": "llamacpp",
+      "engineIds": ["trtllm", "llamacpp", "ollama", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 25.6,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 40.6,
+        "subtotal": false
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "rtx5090",
+          "devices": 1
+        },
+        {
+          "deviceId": "rtx-pro-5000",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "nemotron-3-5-super-vl",
+      "name": "Nemotron 3.5 Super VL",
+      "lab": "NVIDIA",
+      "country": "United States",
+      "runtimeMemory": "?; NVIDIA lists 1M on one Spark or 96 GB RTX PRO 6000; vLLM v0.31 profiles have lower caps",
+      "contextCap": "1M",
+      "speedNote": "Up to 2.3× Spark decode gain with LiLiCorr vs no speculation",
+      "license": "OpenMDW-1.1",
+      "enginesListed": "vLLM, SGLang, TensorRT-LLM",
+      "params": "120B / 12B",
+      "modalities": {
+        "input": ["text", "image", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "75.01 GB NVFP4; recipe budgets ~91 GB",
+      "sourceUrl": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4/blob/main/README.md#L81-L108",
+      "pathLabel": "vLLM NVFP4, FP8 KV",
+      "pathEngineId": "vllm",
+      "engineIds": ["trtllm", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 70.1,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 73.9,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "rtx-pro-6000",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "ripple-65b-preview",
+      "name": "Ripple-65B-Preview",
+      "lab": "Ricursive",
+      "country": "United States",
+      "runtimeMemory": "?; raw 1M KV ~34.49 GB FP8 / ~68.99 GB BF16 with bounded sliding windows",
+      "contextCap": "1M advertised; vLLM config supports up to 2M",
+      "speedNote": "19.5 out/user c1; 48 aggregate out c4, one Spark at 128K recipe cap, SGLang NVFP4 + DFlash2. The BF16 card reports 250 t/s, 2×B200, batch 8, without a per-user/aggregate label",
+      "license": "Apache-2.0",
+      "enginesListed": "SGLang, vLLM; community llama.cpp GGUF",
+      "params": "65B dense",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "57.21 GB NVFP4 tensors / 129.6 GB BF16; separate BF16 drafter",
+      "sourceUrl": "https://huggingface.co/ricursiveAI/Ripple-65B-Preview-NVFP4#run-on-dgx-spark",
+      "pathLabel": "SGLang NVFP4 + DFlash2, BF16 KV",
+      "pathEngineId": "sglang",
+      "engineIds": ["llamacpp", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [
+        {
+          "engineId": "sglang",
+          "label": "Spark wrapper, 128K cap",
+          "devices": 1,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 131072,
+          "diskGib": null,
+          "speed": null,
+          "note": "Target-only; the drafter adds weights and cache",
+          "sourceUrl": "https://huggingface.co/ricursiveAI/Ripple-65B-Preview-NVFP4#run-on-dgx-spark"
+        },
+        {
+          "engineId": "vllm",
+          "label": "MI350X, 1M profile",
+          "devices": 1,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 1048576,
+          "diskGib": null,
+          "speed": null,
+          "note": "Larger single-accelerator layout",
+          "sourceUrl": "https://recipes.vllm.ai/ricursiveAI/Ripple-65B-Preview"
+        }
+      ],
+      "need64k": {
+        "gib": 65.1,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 125.1,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "spark",
+          "devices": 1
+        },
+        {
+          "deviceId": "b200",
+          "devices": 1
+        }
+      ],
+      "mtp": {
+        "kind": "drafter",
+        "params": null,
+        "gib": 7.5,
+        "estimate": false,
+        "includedInFit": true,
+        "resident": true,
+        "note": "separate BF16 drafter, resident",
+        "sourceUrl": "https://huggingface.co/ricursiveAI/Ripple-65B-Preview/blob/main/README.md#L23-L51"
+      }
+    },
+    {
+      "id": "glm-5-3-flash",
+      "name": "GLM-5.3 Flash",
+      "lab": "Z.ai",
+      "country": "China",
+      "runtimeMemory": "?; 1M Spark path below uses gr8, not IQ3 GGUF",
+      "contextCap": "1M",
+      "speedNote": "12,026.62 aggregate out, 4×H200, SGLang + DFlash2, 64K in/1K out, 99.9% shared prefix; 17.72 out/user is a separate Spark c1 test, UD-Q2_K_XL, 256 output tokens, input length not reported",
+      "license": "MIT",
+      "enginesListed": "vLLM, SGLang, Transformers, TokenSpeed, KTransformers, llama.cpp, TensorRT-LLM, gr8; Ollama cloud tag only verified",
+      "params": "320B / 18B",
+      "modalities": {
+        "input": ["text", "image"],
+        "output": ["text"]
+      },
+      "checkpoint": "328.34 GB FP8; community IQ3 120.37 GB (~112.10 GiB), UD-Q4_K_XL 199.71 GB",
+      "sourceUrl": "https://github.com/kindlingai/glm-5.3-flash-exlr8-1x-spark",
+      "pathLabel": "gr8 bit201 → bit349, INT4 KV",
+      "pathEngineId": "gr8",
+      "engineIds": [
+        "trtllm",
+        "tokenspeed",
+        "ktransformers",
+        "transformers",
+        "llamacpp",
+        "ollama",
+        "sglang",
+        "vllm",
+        "gr8"
+      ],
+      "specializedIds": ["dwarfstar", "warp", "pulsarmlx"],
+      "layouts": [
+        {
+          "engineId": "warp",
+          "label": "experts on SSD",
+          "devices": 1,
+          "gib": 4.8,
+          "testedTokens": 4096,
+          "capTokens": null,
+          "diskGib": 104.3,
+          "speed": "3.32–3.86 out",
+          "sourceUrl": "https://github.com/sqliteai/warp/blob/HEAD/README.md#L177-L180"
+        },
+        {
+          "engineId": "ktransformers",
+          "label": "FP8 experts on host RAM, `--tp-size 4`",
+          "devices": 4,
+          "gib": 326,
+          "testedTokens": 501025,
+          "capTokens": null,
+          "diskGib": null,
+          "speed": null,
+          "sourceUrl": "https://github.com/kvcache-ai/ktransformers/blob/main/doc/en/kt-kernel/GLM-5.3-Flash-Tutorial.md#L13"
+        }
+      ],
+      "configs": [
+        {
+          "engineId": "gr8",
+          "label": "Four Sparks, bit273, INT4 KV",
+          "devices": 4,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 513522,
+          "diskGib": null,
+          "speed": "67.1 out; 1,605 prefill",
+          "note": "Eight sessions; 13.53 GiB lowest `MemAvailable`",
+          "sourceUrl": "https://github.com/kindlingai/gr8/blob/HEAD/README.md#L63-L69"
+        },
+        {
+          "engineId": "gr8",
+          "label": "Two Sparks, `SESS=4`",
+          "devices": 2,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 262144,
+          "diskGib": null,
+          "speed": "76.5 out; 1,670 prefill",
+          "note": "2,097,152-token pool; 8 sessions with `TUNE=context`",
+          "sourceUrl": "https://github.com/kindlingai/gr8/blob/HEAD/README.md#L95-L101"
+        },
+        {
+          "engineId": "dwarfstar",
+          "label": "Q4, M5 Max 128 GB, SSD streaming",
+          "devices": 1,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": null,
+          "diskGib": null,
+          "speed": "11.9 / 14.9 out; 121 / 104 prefill",
+          "note": "177.77 GiB artifact, 2K prompt plus 1K append",
+          "sourceUrl": "https://github.com/antirez/ds4/blob/HEAD/docs/SSD_STREAMING.md#L98-L107"
+        }
+      ],
+      "need64k": {
+        "gib": 87,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 142,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "spark",
+          "devices": 1
+        },
+        {
+          "deviceId": "spark",
+          "devices": 2
+        }
+      ],
+      "mtp": {
+        "kind": "mtp",
+        "params": null,
+        "gib": null,
+        "estimate": false,
+        "includedInFit": true,
+        "resident": true,
+        "note": "1 nextn layer; index shares MTP iterations",
+        "sourceUrl": "https://huggingface.co/zai-org/GLM-5.3-Flash/blob/main/config.json"
+      }
+    },
+    {
+      "id": "laguna-s-2-1",
+      "name": "Laguna S 2.1",
+      "lab": "Poolside",
+      "country": "United States",
+      "runtimeMemory": "?; tested NVFP4 Spark recipe caps at 256K",
+      "contextCap": "1M in BF16, FP8, and NVFP4",
+      "speedNote": "15 prose / 22–24 code out, one Spark, vLLM NVFP4 + DFlash",
+      "license": "OpenMDW-1.1",
+      "enginesListed": "vLLM, SGLang, Transformers, llama.cpp, Ollama, MLX",
+      "params": "118B / 8B",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "131.26 GB FP8 tensors; ~235 GB BF16; 99.70 GB current NVFP4",
+      "sourceUrl": "https://huggingface.co/poolside/Laguna-S-2.1-NVFP4/blob/main/README.md#L179-L212",
+      "pathLabel": "vLLM NVFP4 + DFlash, BF16 KV budget",
+      "pathEngineId": "vllm",
+      "engineIds": [
+        "transformers",
+        "llamacpp",
+        "ollama",
+        "sglang",
+        "vllm",
+        "mlx"
+      ],
+      "specializedIds": ["pulsar"],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 98,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 143,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "spark",
+          "devices": 1
+        },
+        {
+          "deviceId": "b200",
+          "devices": 1
+        }
+      ],
+      "mtp": {
+        "kind": "drafter",
+        "params": null,
+        "gib": 2.1,
+        "estimate": false,
+        "includedInFit": true,
+        "resident": true,
+        "note": "resident",
+        "sourceUrl": "https://huggingface.co/poolside/Laguna-S-2.1-NVFP4/blob/826aacdf6d8b2699d4e367def6f17c83b06044c2/model.safetensors.index.json#L2-L3"
+      }
+    },
+    {
+      "id": "inkling-small",
+      "name": "Inkling-Small",
+      "lab": "Thinking Machines",
+      "country": "United States",
+      "runtimeMemory": "?",
+      "contextCap": "1M",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "vLLM, SGLang, Transformers, TokenSpeed",
+      "params": "276B / 12B",
+      "modalities": {
+        "input": ["text", "image", "audio"],
+        "output": ["text"]
+      },
+      "checkpoint": "170.73 GB NVFP4 tensors; vLLM guidance ≥180 GB VRAM",
+      "sourceUrl": "https://github.com/vllm-project/recipes/blob/e42b40144a05b8dd0dd2bab1bbbf92681ac8f063/models/thinkingmachines/Inkling-Small.yaml#L294-L324",
+      "pathLabel": "vLLM NVFP4, BF16 KV",
+      "pathEngineId": "vllm",
+      "engineIds": ["tokenspeed", "transformers", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 160.8,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 187.1,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "b300",
+          "devices": 1
+        }
+      ]
+    },
+    {
+      "id": "laguna-m-1",
+      "name": "Laguna M.1",
+      "lab": "Poolside",
+      "country": "United States",
+      "runtimeMemory": "?; raw 256K KV ~37.58 GB FP8 / ~75.16 GB BF16 before overhead",
+      "contextCap": "256K",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "vLLM, SGLang, Transformers",
+      "params": "225B / 23B",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "229.06 GB FP8 tensors / 139.29 GB NVFP4 tensors; vLLM documents FP8 on 4×H200",
+      "sourceUrl": "https://recipes.vllm.ai/poolside/Laguna-M.1?hardware=h200&variant=fp8",
+      "pathLabel": "vLLM FP8 weights and KV",
+      "pathEngineId": "vllm",
+      "engineIds": ["transformers", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 264.7,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 291,
+        "subtotal": false
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "h100",
+          "devices": 4
+        },
+        {
+          "deviceId": "h200",
+          "devices": 4
+        }
+      ]
+    },
+    {
+      "id": "mimo-v2-6-flash-rl",
+      "name": "MiMo-V2.6-Flash-RL",
+      "lab": "Xiaomi",
+      "country": "China",
+      "runtimeMemory": "?; SGLang 1M configuration uses 4×H200 or B300",
+      "contextCap": "1M",
+      "speedNote": "?",
+      "license": "MIT",
+      "enginesListed": "SGLang, vLLM; community llama.cpp GGUF",
+      "params": "309B / 15B",
+      "modalities": {
+        "input": ["text", "image", "audio", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "167.37 GB community MXFP4 GGUF, distinct from native mixed-precision serving artifact",
+      "sourceUrl": "https://docs.sglang.io/cookbook/autoregressive/Xiaomi/MiMo-V2.6#context-length-and-memory",
+      "pathLabel": "SGLang native, BF16 KV",
+      "pathEngineId": "sglang",
+      "engineIds": ["llamacpp", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 162.5,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 183.6,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "h200",
+          "devices": 4
+        }
+      ]
+    },
+    {
+      "id": "nex-n2-6",
+      "name": "Nex-N2.6",
+      "lab": "Shanghai Innovation Institute (Nex-AGI)",
+      "country": "China",
+      "runtimeMemory": "?",
+      "contextCap": "1M",
+      "speedNote": "?; two H200s cannot hold the native FP8 weights",
+      "license": "Apache-2.0",
+      "enginesListed": "SGLang FP8 via GLM-5.3 Flash architecture; other runtime fits unverified for this checkpoint",
+      "params": "~321B / 18B (GLM-5.3 Flash post-train)",
+      "modalities": {
+        "input": ["text", "image"],
+        "output": ["text"]
+      },
+      "checkpoint": "328.34 GB FP8",
+      "sourceUrl": "https://huggingface.co/nex-agi/Nex-N2.6/blob/main/README.md#L52-L54",
+      "pathLabel": "SGLang FP8 weights, BF16 KV budget",
+      "pathEngineId": "sglang",
+      "engineIds": ["sglang"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 370,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 413,
+        "subtotal": false
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "h200",
+          "devices": 4
+        }
+      ]
+    },
+    {
+      "id": "minimax-m3-1-flash",
+      "name": "MiniMax M3.1 Flash",
+      "lab": "MiniMax",
+      "country": "China",
+      "runtimeMemory": "?; no 1M Spark fit established",
+      "contextCap": "1M",
+      "speedNote": "?",
+      "license": "MiniMax Community License",
+      "enginesListed": "SGLang, vLLM, TokenSpeed, TensorRT-LLM, ATOM; community llama.cpp GGUF",
+      "params": "428B / 23B",
+      "modalities": {
+        "input": ["text", "image", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "~250.12 GB native, NVFP4 experts with MXFP8 dense layers; community UD-Q3/UD-Q4 ~193.95/249.40 GB",
+      "sourceUrl": "https://recipes.vllm.ai/MiniMaxAI/MiniMax-M3.1-Flash?hardware=h100&variant=fp8&preset=h100_agentx",
+      "pathLabel": "vLLM native, Hopper FP8 KV",
+      "pathEngineId": "vllm",
+      "engineIds": [
+        "trtllm",
+        "tokenspeed",
+        "llamacpp",
+        "sglang",
+        "vllm",
+        "atom"
+      ],
+      "specializedIds": ["pulsar"],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 244.2,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 412.9,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "h100",
+          "devices": 8
+        }
+      ]
+    },
+    {
+      "id": "beam-1-0",
+      "name": "Beam 1.0",
+      "lab": "Reflection AI",
+      "country": "United States",
+      "runtimeMemory": "?",
+      "contextCap": "1M",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "vLLM, SGLang, Transformers, TokenSpeed, TensorRT-LLM; community llama.cpp GGUF",
+      "params": "501B / 23B",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "~294 GB NVFP4; vLLM budget ~353 GB. Separate ~187 GB UD-Q2_K_XL GGUF",
+      "sourceUrl": "https://github.com/vllm-project/vllm/blob/601066c91ca20f07975c344af5b4e63bf7e4b026/recipes/models/reflection/Beam-1.0-501B-A23B.yaml#L276-L290",
+      "pathLabel": "vLLM NVFP4, FP8 KV",
+      "pathEngineId": "vllm",
+      "engineIds": [
+        "trtllm",
+        "tokenspeed",
+        "transformers",
+        "llamacpp",
+        "sglang",
+        "vllm"
+      ],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 329.3,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 346.2,
+        "subtotal": false
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "h100",
+          "devices": 8
+        }
+      ]
+    },
+    {
+      "id": "hunyuan-hy3",
+      "name": "Hunyuan Hy3",
+      "lab": "Tencent",
+      "country": "China",
+      "runtimeMemory": "?; raw FP8 KV ~42.95 GB before MTP and runtime overhead",
+      "contextCap": "256K",
+      "speedNote": "?",
+      "license": "Apache-2.0",
+      "enginesListed": "vLLM, SGLang; community llama.cpp GGUF",
+      "params": "295B / 21B",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "~299.89 GB FP8; vLLM budget ~354 GB",
+      "sourceUrl": "https://recipes.vllm.ai/tencent/Hy3",
+      "pathLabel": "vLLM FP8 weights and KV",
+      "pathEngineId": "vllm",
+      "engineIds": ["llamacpp", "sglang", "vllm"],
+      "specializedIds": ["pulsar"],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 345.2,
+        "subtotal": false
+      },
+      "needNative": {
+        "gib": 375.2,
+        "subtotal": false
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "h100",
+          "devices": 8
+        }
+      ],
+      "mtp": {
+        "kind": "mtp",
+        "params": "3.8B",
+        "gib": 3.5,
+        "estimate": true,
+        "includedInFit": false,
+        "resident": true,
+        "note": "fit row sizes weights and KV before MTP",
+        "sourceUrl": "https://huggingface.co/tencent/Hy3/blob/main/README.md#L66-L80"
+      }
+    },
+    {
+      "id": "inkling-2-small",
+      "name": "Inkling 2 Small",
+      "lab": "Thinking Machines",
+      "country": "United States",
+      "runtimeMemory": "?; vLLM profiles 64.47 GiB KV per GPU at TP4 for one 1M request; verified on two GB200 trays (TP8)",
+      "contextCap": "1M",
+      "speedNote": "~630 out/user at c1, GB200 TP4 NVFP4 + DSpark; separate TP8 run: ~1,070 out/GPU at 100 out/user, 32K sessions, ~84 concurrent sessions, 91% prefix hits, 1,024 output tokens",
+      "license": "Apache-2.0",
+      "enginesListed": "vLLM, SGLang, TokenSpeed, upstream llama.cpp text/vision; GGUF and DSpark support depend on build",
+      "params": "594B / 17B",
+      "modalities": {
+        "input": ["text", "image"],
+        "output": ["text"]
+      },
+      "checkpoint": "393.48 GB NVFP4 bundle incl. DSpark (≥500 GB VRAM); 622.80 GB MXFP8 bundle (≥800 GB VRAM)",
+      "sourceUrl": "https://github.com/vllm-project/vllm/blob/601066c91ca20f07975c344af5b4e63bf7e4b026/recipes/models/thinkingmachines/Inkling-2-Small.yaml#L69-L97",
+      "pathLabel": "vLLM NVFP4, BF16 target KV",
+      "pathEngineId": "vllm",
+      "engineIds": ["tokenspeed", "llamacpp", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 368.6,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 398.6,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "gb200",
+          "devices": 4
+        },
+        {
+          "deviceId": "gb200",
+          "devices": 8
+        }
+      ]
+    },
+    {
+      "id": "deepseek-v4-1-flash-1017",
+      "name": "DeepSeek V4.1 Flash 1017",
+      "lab": "DeepSeek",
+      "country": "China",
+      "runtimeMemory": "?; <1 GB global KV at 1M plus fixed sliding-window cache",
+      "contextCap": "1M",
+      "speedNote": "~1.7M total/GPU at p90 387 out/user, Vera Rubin NVL72 AgentX; total includes cached input",
+      "license": "MIT",
+      "enginesListed": "vLLM, SGLang preview, upstream llama.cpp, ATOM; DeepInfer offline reference; Ollama cloud tag only verified",
+      "params": "748B incl. 196B Engram / 16B decode, 8B prefill",
+      "modalities": {
+        "input": ["text", "image"],
+        "output": ["text"]
+      },
+      "checkpoint": "510.3 GB mixed FP8/FP4 on disk; ~614 GB vLLM capacity heuristic. The vLLM 8×H100 recipe puts Engram in host RAM",
+      "sourceUrl": "https://github.com/vllm-project/vllm/blob/601066c91ca20f07975c344af5b4e63bf7e4b026/recipes/models/deepseek-ai/DeepSeek-V4.1-Flash.yaml#L435-L455",
+      "pathLabel": "vLLM native, resident Engram (AgentX preset)",
+      "pathEngineId": "vllm",
+      "engineIds": [
+        "deepinfer",
+        "llamacpp",
+        "ollama",
+        "sglang",
+        "vllm",
+        "atom"
+      ],
+      "specializedIds": ["dwarfstar", "warp", "gr8", "delta", "ljqinfer"],
+      "layouts": [
+        {
+          "engineId": "warp",
+          "label": "experts on SSD",
+          "devices": 1,
+          "gib": 4.5,
+          "testedTokens": 4096,
+          "capTokens": null,
+          "diskGib": 299,
+          "speed": "3.71–3.77 out",
+          "sourceUrl": "https://github.com/sqliteai/warp/blob/HEAD/README.md#L334-L340"
+        },
+        {
+          "engineId": "dwarfstar",
+          "label": "Q2, two 128 GB Macs or Sparks, ~81 GiB/rank, RDMA",
+          "devices": 2,
+          "gib": 162,
+          "testedTokens": null,
+          "capTokens": null,
+          "diskGib": 341,
+          "speed": null,
+          "sourceUrl": "https://github.com/antirez/ds4/blob/HEAD/docs/MODELS.md#L80-L84"
+        }
+      ],
+      "configs": [
+        {
+          "engineId": "dwarfstar",
+          "label": "Q2, 512 GB Mac, resident",
+          "devices": 1,
+          "gib": 152,
+          "testedTokens": null,
+          "capTokens": null,
+          "diskGib": null,
+          "speed": null,
+          "note": "Main weights; 189 GiB of Engram stays on disk in every mode",
+          "sourceUrl": "https://github.com/antirez/ds4/blob/HEAD/docs/MODELS.md#L54-L58"
+        },
+        {
+          "engineId": "dwarfstar",
+          "label": "Q4, 512 GB Mac resident or SSD streaming",
+          "devices": 1,
+          "gib": 294,
+          "testedTokens": null,
+          "capTokens": null,
+          "diskGib": null,
+          "speed": null,
+          "note": "Does not fit resident TP across two 128 GB machines",
+          "sourceUrl": "https://github.com/antirez/ds4/blob/HEAD/docs/MODELS.md#L86-L88"
+        },
+        {
+          "engineId": "dwarfstar",
+          "label": "MXFP4, nine shards merged into one file",
+          "devices": 1,
+          "gib": 278,
+          "testedTokens": null,
+          "capTokens": null,
+          "diskGib": null,
+          "speed": null,
+          "note": "Allow about 935 GiB for shards plus the merge",
+          "sourceUrl": "https://github.com/antirez/ds4/blob/HEAD/docs/MODELS.md#L99-L108"
+        },
+        {
+          "engineId": "gr8",
+          "label": "Four Sparks, fast mode, 32 × 327,680-token slabs",
+          "devices": 4,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 327680,
+          "diskGib": null,
+          "speed": "83.9 prose / 137.5 code out; 7,720–8,408 prefill",
+          "note": "Fast mode changes the output; `TUNE=quality` gives the exact model",
+          "sourceUrl": "https://github.com/kindlingai/gr8/blob/HEAD/README.md#L71-L82"
+        },
+        {
+          "engineId": "delta",
+          "label": "UD-IQ2_XXS, RTX 3090, 192 GB host RAM",
+          "devices": 1,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": null,
+          "diskGib": null,
+          "speed": "41.7 out",
+          "note": "128 GB: 34; 96/64 GB: 29/21",
+          "sourceUrl": "https://github.com/musicurgy/delta-inference-engine/blob/HEAD/README.md#L118-L124"
+        },
+        {
+          "engineId": "ljqinfer",
+          "label": "8×A100, EP8/TP8, DSpark",
+          "devices": 8,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": null,
+          "diskGib": null,
+          "speed": "191 out; 12,500 prefill",
+          "note": "Different method and precision from the Ascend row",
+          "sourceUrl": "https://github.com/lsdefine/ljqinfer/blob/HEAD/README.md#L30"
+        },
+        {
+          "engineId": "ljqinfer",
+          "label": "8×Ascend 910B3, W4A8, DSpark Q6",
+          "devices": 8,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 524288,
+          "diskGib": null,
+          "speed": "114 out; 8,707 prefill",
+          "note": "512K is an API context limit",
+          "sourceUrl": "https://github.com/lsdefine/ljqinfer/blob/HEAD/README.md#L31-L63"
+        }
+      ],
+      "need64k": {
+        "gib": 475.5,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 478.7,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "b200",
+          "devices": 4
+        }
+      ],
+      "mtp": {
+        "kind": "engram",
+        "params": "196B",
+        "gib": null,
+        "estimate": false,
+        "includedInFit": false,
+        "resident": false,
+        "note": "resident in the AgentX preset; host RAM in the 8×H100 recipe",
+        "sourceUrl": "https://github.com/vllm-project/vllm/blob/601066c91ca20f07975c344af5b4e63bf7e4b026/recipes/models/deepseek-ai/DeepSeek-V4.1-Flash.yaml#L114-L150"
+      }
+    },
+    {
+      "id": "mistral-large-4-le-chonk",
+      "name": "Mistral Large 4 (\"Le Chonk\")",
+      "lab": "Mistral",
+      "country": "France",
+      "runtimeMemory": "?; 256K validated in vLLM; do not infer 1M fit from artifact size",
+      "contextCap": "1M",
+      "speedNote": "~260 out/user on 8×B300 FP8 / ~264 on 4×GB300 NVFP4, SGLang + DSpark, c1, 1K in/512 out, from P50 TPOT",
+      "license": "Mistral Ecosystem Open-Weight",
+      "enginesListed": "vLLM (also NVIDIA NIM), SGLang, Transformers, llama.cpp GGUF",
+      "params": "1T / 49B active (52B incl. embeddings and output layers), multimodal",
+      "modalities": {
+        "input": ["text", "image"],
+        "output": ["text"]
+      },
+      "checkpoint": "610.03 GB NVFP4 / 1,060.55 GB FP8. vLLM documents 4×GB300 NVFP4 or 2×8 H200 FP8",
+      "sourceUrl": "https://github.com/vllm-project/vllm/blob/601066c91ca20f07975c344af5b4e63bf7e4b026/recipes/models/mistralai/Mistral-Large-4-1T-A52B.yaml#L201-L226",
+      "pathLabel": "vLLM NVFP4",
+      "pathEngineId": "vllm",
+      "engineIds": ["transformers", "llamacpp", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 568,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 568,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "gb300",
+          "devices": 4
+        },
+        {
+          "deviceId": "gb300",
+          "devices": 8
+        }
+      ]
+    },
+    {
+      "id": "muse-spark-open",
+      "name": "Muse Spark Open",
+      "lab": "Meta",
+      "country": "United States",
+      "runtimeMemory": "?; Blackwell NVFP4 recipe; verify long-context headroom for your topology",
+      "contextCap": "1M",
+      "speedNote": "~300 out/user at c1; ~8,100 aggregate out at c256, 4×GB300 vLLM NVFP4 + DSpark; 18 Q2_K llama.cpp / 21 oQ3e MLX on a 512 GB M3 Ultra",
+      "license": "Muse Model License",
+      "enginesListed": "vLLM, SGLang, llama.cpp, MLX, Transformers, TokenSpeed, TensorRT-LLM",
+      "params": "816B / 42B",
+      "modalities": {
+        "input": ["text", "image", "audio", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "~533 GB NVFP4 / ~1.64 TB BF16; Meta guidance ≥700 GB / ≥2 TB accelerator memory, respectively",
+      "sourceUrl": "https://recipes.vllm.ai/meta-models/Muse-Spark-Open-816B-A42B-NVFP4",
+      "pathLabel": "Blackwell NVFP4 + DSpark, BF16 KV",
+      "pathEngineId": "vllm",
+      "engineIds": [
+        "trtllm",
+        "tokenspeed",
+        "transformers",
+        "llamacpp",
+        "sglang",
+        "vllm",
+        "mlx"
+      ],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 510.6,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 570.6,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "gb300",
+          "devices": 4
+        },
+        {
+          "deviceId": "b200",
+          "devices": 8
+        }
+      ],
+      "mtp": {
+        "kind": "drafter",
+        "params": null,
+        "gib": 9.9,
+        "estimate": false,
+        "includedInFit": true,
+        "resident": true,
+        "note": "resident; draft KV and workspaces still to budget",
+        "sourceUrl": "https://research.meta.ai/blog/muse-spark-open"
+      }
+    },
+    {
+      "id": "mimo-v2-6-pro-rl",
+      "name": "MiMo-V2.6-Pro-RL",
+      "lab": "Xiaomi",
+      "country": "China",
+      "runtimeMemory": "?; SGLang 1M configuration uses 8×H200 or B300",
+      "contextCap": "1M",
+      "speedNote": "?; model-quality scores are not decode rates",
+      "license": "MIT",
+      "enginesListed": "SGLang, vLLM",
+      "params": "1.02T / 42B",
+      "modalities": {
+        "input": ["text", "image", "audio", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "566.05 GB native weights with MXFP4 experts; allow extra memory for the drafter and KV",
+      "sourceUrl": "https://docs.sglang.io/cookbook/autoregressive/Xiaomi/MiMo-V2.6#context-length-and-memory",
+      "pathLabel": "SGLang native, BF16 KV",
+      "pathEngineId": "sglang",
+      "engineIds": ["sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 530.3,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 577.2,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "h200",
+          "devices": 8
+        }
+      ],
+      "mtp": {
+        "kind": "mtp",
+        "params": null,
+        "gib": null,
+        "estimate": false,
+        "includedInFit": false,
+        "resident": true,
+        "note": "SGLang notes extra memory for the drafter; unsized",
+        "sourceUrl": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL"
+      }
+    },
+    {
+      "id": "ling-3-1-flash",
+      "name": "Ling 3.1 Flash",
+      "lab": "inclusionAI",
+      "country": "China",
+      "runtimeMemory": "?; SGLang long-context recipe uses 8×H200 or 4×GB300",
+      "contextCap": "262,144 native; YaRN to 1,048,576",
+      "speedNote": "269.2 out on 8×H200 / 175.3 on 4×GB300, SGLang FP8 + NEXTN, batch 1, short workloads",
+      "license": "MIT",
+      "enginesListed": "SGLang (tested on the listed hardware); vLLM recipe",
+      "params": "560B / 25B (publisher count)",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "~573.78 GB FP8, exceeding 4×H200's nominal 564 GB",
+      "sourceUrl": "https://docs.sglang.io/cookbook/autoregressive/InclusionAI/Ling-3.1-flash.md",
+      "pathLabel": "SGLang FP8, BF16 latent KV budget",
+      "pathEngineId": "sglang",
+      "engineIds": ["sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 539.4,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 554.6,
+        "subtotal": true
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "h200",
+          "devices": 8
+        }
+      ]
+    },
+    {
+      "id": "kimi-k2-6",
+      "name": "Kimi K2.6",
+      "lab": "Moonshot",
+      "country": "China",
+      "runtimeMemory": "?; 262,144 native; the vLLM recipe is verified on 8×H200 INT4 without a stated context or rate",
+      "contextCap": "262,144",
+      "speedNote": "?; do not reuse the K2.5 proxy benchmark",
+      "license": "Modified MIT",
+      "enginesListed": "vLLM, SGLang, TokenSpeed, community llama.cpp GGUF",
+      "params": "1T / 32B",
+      "modalities": {
+        "input": ["text", "image", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "~595.18 GB native INT4; vLLM budget ~714 GB",
+      "sourceUrl": "https://recipes.vllm.ai/moonshotai/Kimi-K2.6",
+      "pathLabel": "vLLM INT4, BF16 MLA budget",
+      "pathEngineId": "vllm",
+      "engineIds": ["tokenspeed", "llamacpp", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 588.6,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 691.6,
+        "subtotal": true
+      },
+      "nativeContext": "256K",
+      "nativeTokens": 262144,
+      "candidates": [
+        {
+          "deviceId": "h200",
+          "devices": 8
+        }
+      ]
+    },
+    {
+      "id": "glm-5-3",
+      "name": "GLM-5.3",
+      "lab": "Z.ai",
+      "country": "China",
+      "runtimeMemory": "?; 1M in vLLM on 8×B200; the 8×H200 recipe caps `--max-model-len` at 262,144 because the 1M default OOMs",
+      "contextCap": "1M",
+      "speedNote": "SGLang 8×H200 data; the 4×H200 record belongs to Flash",
+      "license": "GLM-5.3 license",
+      "enginesListed": "vLLM, SGLang, TokenSpeed, Transformers, llama.cpp, TensorRT-LLM",
+      "params": "~753B / 40B (vLLM recipe uses ~743B / 39B)",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "755.63 GB FP8 shards; vLLM budget ~893 GB",
+      "sourceUrl": "https://github.com/vllm-project/vllm/blob/601066c91ca20f07975c344af5b4e63bf7e4b026/recipes/models/zai-org/GLM-5.3.yaml#L100-L112",
+      "pathLabel": "vLLM FP8, FP8 MLA budget",
+      "pathEngineId": "vllm",
+      "engineIds": [
+        "trtllm",
+        "tokenspeed",
+        "transformers",
+        "llamacpp",
+        "sglang",
+        "vllm"
+      ],
+      "specializedIds": ["dwarfstar", "gr8", "ljqinfer"],
+      "layouts": [
+        {
+          "engineId": "dwarfstar",
+          "label": "routed experts on SSD",
+          "devices": 1,
+          "gib": 39.6,
+          "testedTokens": 1024,
+          "capTokens": null,
+          "diskGib": 196.6,
+          "speed": "6.14 gen / 12.59 prefill",
+          "sourceUrl": "https://github.com/antirez/ds4/blob/HEAD/QA_BEFORE_RELEASES.md#L772-L773"
+        }
+      ],
+      "configs": [
+        {
+          "engineId": "gr8",
+          "label": "Three Sparks, 384K context",
+          "devices": 3,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 393210,
+          "diskGib": null,
+          "speed": "51.6 out; 764–562 prefill",
+          "note": "393,216-token pool",
+          "sourceUrl": "https://github.com/kindlingai/gr8/blob/HEAD/README.md#L49-L57"
+        },
+        {
+          "engineId": "dwarfstar",
+          "label": "Q2, 8K context, 61.35 GiB expert cache",
+          "devices": 1,
+          "gib": null,
+          "testedTokens": null,
+          "capTokens": 8192,
+          "diskGib": null,
+          "speed": "5.11 out after a 16-token append",
+          "note": "196.58 GiB artifact; 4.09 before the cache grew",
+          "sourceUrl": "https://github.com/antirez/ds4/blob/HEAD/docs/SSD_STREAMING.md#L113-L116"
+        }
+      ],
+      "need64k": {
+        "gib": 728.7,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 1103.5,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "h200",
+          "devices": 8
+        },
+        {
+          "deviceId": "b200",
+          "devices": 8
+        }
+      ],
+      "mtp": {
+        "kind": "mtp",
+        "params": null,
+        "gib": null,
+        "estimate": false,
+        "includedInFit": true,
+        "resident": true,
+        "note": "1 nextn layer; index shares MTP iterations",
+        "sourceUrl": "https://huggingface.co/zai-org/GLM-5.3/blob/main/config.json"
+      }
+    },
+    {
+      "id": "deepseek-v4-pro",
+      "name": "DeepSeek V4 Pro",
+      "lab": "DeepSeek",
+      "country": "China",
+      "runtimeMemory": "?; 800K on a specific 8×H200 layout; 1M B300 recipe",
+      "contextCap": "1M",
+      "speedNote": "Preview: 76.8 out/GPU, H20 SGLang DP16/EP16, 4K input, one request per DP rank, Humming MXFP4AFP8 + DSpark; H200 results are also preview-only",
+      "license": "MIT",
+      "enginesListed": "vLLM, SGLang",
+      "params": "~1.6T / 49B",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "~892.74 GB mixed precision for 0813; linked preview is ~864.72 GB",
+      "sourceUrl": "https://recipes.vllm.ai/deepseek-ai/DeepSeek-V4-Pro",
+      "pathLabel": "vLLM 0813 mixed precision",
+      "pathEngineId": "vllm",
+      "engineIds": ["sglang", "vllm"],
+      "specializedIds": ["dwarfstar"],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 834.2,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 874.5,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "h200",
+          "devices": 8
+        },
+        {
+          "deviceId": "b300",
+          "devices": 8
+        }
+      ]
+    },
+    {
+      "id": "hunyuan-hy4-preview",
+      "name": "Hunyuan Hy4 preview",
+      "lab": "Tencent",
+      "country": "China",
+      "runtimeMemory": "?; vLLM verifies 262,144 on MI355X and reports separate 1M startup on that hardware",
+      "contextCap": "1M",
+      "speedNote": "?; one Spark cannot hold MXFP8",
+      "license": "Apache-2.0",
+      "enginesListed": "vLLM, SGLang; community llama.cpp GGUF",
+      "params": "770B / 49B",
+      "modalities": {
+        "input": ["text"],
+        "output": ["text"]
+      },
+      "checkpoint": "813.77 GB MXFP8; vLLM budget ~924 GB",
+      "sourceUrl": "https://github.com/vllm-project/vllm/blob/601066c91ca20f07975c344af5b4e63bf7e4b026/recipes/models/tencent/Hy4-preview.yaml#L166-L212",
+      "pathLabel": "vLLM MXFP8, BF16 latent budget",
+      "pathEngineId": "vllm",
+      "engineIds": ["llamacpp", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 801.8,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 1459.9,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "b200",
+          "devices": 8
+        },
+        {
+          "deviceId": "b300",
+          "devices": 8
+        }
+      ],
+      "mtp": {
+        "kind": "mtp",
+        "params": null,
+        "gib": null,
+        "estimate": false,
+        "includedInFit": false,
+        "resident": true,
+        "note": "backbone excludes MTP; unsized",
+        "sourceUrl": "https://huggingface.co/tencent/Hy4-preview/blob/main/README.md#L67-L90"
+      }
+    },
+    {
+      "id": "kimi-k3",
+      "name": "Kimi K3",
+      "lab": "Moonshot",
+      "country": "China",
+      "runtimeMemory": "?; MXFP4 weights dominate, but do not include KV",
+      "contextCap": "1M",
+      "speedNote": "331.18 out/GPU, TokenSpeed NVFP4, 32×GB300, c576; baseline used 8 GPUs at c72",
+      "license": "Kimi K3 license",
+      "enginesListed": "vLLM, SGLang, TokenSpeed, TensorRT-LLM, ATOM, upstream llama.cpp",
+      "params": "2.8T / 104B",
+      "modalities": {
+        "input": ["text", "image", "video"],
+        "output": ["text"]
+      },
+      "checkpoint": "1,560.94 GB MXFP4; select a hardware-specific recipe",
+      "sourceUrl": "https://recipes.vllm.ai/moonshotai/Kimi-K3",
+      "pathLabel": "vLLM MXFP4, FP8 MLA",
+      "pathEngineId": "vllm",
+      "engineIds": [
+        "trtllm",
+        "tokenspeed",
+        "llamacpp",
+        "sglang",
+        "vllm",
+        "atom"
+      ],
+      "specializedIds": ["warp"],
+      "layouts": [
+        {
+          "engineId": "warp",
+          "label": "experts on SSD",
+          "devices": 1,
+          "gib": 27.2,
+          "testedTokens": 4096,
+          "capTokens": null,
+          "diskGib": 914.6,
+          "speed": "0.45–0.62 out",
+          "sourceUrl": "https://github.com/sqliteai/warp/blob/HEAD/README.md#L17-L42"
+        }
+      ],
+      "configs": [],
+      "need64k": {
+        "gib": 1460,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 1562,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "b300",
+          "devices": 8
+        }
+      ],
+      "mtp": {
+        "kind": "drafter",
+        "params": null,
+        "gib": null,
+        "estimate": false,
+        "includedInFit": false,
+        "resident": true,
+        "note": "unsized; before KDA and drafts",
+        "sourceUrl": "https://huggingface.co/moonshotai/Kimi-K3/blob/main/README.md#L110-L131"
+      }
+    },
+    {
+      "id": "kimi-k3-1-pro",
+      "name": "Kimi K3.1 Pro",
+      "lab": "Moonshot",
+      "country": "China",
+      "runtimeMemory": "?; Gated DSA differs from K3's Gated MLA",
+      "contextCap": "1M",
+      "speedNote": "AgentX Pareto endpoints, separate points: GB300 375.9 p90 out/user (16 GPUs, c1) or 37.8K total/GPU (32, c352); Rubin 815.6 (24, c1) or 68.7K (32, c512). Synthetic speculation acceptance",
+      "license": "Kimi K3.1 license",
+      "enginesListed": "vLLM, SGLang, TokenSpeed, TensorRT-LLM, upstream llama.cpp text/vision",
+      "params": "2.8T / 104B",
+      "modalities": {
+        "input": ["text", "image"],
+        "output": ["text"]
+      },
+      "checkpoint": "1,561.29 GB MXFP4; vLLM recipe budget ~1,874 GB, not a universal minimum",
+      "sourceUrl": "https://github.com/vllm-project/vllm-project.github.io/blob/main/_posts/2026-11-04-kimi-k31-pro.md#L82-L92",
+      "pathLabel": "vLLM MXFP4, FP8 MLA/index",
+      "pathEngineId": "vllm",
+      "engineIds": ["trtllm", "tokenspeed", "llamacpp", "sglang", "vllm"],
+      "specializedIds": [],
+      "layouts": [],
+      "configs": [],
+      "need64k": {
+        "gib": 1462,
+        "subtotal": true
+      },
+      "needNative": {
+        "gib": 1587,
+        "subtotal": true
+      },
+      "nativeContext": "1M",
+      "nativeTokens": 1048576,
+      "candidates": [
+        {
+          "deviceId": "b300",
+          "devices": 8
+        }
+      ],
+      "mtp": {
+        "kind": "drafter",
+        "params": null,
+        "gib": null,
+        "estimate": false,
+        "includedInFit": false,
+        "resident": true,
+        "note": "unsized; synthetic speculation acceptance",
+        "sourceUrl": "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/main/README.md#L114-L135"
+      }
+    }
+  ],
+  "throughput": [
+    {
+      "modelId": "gpt-oss-20b",
+      "hardwareId": "rtx4090",
+      "text": "225.22 ± 0.10 out · llama.cpp MXFP4 GGUF tg128"
+    },
+    {
+      "modelId": "gpt-oss-20b",
+      "hardwareId": "rx9070",
+      "text": "132.4 out · Ollama MXFP4, RX 9070 family"
+    },
+    {
+      "modelId": "qwen3-8-27b",
+      "hardwareId": "rtx4090",
+      "text": "95.5 out with MTP / 47.7 without · Ollama Q4_K_M"
+    },
+    {
+      "modelId": "gemma-4-26b-a4b",
+      "hardwareId": "rtx3090",
+      "text": "119 / 82 / 64 out at 4K / 128K / 256K · llama.cpp Q4"
+    },
+    {
+      "modelId": "gemma-4-31b",
+      "hardwareId": "rtx3090",
+      "text": "34 / 31 / 30 out at 4K / 32K / ~45K · llama.cpp Q4"
+    },
+    {
+      "modelId": "muse-glimmer-30b",
+      "hardwareId": "rtx5090",
+      "text": "74.9 → 233.4 out/user, c1, without → with DFlash"
+    },
+    {
+      "modelId": "laguna-xs-2-1",
+      "hardwareId": "apple-m5-max-128",
+      "text": "95.4 → 76.7 out/user at 1K → 32K prompts, oMLX 8-bit"
+    },
+    {
+      "modelId": "laguna-s-2-1",
+      "hardwareId": "spark",
+      "text": "15 prose / 22–24 code out · vLLM NVFP4 + DFlash"
+    },
+    {
+      "modelId": "ripple-65b-preview",
+      "hardwareId": "spark",
+      "text": "19.5 out/user c1; 48 aggregate out c4 · SGLang NVFP4"
+    },
+    {
+      "modelId": "glm-5-3-flash",
+      "hardwareId": "spark",
+      "text": "17.72 out/user c1 · UD-Q2_K_XL via gr8"
+    },
+    {
+      "modelId": "glm-5-3-flash",
+      "hardwareId": "h200-4",
+      "text": "12,026.62 aggregate out · SGLang + DFlash2, 99.9% shared prefix"
+    },
+    {
+      "modelId": "inkling-2-small",
+      "hardwareId": "gb200-4",
+      "text": "~630 out/user at c1 · NVFP4 + DSpark"
+    },
+    {
+      "modelId": "inkling-2-small",
+      "hardwareId": "gb200-8",
+      "text": "~1,070 out/GPU at 100 out/user, ~84 sessions"
+    },
+    {
+      "modelId": "kimi-k3",
+      "hardwareId": "gb300-32",
+      "text": "331.18 out/GPU · TokenSpeed NVFP4, c576"
+    },
+    {
+      "modelId": "kimi-k3-1-pro",
+      "hardwareId": "gb300-16",
+      "text": "375.9 p90 out/user at c1 · synthetic speculation acceptance"
+    },
+    {
+      "modelId": "mistral-large-4-le-chonk",
+      "hardwareId": "b300-8",
+      "text": "~260 out/user · SGLang FP8 + DSpark"
+    },
+    {
+      "modelId": "mistral-large-4-le-chonk",
+      "hardwareId": "gb300-4",
+      "text": "~264 out/user · SGLang NVFP4 + DSpark"
+    },
+    {
+      "modelId": "ling-3-1-flash",
+      "hardwareId": "h200-8",
+      "text": "269.2 out · SGLang FP8 + NEXTN, batch 1"
+    },
+    {
+      "modelId": "ling-3-1-flash",
+      "hardwareId": "gb300-4",
+      "text": "175.3 out · SGLang FP8 + NEXTN, batch 1"
+    },
+    {
+      "modelId": "muse-spark-open",
+      "hardwareId": "gb300-4",
+      "text": "~300 out/user at c1; ~8,100 aggregate out at c256"
+    }
+  ],
+  "batching": [
+    {
+      "modelId": "ripple-65b-preview",
+      "hardwareId": "spark",
+      "concurrency": 1,
+      "perUserOut": 19.5,
+      "aggregateOut": null,
+      "approx": false
+    },
+    {
+      "modelId": "ripple-65b-preview",
+      "hardwareId": "spark",
+      "concurrency": 4,
+      "perUserOut": null,
+      "aggregateOut": 48,
+      "approx": false
+    },
+    {
+      "modelId": "muse-spark-open",
+      "hardwareId": "gb300-4",
+      "concurrency": 1,
+      "perUserOut": 300,
+      "aggregateOut": null,
+      "approx": true
+    },
+    {
+      "modelId": "muse-spark-open",
+      "hardwareId": "gb300-4",
+      "concurrency": 256,
+      "perUserOut": null,
+      "aggregateOut": 8100,
+      "approx": true
+    },
+    {
+      "modelId": "inkling-2-small",
+      "hardwareId": "gb200-8",
+      "concurrency": 84,
+      "perUserOut": 100,
+      "aggregateOut": null,
+      "approx": true
+    }
+  ],
+  "platformNotes": [
+    {
+      "modelId": "kimi-k3-1-pro",
+      "family": "amd",
+      "text": "SGLang AMD Instinct cookbook: a separate deployment path, not a B300-only model",
+      "sourceUrl": "https://docs.sglang.io/cookbook/autoregressive/Moonshotai/Kimi-K3.1-Pro.md"
+    },
+    {
+      "modelId": "inkling-small",
+      "family": "amd",
+      "text": "A separate MXFP4 AMD path verifies 1M context",
+      "sourceUrl": "https://github.com/vllm-project/recipes/blob/e42b40144a05b8dd0dd2bab1bbbf92681ac8f063/models/thinkingmachines/Inkling-Small.yaml#L280-L290"
+    },
+    {
+      "modelId": "gpt-oss-20b",
+      "family": "amd",
+      "text": "132.4 out · Ollama MXFP4 on the RX 9070 family",
+      "sourceUrl": "https://llm-bench.io/benchmarks/cmutrpe0700wf01oxbqfnpyn3"
+    },
+    {
+      "modelId": "laguna-xs-2-1",
+      "family": "apple",
+      "text": "95.4 → 76.7 out/user at 1K → 32K prompts, oMLX 8-bit on an M5 Max 128 GB",
+      "sourceUrl": "https://huggingface.co/mlx-community/Laguna-XS-2.1-8bit/blob/main/README.md#L22-L33"
+    },
+    {
+      "modelId": "muse-glimmer-30b",
+      "family": "apple",
+      "text": "M4 Max ExecuTorch: 23.7 → 37.8 out/user",
+      "sourceUrl": "https://huggingface.co/meta-models/Muse-Glimmer-30B/blob/main/README.md#L27-L84"
+    },
+    {
+      "modelId": "muse-spark-open",
+      "family": "apple",
+      "text": "512 GB M3 Ultra: llama.cpp Q2_K 18 out/user, MLX oQ3e 21; two 512 GB M5 Ultra Mac Studios via MLX/JACCL",
+      "sourceUrl": "https://huggingface.co/blog/meta-muse-spark-open#llamacpp"
+    },
+    {
+      "modelId": "glm-5-3-flash",
+      "family": "apple",
+      "text": "PulsarMLX paged experts: ~2.6–4.2 out on a 128 GB M1 Ultra with a 181.9 GB artifact",
+      "sourceUrl": "https://github.com/MahdiHedhli/PulsarMLX/blob/HEAD/README.md#L67-L88"
+    }
+  ]
+}
