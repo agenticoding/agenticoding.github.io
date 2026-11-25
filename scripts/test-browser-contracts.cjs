@@ -2599,6 +2599,2829 @@ async function inspectNavigationContracts(routes) {
   await withRetry(() => inspectSidebarAudioBand(), "inspectSidebarAudioBand");
 }
 
+// ---------------------------------------------------------------- fit page
+// Each contract pins a calculator invariant a reader would notice if it broke.
+const FIT_ROUTE = "/developer-tools/open-weight-model-fit";
+/** A memory cell: a number with its integrity markers. */
+const FIT_CELL = /^(≈|⇢)?[\d,.]+\+?$/;
+// The two workload axes are document-wide (they sit beside the memory track),
+// while the rail keeps only the target's own levers.
+const FIT_CONTEXT_LABEL = "Context length (prompt + output, in tokens)";
+const FIT_CONVERSATIONS_LABEL = "Conversations in flight";
+
+async function openFit(page) {
+  await emulateReducedMotion(page);
+  await page.goto(siteUrl(FIT_ROUTE), { waitUntil: "networkidle0" });
+  await page.waitForSelector("input[data-fit-budget]");
+  await page.waitForSelector("[data-fit-table] [data-fit-row]");
+}
+
+async function fitTrackState(page) {
+  return page.evaluate(() => {
+    const input = document.querySelector("input[data-fit-budget]");
+    const block = input?.closest("section");
+    if (!input || !block) throw new Error("Missing memory track");
+    const strip = block.querySelector('[class*="zones"]');
+    const text = block.textContent.replace(/\s+/g, " ").trim();
+    const read = (node) => node?.textContent.replace(/\s+/g, " ").trim() ?? "";
+    const rows = [...document.querySelectorAll("[data-fit-row]")];
+    // The retired verdict bands and their hues: a reappearing group is a design
+    // regression, and the flat table states it as data.
+    const bands = document.querySelectorAll(
+      "[data-fit-table] details, [data-fit-table] [class*='group']",
+    ).length;
+    const marks = rows.flatMap((row) => [
+      ...row.querySelectorAll('[class*="mark"] img, [class*="mark"] > span'),
+    ]);
+    return {
+      // The input spans the whole machine; the ends it must not enter travel as
+      // their own data, so the contract states the same three numbers the page does.
+      track: Number(input.max),
+      floor: Number(input.dataset.fitFloor),
+      ceiling: Number(input.dataset.fitCeiling),
+      value: Number(input.dataset.fitValue),
+      thumb: input.getBoundingClientRect(),
+      zoneBox: strip ? strip.getBoundingClientRect() : null,
+      text,
+      labels: [...block.querySelectorAll("li")].map((li) =>
+        li.textContent.replace(/\s+/g, " ").trim(),
+      ),
+      zones: strip
+        ? [...strip.children].map((zone) => zone.getBoundingClientRect().width)
+        : [],
+      // The strip keeps a 1px border, so its children own the content box.
+      stripWidth: strip ? strip.clientWidth : 0,
+      bands,
+      // The number travels on its own hook: the cell also draws the budget
+      // ruler and, for a streamed row, the storage line, and concatenating the
+      // three would make the number unreadable to the contract that guards it.
+      values: rows.map((row) =>
+        read(row.querySelector("[data-figure-memory]")),
+      ),
+      // A streamed row is a different claim from a resident one, and the mark is
+      // the only place the reader sees which claim this row makes.
+      streamed: rows
+        .filter((row) => row.hasAttribute("data-fit-streamed"))
+        .map((row) => read(row.querySelector('[class*="rowValue"]'))),
+      streamedRows: rows.filter((row) => row.hasAttribute("data-fit-streamed"))
+        .length,
+      markedRows: rows.filter((row) =>
+        /^⇢/.test(read(row.querySelector('[class*="rowValue"]'))),
+      ).length,
+      // A row is a mark, a name, a setup, and one number; a bar or a badge here
+      // would be the design the table replaced.
+      legacyMarks: document.querySelectorAll(
+        '[data-fit-table] [class*="bar"], [data-fit-table] [class*="badge"], [data-fit-table] [class*="budgetMark"]',
+      ).length,
+      brokenMarks: marks.filter((mark) => !mark.getBoundingClientRect().width)
+        .length,
+      // The counts travel as data on the instrument, so no contract parses prose.
+      count: Number(
+        document.querySelector("[data-fit-target]")?.dataset.fitCount ?? NaN,
+      ),
+      total: Number(
+        document.querySelector("[data-fit-target]")?.dataset.fitTotal ?? NaN,
+      ),
+      hasAxis: Boolean(document.querySelector("[data-fit-axis]")),
+      // The count's sentence travels for screen readers; it must state the same
+      // numbers the rows do, and it must take no room on the page.
+      speech: {
+        text: read(document.querySelector("[data-fit-speech]")),
+        box: (() => {
+          const node = document.querySelector("[data-fit-speech]");
+          if (!node) return null;
+          const rect = node.getBoundingClientRect();
+          return { width: rect.width, height: rect.height };
+        })(),
+      },
+      valueText: document
+        .querySelector("[data-fit-budget-value]")
+        ?.textContent.trim(),
+    };
+  });
+}
+
+/** A wait that names itself: a timeout must say which value never arrived. */
+async function waitForFit(page, label, predicate, ...args) {
+  try {
+    await page.waitForFunction(predicate, { timeout: 5000 }, ...args);
+  } catch {
+    fail(`${label} did not settle`);
+  }
+}
+
+/** Hydration and React commits land after the click returns. The page is one
+ * reading when the table's rows account for the instrument's own count and every
+ * row prints a number: a half-applied state fails both. */
+async function settleFitTable(page) {
+  await page
+    .waitForFunction(
+      () => {
+        const count = Number(
+          document.querySelector("[data-fit-target]")?.dataset.fitCount,
+        );
+        const rows = [...document.querySelectorAll("[data-fit-row]")];
+        if (rows.length !== count) return false;
+        return rows.every((row) =>
+          /^(?:≈|⇢)?[\d,.]+\+?$/.test(
+            row.querySelector("[data-figure-memory]")?.textContent.trim() ?? "",
+          ),
+        );
+      },
+      { timeout: 3000 },
+    )
+    .catch(() => {});
+}
+
+async function assertFitTrack(page, name) {
+  await settleFitTable(page);
+  const state = await fitTrackState(page);
+  if (state.hasAxis) fail(`${name} still draws the old axis strip`);
+  // The ends are the machine's own arithmetic: a positive floor, a ceiling above
+  // it, and the reader's value inside the range the reserved areas leave.
+  if (!(state.floor > 0)) fail(`${name} track has no floor: ${state.floor}`);
+  if (!(state.ceiling > state.floor))
+    fail(`${name} track has no range: ${state.floor}–${state.ceiling}`);
+  if (state.ceiling >= state.track)
+    fail(`${name} ceiling ${state.ceiling} leaves no OS reserve`);
+  if (state.value < state.floor || state.value > state.ceiling)
+    fail(`${name} thumb sits inside a reserved area: ${state.value}`);
+  // The handle is a position on the same scale as the zones it rides.
+  if (state.zoneBox) {
+    const at =
+      (state.thumb.left + state.thumb.width / 2 - state.zoneBox.left) /
+      state.zoneBox.width;
+    if (Math.abs(at - state.value / state.track) > 0.02)
+      fail(
+        `${name} handle sits at ${at.toFixed(3)} of the track, not its value`,
+      );
+  }
+  if (!state.valueText?.startsWith(`${state.value}`))
+    fail(`${name} track states "${state.valueText}" for ${state.value}`);
+  // Three reserved or free areas, each named with its own number.
+  if (state.labels.length !== 3)
+    fail(`${name} track labels ${state.labels.length} zones`);
+  const patterns = [
+    /smallest model · [\d,.]+ GiB/,
+    /cache at .+ · [\d,.]+ GiB/,
+    /OS reserve · [\d,.]+ GiB/,
+  ];
+  patterns.forEach((pattern, index) => {
+    if (!pattern.test(state.labels[index] ?? ""))
+      fail(`${name} zone ${index} reads "${state.labels[index]}"`);
+  });
+  // Every zone is painted and they account for the whole track: nothing can be
+  // dragged into an area the page forgot to draw.
+  if (state.zones.length !== 4)
+    fail(`${name} track paints ${state.zones.length} zones`);
+  const painted = state.zones.reduce((sum, width) => sum + width, 0);
+  if (Math.abs(painted - state.stripWidth) > 2)
+    fail(`${name} zones cover ${painted}px of ${state.stripWidth}px`);
+  // The table is the count: the list holds exactly the models that fit, and the
+  // retired verdict bands stay gone.
+  if (state.bands) fail(`${name} renders ${state.bands} retired verdict bands`);
+  if (!state.values.length && state.count !== 0)
+    fail(`${name} lists no rows for ${state.count} fits`);
+  if (state.count !== state.values.length)
+    fail(`${name} lists ${state.values.length} rows for ${state.count} fits`);
+  if (state.total < state.count)
+    fail(`${name} counts ${state.count} of ${state.total} models`);
+  // One count, two surfaces: the visible rows and the announced sentence.
+  if (!state.speech.text.startsWith(`${state.count} of ${state.total} `))
+    fail(
+      `${name} announces "${state.speech.text}" for ${state.count} of ${state.total}`,
+    );
+  if (
+    !state.speech.box ||
+    state.speech.box.height > 1 ||
+    state.speech.box.width > 1
+  )
+    fail(`${name} lays out its announced count`);
+  // A row carries one number and no chart furniture.
+  for (const value of state.values)
+    if (!FIT_CELL.test(value)) fail(`${name} row prints "${value}"`);
+  // The attribute and the mark are one fact: a streamed row must say so on its
+  // number, and a number that streams must be attributed.
+  if (state.streamedRows !== state.markedRows)
+    fail(
+      `${name} marks ${state.markedRows} rows and attributes ${state.streamedRows}`,
+    );
+  for (const value of state.streamed)
+    if (!/^⇢/.test(value)) fail(`${name} streamed row prints "${value}"`);
+  if (state.legacyMarks)
+    fail(`${name} still draws ${state.legacyMarks} bar or badge marks`);
+  if (state.brokenMarks)
+    fail(`${name} paints ${state.brokenMarks} lab marks with no size`);
+  return state;
+}
+
+/** The overfull panel: there is no budget to set, so the strip splits the need
+ * into what the machine holds and what it cannot. The claim is geometric: each
+ * area must sit at the share its own key states. */
+async function assertOverfullTrack(page, name) {
+  // The panel is a query container: Chromium can leave its percentage children
+  // on an earlier pass's basis while the page is not painting, so the rects
+  // would state an older workload. One write and revert re-runs the layout the
+  // reader would see before the ratio is judged; the panel itself is unchanged.
+  await page.evaluate(() => {
+    const section = document.querySelector("[data-fit-overfull]");
+    if (!section) return;
+    section.style.display = "none";
+    void section.offsetHeight;
+    section.style.removeProperty("display");
+  });
+  const state = await page.evaluate(() => {
+    const block = document.querySelector("[data-fit-overfull]");
+    if (!block) return null;
+    const strip = block.querySelector('[class*="zones"]');
+    const zones = [...strip.querySelectorAll("[data-fit-zone]")];
+    const text = (node) => node?.textContent.replace(/\s+/g, " ").trim() ?? "";
+    const labels = [...block.querySelectorAll("li")].map(text);
+    const number = (pattern, label) => {
+      const match = label.match(pattern);
+      return match ? Number(match[1].replace(/,/g, "")) : NaN;
+    };
+    const recipe = (labels[2] ?? "").match(
+      /^([\d,.]+) GiB model \+ ([\d,.]+) GiB cache$/,
+    );
+    const widths = zones.map((zone) => zone.getBoundingClientRect().width);
+    return {
+      input: Boolean(block.querySelector("input[data-fit-budget]")),
+      labels,
+      widths,
+      target: document.querySelector("[data-fit-target]")?.dataset.fitTarget,
+      strip: strip.clientWidth,
+      need: Number(block.dataset.fitNeed),
+      supply: Number(block.dataset.fitSupply),
+      covered: number(/^this machine · ([\d,.]+) GiB usable$/, labels[0] ?? ""),
+      over: number(/^over this machine · ([\d,.]+) GiB$/, labels[1] ?? ""),
+      model: recipe ? Number(recipe[1].replace(/,/g, "")) : NaN,
+      cache: recipe ? Number(recipe[2].replace(/,/g, "")) : NaN,
+      head: text(block.querySelector("[data-fit-head-value]")),
+      note: text(document.querySelector("[data-fit-note]")),
+    };
+  });
+  if (!state) fail(`${name} shows no overfull panel`);
+  if (state.input)
+    fail(`${name} offers a budget handle for a range with one value`);
+  if (state.widths.length !== 2)
+    fail(`${name} paints ${state.widths.length} zones, not the need's two`);
+  if (state.labels.length !== 3)
+    fail(`${name} keys the overfull strip with ${state.labels.length} rows`);
+  if (!(state.need > 0)) fail(`${name} travels no need: ${state.need}`);
+  if (!(state.supply > 0)) fail(`${name} travels no supply: ${state.supply}`);
+  // One scale, no gaps: the need is the whole strip.
+  const painted = state.widths[0] + state.widths[1];
+  if (Math.abs(painted - state.strip) > 2)
+    fail(
+      `${name} zones cover ${painted}px of ${state.strip}px (need ${
+        state.need
+      }, supply ${state.supply}, target ${state.target}: ${state.labels.join(
+        " | ",
+      )})`,
+    );
+  // Both keys state the same two sides the areas paint, and the composition is
+  // the arithmetic the head fills: a colour change with no number is decoration.
+  const parts = [
+    ["covered", state.covered, state.supply, state.widths[0]],
+    ["over", state.over, state.need - state.supply, state.widths[1]],
+  ];
+  for (const [label, said, gib, px] of parts) {
+    if (!(Math.abs(said - gib) <= 0.51))
+      fail(`${name} keys ${label} as ${said} GiB for ${gib.toFixed(1)}`);
+    if (!(Math.abs(px / painted - gib / state.need) <= 0.02))
+      fail(
+        `${name} paints ${label} ${Math.round(px)}px for ${gib.toFixed(1)} of ${
+          state.need
+        } GiB`,
+      );
+  }
+  if (!(state.model > 0)) fail(`${name} names no model size`);
+  if (!(state.cache >= 0)) fail(`${name} names no cache size`);
+  if (Math.abs(state.model + state.cache - state.need) > 1.02)
+    fail(
+      `${name} recipe ${state.model} + ${state.cache} does not fill ${
+        state.need
+      } GiB`,
+    );
+  // The head and the strip are one claim: the big number is the length the bar
+  // fills, so a reader never has to reconcile two different totals.
+  const headed = state.head.match(/^([\d,.]+) GiB$/);
+  if (!headed) fail(`${name} heads the need as "${state.head}"`);
+  if (Math.abs(Number(headed[1].replace(/,/g, "")) - state.need) > 0.51)
+    fail(`${name} heads "${state.head}" for a ${state.need} GiB need`);
+  // The note names the only two levers that can change an overfull answer.
+  if (!/^Shorten the context or pick a larger machine\.$/.test(state.note))
+    fail(`${name} explains the overfull track as "${state.note}"`);
+  return state;
+}
+
+async function inspectFitChartViewport(viewport) {
+  await withPage(`fit-chart-${viewport.width}`, viewport, async (page) => {
+    await openFit(page);
+    const before = await assertFitTrack(page, `fit track ${viewport.width}`);
+    // The budget changes what fits, never the boxes that report it.
+    const settled = await fitLayout(page);
+    assertBandsHold(`fit track ${viewport.width}`, settled);
+    // The thumb is a control: one key press moves the budget and regrades the
+    // table, and a lower budget can never let more models through.
+    await page.focus("input[data-fit-budget]");
+    await page.keyboard.press("ArrowLeft");
+    await waitForFit(
+      page,
+      `budget below ${before.value}`,
+      (previous) =>
+        Number(
+          document.querySelector("input[data-fit-budget]").dataset.fitValue,
+        ) < previous,
+      before.value,
+    );
+    const after = await assertFitTrack(
+      page,
+      `fit track after ${viewport.width}`,
+    );
+    if (after.value >= before.value)
+      fail(`${viewport.width} arrow key did not lower the budget`);
+    if (after.count > before.count)
+      fail(`${viewport.width} a lower budget added fits`);
+    // Park the thumb at its floor: the reserved ends must stay out of reach.
+    await page.keyboard.press("Home");
+    await waitForFit(page, "budget at its floor", () => {
+      const input = document.querySelector("input[data-fit-budget]");
+      return (
+        Math.abs(
+          Number(input.dataset.fitValue) - Number(input.dataset.fitFloor),
+        ) < 1e-9
+      );
+    });
+    const floor = await assertFitTrack(page, `fit floor ${viewport.width}`);
+    assertBandsStill(
+      `fit floor ${viewport.width}`,
+      settled,
+      await fitLayout(page),
+    );
+    if (Math.abs(floor.value - floor.floor) > 1e-9)
+      fail(`${viewport.width} thumb left the track at ${floor.value}`);
+    // The far end is the other reserved area: it must stop at its own boundary.
+    await page.keyboard.press("End");
+    await page.waitForFunction(
+      (ceiling) =>
+        Math.abs(
+          Number(
+            document.querySelector("input[data-fit-budget]").dataset.fitValue,
+          ) - ceiling,
+        ) < 1e-9,
+      {},
+      floor.ceiling,
+    );
+    const top = await assertFitTrack(page, `fit ceiling ${viewport.width}`);
+    assertBandsStill(
+      `fit ceiling ${viewport.width}`,
+      settled,
+      await fitLayout(page),
+    );
+    if (Math.abs(top.value - top.ceiling) > 1e-9)
+      fail(`${viewport.width} thumb entered the OS reserve at ${top.value}`);
+    if (top.count < floor.count)
+      fail(`${viewport.width} raising the budget to its ceiling lost fits`);
+    if (floor.count > before.count)
+      fail(`${viewport.width} the floor added fits`);
+  });
+}
+
+async function inspectFitChart() {
+  for (const viewport of [DESKTOP_VIEWPORT, DOCK_VIEWPORT])
+    await inspectFitChartViewport(viewport);
+}
+
+async function clickFitChip(page, groupLabel, label) {
+  const clicked = await page.evaluate(
+    (group, text) => {
+      const rail = document.querySelector(
+        `[role="group"][aria-label="${group}"]`,
+      );
+      // A chip may carry a count after its label, so match the label alone.
+      const chip = [...(rail?.querySelectorAll("button") ?? [])].find(
+        (button) => button.textContent.trim().split(" · ")[0] === text,
+      );
+      if (!chip) return false;
+      // A folded tier keeps its chips in the document but out of sight. Open
+      // every ancestor so the click is the one a reader makes.
+      for (let node = chip.parentElement; node; node = node.parentElement)
+        if (node.tagName === "DETAILS" && !node.open) node.open = true;
+      chip.click();
+      return true;
+    },
+    groupLabel,
+    label,
+  );
+  if (!clicked) fail(`Missing ${groupLabel} chip "${label}"`);
+}
+
+/** Every platform answers the same control, including those the guide never screened. */
+async function inspectFitPlatformsViewport(viewport) {
+  await withPage(`fit-platforms-${viewport.width}`, viewport, async (page) => {
+    await openFit(page);
+    const families = [
+      ["Workstation", "RTX 4090"],
+      ["DGX Spark", "DGX Spark"],
+      ["NVIDIA node", "H100 80 GB"],
+      ["AMD", "MI355X"],
+      ["Apple Silicon", "M4 Max 128 GB"],
+    ];
+    // The calm strip the reservation is measured against: the default machine's
+    // layout and the chips it draws.
+    let calm = null;
+    for (const [family, device] of families) {
+      await clickFitChip(page, "Hardware", family);
+      if (family !== "DGX Spark") await clickFitChip(page, "Device", device);
+      // React commits after the click handler returns, so wait until the device
+      // chip is the pressed one before measuring the answer it produces.
+      await page.waitForFunction(
+        (label) =>
+          document
+            .querySelector(
+              '[role="group"][aria-label="Device"] button[aria-pressed="true"]',
+            )
+            ?.textContent.trim()
+            .split(" · ")[0] === label,
+        {},
+        device,
+      );
+      const state = await assertFitTrack(page, `${family} ${viewport.width}`);
+      // A family brings its own sentences: the reserved bands must still hold
+      // them without clipping or wrapping into a new row.
+      const layout = await fitLayout(page);
+      assertBandsHold(`${family} ${viewport.width}`, layout);
+      // Every machine draws the same bands, whatever hardware it names: the
+      // machine's sentence and its budget wrap inside reserved rows, so a target
+      // can change words but never the instrument's boxes. Only sizes are claimed
+      // here; the seam under the reserved row is claimed by `figureSeam`, which
+      // sweeps the families of both figures.
+      if (!calm) calm = { layout };
+      else {
+        for (const band of ["setup", "budget", "workload", "strip"]) {
+          if (layout[band].height !== calm.layout[band].height)
+            fail(
+              `${family} ${viewport.width} resizes ${band}: ${calm.layout[band].height}px → ${layout[band].height}px`,
+            );
+        }
+      }
+      const rails = await page.evaluate(
+        (workload) => {
+          // The page carries two figures; this contract is about the fit one.
+          const root =
+            document.querySelector("[data-figure-root][data-fit]") ?? document;
+          const labels = [...root.querySelectorAll('[role="group"]')].map(
+            (group) => group.getAttribute("aria-label"),
+          );
+          return {
+            runtime: labels.filter((label) => label === "Runtime").length,
+            missing: workload.filter((label) => !labels.includes(label)),
+          };
+        },
+        [FIT_CONTEXT_LABEL, FIT_CONVERSATIONS_LABEL],
+      );
+      if (rails.runtime !== 1)
+        fail(`${family} offers ${rails.runtime} runtime rails`);
+      if (rails.missing.length)
+        fail(`${family} hides the ${rails.missing.join(", ")} rail`);
+      // A streamed layout must be visible where it changes the answer: the
+      // runtime that reaches models the standardized set cannot says so, and
+      // every row it leaves carries the mark on its number.
+      if (family !== "Apple Silicon") continue;
+      await clickFitChip(page, "Specialized runtimes", "WARP");
+      await page.waitForFunction(() =>
+        document
+          .querySelector(
+            '[role="group"][aria-label="Specialized runtimes"] button[aria-pressed="true"]',
+          )
+          ?.textContent.trim()
+          .startsWith("WARP"),
+      );
+      const streamed = await assertFitTrack(page, `WARP ${viewport.width}`);
+      const chips = await fitRuntimeState(page);
+      const warp = chips?.chips.find((chip) => chip.label === "WARP");
+      if (!warp) fail(`${viewport.width} WARP takes no chip`);
+      // The snapshot is taken on the pressed chip: the gain must survive the
+      // inverted surface, where the hue alone would be unreadable.
+      if (!warp.pressed) fail(`${viewport.width} WARP is not the pressed chip`);
+      if (!/^\d+ only here$/.test(warp.gain))
+        fail(`${viewport.width} WARP prints no gain: "${warp.gain}"`);
+      if (
+        !/holds [1-9]\d* models? no general-purpose runtime holds here/.test(
+          warp.spoken,
+        )
+      )
+        fail(`${viewport.width} WARP reach reads "${warp.spoken}"`);
+      if (!streamed.count) fail(`${viewport.width} WARP lists no streamed row`);
+      if (streamed.streamedRows !== streamed.count)
+        fail(
+          `${viewport.width} WARP lists ${streamed.streamedRows} of ${streamed.count} rows as streamed`,
+        );
+      if (warp.count !== streamed.count)
+        fail(
+          `${viewport.width} WARP prints ${warp.count} and leaves ${streamed.count}`,
+        );
+      await clickFitChip(page, "Runtime", "Any runtime");
+    }
+    // The busiest strip the guide can draw: the largest DGX Spark lists five
+    // runtimes, two of them specialized. Space is reserved for that, so the
+    // crowded state must keep the same box on the same machine rather than push
+    // the answer down.
+    await clickFitChip(page, "Hardware", "DGX Spark");
+    await page.waitForFunction(() =>
+      document
+        .querySelector(
+          '[role="group"][aria-label="Device"] button[aria-pressed="true"]',
+        )
+        ?.textContent.trim()
+        .startsWith("DGX Spark"),
+    );
+    const quiet = await fitLayout(page);
+    const counts = await page.evaluate(() =>
+      [
+        ...document.querySelectorAll(
+          '[role="group"][aria-label="Devices"] button',
+        ),
+      ].map((button) => button.textContent.trim().split(" · ")[0]),
+    );
+    if (!counts.length)
+      fail(`${viewport.width} DGX Spark offers no device count`);
+    const busiest = counts[counts.length - 1];
+    await clickRailChip(page, "Devices", busiest);
+    await waitForFit(
+      page,
+      `${viewport.width} busiest DGX Spark`,
+      (label) =>
+        document
+          .querySelector(
+            '[role="group"][aria-label="Devices"] button[aria-pressed="true"]',
+          )
+          ?.textContent.trim()
+          .split(" · ")[0] === label,
+      busiest,
+    );
+    const busy = await fitLayout(page);
+    assertBandsHold(`${viewport.width} busiest strip`, busy);
+    const chips = await page.evaluate(() => ({
+      general: document.querySelectorAll(
+        '[role="group"][aria-label="Runtime"] button',
+      ).length,
+      specialized: document.querySelectorAll(
+        '[role="group"][aria-label="Specialized runtimes"] button',
+      ).length,
+    }));
+    if (chips.general < 4)
+      fail(
+        `${viewport.width} the busiest DGX Spark lists ${chips.general} runtimes`,
+      );
+    // One machine, two memberships: nothing but the strip's own words may differ.
+    for (const band of ["strip", "table"])
+      for (const side of ["top", "height"])
+        if (side === "height" && band === "table") continue;
+        else if (quiet[band][side] !== busy[band][side])
+          fail(
+            `${viewport.width} the busy strip moved ${band}.${side}: ${quiet[band][side]} → ${busy[band][side]}`,
+          );
+  });
+}
+
+async function inspectFitPlatforms() {
+  for (const viewport of [DESKTOP_VIEWPORT, DOCK_VIEWPORT])
+    await inspectFitPlatformsViewport(viewport);
+}
+
+const FIT_RAIL_LABELS = ["Hardware", "Device"];
+
+/** One workload axis: the stops it offers, where its handle sits, and its words. */
+async function fitWorkloadState(page) {
+  return page.evaluate(
+    (labels) => {
+      const rail = document.querySelector(
+        'section[aria-label="Your hardware"]',
+      );
+      const read = (node) =>
+        node?.textContent.replace(/\s+/g, " ").trim() ?? "";
+      const axis = (label) => {
+        const group = document.querySelector(
+          `[role="group"][aria-label="${label}"]`,
+        );
+        const input = group?.querySelector('input[type="range"]');
+        if (!group || !input) return null;
+        return {
+          inRail: Boolean(rail?.contains(group)),
+          ranges: group.querySelectorAll('input[type="range"]').length,
+          stops: (group.dataset.leverStops ?? "").split(","),
+          min: Number(input.min),
+          max: Number(input.max),
+          value: Number(input.value),
+          spoken: input.getAttribute("aria-valuetext") ?? "",
+          shown: read(group.querySelector('[class*="leverValue"]')),
+          ends: [...group.querySelectorAll('[class*="leverEnd"]')].map(read),
+        };
+      };
+      return {
+        context: axis(labels.context),
+        conversations: axis(labels.conversations),
+      };
+    },
+    { context: FIT_CONTEXT_LABEL, conversations: FIT_CONVERSATIONS_LABEL },
+  );
+}
+
+/** An axis is ordinal: one handle on the published stops, and it states its span. */
+function assertWorkloadAxis(axis, name) {
+  if (!axis) fail(`${name} is missing`);
+  if (axis.inRail) fail(`${name} is still folded into the target rail`);
+  if (axis.ranges !== 1) fail(`${name} offers ${axis.ranges} handles`);
+  if (axis.min !== 0 || axis.max !== axis.stops.length - 1)
+    fail(`${name} spans ${axis.min}–${axis.max} of ${axis.stops.length} stops`);
+  if (!Number.isInteger(axis.value) || axis.value > axis.max)
+    fail(`${name} sits at ${axis.value}`);
+  if (axis.shown !== axis.stops[axis.value])
+    fail(`${name} states "${axis.shown}" at stop ${axis.stops[axis.value]}`);
+  if (!axis.spoken.startsWith(axis.shown))
+    fail(`${name} is read as "${axis.spoken}" for "${axis.shown}"`);
+  const ends = [axis.stops[0], axis.stops[axis.stops.length - 1]];
+  if (axis.ends.join() !== ends.join())
+    fail(`${name} prints ends ${axis.ends.join(" … ")} of ${ends.join(" … ")}`);
+}
+
+/** Move an axis to one of its published stops, the way a reader drags it. */
+async function setFitStop(page, groupLabel, label) {
+  const moved = await page.evaluate(
+    (group, text) => {
+      const wrapper = document.querySelector(
+        `[role="group"][aria-label="${group}"]`,
+      );
+      const input = wrapper?.querySelector('input[type="range"]');
+      const stops = (wrapper?.dataset.leverStops ?? "").split(",");
+      const index = stops.indexOf(text);
+      if (!input || index < 0) return false;
+      // React tracks the input's value, so write through the native setter and
+      // announce the change the way a drag does.
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      ).set.call(input, String(index));
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      return true;
+    },
+    groupLabel,
+    label,
+  );
+  if (!moved) fail(`Missing ${groupLabel} stop "${label}"`);
+}
+
+/** One chip, as the page renders it. Shared by the rail and the runtime strip. */
+const CHIP_STATE = `(chip) => {
+  const parts = chip.textContent.trim().split(" · ");
+  const raw = parts[1] ?? "";
+  const [fits, coverage] = raw.split("/");
+  return {
+    group: chip.closest('[role="group"]')?.getAttribute("aria-label") ?? "",
+    label: parts[0],
+    raw,
+    count: Number(fits),
+    coverage: coverage === undefined ? null : Number(coverage),
+    gain: parts.length > 2 ? parts.slice(2).join(" · ") : "",
+    spoken: chip.getAttribute("aria-label") ?? "",
+    pressed: chip.getAttribute("aria-pressed") === "true",
+    overflow: chip.scrollWidth - chip.clientWidth,
+  };
+}`;
+
+/** The rail's own contract: the machine's choices, and no workload and no prose. */
+async function fitRailState(page) {
+  return page.evaluate(
+    (labels, chipStateSource) => {
+      const chipState = eval(chipStateSource);
+      const rail = document.querySelector(
+        'section[aria-label="Your hardware"]',
+      );
+      if (!rail) throw new Error("Missing the target rail");
+      const group = (label) =>
+        rail.querySelector(`[role="group"][aria-label="${label}"]`);
+      const text = (node) =>
+        node?.textContent.replace(/\s+/g, " ").trim() ?? "";
+      const box = rail.getBoundingClientRect();
+      return {
+        height: box.height,
+        missing: labels.filter((label) => !group(label)),
+        chips: [...rail.querySelectorAll('[role="group"] button')].map(
+          chipState,
+        ),
+        // Every rail paragraph other than a group label is prose; the rail owns none.
+        notes: [...rail.querySelectorAll("p")]
+          .filter((node) => !String(node.className).includes("chipLabel"))
+          .map((node) => text(node)),
+        // The rendered target travels as data: the rail's words are for readers.
+        target:
+          document.querySelector("[data-fit-target]")?.dataset.fitTarget ?? "",
+        count: Number(
+          document.querySelector("[data-fit-target]")?.dataset.fitCount ?? NaN,
+        ),
+        total: Number(
+          document.querySelector("[data-fit-target]")?.dataset.fitTotal ?? NaN,
+        ),
+        budgetNote: text(document.querySelector("[data-fit-note]")),
+        cacheKey: text(document.querySelector('[class*="budgetZones"]')),
+      };
+    },
+    FIT_RAIL_LABELS,
+    CHIP_STATE,
+  );
+}
+
+/** The runtime strip: two groups of chips, no fold, no prose, one promise each. */
+async function fitRuntimeState(page) {
+  return page.evaluate((chipStateSource) => {
+    const chipState = eval(chipStateSource);
+    const section = document.querySelector("[data-fit-strip]");
+    if (!section) return null;
+    const group = (label) =>
+      section.querySelector(`[role="group"][aria-label="${label}"]`);
+    const text = (node) => node?.textContent.replace(/\s+/g, " ").trim() ?? "";
+    const chips = [...section.querySelectorAll('[role="group"] button')].map(
+      chipState,
+    );
+    return {
+      folded: Boolean(section.closest("details")),
+      groups: [...section.querySelectorAll('[role="group"]')].map((node) =>
+        node.getAttribute("aria-label"),
+      ),
+      chips,
+      specialized: chips.filter(
+        (chip) => chip.group === "Specialized runtimes",
+      ),
+      notes: [...section.querySelectorAll("p")]
+        .filter((node) => !String(node.className).includes("chipLabel"))
+        .map((node) => text(node)),
+      // The empty group's own words: its note slot states the absence its
+      // reserved rail cannot.
+      empty: text(section.querySelector("[data-chip-empty]")),
+    };
+  }, CHIP_STATE);
+}
+
+/** Both groups keep their reserved rails, so an empty one states its absence
+ * in the note slot above the rail. */
+function assertEmptyGroupState(name, runtimes) {
+  if (!runtimes.groups.includes("Specialized runtimes"))
+    fail(`${name} drops the specialized group's reserved rows`);
+  if (runtimes.specialized.length === 0 && !runtimes.empty)
+    fail(`${name} leaves its empty specialized group unstated`);
+  if (runtimes.specialized.length > 0 && runtimes.empty)
+    fail(
+      `${name} states an absence beside ${runtimes.specialized.length} specialized runtimes`,
+    );
+}
+
+/** The bands between the levers and the rows. A state change may rewrite the
+ * words in any of them but never their boxes: a lever that rescales the page is
+ * the defect this instrument exists to avoid. */
+async function fitLayout(page) {
+  return page.evaluate(() => {
+    // Positions are relative to the instrument: focusing a control can scroll
+    // the page, and a scroll must not read as a moved band.
+    const origin = document
+      .querySelector("[data-fit-target]")
+      .getBoundingClientRect().top;
+    const read = (selector) => {
+      const node = document.querySelector(selector);
+      if (!node) throw new Error(`Missing ${selector}`);
+      const box = node.getBoundingClientRect();
+      return {
+        top: Math.round(box.top - origin),
+        height: Math.round(box.height),
+        width: Math.round(box.width),
+        scrollHeight: node.scrollHeight,
+        clientHeight: node.clientHeight,
+        scrollWidth: node.scrollWidth,
+        clientWidth: node.clientWidth,
+      };
+    };
+    return {
+      // Scoped to the fit figure: the page carries two instruments, and one
+      // class name must never resolve to the other figure's panel.
+      setup: read('[data-fit] [class*="setup"]'),
+      budget: read('[data-fit] section[class*="budget"]'),
+      workload: read('[data-fit] div[class*="workload"]'),
+      // The strip's membership follows the workload, so its box is reserved: it
+      // must measure the same in the crowded and the empty state.
+      strip: read("[data-fit-strip]"),
+      table: read("[data-fit-table]"),
+    };
+  });
+}
+
+/** Reserved bands must hold what they are given: an overflow is a silent clip. */
+function assertBandsHold(name, layout) {
+  for (const band of ["strip", "budget", "workload"]) {
+    const box = layout[band];
+    if (box.scrollHeight > box.clientHeight + 1)
+      fail(
+        `${name} ${band} needs ${box.scrollHeight}px of its ${box.clientHeight}px band`,
+      );
+    if (box.scrollWidth > box.clientWidth + 1)
+      fail(
+        `${name} ${band} overflows by ${box.scrollWidth - box.clientWidth}px`,
+      );
+  }
+  // Side by side, the two levers are one row: one bottom edge, whatever each
+  // panel's own content needs.
+  if (
+    Math.abs(layout.budget.top - layout.workload.top) <= 1 &&
+    layout.budget.height !== layout.workload.height
+  )
+    fail(
+      `${name} panels end ${layout.budget.height}px and ${layout.workload.height}px tall`,
+    );
+}
+
+/** Nothing may move. The bands above the runtime strip keep their boxes, and the
+ * strip's own space is reserved for its most crowded state, so the table stays
+ * where it is in the lean one too. The table's own height is its row count;
+ * widths never move. */
+function assertBandsStill(name, before, after) {
+  assertBandsHold(name, after);
+  for (const band of Object.keys(before))
+    for (const side of ["top", "height", "width"])
+      if (side === "height" && band === "table") continue;
+      else if (before[band][side] !== after[band][side])
+        fail(
+          `${name} moved ${band}.${side}: ${before[band][side]} → ${after[band][side]}`,
+        );
+}
+
+/** The row's pitch is a design token: a theme's list margin or a
+ * state-dependent padding must not move it. */
+const FIT_ROW_PITCH = 52;
+
+/** The head and the rows are one table: the head's words sit on the name
+ * column, and the rows keep the stated rhythm. Industry rule: a header inherits
+ * the table's column grid. */
+async function assertFitTableGrid(page, name) {
+  await assertMemoryRuler(page, name);
+  const grid = await page.evaluate(() => {
+    const table = document.querySelector("[data-fit-table]");
+    const left = (node) => node.getBoundingClientRect().left;
+    const headModel = table.querySelector('[class*="headLabel"]');
+    const head = table.querySelector(':scope > [class*="head"]');
+    const rowName = table.querySelector('[data-fit-row] [class*="rowName"]');
+    const headModality = [
+      ...table.querySelectorAll('[class*="headLabel"]'),
+    ].find((node) => node.textContent.trim() === "Modality");
+    const modality = table.querySelector("[data-fit-row] [data-fit-modality]");
+    const flow = modality?.querySelector("svg") ?? null;
+    const rowValue = table.querySelector('[data-fit-row] [class*="rowValue"]');
+    const pitch = [];
+    const rows = [...table.querySelectorAll("[data-fit-row] > button")];
+    for (let index = 1; index < rows.length; index += 1) {
+      const before = rows[index - 1];
+      const after = rows[index];
+      // An open detail is part of its row's box: that pair cannot state a pitch.
+      if (
+        before.getAttribute("aria-expanded") === "true" ||
+        after.getAttribute("aria-expanded") === "true"
+      )
+        continue;
+      pitch.push(
+        after.getBoundingClientRect().top - before.getBoundingClientRect().top,
+      );
+    }
+    return {
+      headModelX: left(headModel),
+      rowNameX: rowName ? left(rowName) : null,
+      // The head and a row must state the same columns: a hidden column in one
+      // would silently shift every label off its values.
+      headCells: head ? head.children.length : 0,
+      rowCells: rows[0] ? rows[0].children.length : 0,
+      headModalityX: headModality ? left(headModality) : null,
+      modalityX: modality ? left(modality) : null,
+      // The flow must stay inside its own column; a chip that overhangs the
+      // memory number reads as part of that number.
+      modalityRight: flow ? flow.getBoundingClientRect().right : null,
+      valueLeft: rowValue ? left(rowValue) : null,
+      modalityCode: modality?.dataset.fitModality ?? null,
+      rows: rows.length,
+      pitch,
+    };
+  });
+  // One left edge: the head's word and every model name. A state that lists no
+  // rows still draws the head, so the page never resizes around a verdict.
+  if (grid.rows === 0) {
+    if (typeof grid.headModelX !== "number")
+      fail(`${name} draws no table head`);
+    return;
+  }
+  if (Math.abs(grid.headModelX - grid.rowNameX) > 1)
+    fail(
+      `${name} head sits ${Math.round(grid.headModelX - grid.rowNameX)}px off the names`,
+    );
+  if (grid.headCells !== grid.rowCells)
+    fail(
+      `${name} head draws ${grid.headCells} columns over rows of ${grid.rowCells}`,
+    );
+  if (typeof grid.headModalityX !== "number")
+    fail(`${name} draws no modality head`);
+  if (Math.abs(grid.headModalityX - grid.modalityX) > 1)
+    fail(
+      `${name} modality head sits ${Math.round(grid.headModalityX - grid.modalityX)}px off its cell`,
+    );
+  if (grid.modalityRight > grid.valueLeft + 1)
+    fail(`${name} modality flow overhangs the memory column`);
+  // `in:text+image;out:text` — the shape cell's machine form, so a contract can
+  // read the claim without reading a drawing.
+  if (
+    !/^in:(text|image|audio|video)(\+(text|image|audio|video))*;out:(text|image|audio|video)(\+(text|image|audio|video))*$/.test(
+      grid.modalityCode ?? "",
+    )
+  )
+    fail(`${name} modality cell states "${grid.modalityCode}"`);
+  // Rows are 50px tall and 2px apart; the theme's list margin must not add to it.
+  for (const gap of grid.pitch)
+    if (Math.abs(gap - FIT_ROW_PITCH) > 1)
+      fail(`${name} rows sit ${Math.round(gap)}px apart, not ${FIT_ROW_PITCH}`);
+}
+
+/** WCAG relative luminance of an `rgb()` colour. */
+function luminance(value) {
+  const [r, g, b] = value.match(/\d+/g).slice(0, 3).map(Number);
+  const channel = (part) => {
+    const scaled = part / 255;
+    return scaled <= 0.04045
+      ? scaled / 12.92
+      : ((scaled + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+}
+
+/** WCAG 1.4.11: a data mark's edge must read against its own ground. */
+function contrastRatio(from, to) {
+  const [high, low] = [luminance(from), luminance(to)].sort((a, b) => b - a);
+  return (high + 0.05) / (low + 0.05);
+}
+
+/**
+ * The memory ruler, in every table on the page: one scale, drawn inside its own
+ * column, off the row's edge, on an ink pair the eye can separate, with a key
+ * that states the budget. All four are properties of the drawing rather than of
+ * a row's data, so they are asserted wherever a table is drawn.
+ */
+async function assertMemoryRuler(page, name) {
+  const ruler = await page.evaluate(() => {
+    const box = (node) => {
+      const rect = node.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, bottom: rect.bottom };
+    };
+    // The groove may be the page's own surface; the shipped colour is what the
+    // reader sees under the fill, whatever the declaration chain.
+    const painted = (node) => {
+      let current = node;
+      while (current) {
+        const value = getComputedStyle(current).backgroundColor;
+        if (value !== "rgba(0, 0, 0, 0)" && value !== "transparent")
+          return value;
+        current = current.parentElement;
+      }
+      return "rgb(255, 255, 255)";
+    };
+    return [
+      ...document.querySelectorAll("[data-fit-table], [data-decision-table]"),
+    ].map((table) => {
+      const legend = table.nextElementSibling;
+      const row = table.querySelector("[data-figure-row]");
+      return {
+        table: table.hasAttribute("data-fit-table") ? "fit" : "decision",
+        // The key follows its own table: two figures on one page keep two
+        // budgets, so a page-wide lookup would read the wrong one.
+        legend: legend?.matches("[data-memory-legend]")
+          ? Number(legend.dataset.memoryBudget)
+          : null,
+        rowHeight: row ? Math.round(row.getBoundingClientRect().height) : null,
+        bars: [...table.querySelectorAll("[data-memory-bar-need]")].map(
+          (bar) => ({
+            need: Number(bar.dataset.memoryBarNeed),
+            over: bar.hasAttribute("data-memory-bar-over"),
+            width: Math.round(bar.getBoundingClientRect().width),
+            bar: box(bar),
+            cell: box(bar.parentElement),
+            row: box(bar.closest("[data-figure-row]")),
+            track: painted(bar),
+            fill: getComputedStyle(bar.firstElementChild).backgroundColor,
+            // One ink: a row bar draws nothing but its own footprint. The cache
+            // and the drafter are stated once, where they do not repeat.
+            inks: bar.children.length,
+            fillLeft: box(bar.firstElementChild).left,
+          }),
+        ),
+      };
+    });
+  });
+  const widths = [];
+  for (const table of ruler) {
+    if (table.legend === null)
+      fail(`${name} ${table.table} table carries no memory key`);
+    if (!Number.isFinite(table.legend))
+      fail(`${name} ${table.table} memory key states no budget`);
+    for (const bar of table.bars) {
+      widths.push(bar.width);
+      // The drawing states a share of its own column, never of the row.
+      if (
+        bar.bar.left < bar.cell.left - 1 ||
+        bar.bar.right > bar.cell.right + 1
+      )
+        fail(
+          `${name} ${table.table} draws its memory bar ${Math.round(
+            Math.max(
+              bar.cell.left - bar.bar.left,
+              bar.bar.right - bar.cell.right,
+            ),
+          )}px outside its column`,
+        );
+      // A rule on the row's edge merges with the divider between rows.
+      if (bar.row.bottom - bar.bar.bottom < 4)
+        fail(`${name} ${table.table} draws its memory bar on the row's edge`);
+      const ratio = contrastRatio(bar.fill, bar.track);
+      if (ratio < 3)
+        fail(
+          `${name} ${table.table} draws its memory bar at ${ratio.toFixed(
+            2,
+          )}:1 against its groove`,
+        );
+      // The mark is the arithmetic, not a decoration: a full ruler without the
+      // hatch hides an over-budget row, and a hatch on a fitting row lies.
+      if (bar.over !== bar.need > table.legend)
+        fail(
+          `${name} ${table.table} draws a ${bar.need} GiB row ${bar.over ? "over" : "inside"} a ${table.legend} GiB budget`,
+        );
+      // One ink, one origin: the footprint starts where the groove starts in
+      // every row, so the column reads as one ruler rather than five drawings.
+      if (bar.inks !== (bar.over ? 2 : 1))
+        fail(
+          `${name} ${table.table} draws ${
+            bar.inks
+          } layers on a ${bar.over ? "over" : "fitting"} row`,
+        );
+      if (Math.abs(bar.fillLeft - bar.bar.left) > 1)
+        fail(
+          `${name} ${table.table} starts its ink ${Math.round(
+            bar.fillLeft - bar.bar.left,
+          )}px into the bar`,
+        );
+    }
+  }
+  if (widths.length && Math.max(...widths) - Math.min(...widths) > 1)
+    fail(
+      `${name} draws its memory bars ${Math.min(...widths)}-${Math.max(
+        ...widths,
+      )}px wide, not one ruler`,
+    );
+  // The two tables answer from one geometry: a bar that grew a row would make
+  // the pages that draw both read as two designs.
+  const heights = ruler
+    .map((table) => table.rowHeight)
+    .filter((height) => Number.isFinite(height));
+  if (heights.length === 2 && Math.abs(heights[0] - heights[1]) > 1)
+    fail(`${name} draws its two tables' rows ${heights.join(" and ")}px tall`);
+}
+
+/** Click a rail chip by its words, the way the reader does. */
+async function clickRailChip(page, groupLabel, text) {
+  const clicked = await page.evaluate(
+    (group, label) => {
+      const box = document.querySelector(
+        '[role="group"][aria-label="' + group + '"]',
+      );
+      const chip = [...(box?.querySelectorAll("button") ?? [])].find(
+        (entry) => entry.textContent.trim().split(" · ")[0] === label,
+      );
+      if (!chip) return false;
+      chip.click();
+      return true;
+    },
+    groupLabel,
+    text,
+  );
+  if (!clicked) fail(`rail chip ${groupLabel} "${text}" was not found`);
+}
+
+/** Every runtime chip is a click the page survives: a narrow runtime can leave
+ * the open model unsized, and the readout must say that instead of taking the
+ * instrument down. Restores the runtime the caller was priced on. */
+async function assertRuntimeClicksSurvive(page, name, restore) {
+  const chips = await page.evaluate(() =>
+    [
+      ...document.querySelectorAll('[data-fit-strip] [role="group"] button'),
+    ].map((button) => ({
+      group: button.closest('[role="group"]').getAttribute("aria-label"),
+      label: button.textContent.trim().split(" · ")[0],
+    })),
+  );
+  if (chips.length < 3)
+    fail(`${name} offers ${chips.length} runtimes to click`);
+  for (const { group, label } of chips) {
+    const clicked = await page.evaluate(
+      (target) => {
+        const box = document.querySelector(
+          `[role="group"][aria-label="${target.group}"]`,
+        );
+        const chip = [...(box?.querySelectorAll("button") ?? [])].find(
+          (button) =>
+            button.textContent.trim().split(" · ")[0] === target.label,
+        );
+        chip?.click();
+        return Boolean(chip);
+      },
+      { group, label },
+    );
+    if (!clicked) continue;
+    await page.waitForFunction(
+      (target) =>
+        document
+          .querySelector(
+            `[role="group"][aria-label="${target.group}"] button[aria-pressed="true"]`,
+          )
+          ?.textContent.trim()
+          .split(" · ")[0] === target.label,
+      {},
+      { group, label },
+    );
+    const alive = await page.evaluate(() => {
+      // The pressed chip's numerator is its promise: the rows this click leaves.
+      const strip = document.querySelector("[data-fit-strip]");
+      const pressed = strip.querySelector('button[aria-pressed="true"]');
+      const printed = (pressed?.textContent ?? "").match(/(\d+)\s*\/\s*\d+/);
+      return {
+        instrument: Boolean(document.querySelector("[data-fit-target]")),
+        crashed: document.body.textContent.includes("This page crashed"),
+        promise: printed ? Number(printed[1]) : null,
+        rows: document.querySelectorAll("[data-fit-row]").length,
+      };
+    });
+    if (!alive.instrument || alive.crashed)
+      fail(
+        `${name} the click on "${label}" leaves the page ${
+          alive.crashed ? "crashed" : "incomplete"
+        }`,
+      );
+    if (alive.promise !== alive.rows)
+      fail(
+        `${name} "${label}" prints ${alive.promise} rows over a table of ${alive.rows}`,
+      );
+  }
+  await clickRailChip(page, restore.group, restore.label);
+}
+
+/** The rail's promise: the number a chip prints is the count its click leaves. */
+async function assertChipPromise(page, name, closed) {
+  for (const group of ["Device", "Hardware"]) {
+    const pressed = closed.chips.find(
+      (chip) => chip.group === group && chip.pressed,
+    );
+    const other = closed.chips.find(
+      (chip) => chip.group === group && !chip.pressed,
+    );
+    if (!pressed || !other) continue;
+    await clickRailChip(page, other.group, other.label);
+    await waitForFit(
+      page,
+      `${name} chip "${other.label}"`,
+      (expected) =>
+        document.querySelector("[data-fit-target]")?.dataset.fitCount ===
+        expected,
+      String(other.count),
+    );
+    await clickRailChip(page, pressed.group, pressed.label);
+    await waitForFit(
+      page,
+      `${name} back to "${pressed.label}"`,
+      (expected) =>
+        document.querySelector("[data-fit-target]")?.dataset.fitCount ===
+        expected,
+      String(pressed.count),
+    );
+    return;
+  }
+  fail(`${name} offers no chip swap to test`);
+}
+
+async function inspectFitRailViewport(viewport) {
+  await withPage(`fit-rail-${viewport.width}`, viewport, async (page) => {
+    await openFit(page);
+    const name = `fit rail ${viewport.width}`;
+    // The bands' boxes as the reader first sees them. Every stop below must
+    // leave them as they are: only the words and the rows may change.
+    const settled = await fitLayout(page);
+    assertBandsHold(name, settled);
+    const closed = await fitRailState(page);
+    if (closed.missing.length)
+      fail(`${name} loses the ${closed.missing.join(", ")} rail`);
+    if (!closed.target) fail(`${name} names no hardware target`);
+    // The runtime is the guide's second dimension: one strip, never folded, and
+    // every chip states the coverage its number is counted from.
+    const runtimes = await fitRuntimeState(page);
+    if (!runtimes) fail(`${name} offers no runtime strip`);
+    if (runtimes.folded) fail(`${name} hides the runtimes behind a fold`);
+    const silent = runtimes.chips.filter(
+      (chip) =>
+        chip.label !== "Any runtime" &&
+        !/covers [1-9]\d* models?/.test(chip.spoken),
+    );
+    if (silent.length)
+      fail(
+        `${name} offers ${silent.map((chip) => chip.label).join(", ")} with no coverage`,
+      );
+    if (runtimes.notes.length === 0)
+      fail(`${name} never says what a runtime count means`);
+    assertEmptyGroupState(name, runtimes);
+    // One number, one meaning: a chip is listed only when the click that lists
+    // it lands on rows, and its count carries the scope it is counted from.
+    for (const chip of runtimes.chips) {
+      if (chip.coverage === null)
+        fail(`${name} prints "${chip.label}" without its coverage`);
+      if (!(chip.count > 0))
+        fail(`${name} offers "${chip.label}" with ${chip.count} rows`);
+    }
+    // The gain lives in the words: the hue repeats them, so the phrase is on the
+    // page and the strip defines it once.
+    if (
+      runtimes.chips.some((chip) => chip.gain) &&
+      !runtimes.notes.some((note) => /“only here”/.test(note))
+    )
+      fail(`${name} marks a gain without defining “only here”`);
+    for (const chip of runtimes.chips)
+      if (
+        chip.gain &&
+        !/holds \d+ models? no general-purpose runtime holds here/.test(
+          chip.spoken,
+        )
+      )
+        fail(`${name} marks "${chip.label}" without words`);
+    // The rail carries chips only: a runtime that sizes nothing is absent, and
+    // the group needs no sentence about it.
+    if (closed.notes.length)
+      fail(`${name} adds rail prose: ${closed.notes.join(" | ")}`);
+    // A pinned rail taller than the window is cut off, whatever the scroll.
+    if (closed.height > viewport.height - 16)
+      fail(
+        `${name} needs ${Math.round(closed.height)} px of a ${viewport.height} px window`,
+      );
+    // One number, one meaning: a chip prints the fits its own click leaves.
+    for (const chip of [...closed.chips, ...runtimes.chips]) {
+      if (!Number.isInteger(chip.count) || chip.count < 0)
+        fail(`${name} ${chip.group} "${chip.label}" prints "${chip.count}"`);
+      if (chip.count > closed.total)
+        fail(
+          `${name} "${chip.label}" promises ${chip.count} of ${closed.total}`,
+        );
+      if (chip.overflow > 0)
+        fail(`${name} "${chip.label}" overflows by ${chip.overflow}px`);
+    }
+    // The pressed runtime chip is a click that changes nothing, so it repeats the
+    // count the instrument travels as data.
+    const pressedRuntime = runtimes.chips.find((chip) => chip.pressed);
+    if (!pressedRuntime || pressedRuntime.count !== closed.count)
+      fail(
+        `${name} pressed runtime prints ${pressedRuntime?.count} beside ${closed.count}`,
+      );
+    await assertChipPromise(page, name, closed);
+    assertBandsStill(name, settled, await fitLayout(page));
+
+    // The panel's note row speaks only when the track cannot hold the workload.
+    if (closed.budgetNote)
+      fail(
+        `${name} explains a track that still holds the workload: "${closed.budgetNote}"`,
+      );
+
+    // Both levers are open, beside the track, and agree with the answer. The
+    // axes name themselves; the strip names the runtimes.
+    const workload = await fitWorkloadState(page);
+    assertWorkloadAxis(workload.context, `${name} context axis`);
+    assertWorkloadAxis(workload.conversations, `${name} conversation axis`);
+    if (workload.context.stops.length < 2)
+      fail(`${name} context axis offers one length`);
+    if (!closed.cacheKey.includes(workload.context.shown))
+      fail(`${name} cache key "${closed.cacheKey}" ignores the axis`);
+
+    // One axis moves the answer and the track's cache together, in width and in
+    // words: the zone is the only place the workload's cost is drawn.
+    await setFitStop(page, FIT_CONTEXT_LABEL, "128K");
+    await waitForFit(page, `${name} context choice`, () =>
+      document
+        .querySelector('[class*="budgetZones"]')
+        ?.textContent.includes("128K"),
+    );
+    const moved = await fitWorkloadState(page);
+    if (moved.context.shown !== "128K")
+      fail(`${name} context axis stopped at "${moved.context.shown}"`);
+    const afterContext = await fitRailState(page);
+    if (!afterContext.cacheKey.includes("128K"))
+      fail(`${name} the memory track kept the old workload's cache`);
+    const narrow = await assertFitTrack(page, `${name} at 128K`);
+    assertBandsStill(name, settled, await fitLayout(page));
+    await assertFitTableGrid(page, `${name} at 128K`);
+    await setFitStop(page, FIT_CONTEXT_LABEL, "256K");
+    // Wait on the drawn width, not only the words: the zone is the claim, and a
+    // paint that lags its label would otherwise pass a stale read.
+    await waitForFit(
+      page,
+      `${name} longer context`,
+      (previous) => {
+        const strip = document.querySelector('[class*="zones"]');
+        const cache = strip?.children[1]?.getBoundingClientRect().width ?? 0;
+        return (
+          cache > previous &&
+          document
+            .querySelector('[class*="budgetZones"]')
+            ?.textContent.includes("256K")
+        );
+      },
+      narrow.zones[1],
+    );
+    const wide = await assertFitTrack(page, `${name} at 256K`);
+    assertBandsStill(name, settled, await fitLayout(page));
+    await assertFitTableGrid(page, `${name} at 256K`);
+    if (!(wide.zones[1] > narrow.zones[1]))
+      fail(
+        `${name} cache zone stays ${wide.zones[1]} px at 256K and ${narrow.zones[1]} px at 128K`,
+      );
+    if (!(wide.count <= narrow.count))
+      fail(`${name} a longer context added fits`);
+    await setFitStop(page, FIT_CONTEXT_LABEL, "128K");
+    await waitForFit(page, `${name} back to 128K`, () =>
+      document
+        .querySelector('[class*="budgetZones"]')
+        ?.textContent.includes("128K"),
+    );
+
+    // The other axis too, and its direction: more conversations never add fits.
+    const lastStop = moved.conversations.stops.length - 1;
+    // The panel's cache cost is the axis' claim: read it before the move, then
+    // wait for the number the keys print, not only for the slider.
+    const cacheBefore = await fitCacheValue(page);
+    await setFitStop(
+      page,
+      FIT_CONVERSATIONS_LABEL,
+      moved.conversations.stops[lastStop],
+    );
+    await waitForFit(
+      page,
+      `${name} conversation choice`,
+      (previous) => {
+        // The same parse as fitCacheValue: this predicate runs in the page.
+        const text =
+          document.querySelector('[class*="budgetZones"]')?.textContent ?? "";
+        const found =
+          text.match(/\+ ([\d,.]+) GiB cache/) ??
+          text.match(/cache at .+ · ([\d,.]+) GiB/);
+        return Boolean(found) && Number(found[1].replace(/,/g, "")) > previous;
+      },
+      cacheBefore,
+    );
+    const crowded = await fitWorkloadState(page);
+    if (crowded.conversations.value !== lastStop)
+      fail(
+        `${name} conversation axis stopped at ${crowded.conversations.value}`,
+      );
+    const crowdedRail = await fitRailState(page);
+    if (!((await fitCacheValue(page)) > cacheBefore))
+      fail(`${name} cache cost does not follow its conversation axis`);
+    if (crowdedRail.count > afterContext.count)
+      fail(`${name} more conversations added fits`);
+    assertBandsStill(name, settled, await fitLayout(page));
+
+    // A count is a consequence, not a layout event: the rail's counts and the
+    // open model's answer fill bands that were already reserved, so nothing
+    // between the levers and the rows changes size.
+    await setFitStop(page, FIT_CONTEXT_LABEL, "512K");
+    await waitForFit(
+      page,
+      `${name} zero count`,
+      () =>
+        document.querySelector("[data-fit-target]")?.dataset.fitCount === "0",
+    );
+    assertBandsStill(name, settled, await fitLayout(page));
+    await assertFitTableGrid(page, `${name} at 512K`);
+    // The strip states only runtimes that still hold a row; a runtime the
+    // workload outgrows leaves the page rather than becoming a dead button.
+    const later = await fitRuntimeState(page);
+    assertEmptyGroupState(`${name} at 512K`, later);
+    const idle = later.chips.filter(
+      (chip) => !chip.pressed && !(chip.count > 0),
+    );
+    if (idle.length)
+      fail(
+        `${name} keeps ${idle.map((chip) => chip.label).join(", ")} at 512K`,
+      );
+    // The panel's reserved note row is the only place a saturated track speaks,
+    // and the strip itself must state the need against the machine: an empty
+    // range is not a control.
+    await assertOverfullTrack(page, `${name} at 512K`);
+    // Nothing fits, so the list is empty: the track's note is the page's only
+    // word.
+    const zero = await page.evaluate(
+      () => document.querySelectorAll("[data-fit-row]").length,
+    );
+    if (zero !== 0) fail(`${name} lists ${zero} rows at the zero state`);
+    assertBandsStill(name, settled, await fitLayout(page));
+  });
+}
+
+async function inspectFitRail() {
+  for (const viewport of [DESKTOP_VIEWPORT, DOCK_VIEWPORT])
+    await inspectFitRailViewport(viewport);
+}
+
+/**
+ * The memory panel's cache cost, whichever key set the state prints: the fitting
+ * key names it after the workload, the overfull row after the model. WHY read
+ * both: the conversation axis can cross from a fitting state into an overfull
+ * one, and the cache is still the fact the move must change.
+ */
+async function fitCacheValue(page) {
+  return page.evaluate(() => {
+    const text =
+      document.querySelector('[class*="budgetZones"]')?.textContent ?? "";
+    const found =
+      text.match(/\+ ([\d,.]+) GiB cache/) ??
+      text.match(/cache at .+ · ([\d,.]+) GiB/);
+    return found ? Number(found[1].replace(/,/g, "")) : null;
+  });
+}
+
+async function fitConversationRail(page) {
+  const state = await fitWorkloadState(page);
+  return state.conversations;
+}
+
+function assertConversationRail(rail) {
+  if (!rail) fail("conversation axis is missing");
+  if (rail.stops.length < 4)
+    fail(`conversation axis shows ${rail.stops.length} stops`);
+  if (rail.ranges !== 1)
+    fail(`conversation axis offers ${rail.ranges} handles`);
+  if (!rail.spoken.startsWith(rail.shown))
+    fail(`conversation axis reads "${rail.spoken}" for "${rail.shown}"`);
+}
+
+async function inspectFitConversationViewport(viewport) {
+  await withPage(
+    `fit-conversation-${viewport.width}`,
+    viewport,
+    async (page) => {
+      await openFit(page);
+      assertConversationRail(await fitConversationRail(page));
+    },
+  );
+}
+
+/** The runtime comparison: a narrow runtime is priced on the machine that can
+ * host it, and a zero-fit chip states zero rather than a dash. */
+async function inspectFitRuntimes() {
+  await withPage(
+    "fit-runtimes",
+    { width: 1440, height: 1000 },
+    async (page) => {
+      await openFit(page);
+      await clickRailChip(page, "Hardware", "DGX Spark");
+      await page.waitForFunction(() =>
+        [
+          ...document.querySelectorAll(
+            '[data-figure-root][data-fit] [role="group"] button',
+          ),
+        ].some((node) => node.textContent.trim().startsWith("2×")),
+      );
+      await clickRailChip(page, "Devices", "2×");
+      await setFitStop(page, FIT_CONTEXT_LABEL, "64K");
+      await clickRailChip(page, "Specialized runtimes", "DwarfStar");
+      await page.waitForFunction(() =>
+        [...document.querySelectorAll("[data-fit-row] > button")].some((row) =>
+          row.textContent.includes("DeepSeek V4.1 Flash 1017"),
+        ),
+      );
+
+      const pair = await page.evaluate(() => {
+        const row = [...document.querySelectorAll("[data-fit-row]")].find(
+          (node) => node.textContent.includes("DeepSeek V4.1 Flash 1017"),
+        );
+        const button = row?.querySelector(":scope > button");
+        button?.click();
+        return {
+          memory: row?.querySelector('[class*="rowValue"]')?.textContent ?? "",
+        };
+      });
+      if (!pair.memory.includes("162"))
+        fail(`2× Spark prices DwarfStar at "${pair.memory}", not 162 GiB`);
+
+      await page.waitForSelector("[data-fit-runtimes]");
+      const detail = await page.evaluate(() => {
+        const options = [
+          ...document.querySelectorAll("[data-fit-runtime]"),
+        ].map((node) => ({
+          state: node.dataset.fitRuntimeState,
+          text: node.textContent.replace(/\s+/g, " ").trim(),
+        }));
+        return {
+          options,
+          note: document
+            .querySelector("[data-fit-runtimes]")
+            .textContent.replace(/\s+/g, " ")
+            .trim(),
+        };
+      });
+      const layout = detail.options.find(
+        (option) => option.state === "fits" && /2 devices/.test(option.text),
+      );
+      if (!layout)
+        fail(
+          `the comparison never offers the two-device layout: ${JSON.stringify(detail.options)}`,
+        );
+      if (!/~81 GiB\/rank/.test(layout.text))
+        fail(`the two-device option loses its per-rank figure: ${layout.text}`);
+      if (!/do not change the fit arithmetic/.test(detail.note))
+        fail("the comparison never says cited configurations are not priced");
+      // The retired placeholder line: a runtime the guide names but never sizes
+      // has nothing to compare, so it must not stand in as a dead row.
+      if (/no published configuration/.test(detail.note))
+        fail("the comparison lists a runtime with nothing to compare");
+
+      // A runtime is a chip, not a way to break the page: the open model may be
+      // unsized on a narrow engine, and the readout must say so.
+      await assertRuntimeClicksSurvive(page, "DGX Spark 2×", {
+        group: "Specialized runtimes",
+        label: "DwarfStar",
+      });
+
+      await clickRailChip(page, "Devices", "1×");
+      await page.waitForFunction(
+        () =>
+          ![...document.querySelectorAll("[data-fit-row] > button")].some(
+            (row) => row.textContent.includes("DeepSeek V4.1 Flash 1017"),
+          ),
+      );
+      // A runtime the smaller machine cannot hold leaves the strip rather than
+      // becoming a dead button: what stays, promises at least one row.
+      const dead = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-fit-strip] [role="group"] button')]
+          .map((chip) => chip.textContent.replace(/\s+/g, " ").trim())
+          .filter((text) => / \u00b7 0\//.test(text)),
+      );
+      if (dead.length)
+        fail(`a one-Spark machine still offers ${dead.join(", ")}`);
+    },
+  );
+}
+
+/** The table changes one way, whatever the input was. A press that re-scopes it
+ * closes the open card (the row's question is gone), and a repricing press
+ * leaves no pin on a row the list has dropped — otherwise the card would spring
+ * open again the moment a later press brings that row back. The classifier holds
+ * the same rule (`pinAfter`); this guard keeps the two figures from drifting. */
+async function inspectFitPin() {
+  await withPage("fit-pin", { width: 1440, height: 1000 }, async (page) => {
+    await openFit(page);
+    const rowName = () =>
+      page.evaluate(() => {
+        const row = document.querySelector("[data-fit-row]");
+        return {
+          name: row
+            ?.querySelector('[class*="rowName"]')
+            ?.textContent.trim(),
+          open: document.querySelectorAll(
+            '[data-fit-row] button[aria-expanded="true"]',
+          ).length,
+          rows: [...document.querySelectorAll("[data-fit-row]")].map((node) =>
+            node
+              .querySelector('[class*="rowName"]')
+              ?.textContent.trim(),
+          ),
+        };
+      });
+    const opened = await page.evaluate(() => {
+      const button = document.querySelector("[data-fit-row] > button");
+      button?.click();
+      return Boolean(button);
+    });
+    if (!opened) fail("fit pin: no row to open");
+    await page.waitForFunction(
+      () =>
+        document.querySelectorAll('[data-fit-row] button[aria-expanded="true"]')
+          .length === 1,
+    );
+    const first = await rowName();
+
+    // llama.cpp serves every row the default machine lists, so the press both
+    // keeps the open row and re-scopes the table: exactly the case the pin must
+    // close, not keep.
+    const pressed = await page.evaluate(() => {
+      const chip = [...document.querySelectorAll("[data-fit-strip] button")].find(
+        (node) => node.textContent.trim().startsWith("llama.cpp"),
+      );
+      chip?.click();
+      return Boolean(chip);
+    });
+    if (!pressed) fail("fit pin: the default machine offers no llama.cpp chip");
+    await page.waitForFunction(
+      () =>
+        [...document.querySelectorAll("[data-fit-strip] button")].some(
+          (node) =>
+            node.textContent.trim().startsWith("llama.cpp") &&
+            node.getAttribute("aria-pressed") === "true",
+        ),
+    );
+    const reScoped = await rowName();
+    if (!reScoped.rows.includes(first.name))
+      fail(
+        `fit pin: llama.cpp drops ${first.name}, so the press cannot show a kept card`,
+      );
+    if (reScoped.open !== 0)
+      fail(`fit pin: a runtime press leaves ${first.name} open`);
+
+    // A lever can drop the open row and bring it back: the pin must not wait for
+    // that return, or a card nobody clicked reappears.
+    await page.evaluate(() => {
+      document.querySelector("[data-fit-row] > button")?.click();
+    });
+    await page.waitForFunction(
+      () =>
+        document.querySelectorAll('[data-fit-row] button[aria-expanded="true"]')
+          .length === 1,
+    );
+    const target = await rowName();
+    await setFitStop(page, FIT_CONTEXT_LABEL, "1M");
+    await page.waitForFunction(
+      (name) =>
+        ![...document.querySelectorAll("[data-fit-row]")].some((node) =>
+          node
+            .querySelector('[class*="rowName"]')
+            ?.textContent.trim() === name,
+        ),
+      {},
+      target.name,
+    );
+    await setFitStop(page, FIT_CONTEXT_LABEL, "64K");
+    await page.waitForFunction(
+      (name) =>
+        [...document.querySelectorAll("[data-fit-row]")].some(
+          (node) =>
+            node
+              .querySelector('[class*="rowName"]')
+              ?.textContent.trim() === name,
+        ),
+      {},
+      target.name,
+    );
+    const returned = await rowName();
+    if (returned.rows.length !== first.rows.length)
+      fail(
+        `fit pin: the lever round trip lists ${returned.rows.length} rows, not ${first.rows.length}`,
+      );
+    if (returned.open !== 0)
+      fail(`fit pin: the lever round trip reopens ${target.name}`);
+  });
+}
+
+/** Every runtime chip in the busiest strip, with its box relative to the
+ * instrument: a control that resizes on press re-wraps the rail under the
+ * reader's click. */
+async function fitRuntimeChips(page) {
+  return page.evaluate(() => {
+    const origin = document
+      .querySelector("[data-fit-target]")
+      .getBoundingClientRect().top;
+    return [...document.querySelectorAll("[data-fit-strip] button")].map(
+      (chip) => {
+        const box = chip.getBoundingClientRect();
+        return {
+          label: chip.textContent.replace(/\s+/g, " ").trim(),
+          pressed: chip.getAttribute("aria-pressed") === "true",
+          disabled: chip.disabled,
+          top: Math.round(box.top - origin),
+          left: Math.round(box.left),
+          height: Math.round(box.height),
+          width: Math.round(box.width),
+        };
+      },
+    );
+  });
+}
+
+/** A pressed chip is a reading, not a layout event: its own box and every other
+ * chip's box stay where they were. */
+function assertRuntimeChipsStill(name, before, after) {
+  if (before.length !== after.length)
+    fail(`${name} offers ${after.length} runtimes, not ${before.length}`);
+  before.forEach((chip, index) => {
+    const now = after[index];
+    for (const side of ["top", "left", "height", "width"])
+      if (chip[side] !== now[side])
+        fail(
+          `${name} moves ${chip.label}.${side}: ${chip[side]} → ${now[side]}`,
+        );
+  });
+}
+
+/** The runtime strip's promise: a runtime reprices the rows, not the instrument.
+ * Every reserved band keeps its box, and no chip resizes when pressed, so the
+ * rail cannot re-wrap under the click that chose it. */
+async function inspectFitRuntimeBandsViewport(viewport) {
+  await withPage(
+    `fit-runtime-bands-${viewport.width}`,
+    viewport,
+    async (page) => {
+      await openFit(page);
+      const name = `fit runtime bands ${viewport.width}`;
+      // The busiest strip the guide can draw: five engines and two specialists.
+      await clickRailChip(page, "Hardware", "DGX Spark");
+      await clickRailChip(page, "Devices", "4×");
+      await settleFitTable(page);
+      const settled = await fitLayout(page);
+      const blueprint = await fitRuntimeChips(page);
+      if (blueprint.length < 5)
+        fail(`${name} lists ${blueprint.length} runtimes`);
+      for (const chip of blueprint) {
+        // A zero-fit chip is drawn but inert; the contract is about the clicks a
+        // reader can make, so only what can be pressed is pressed.
+        if (chip.disabled) continue;
+        const clicked = await page.evaluate((label) => {
+          const target = [
+            ...document.querySelectorAll("[data-fit-strip] button"),
+          ].find(
+            (node) => node.textContent.replace(/\s+/g, " ").trim() === label,
+          );
+          target?.click();
+          return Boolean(target);
+        }, chip.label);
+        if (!clicked) fail(`${name} lost "${chip.label}" between reads`);
+        await page.waitForFunction(
+          (label) =>
+            document
+              .querySelector('[data-fit-strip] button[aria-pressed="true"]')
+              ?.textContent.replace(/\s+/g, " ")
+              .trim() === label,
+          { timeout: 3000 },
+          chip.label,
+        );
+        assertBandsStill(name, settled, await fitLayout(page));
+        assertRuntimeChipsStill(
+          `${name} on "${chip.label}"`,
+          blueprint,
+          await fitRuntimeChips(page),
+        );
+      }
+    },
+  );
+}
+
+async function inspectFitRuntimeBands() {
+  for (const viewport of [DESKTOP_VIEWPORT, DOCK_VIEWPORT])
+    await inspectFitRuntimeBandsViewport(viewport);
+}
+
+async function inspectFitConversation() {
+  for (const viewport of [DESKTOP_VIEWPORT, DOCK_VIEWPORT])
+    await inspectFitConversationViewport(viewport);
+}
+
+// Three regions: the rail sets the target, the master carries the controls, and
+// the answer band carries the table on the figure's full measure. Rows start
+// closed; the reader's click opens one row, whose detail is a child of that row.
+async function fitLayoutGeometry(page) {
+  return page.evaluate(() => {
+    const rect = (node) => {
+      const box = node.getBoundingClientRect();
+      return {
+        left: box.left,
+        right: box.right,
+        top: box.top,
+        bottom: box.bottom,
+        width: box.width,
+      };
+    };
+    const figure = document.querySelector("figure[data-audio-figure]");
+    const rail = figure?.querySelector("[data-figure-rail]");
+    const master = figure?.querySelector("[data-figure-master]");
+    const answer = figure?.querySelector("[data-figure-answer]");
+    // The sidebar has its own open <details>; anchor on a chart row instead.
+    const row = figure?.querySelector("[data-fit-row] > button");
+    const table = row?.closest("[data-fit-table]");
+    if (!figure || !rail || !master || !answer || !table)
+      throw new Error("Fit layout is incomplete");
+    const expanded = [
+      ...figure.querySelectorAll('button[aria-expanded="true"]'),
+    ];
+    const owner = expanded[0]?.closest("[data-fit-row]");
+    const detail = owner?.querySelector('[role="region"]');
+    return {
+      rail: { ...rect(rail), position: getComputedStyle(rail).position },
+      master: rect(master),
+      answer: rect(answer),
+      table: rect(table),
+      expanded: expanded.length,
+      detail: detail ? rect(detail) : null,
+    };
+  });
+}
+
+/**
+ * The shell's measure: the rail sets the target beside the controls or above
+ * them, never beside the answer, and the answer band spans the figure. A
+ * floating rail, or a table that stops short of its band, re-creates the side
+ * column the figure abandoned.
+ */
+function assertFigureMeasure(name, { rail, master, answer, table }) {
+  if (rail.position === "sticky" || rail.position === "fixed")
+    fail(`${name} floats its rail (${rail.position})`);
+  if (rail.bottom > table.top + 1)
+    fail(`${name} draws the answer beside the rail`);
+  if (answer.width < master.width - 1)
+    fail(
+      `${name} narrows the answer to the ${Math.round(
+        answer.width,
+      )}px controls column`,
+    );
+  if (Math.abs(table.width - answer.width) > 1)
+    fail(
+      `${name} leaves ${Math.round(
+        answer.width - table.width,
+      )}px of the answer band outside the table`,
+    );
+}
+
+function assertFitLayout(geometry) {
+  // Nothing is open on arrival: a row's evidence costs the reader a click.
+  if (geometry.expanded !== 0)
+    fail(`fit table opens ${geometry.expanded} rows on arrival`);
+  if (geometry.detail) fail("fit detail is drawn before a row is opened");
+  assertFigureMeasure("fit layout", geometry);
+}
+
+function assertFitDetail(geometry) {
+  // One row is the answer: a second expanded row would be a second reading.
+  if (geometry.expanded !== 1)
+    fail(`fit table expands ${geometry.expanded} rows`);
+  if (!geometry.detail) fail("expanded fit row has no detail region");
+  if (geometry.detail.top < geometry.table.top)
+    fail("fit detail sits above the table it belongs to");
+  // The panel is a disclosure, not a peek: it must land at its own height, so a
+  // clipped or never-opened panel fails here rather than passing as "present".
+  if (geometry.detail.bottom - geometry.detail.top <= 0)
+    fail("expanded fit row's panel never opened");
+}
+
+/** Click the first row the way the reader does, then read the page again. */
+async function openFitRow(page) {
+  await page.evaluate(() => {
+    const row = document.querySelector(
+      "figure[data-audio-figure] [data-fit-row] > button",
+    );
+    if (!row) throw new Error("Missing table row");
+    row.click();
+  });
+  await waitForFit(
+    page,
+    "fit row expansion",
+    () =>
+      document.querySelectorAll(
+        'figure[data-audio-figure] button[aria-expanded="true"]',
+      ).length === 1,
+  );
+}
+
+/** The open row's second click: the reader closes what they opened. */
+async function closeFitRow(page) {
+  await page.evaluate(() => {
+    const row = document.querySelector(
+      'figure[data-audio-figure] [data-fit-row] > button[aria-expanded="true"]',
+    );
+    if (!row) throw new Error("No open fit row to close");
+    row.click();
+  });
+  await waitForFit(
+    page,
+    "fit row collapse",
+    () =>
+      document.querySelectorAll(
+        'figure[data-audio-figure] button[aria-expanded="true"]',
+      ).length === 0,
+  );
+}
+
+async function inspectFitLayoutViewport(viewport) {
+  await withPage(`fit-layout-${viewport.width}`, viewport, async (page) => {
+    await openFit(page);
+    assertFitLayout(await fitLayoutGeometry(page));
+    const bands = await fitLayout(page);
+    // The reader's first click picks one row, and that row owns the detail.
+    await openFitRow(page);
+    assertFitDetail(await fitLayoutGeometry(page));
+    // A row opens downward, under the table: the levers, the strip and the
+    // answer above it are the page's frame and must not move with it.
+    assertBandsStill("fit row expansion", bands, await fitLayout(page));
+    // The same row's next click closes it: the panel leaves no ghost, and the
+    // page keeps the frame it had before the row opened.
+    const opened = await fitLayout(page);
+    await closeFitRow(page);
+    assertFitLayout(await fitLayoutGeometry(page));
+    assertBandsStill("fit row collapse", opened, await fitLayout(page));
+  });
+}
+
+async function inspectFitLayout() {
+  for (const viewport of [DESKTOP_VIEWPORT, DOCK_VIEWPORT])
+    await inspectFitLayoutViewport(viewport);
+}
+
+/**
+ * Both figures draw one shell: the answer band must be as wide as the rail's row
+ * in each. A drift here is the failure the shared layer exists to prevent, so it
+ * fails loudly.
+ */
+async function assertFigureBase(page, name, attr) {
+  const base = await page.evaluate((prefix) => {
+    const root = document.querySelector(`[data-figure-root][${prefix}]`);
+    const count = (selector) => document.querySelectorAll(selector).length;
+    const rect = (node) => {
+      const box = node.getBoundingClientRect();
+      return {
+        left: box.left,
+        right: box.right,
+        top: box.top,
+        bottom: box.bottom,
+        width: box.width,
+      };
+    };
+    const rail = root?.querySelector("[data-figure-rail]");
+    const master = root?.querySelector("[data-figure-master]");
+    const answer = root?.querySelector("[data-figure-answer]");
+    const table = root?.querySelector(
+      "[data-fit-table], [data-decision-table]",
+    );
+    return {
+      roots: count(`[data-figure-root][${prefix}]`),
+      speech: count(`[${prefix}-speech]`),
+      heads: root?.querySelectorAll('[class*="headLabel"]').length ?? 0,
+      strips: count(`[${prefix}-strip]`),
+      railLabel: rail?.getAttribute("aria-label") ?? "",
+      measure:
+        rail && master && answer && table
+          ? {
+              rail: {
+                ...rect(rail),
+                position: getComputedStyle(rail).position,
+              },
+              master: rect(master),
+              answer: rect(answer),
+              table: rect(table),
+            }
+          : null,
+    };
+  }, attr);
+  if (base.roots !== 1) fail(`${name} draws ${base.roots} figure roots`);
+  if (base.speech !== 1) fail(`${name} has ${base.speech} live regions`);
+  if (base.heads === 0) fail(`${name} draws no table head`);
+  if (base.strips !== 1) fail(`${name} draws ${base.strips} runtime strips`);
+  if (base.railLabel !== "Your hardware")
+    fail(`${name} names its rail "${base.railLabel}"`);
+  if (!base.measure) fail(`${name} draws no rail, master, answer and table`);
+  else assertFigureMeasure(name, base.measure);
+}
+
+/** The hardware chips one rail draws, in the order the figure draws them. */
+async function railFamilies(page, attr) {
+  return page.evaluate((prefix) => {
+    const group = document.querySelector(
+      `[data-figure-root][${prefix}] [role="group"][aria-label="Hardware"]`,
+    );
+    return [...(group?.querySelectorAll("button") ?? [])].map(
+      (chip) => chip.textContent.trim().split(" · ")[0],
+    );
+  }, attr);
+}
+
+/** One family click, scoped to one figure: both rails draw a "Hardware" group. */
+async function clickRailFamily(page, attr, family) {
+  const clicked = await page.evaluate(
+    (prefix, label) => {
+      const group = document.querySelector(
+        `[data-figure-root][${prefix}] [role="group"][aria-label="Hardware"]`,
+      );
+      const chip = [...(group?.querySelectorAll("button") ?? [])].find(
+        (button) => button.textContent.trim().split(" · ")[0] === label,
+      );
+      if (!chip) return false;
+      chip.click();
+      return true;
+    },
+    attr,
+    family,
+  );
+  if (!clicked) fail(`${attr} rail draws no "${family}" chip`);
+  // React commits on the event, but the answer is measured against the layout it
+  // produced: wait for that click's own pressed chip.
+  await page.waitForFunction(
+    (prefix, label) =>
+      [
+        ...(document
+          .querySelector(
+            `[data-figure-root][${prefix}] [role="group"][aria-label="Hardware"]`,
+          )
+          ?.querySelectorAll("button") ?? []),
+      ].some(
+        (chip) =>
+          chip.getAttribute("aria-pressed") === "true" &&
+          chip.textContent.trim().split(" · ")[0] === label,
+      ),
+    {},
+    attr,
+    family,
+  );
+}
+
+/** What one family costs the figure's boxes, measured against the row it sits in. */
+async function seamMetrics(page, attr) {
+  return page.evaluate((prefix) => {
+    const root = document.querySelector(`[data-figure-root][${prefix}]`);
+    const box = (selector) =>
+      root.querySelector(selector).getBoundingClientRect();
+    return {
+      // Measured from the row's top, not the page's: the figure above may answer
+      // a different question and move; this figure's own seam may not.
+      belowRow:
+        box("[data-figure-answer]").top - box("[data-figure-master]").top,
+      axis:
+        root
+          .querySelector("[data-decision-memory-axis]")
+          ?.getBoundingClientRect().height ?? null,
+    };
+  }, attr);
+}
+
+/**
+ * The seam, swept over every family: the answer band starts where the reserved
+ * first row ends, never where the tallest column ends. Chips wrap by family, so
+ * the rail runs 328-496px against controls of 429-505px; without the
+ * reservation a chip click would carry the table down the page.
+ *
+ * The same sweep states the read-out's own reservation: the memory axis keeps
+ * two lines of facts, so a target's wording never resizes the card that prices
+ * it.
+ */
+async function figureSeam(page, attr) {
+  const families = await railFamilies(page, attr);
+  if (families.length < 2)
+    fail(`${attr} offers ${families.length} hardware families`);
+  const rows = [];
+  for (const family of families) {
+    await clickRailFamily(page, attr, family);
+    rows.push({ family, ...(await seamMetrics(page, attr)) });
+  }
+  const spread = (values) => Math.max(...values) - Math.min(...values);
+  const seams = rows.map((row) => row.belowRow);
+  if (spread(seams) > 1)
+    fail(
+      `${attr} moves its answer ${spread(seams)}px across families (${rows
+        .map((row) => `${row.family} ${Math.round(row.belowRow)}`)
+        .join(", ")})`,
+    );
+  const axes = rows.map((row) => row.axis).filter((height) => height !== null);
+  if (axes.length && spread(axes) > 1)
+    fail(
+      `${attr} resizes its memory axis by ${spread(axes)}px across families`,
+    );
+}
+
+async function inspectFigureSeam() {
+  await withPage("figure-seam", DESKTOP_VIEWPORT, async (page) => {
+    await openFit(page);
+    await page.waitForSelector("[data-decision-memory-axis]");
+    for (const attr of ["data-fit", "data-decision"])
+      await figureSeam(page, attr);
+  });
+}
+
+/** What one family costs the two figures' own boxes, in page coordinates. */
+async function anchorMetrics(page, attr, other) {
+  return page.evaluate(
+    ([prefix, siblingPrefix]) => {
+      const root = document.querySelector(`[data-figure-root][${prefix}]`);
+      const sibling = document.querySelector(
+        `[data-figure-root][${siblingPrefix}]`,
+      );
+      const strip = root.querySelector(`[${prefix}-strip]`);
+      const box = (node) => node.getBoundingClientRect();
+      return {
+        // Document top, not viewport top: the figure under test may sit below
+        // the sibling, so a scroll would hide the movement this reads.
+        top: Math.round(box(root).top + window.scrollY),
+        siblingHeight: Math.round(box(sibling).height),
+        strip: strip ? Math.round(box(strip).height) : null,
+      };
+    },
+    [attr, other],
+  );
+}
+
+/**
+ * A figure's place on the page, swept over every family: a click in one rail may
+ * not resize the other figure, and may not move the figure that owns the rail.
+ *
+ * WHY: the fit table draws one row per fitting model (0-16 rows, 581-1428px).
+ * While both figures read one machine, a classifier click resized that table and
+ * translated the classifier by up to 521px, out from under the reader. Each
+ * figure keeps its own store now; this sweep is what proves it.
+ *
+ * Run at two widths: 1400 is where the layout gives the master its widest
+ * column, and where the strip's reserved rows are the only thing keeping its box
+ * the same size on every machine.
+ */
+async function figureAnchor(page, attr) {
+  const other = attr === "data-fit" ? "data-decision" : "data-fit";
+  const families = await railFamilies(page, attr);
+  if (families.length < 2)
+    fail(`${attr} offers ${families.length} hardware families`);
+  const rows = [];
+  for (const family of families) {
+    await clickRailFamily(page, attr, family);
+    rows.push({ family, ...(await anchorMetrics(page, attr, other)) });
+  }
+  const spread = (values) => Math.max(...values) - Math.min(...values);
+  const tops = rows.map((row) => row.top);
+  if (spread(tops) > 1)
+    fail(
+      `${attr} moves itself ${spread(tops)}px across families (${rows
+        .map((row) => `${row.family} ${row.top}`)
+        .join(", ")})`,
+    );
+  const siblings = rows.map((row) => row.siblingHeight);
+  if (spread(siblings) > 1)
+    fail(`${attr} resizes the ${other} figure by ${spread(siblings)}px`);
+  const strips = rows
+    .map((row) => row.strip)
+    .filter((height) => height !== null);
+  if (strips.length && spread(strips) > 1)
+    fail(
+      `${attr} resizes its runtime strip by ${spread(strips)}px across families`,
+    );
+}
+
+async function inspectFigureAnchor() {
+  for (const viewport of [DESKTOP_VIEWPORT, { width: 1400, height: 900 }]) {
+    await withPage(
+      `figure-anchor-${viewport.width}`,
+      viewport,
+      async (page) => {
+        await openFit(page);
+        await page.waitForSelector("[data-decision-memory-axis]");
+        for (const attr of ["data-fit", "data-decision"])
+          await figureAnchor(page, attr);
+      },
+    );
+  }
+}
+
+/** One figure's drawn claims, read from the DOM rather than from its prose. */
+async function decisionShape(page) {
+  return page.evaluate(() => {
+    const read = (node) => node?.textContent.replace(/\s+/g, " ").trim();
+    const table = document.querySelector("[data-decision-table]");
+    const head = table.querySelector(':scope > [class*="head"]');
+    const row = table.querySelector("[data-decision-row] > button");
+    const lever = (axis) => {
+      const input = document.querySelector(
+        `[data-decision] input[data-lever-input="${axis}"]`,
+      );
+      if (!input) return null;
+      return {
+        value: Number(input.dataset.leverValue),
+        stops: Number(input.max) + 1,
+        spoken: input.getAttribute("aria-valuetext") ?? "",
+      };
+    };
+    return {
+      // Every column that is drawn must be one the row also draws: a folded
+      // column hides its head and its cell together. A workload the machine
+      // cannot hold lists no row, so the row-level facts are null then.
+      headCells: head.children.length,
+      rowCells: row ? row.children.length : null,
+      headNameX: head
+        .querySelector('[class*="headLabel"]')
+        .getBoundingClientRect().left,
+      rowNameX: row
+        ? row.querySelector('[class*="rowName"]').getBoundingClientRect().left
+        : null,
+      // The name is the one column allowed to shorten: every other fact has a
+      // fixed track, so a long name never pushes a number out of the card.
+      nameEllipsis: row
+        ? (() => {
+            const style = getComputedStyle(
+              row.querySelector('[class*="rowName"]'),
+            );
+            return (
+              style.textOverflow === "ellipsis" && style.whiteSpace === "nowrap"
+            );
+          })()
+        : null,
+      // A card's own facts, which no lever may touch: the lab's country and the
+      // four-island name it publishes under.
+      origins: [...table.querySelectorAll("[data-decision-origin]")].map(read),
+      leakedFit: table.querySelectorAll("[data-fit-row], [data-fit-table]")
+        .length,
+      verified: document.querySelectorAll(
+        "[data-decision-row][data-decision-verdict]",
+      ).length,
+      // The mark column is drawn in every row: a lab with no official vector
+      // still gets its initial tile, so no row reads as a broken image.
+      emptyMarks: [...table.querySelectorAll("[data-decision-row]")].filter(
+        (row) => {
+          const slot = row.querySelector("button > span");
+          return !slot || !slot.firstElementChild;
+        },
+      ).length,
+      tableScroll: table.scrollWidth,
+      tableWidth: table.clientWidth,
+      docScroll: document.documentElement.scrollWidth,
+      docWidth: document.documentElement.clientWidth,
+      // The memory band, read from its own hooks: the lightest listed row's need
+      // (the strip's floor), the budget the row bars are priced against, and the
+      // machine that is the strip's whole length.
+      axis: (() => {
+        const node = document.querySelector("[data-decision-memory-axis]");
+        if (!node) return null;
+        const head = node.querySelector("[data-decision-head-value]");
+        return {
+          need: Number(node.dataset.decisionNeed),
+          budget: Number(node.dataset.decisionSupply),
+          machine: Number(node.dataset.decisionTrack),
+          weights: Number(node.dataset.decisionWeights),
+          cache: Number(node.dataset.decisionCache),
+          overfull: node.hasAttribute("data-decision-overfull"),
+          head: Number(read(head)?.replace(/[^\d.]/g, "")),
+        };
+      })(),
+      levers: {
+        state: lever("state"),
+        decisions: lever("decisions"),
+      },
+      // The table's own verdicts, which the axis must agree with: one budget
+      // prices both, so neither may be read as a second opinion.
+      counts: {
+        fitting: Number(
+          document.querySelector("[data-decision-count]")?.dataset
+            .decisionCount,
+        ),
+        total: Number(
+          document.querySelector("[data-decision-total]")?.dataset
+            .decisionTotal,
+        ),
+      },
+      // The levers are sliders, not chips: one handle per axis, so the count is
+      // the panel's own claim that a knob is a published value, not a filter.
+      leverInputs: document.querySelectorAll(
+        "[data-decision] input[data-lever-input]",
+      ).length,
+      // The columns the chat table also draws: the channels each card reads, and
+      // the footprint the reader's machine is tested against.
+      modalities: [...table.querySelectorAll("[data-decision-modality]")].map(
+        (cell) => cell.dataset.decisionModality,
+      ),
+      memory: [...table.querySelectorAll("[data-decision-memory]")].map(
+        (cell) => read(cell.querySelector("[data-figure-memory]")),
+      ),
+      // The workload's two terms, row by row: the published weights, and the
+      // exact need the bar was drawn from. A row with no published size states
+      // the mark and draws nothing.
+      rows: [
+        ...table.querySelectorAll("[data-decision-row][data-decision-verdict]"),
+      ].map((row) => {
+        const figure = row.querySelector("[data-figure-memory]");
+        const bar = row.querySelector("[data-memory-bar-need]");
+        const text = read(figure);
+        return {
+          id: row.dataset.decisionModel,
+          verdict: row.dataset.decisionVerdict,
+          weights: figure?.dataset.decisionWeights
+            ? Number(figure.dataset.decisionWeights)
+            : null,
+          memory: text === "—" ? null : Number(text.replace(/,/g, "")),
+          need: bar ? Number(bar.dataset.memoryBarNeed) : null,
+          origin: row.querySelector("[data-decision-origin]")?.textContent,
+        };
+      }),
+      // One ruler, two tables: the bars must be one width, or the columns that
+      // look alike are reading different scales.
+      barWidths: [
+        ...table.querySelectorAll(
+          "[data-decision-memory] [data-memory-bar-need]",
+        ),
+        ...document.querySelectorAll("[data-fit-table] [data-memory-bar-need]"),
+      ].map((bar) => Math.round(bar.getBoundingClientRect().width)),
+    };
+  });
+}
+
+/**
+ * Push one workload lever to its end and wait for the panel to re-price. WHY a
+ * wait on the floor: a lever can delete rows, so the row list is not a stable
+ * signal; the lightest need is.
+ */
+async function pushLever(page, axis, before) {
+  if (!before.axis) fail(`the ${axis} lever has no memory band to move`);
+  const was = before.axis.need;
+  await page.focus(`input[data-lever-input="${axis}"]`);
+  await page.keyboard.press("End");
+  await page.waitForFunction(
+    (need) => {
+      const node = document.querySelector("[data-decision-memory-axis]");
+      return node ? Number(node.dataset.decisionNeed) !== need : false;
+    },
+    {},
+    was,
+  );
+  return decisionShape(page);
+}
+
+/**
+ * The setup's own shape: the memory strip beside the levers that price it. Read
+ * as geometry, so the two arrangements the fit calculator taught (side by side,
+ * then stacked) are one contract.
+ */
+async function decisionSetup(page) {
+  return page.evaluate(() => {
+    const root = document.querySelector("[data-decision]");
+    const setup = root.querySelector('[class*="setup"]');
+    const panel = root.querySelector("[data-decision-memory-axis]");
+    const levers = root.querySelector('[class*="levers"]');
+    const box = (node) => {
+      const rect = node.getBoundingClientRect();
+      return {
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      };
+    };
+    return {
+      bands: setup.children.length,
+      setup: box(setup),
+      panel: box(panel),
+      levers: box(levers),
+    };
+  });
+}
+
+const sameEdge = (a, b) => Math.abs(a - b) <= 1;
+
+/** One row where there is room, one column where there is not. */
+function assertDecisionSetup(name, shape) {
+  if (shape.bands !== 2)
+    fail(`${name} draws ${shape.bands} setup bands, not two`);
+  if (!sameEdge(shape.panel.left, shape.levers.left)) {
+    // One row: same top, same bottom, the panel stretched to the levers.
+    if (!sameEdge(shape.panel.top, shape.levers.top))
+      fail(
+        `${name} starts its memory and levers ${Math.round(
+          shape.panel.top - shape.levers.top,
+        )}px apart`,
+      );
+    if (!(shape.panel.right <= shape.levers.left + 1))
+      fail(`${name} overlaps its memory band and its levers`);
+    if (!sameEdge(shape.panel.height, shape.levers.height))
+      fail(
+        `${name} leaves its bands ${Math.round(
+          Math.abs(shape.panel.height - shape.levers.height),
+        )}px apart`,
+      );
+  } else {
+    if (!(shape.panel.bottom <= shape.levers.top + 1))
+      fail(`${name} overlaps its stacked bands`);
+    if (!sameEdge(shape.panel.width, shape.levers.width))
+      fail(`${name} stacks bands of two widths`);
+  }
+}
+
+/**
+ * The decision figure's contract: one state, two protocols, and a count that
+ * states its own basis. The levers must move the count and the need, never a
+ * card's own facts; the table must keep its columns inside the card at every
+ * width, and no fit hook may appear inside it.
+ */
+// ---------------------------------------------------------------- decision runtimes
+// The classifier cards' own runtime list, read from the artifact the figure
+// reads: a second copy of "who serves what" would drift, and this contract
+// exists because a chip agreed with a table that listed rows it never served.
+const CLASSIFIER_DATASET = require(
+  path.resolve(
+    __dirname,
+    "..",
+    "website",
+    "src",
+    "generated",
+    "open-weight-classifiers.json",
+  ),
+);
+const FIT_DATASET = require(
+  path.resolve(
+    __dirname,
+    "..",
+    "website",
+    "src",
+    "generated",
+    "open-weight-fit.json",
+  ),
+);
+const ENGINE_LABELS = new Map(
+  FIT_DATASET.engines.map((engine) => [engine.label, engine.id]),
+);
+
+/** The cards that name a runtime: the rows that chip promises. */
+const classifiersServing = (engineId) =>
+  CLASSIFIER_DATASET.models
+    .filter((model) => model.engineIds.includes(engineId))
+    .map((model) => model.id);
+
+/** The classifier table, its count and its floor, as the reader reads them. */
+async function decisionRuntimeState(page) {
+  return page.evaluate(() => {
+    const root = document.querySelector("[data-decision]");
+    const axis = root.querySelector("[data-decision-memory-axis]");
+    const pressed = root.querySelector(
+      '[data-decision-strip] button[aria-pressed="true"]',
+    );
+    const chip = (pressed?.textContent ?? "").replace(/\s+/g, " ").trim();
+    const [count, coverage] = (chip.split(" \u00b7 ")[1] ?? "").split("/");
+    return {
+      chip,
+      label: chip.split(" \u00b7 ")[0],
+      chipCount: Number(count),
+      chipCoverage: Number(coverage),
+      rows: [...root.querySelectorAll("[data-decision-row]")].map(
+        (row) => row.dataset.decisionModel,
+      ),
+      needs: [
+        ...root.querySelectorAll("[data-decision-row] [data-memory-bar-need]"),
+      ].map((bar) => Number(bar.dataset.memoryBarNeed)),
+      count: Number(root.dataset.decisionCount),
+      total: Number(root.dataset.decisionTotal),
+      need: Number(axis?.dataset.decisionNeed),
+      expanded: root.querySelectorAll(
+        '[data-decision-row] button[aria-expanded="true"]',
+      ).length,
+      speech: (root.querySelector("[data-decision-speech]")?.textContent ?? " ")
+        .replace(/\s+/g, " ")
+        .trim(),
+    };
+  });
+}
+
+/** The runtime chips the strip offers, in drawing order, without their counts. */
+async function decisionRuntimeChips(page) {
+  return page.evaluate(() =>
+    [
+      ...document.querySelectorAll(
+        '[data-decision-strip] [role="group"][aria-label="Runtime"] button',
+      ),
+    ].map((chip) =>
+      chip.textContent.replace(/\s+/g, " ").trim().split(" \u00b7 ")[0],
+    ),
+  );
+}
+
+/** Presses one runtime chip and waits for the strip to read it back. */
+async function pressDecisionRuntime(page, label) {
+  const clicked = await page.evaluate((target) => {
+    const chip = [
+      ...document.querySelectorAll(
+        '[data-decision-strip] [role="group"][aria-label="Runtime"] button',
+      ),
+    ].find((node) =>
+      node.textContent.replace(/\s+/g, " ").trim().startsWith(`${target} \u00b7 `),
+    );
+    chip?.click();
+    return Boolean(chip);
+  }, label);
+  if (!clicked) fail(`the classifier strip offers no "${label}" chip`);
+  await page.waitForFunction(
+    (target) =>
+      document
+        .querySelector('[data-decision-strip] button[aria-pressed="true"]')
+        ?.textContent.replace(/\s+/g, " ")
+        .trim()
+        .startsWith(`${target} \u00b7 `),
+    {},
+    label,
+  );
+}
+
+/**
+ * The classifier strip's promise: a runtime chip lists the rows it serves, and
+ * the numbers it prints are the ones under it. WHY the dataset rides along: a
+ * chip can agree with a table that lists the wrong rows, so the source that
+ * decides "who serves what" is the only check a scope that never reached the
+ * list cannot pass (2026-11-25: the chip counted 2, the table listed 3).
+ */
+async function inspectDecisionRuntimesViewport(viewport) {
+  await withPage(
+    `decision-runtimes-${viewport.width}`,
+    viewport,
+    async (page) => {
+      await emulateReducedMotion(page);
+      await page.goto(siteUrl(FIT_ROUTE), { waitUntil: "networkidle0" });
+      await page.waitForSelector("[data-decision-table] [data-decision-row]");
+      const name = `decision runtimes ${viewport.width}`;
+      const baseline = await decisionRuntimeState(page);
+      const chips = await decisionRuntimeChips(page);
+      if (chips[0] !== "Any runtime")
+        fail(`${name} opens on "${chips[0]}", not the whole set`);
+      if (baseline.rows.length !== baseline.count)
+        fail(
+          `${name} lists ${baseline.rows.length} rows under a count of ${baseline.count}`,
+        );
+      if (baseline.total !== CLASSIFIER_DATASET.models.length)
+        fail(
+          `${name} prices ${baseline.total} classifiers against a card set of ${CLASSIFIER_DATASET.models.length}`,
+        );
+      if (!baseline.speech.includes("on any runtime"))
+        fail(`${name} speaks "${baseline.speech}" without a scope`);
+
+      // A row opened here is a pin on this runtime: the next runtime may not
+      // serve it, so the strip must close it rather than leave it hidden.
+      const opened = baseline.rows[0];
+      const toggled = await page.evaluate((id) => {
+        const row = document.querySelector(
+          `[data-decision-row][data-decision-model="${id}"] button`,
+        );
+        row?.click();
+        return Boolean(row);
+      }, opened);
+      if (!toggled) fail(`${name} cannot open ${opened}`);
+      await page.waitForFunction(
+        () =>
+          document.querySelectorAll(
+            '[data-decision-row] button[aria-expanded="true"]',
+          ).length === 1,
+      );
+
+      let narrowed = false;
+      for (const label of chips.slice(1)) {
+        const engineId = ENGINE_LABELS.get(label);
+        if (!engineId)
+          fail(`${name} draws "${label}", which the catalogue does not name`);
+        await pressDecisionRuntime(page, label);
+        const state = await decisionRuntimeState(page);
+        if (state.label !== label)
+          fail(`${name} pressed "${label}" and reads "${state.label}"`);
+        const served = classifiersServing(engineId);
+        for (const id of state.rows)
+          if (!served.includes(id))
+            fail(
+              `${name} lists ${id} under "${label}", which its card does not name`,
+            );
+        // The printed fraction is the list: the numerator counts its rows, the
+        // denominator counts the cards that name this runtime.
+        if (state.chipCount !== state.rows.length || state.count !== state.rows.length)
+          fail(
+            `${name} prints "${state.chip}" over ${state.rows.length} rows and a count of ${state.count}`,
+          );
+        if (state.chipCoverage !== served.length || state.total !== served.length)
+          fail(
+            `${name} prints "${state.chip}" against ${served.length} cards that name ${label}`,
+          );
+        // The floor is the lightest listed row, whatever the runtime.
+        const lightest = Math.min(...state.needs);
+        if (!(Math.abs(state.need - lightest) <= 0.05))
+          fail(
+            `${name} states a ${state.need} GiB floor over a ${lightest} GiB lightest row on "${label}"`,
+          );
+        if (state.expanded !== 0)
+          fail(`${name} keeps ${opened} open on "${label}"`);
+        if (!state.speech.includes(`${state.count} of ${state.total}`))
+          fail(
+            `${name} speaks "${state.speech}" over a ${state.count} of ${state.total} table`,
+          );
+        if (!state.speech.includes(label))
+          fail(`${name} speaks "${state.speech}" without naming "${label}"`);
+        if (state.rows.length < baseline.rows.length) narrowed = true;
+      }
+      if (!narrowed)
+        fail(`${name} lists the same rows on every runtime: no chip filters`);
+
+      await pressDecisionRuntime(page, "Any runtime");
+      const restored = await decisionRuntimeState(page);
+      if (restored.rows.join() !== baseline.rows.join())
+        fail(`${name} does not restore its rows on "Any runtime"`);
+      if (restored.expanded !== 0)
+        fail(`${name} reopens the row a runtime dropped`);
+    },
+  );
+}
+
+async function inspectDecisionRuntimes() {
+  for (const viewport of [DESKTOP_VIEWPORT, DOCK_VIEWPORT])
+    await inspectDecisionRuntimesViewport(viewport);
+}
+
+async function inspectDecisionModelViewport(viewport) {
+  await withPage(`decision-model-${viewport.width}`, viewport, async (page) => {
+    await emulateReducedMotion(page);
+    await page.goto(siteUrl(FIT_ROUTE), { waitUntil: "networkidle0" });
+    await page.waitForSelector("[data-decision-table] [data-decision-row]");
+    const name = `decision model ${viewport.width}`;
+    await assertFigureBase(page, name, "data-decision");
+    await assertFigureBase(page, name, "data-fit");
+    await assertMemoryRuler(page, name);
+    assertDecisionSetup(name, await decisionSetup(page));
+
+    const shape = await decisionShape(page);
+    if (shape.leakedFit)
+      fail(`${name} carries ${shape.leakedFit} fit-figure hooks`);
+    if (shape.rowCells !== null && shape.headCells !== shape.rowCells)
+      fail(
+        `${name} head draws ${shape.headCells} columns over rows of ${shape.rowCells}`,
+      );
+    if (
+      shape.rowNameX !== null &&
+      Math.abs(shape.headNameX - shape.rowNameX) > 1
+    )
+      fail(`${name} name column sits off its head`);
+    if (shape.nameEllipsis === false)
+      fail(`${name} lets the model name wrap instead of ellipsing`);
+    // One handle per workload axis, and no chip standing in for one: a knob is a
+    // published value the reader picks, a chip is a filter.
+    if (shape.leverInputs !== 2)
+      fail(`${name} draws ${shape.leverInputs} lever handles, not two`);
+    for (const [axis, lever] of Object.entries(shape.levers))
+      if (!lever || !Number.isInteger(lever.value) || !lever.spoken)
+        fail(`${name} states no value for the ${axis} lever`);
+    // The memory band: one budget prices its bar and the table's row bars, so
+    // the filled span may never claim memory the machine does not print.
+    if (!shape.axis) fail(`${name} draws no memory band`);
+    else {
+      const { axis } = shape;
+      if (!(axis.budget > 0 && axis.budget <= axis.machine))
+        fail(`${name} gives ${axis.budget} GiB of ${axis.machine} GiB printed`);
+      if (!(axis.need > 0))
+        fail(`${name} states no floor for this workload`);
+      // The panel's three areas are its own need: the strip and its keys cannot
+      // describe two different models.
+      if (Math.abs(axis.weights + axis.cache - axis.need) > 0.05)
+        fail(
+          `${name} splits ${axis.need} GiB into ${axis.weights} + ${axis.cache}`, 
+        );
+      if (axis.overfull !== (axis.need > axis.budget + 1e-9))
+        fail(
+          `${name} calls a ${axis.need} GiB floor over ${axis.budget} GiB "${axis.overfull}"`,
+        );
+      const head = axis.overfull ? axis.need : axis.budget;
+      if (Math.abs(axis.head - head) > 0.6)
+        fail(
+          `${name} prints ${axis.head} GiB in a panel that stands on ${head} GiB`,
+        );
+    }
+    if (shape.origins.length !== shape.verified)
+      fail(
+        `${name} draws ${shape.origins.length} origins for ${shape.verified} rows`,
+      );
+    for (const origin of shape.origins)
+      if (!origin) fail(`${name} leaves an origin cell empty`);
+    if (shape.tableScroll > shape.tableWidth + 1)
+      fail(`${name} table overflows its card`);
+    if (shape.emptyMarks)
+      fail(`${name} leaves ${shape.emptyMarks} row marks empty`);
+
+    // The chat table's two columns, drawn here as well: a classifier states the
+    // channels it reads and the memory it needs on the machine the reader set.
+    if (shape.modalities.length !== shape.verified)
+      fail(
+        `${name} draws ${shape.modalities.length} modality cells for ${shape.verified} rows`,
+      );
+    for (const code of shape.modalities)
+      if (
+        !/^in:(?:text|image|audio|video)(?:\+(?:text|image|audio|video))*;out:label$/.test(
+          code ?? "",
+        )
+      )
+        fail(`${name} draws the channels as "${code}"`);
+    if (shape.memory.length !== shape.verified)
+      fail(
+        `${name} draws ${shape.memory.length} memory cells for ${shape.verified} rows`,
+      );
+    for (const value of shape.memory)
+      if (!/^(?:—|[\d.,]+)$/.test(value))
+        fail(`${name} prints "${value}" as a memory figure`);
+    // The column is the need at this workload: the weights once, plus the cache
+    // the state holds. The table lists only the rows that fit, so a listed row
+    // is inside the budget by construction — the count and the list are one
+    // claim, and neither may name a card that loses here.
+    if (shape.rows.length !== shape.counts.fitting)
+      fail(
+        `${name} lists ${shape.rows.length} rows under a count of ${shape.counts.fitting}`,
+      );
+    for (const row of shape.rows) {
+      if (row.verdict !== "fits")
+        fail(`${name} lists a "${row.verdict}" row`);
+      if (row.weights === null)
+        fail(`${name} lists a row with no published weight size`);
+      if (row.need === null || row.memory === null)
+        fail(`${name} draws no need for ${row.id}`);
+      if (row.need + 1e-6 < row.weights)
+        fail(
+          `${name} prices ${row.need} GiB under its ${row.weights} GiB of weights`,
+        );
+      if (!(row.need > row.weights))
+        fail(`${name} prices no cache for a ${row.weights} GiB row`);
+      if (!(row.need <= shape.axis.budget + 1e-9))
+        fail(
+          `${name} lists ${row.need} GiB over a ${shape.axis.budget} GiB budget`,
+        );
+      // The number and the bar state one footprint: the row prints the need.
+      if (Math.abs(row.memory - row.need) > 0.05)
+        fail(`${name} prints ${row.memory} for a ${row.need} GiB need`);
+      // No listed row can carry the "needs more" hatch.
+      if (row.need > shape.axis.budget)
+        fail(`${name} hatches a row it lists`);
+    }
+
+    // The panel's cache is the rows' own term: every listed row's need minus its
+    // weights must be the one figure the strip draws beside the levers.
+    const caches = shape.rows
+      .filter((row) => row.need !== null && row.weights !== null)
+      .map((row) => row.need - row.weights);
+    if (!caches.length) fail(`${name} prices no cache term`);
+    for (const cache of caches)
+      if (Math.abs(cache - shape.axis.cache) > 0.05)
+        fail(
+          `${name} draws a ${shape.axis.cache} GiB cache against a row's ${cache} GiB`,
+        );
+    // The floor is the lightest listed row, so the panel and the table quote one
+    // model's need: this is the quantity the old cache-only strip never carried.
+    const lightest = Math.min(...shape.rows.map((row) => row.need));
+    if (!(Math.abs(shape.axis.need - lightest) <= 0.05))
+      fail(
+        `${name} states a ${shape.axis.need} GiB floor while its lightest row needs ${lightest} GiB`,
+      );
+    if (new Set(shape.barWidths).size > 1)
+      fail(
+        `${name} draws its memory bars ${[...new Set(shape.barWidths)].join("/")}px wide, not one ruler`,
+      );
+    if (shape.docScroll > shape.docWidth + 1)
+      fail(`${name} overflows the page`);
+
+    // A longer state raises every listed row's need and every read, and lists
+    // strictly fewer rows. It may not touch the weights, a card's own origin,
+    // the machine's budget, or the question count the read-out states.
+    const long = await pushLever(page, "state", shape);
+    if (long.axis?.budget !== shape.axis?.budget)
+      fail(`${name} moved the memory budget with a workload lever`);
+    if (!(long.axis.cache > shape.axis.cache))
+      fail(`${name} kept a ${long.axis.cache} GiB cache at a longer state`);
+    if (!(long.axis.need > shape.axis.need))
+      fail(`${name} kept a ${long.axis.need} GiB floor at a longer state`);
+    if (long.axis.overfull !== (long.axis.need > long.axis.budget + 1e-9))
+      fail(`${name} misreads its own floor after the state lever`);
+    if (!(long.rows.length < shape.rows.length))
+      fail(
+        `${name} lists ${long.rows.length} rows at a longer state, not fewer than ${shape.rows.length}`,
+      );
+    for (const row of long.rows) {
+      const was = shape.rows.find((before) => before.id === row.id);
+      if (!was) fail(`${name} lists ${row.id}, which it did not price before`);
+      if (row.origin !== was.origin)
+        fail(`${name} changed a card's origin with a lever`);
+      if (row.weights !== was.weights)
+        fail(`${name} rescaled a card's published weights with a lever`);
+      if (!(row.need > was.need))
+        fail(`${name} kept ${row.need} GiB of need at a longer state`);
+    }
+
+    // Concurrency is the cache's multiplier for every row: the same state, held
+    // for every decision the deployment runs at once.
+    const many = await pushLever(page, "decisions", long);
+    if (!(many.axis.cache > long.axis.cache))
+      fail(`${name} kept a ${many.axis.cache} GiB cache in flight`);
+    if (!(many.axis.need > long.axis.need))
+      fail(`${name} kept a ${many.axis.need} GiB floor in flight`);
+    for (const row of many.rows) {
+      const was = long.rows.find((before) => before.id === row.id);
+      if (!was) fail(`${name} lists ${row.id}, which it did not price before`);
+      if (!(row.need > was.need))
+        fail(`${name} kept ${row.need} GiB of need in flight`);
+    }
+    if (!(many.levers.decisions.value > long.levers.decisions.value))
+      fail(`${name} ignored the decisions lever`);
+  });
+}
+
+async function inspectDecisionModel() {
+  for (const width of [1280, 768, 390])
+    await inspectDecisionModelViewport({ width, height: 900 });
+}
+
 async function inspectResponsiveRoutes(routes) {
   const page = await openContractPage();
   try {
@@ -2620,6 +5443,18 @@ async function main() {
 
   await launchBrowser();
   await inspectNavigationContracts(routes);
+  await withRetry(() => inspectFitChart(), "inspectFitChart");
+  await withRetry(() => inspectFitPlatforms(), "inspectFitPlatforms");
+  await withRetry(() => inspectFitRail(), "inspectFitRail");
+  await withRetry(() => inspectFitRuntimes(), "inspectFitRuntimes");
+  await withRetry(() => inspectFitPin(), "inspectFitPin");
+  await withRetry(() => inspectFitRuntimeBands(), "inspectFitRuntimeBands");
+  await withRetry(() => inspectFitConversation(), "inspectFitConversation");
+  await withRetry(() => inspectFitLayout(), "inspectFitLayout");
+  await withRetry(() => inspectFigureSeam(), "inspectFigureSeam");
+  await withRetry(() => inspectFigureAnchor(), "inspectFigureAnchor");
+  await withRetry(() => inspectDecisionModel(), "inspectDecisionModel");
+  await withRetry(() => inspectDecisionRuntimes(), "inspectDecisionRuntimes");
   const responsiveContainers = await inspectResponsiveRoutes(routes);
   if (!responsiveContainers)
     fail("no responsive diagrams found in generated routes");
