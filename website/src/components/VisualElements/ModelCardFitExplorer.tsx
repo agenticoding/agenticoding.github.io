@@ -6,9 +6,12 @@ import { GearNode } from './GearNode';
 import {
   TokenTypeTokens,
   tokenIllustrationWidth,
-  type TokenExample,
 } from './TokenTypeIllustration';
-import type { TokenUnitModality } from './TokenUnit';
+import {
+  modalityTokens,
+  type ModalityProfile,
+  type ModelModality,
+} from './modalityProfile';
 import { EMOJI, type EmojiAsset } from './emojiAssets';
 import {
   BenchmarkChartSvg,
@@ -41,11 +44,6 @@ type PriceProfile = {
   cacheRead: string;
   cacheWrite: string;
   cacheTtl: string;
-};
-
-type ModalityProfile = {
-  input: readonly TokenUnitModality[];
-  output: readonly TokenUnitModality[];
 };
 
 type ArchitectureProfile = {
@@ -622,27 +620,13 @@ function PriceGraphic({ profile }: { profile: PriceProfile }) {
   );
 }
 
-const modalityTokens = (
-  modalities: readonly TokenUnitModality[]
-): readonly TokenExample[] =>
-  modalities.map((modality) => ({
-    modality,
-    signal:
-      modality === 'code'
-        ? 'salient'
-        : modality === 'video'
-          ? 'compressed'
-          : 'ordinary',
-    label: modality === 'code' ? 'call' : modality,
-  }));
-
 function ModalityGraphic({ profile }: { profile: ModalityProfile }) {
   const inputTokens = modalityTokens(profile.input);
   const outputTokens = modalityTokens(profile.output);
   const centerX = 169;
   const inputX = centerX - tokenIllustrationWidth(inputTokens.length) / 2;
   const outputX = centerX - tokenIllustrationWidth(outputTokens.length) / 2;
-  const modalityLabel = (modalities: readonly TokenUnitModality[]) =>
+  const modalityLabel = (modalities: readonly ModelModality[]) =>
     modalities.join(' + ');
 
   return (

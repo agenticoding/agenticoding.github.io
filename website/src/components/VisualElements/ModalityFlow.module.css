@@ -1,0 +1,65 @@
+/* The packed form: the table cell's one-line flow. */
+.flow {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.shapes {
+  display: block;
+  /* Height is the one lever: the viewBox keeps the proportions, so a narrower
+   * column only shrinks the chips. */
+  height: 0.75rem;
+  width: auto;
+  overflow: visible;
+}
+
+.arrow {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The labeled form: one channel name per shape, for the expanded panel. */
+.labeled {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-0h) var(--space-1);
+}
+
+.unit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0h);
+}
+
+.shape {
+  display: block;
+  /* One step above the table cell: the panel reads at its own scale. */
+  height: 0.8125rem;
+  width: auto;
+  overflow: visible;
+}
+
+.direction {
+  color: var(--text-muted);
+}
+
+/* The sink is the flow's last stop: outlined, never filled, so a decision never
+ * reads as another channel the card takes. */
+.sink {
+  fill: none;
+  stroke: var(--visual-violet);
+  stroke-width: 1;
+}
+
+.sinkMark {
+  fill: none;
+  stroke: var(--visual-violet);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

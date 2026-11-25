@@ -44,6 +44,11 @@ export const toolboxEntries = [
     kind: 'reference' as const,
     numbered: false,
   },
+  {
+    id: 'developer-tools/open-weight-model-fit',
+    kind: 'reference' as const,
+    numbered: false,
+  },
 ] as const;
 
 export const chapterGroups = [

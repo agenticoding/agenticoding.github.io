@@ -1,0 +1,1142 @@
+/* Figure.module.css
+ * One instrument: the target rail, two levers (memory and workload) on one row,
+ * the runtime strip, and one table of the models that fit. Rows stay neutral;
+ * the strip's "only here" suffix is the only hue in the answer.
+ */
+
+/* Three regions: the rail sets the target, the master carries the diagram, the
+ * levers and the runtime strip, and the answer band carries the table. The rail
+ * stands beside the master where there is room and above it where there is not;
+ * the answer always spans the figure, because the table is read against the
+ * whole card. WHY two query containers: the controls measure the column they
+ * narrow, and the table measures its own band, which is never that column. */
+.explorer {
+  /* WHY: Infima puts 4px above every `li` after the first. The sections here
+   * own their rhythm with `gap`, so that margin would double every gap. */
+  --ifm-list-item-margin: 0;
+  /* One hatch for "the machine cannot hold this", shared by the strip's overfull
+   * end and the row ruler: two stop lists would drift into two meanings. */
+  --hatch-over: repeating-linear-gradient(
+    -45deg,
+    var(--visual-warning) 0 2px,
+    var(--visual-bg-warning) 2px 6px
+  );
+  /* Every range's handle, and the width the zone strip insets for: the budget
+   * track and the workload levers sit in one figure, so one value keeps a zone
+   * edge and a handle's centre on one coordinate. */
+  --handle: 0.9rem;
+
+  display: grid;
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.master {
+  container-type: inline-size;
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+/* The table and its key, on the figure's whole measure. WHY a band of its own
+ * and not a master child: a table that stops where the rail starts answers a
+ * narrower question than the card asks, and leaves the rail's column empty
+ * under the chips. */
+.answer {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: var(--space-1);
+  /* The strip sets the seam's width; the band keeps the 8px the master's own gap
+   * gave it, so the table head's rule stays the seam's only line. */
+  padding-block-start: var(--space-1);
+  min-width: 0;
+  /* The table's fold is measured on its own band: the answer is wider than the
+   * controls column wherever the rail stands beside them. */
+  container-type: inline-size;
+}
+
+/* ---------------------------------------------------------------- controls */
+.rail {
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+  border-block: 1px solid var(--border-subtle);
+}
+
+.controls {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.deviceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: flex-start;
+}
+
+.chipGroup {
+  /* Rows reserved for the most crowded state the group can reach. Chips wrap
+   * by the figure's width, so a rail sized by its members would move everything
+   * below it on every lever move; the runtime strip's tier rules set this per
+   * group and the hardware rail keeps the one row it needs. */
+  --chip-rows: 1;
+
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.chipLabel {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+.chipRail {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: var(--space-1);
+  /* WHY the row height is --target-sm: a chip is one control tall, and the gap
+   * between rows is the --space-1 the rail already uses. */
+  min-block-size: calc(
+    var(--chip-rows) * var(--target-sm) + (var(--chip-rows) - 1) *
+      var(--space-1)
+  );
+}
+
+.chip {
+  display: inline-flex;
+  gap: var(--space-0h);
+  align-items: baseline;
+  min-height: var(--target-sm);
+  padding: 0 var(--space-1);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.chip:hover,
+.chip:focus-visible {
+  border-color: var(--border-emphasis);
+  color: var(--text-heading);
+}
+
+/* WHY no weight change: the pressed chip sits in a rail whose rows are the
+ * reader's ruler. Restyling its text would resize the control on every click and
+ * re-wrap the rail; the inverted surface already carries the state. */
+.chip[aria-pressed='true'] {
+  background: var(--text-heading);
+  border-color: var(--text-heading);
+  color: var(--surface-page);
+}
+
+.chip[aria-pressed='true'] .chipCount {
+  color: var(--surface-page);
+}
+
+/* A pressed chip keeps its inverted surface under the pointer. The hover rule
+ * above would drop the label to the fill's own tone and hide it. */
+.chip[aria-pressed='true']:hover,
+.chip[aria-pressed='true']:focus-visible {
+  border-color: var(--text-heading);
+  color: var(--surface-page);
+}
+
+.chip:focus-visible {
+  outline: 3px solid var(--text-heading);
+  outline-offset: 2px;
+}
+
+.chipCount {
+  margin-left: 0.4em;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+
+/* A runtime's gain, in words. The success hue repeats the phrase; it never
+ * carries it alone. WHY the selected chip inherits: its inverted surface turns
+ * green into 3.2:1, and the words are what the reader needs there. */
+.chipWhy {
+  margin-left: 0.4em;
+  color: var(--visual-success);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chip[aria-pressed='true'] .chipWhy {
+  color: var(--surface-page);
+}
+
+.groupNote {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-tight);
+}
+
+/* ---------------------------------------------------------------- runtimes */
+/* Full width, so every runtime the guide documents takes a chip without
+ * stacking the hardware rail past the window. */
+.runtimes {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Both groups keep their rails in every state, so the strip's box is the same
+ * box whether it lists nothing or everything. Measured maxima: the broad group
+ * reaches seven chips (Any runtime + six engines, when the machine holds rows
+ * for all of them) and the narrow one two, so these are the rows each needs, at
+ * the widths where they wrap most. */
+.runtimes [data-chip-group='general'] {
+  --chip-rows: 2;
+}
+
+/* A whole column takes the broad group on one line. The threshold is the
+ * machine's own worst case, not a device breakpoint: seven chips measure 772 px
+ * (2026-11-24), so one row holds from 50rem and the rule asks 51rem for a longer
+ * count label. At 42rem DGX Spark and H100 add MLX, wrap to a second row, and
+ * grow a box that claimed one. */
+@container (min-width: 51rem) {
+  .runtimes [data-chip-group='general'] {
+    --chip-rows: 1;
+  }
+}
+
+/* A dock-width column wraps the broad group onto three lines and the narrow
+ * one onto two; below 15rem it needs a fourth. */
+@container (max-width: 23rem) {
+  .runtimes [data-chip-group='general'] {
+    --chip-rows: 3;
+  }
+
+  .runtimes [data-chip-group='specialized'] {
+    --chip-rows: 2;
+  }
+}
+
+@container (max-width: 15rem) {
+  .runtimes [data-chip-group='general'] {
+    --chip-rows: 4;
+  }
+}
+
+/* The legend and a group's absence share one slot, and the strip sums its
+ * groups: the one-line absence must not shorten the two-line legend's box.
+ * Measured: the narrow group's legend wraps to two lines at every width the
+ * strip stacks in, so two --lh-tight lines is its tallest form. */
+.runtimes [data-chip-group='specialized'] .groupNote {
+  min-block-size: calc(2 * var(--lh-tight));
+}
+
+.railNote,
+.footnote {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-tight);
+}
+
+/* Budget and caveat describe the whole instrument, not one control. */
+.footnote {
+  grid-column: 1 / -1;
+}
+
+/* The count's sentence: announced when a lever changes it, laid out nowhere.
+ * The visible page states the same numbers as chip counts and table rows. */
+.liveRegion {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- state fade */
+/* WHY: every band that changes words on a lever move has its box reserved, so
+ * the only motion left is the arrival of those words. 110ms of opacity marks
+ * what changed without moving the page, and reduced motion paints the state
+ * immediately. Only opacity is animated: no band is resized. */
+@keyframes stateEnter {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chip,
+  .stateText {
+    /* `backwards`, not `both`: the animation leaves no finished instance behind
+     * once it has run, and the element's own style is the settled state. */
+    animation: stateEnter var(--duration-fast) var(--ease-enter) backwards;
+  }
+}
+
+/* ---------------------------------------------------------------- table */
+/* One column geometry for the header and every row, so the memory numbers stay
+ * in one line of sight down the list. */
+.table {
+  /* The figure's column template, from its own list. A narrow column folds a
+   * column instead of squeezing every one of them. */
+  --figure-cols: var(--figure-cols-wide, 1.15rem minmax(0, 1fr));
+
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.head,
+.rowButton {
+  display: grid;
+  grid-template-columns: var(--figure-cols);
+  gap: var(--space-1);
+  align-items: baseline;
+  min-width: 0;
+}
+
+/* The head matches the row's own inset, so a label sits over its column. */
+.head {
+  padding: 0 var(--space-1) var(--space-0h);
+  border-left: 1px solid transparent;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.headLabel {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  /* A head never wraps: a second line would move the rule below it. The unit
+   * may overhang the number column to the left, where the name column is air. */
+  white-space: nowrap;
+}
+
+/* A head over a right-aligned figure sits on the same edge as its numbers. */
+.headEnd {
+  text-align: right;
+}
+
+/* ---------------------------------------------------------- scenario row */
+/* Both instruments: the memory strip beside the controls that price it, so the
+ * two read as one machine — move a handle and the strip redraws the cost. */
+.setup {
+  display: grid;
+  gap: var(--space-2);
+  /* Both panels share one bottom edge: a panel that sized itself to its own
+   * content would jump when the other one's state changed. */
+  align-items: stretch;
+}
+
+/* Side by side only where the memory track keeps its three zone keys on one
+ * line each; below that they stack, memory first. The workload panel fills the
+ * row's height, so its border never trails a shorter or taller neighbour. */
+@container (min-width: 35rem) {
+  .setup {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------- workload */
+/* The ordinal lever both figures use: a caption that names the unit, the value
+ * the handle sits on, and the axis's own ends. WHY shared: a handle on a strip
+ * is one control in this book, and a second geometry would let it drift into a
+ * thing that only looks like the same control. */
+.leverField {
+  display: grid;
+  gap: var(--space-0h);
+  min-width: 0;
+}
+
+.leverHead {
+  display: flex;
+  gap: var(--space-1);
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.leverLabel {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+/* The value the axis sits on: the same rank as the track's own number. */
+.leverValue {
+  color: var(--text-heading);
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: var(--lh-sm);
+}
+
+/* The axis prints its own span: an ordinal track without its ends would not say
+ * what the handle can travel. */
+.leverTrack {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.leverEnd {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lh-tight);
+}
+
+/* The memory track's strip without its zones: the input rides inside it, so the
+ * handle sits on the same scale the ends label. */
+.leverScale {
+  position: relative;
+  display: block;
+  height: 1.1rem;
+  border: 1px solid var(--border-default);
+}
+
+/* The lever's own scope: what it moves, or the state it leaves alone. */
+.leverNote {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-tight);
+}
+
+/* ---------------------------------------------------------------- budget */
+/* The machine's memory as one track. Neutral tones on purpose: a capacity fact
+ * must never borrow a verdict colour. The shaded ends are areas the thumb cannot
+ * enter, so their width is the machine's own arithmetic, not a hint. When the
+ * need exceeds the machine, the same strip carries the need and a rule marks the
+ * machine's end; a scale that cannot hold its labels would state a false ratio. */
+.budget {
+  --facts-lines: 2;
+  --note-lines: 1;
+
+  display: grid;
+  gap: 2px;
+  padding: var(--space-1) calc(var(--space-1) + 3px) var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+}
+
+.budgetHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.budgetLabel {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+.budgetValue {
+  color: var(--text-heading);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--lh-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Strip and handle share one box: the handle rides inside the zones, so the two
+ * cannot look like separate controls. */
+.track {
+  position: relative;
+  display: block;
+  margin-block: 2px 5px;
+}
+
+.zones {
+  position: relative;
+  display: flex;
+  height: 1.1rem;
+  margin-inline: calc(var(--handle) / 2);
+  border: 1px solid var(--border-default);
+}
+
+/* A strip with no handle still states where the budget ends: the head prints the
+ * number, and this rule gives it a position on the machine's own length. */
+.budgetMark {
+  position: absolute;
+  inset-block: 0;
+  inline-size: 1px;
+  background: var(--border-emphasis);
+}
+
+.zone {
+  display: block;
+  flex: none;
+}
+
+/* A machine with a 288 GB pool still keeps 2 GiB back: at that scale the reserve
+ * is a hairline, so every reserved area gets a floor width and the open span
+ * absorbs the difference. */
+.zoneWeights,
+.zoneCache,
+.zoneOs {
+  min-width: 4px;
+}
+
+/* Three hatches, three meanings: dense for the model, cross for its cache, light
+ * for the system. Two identical patterns would read as one reserved area. */
+.zoneWeights {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--border-emphasis) 0 2px,
+    transparent 2px 4px
+  );
+}
+
+/* The overfull strip has no free span to absorb a minimum, so a zero-sized area
+ * must paint nothing and leave the sum exact: a stray mark would claim memory
+ * the workload's own key does not name. */
+.budget[data-fit-overfull] .zone {
+  min-width: 0;
+}
+
+/* Solid, not hatched: at 0.4 GiB this area is a few pixels wide, and a hatch
+ * fragment would read as a stray mark. */
+.zoneCache {
+  background: var(--border-default);
+}
+
+.zoneFree {
+  flex: 1 1 0;
+  /* The open span of the strip: the panel's own surface, not a colour. */
+  background: var(--surface-page);
+}
+
+.zoneOs {
+  border-inline-start: 1px solid var(--border-default);
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--border-subtle) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+/* The part of the need the machine cannot hold. Warning is the figure's one
+ * "does not fit" reading (see `.runtimeState`), so the strip repeats it instead
+ * of inventing a second signal. The hatch keeps the 10% region tint between its
+ * lines, so the area reads as one colour from arm's length. */
+.zoneOver {
+  background: var(--hatch-over);
+}
+
+/* The part the machine holds. A solid tone, not a hatch: it is a capacity, and
+ * the strip already uses hatch for a composition. */
+.zoneCovered {
+  background: var(--border-subtle);
+}
+
+/* The handle rides the strip: the track is the element itself, so the zones and
+ * the handle are drawn on one scale. */
+.budgetRange {
+  position: absolute;
+  inset: 0;
+  appearance: none;
+  width: 100%;
+  height: 1.1rem;
+  margin: 0;
+  background: transparent;
+}
+
+.budgetRange::-webkit-slider-runnable-track {
+  height: 1.1rem;
+  background: transparent;
+}
+
+.budgetRange::-webkit-slider-thumb {
+  appearance: none;
+  width: var(--handle);
+  height: 1.1rem;
+  margin-top: 0;
+  background: var(--text-heading);
+  border: 0;
+  border-radius: 2px;
+}
+
+.budgetRange::-moz-range-track {
+  height: 1.1rem;
+  background: transparent;
+}
+
+.budgetRange::-moz-range-thumb {
+  width: var(--handle);
+  height: 1.1rem;
+  background: var(--text-heading);
+  border: 0;
+  border-radius: 2px;
+}
+
+.budgetRange:focus-visible {
+  outline: 2px solid var(--text-heading);
+  outline-offset: 2px;
+}
+
+.budgetZones {
+  display: grid;
+  gap: var(--space-0h);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-relaxed);
+  /* One key per row: a wrapped key would add a line to the panel and move every
+   * row below it. The longest key sets the panel's width. */
+  white-space: nowrap;
+}
+
+/* Each key repeats the pattern of the area it names, so the words and the track
+ * cannot describe different things. The composed selectors are not decoration:
+ * the built stylesheet reorders equal-specificity rules, and a bare
+ * `.zoneKeyCache` lost its solid fill to the base hatch. */
+.zoneKey {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-inline-end: 0.35rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--border-emphasis) 0 2px,
+    transparent 2px 4px
+  );
+  vertical-align: baseline;
+}
+
+.zoneKey.zoneKeyCache {
+  background: var(--border-default);
+}
+
+.zoneKey.zoneKeyCovered {
+  background: var(--border-subtle);
+}
+
+.zoneKey.zoneKeyOver {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--visual-warning) 0 2px,
+    var(--visual-bg-warning) 2px 6px
+  );
+}
+
+/* A breakdown, not a key: no area to repeat, so it aligns on the words' edge
+ * and reads as the arithmetic behind the need. */
+.zoneBreakdown {
+  padding-inline-start: calc(0.6rem + 0.35rem);
+}
+
+.zoneKey.zoneKeyOs {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--border-subtle) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+/* The machine's sentence wraps, so its panel would change height with the
+ * target and move everything under it. Reserved at the widest sentence's line
+ * count: two at every width a split panel has, three once the panel is narrow. */
+.budgetFacts {
+  min-block-size: calc(
+    var(--facts-lines) * var(--ifm-line-height-base) * var(--text-sm)
+  );
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  /* The declaration and the reservation read one line height, not two copies. */
+  line-height: var(--ifm-line-height-base);
+}
+
+/* The panel is the query context for its own rows: the wrap points below depend
+ * on the panel's width, which the master's width only predicts approximately
+ * (the setup gives the panel 1.25 of 2.25 shares). */
+.budget {
+  container-type: inline-size;
+}
+
+/* Measured on the widest machine sentence (DGX Spark, 83 characters): three
+ * lines below 280px of content, two above. */
+@container (max-width: 17.5rem) {
+  .budgetFacts {
+    --facts-lines: 3;
+  }
+
+  .budgetNote {
+    --note-lines: 2;
+  }
+}
+
+/* The label and the big number share a row until the row's own content no longer
+ * fits (label 172 + gap 8 + the widest value 111 = 291px): then the number takes
+ * its own line, which keeps the head's height fixed at every width. */
+@container (max-width: 18.5rem) {
+  .budgetHead {
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+  }
+}
+
+/* The one case the scale cannot draw, in a row reserved in every state: the
+ * sentence appearing must not add a line to the panel. One key row's height. */
+.budgetNote {
+  min-block-size: calc(
+    var(--note-lines) * var(--ifm-line-height-base) * var(--text-xs)
+  );
+  margin: 0;
+  color: var(--text-heading);
+  font-size: var(--text-xs);
+  line-height: var(--ifm-line-height-base);
+}
+
+/* ---------------------------------------------------------------- rows */
+.rows {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+
+.rowButton {
+  width: 100%;
+  /* A row is two lines, and the expanded row is the top of a card: this padding
+   * is the card's top edge, so it must match the detail's bottom edge below. */
+  padding: var(--space-1);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-body);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* Expansion is a surface, not a verdict: only the background follows state. */
+  transition-property: background-color;
+}
+
+.rowButton:hover,
+.rowButton:focus-visible {
+  background: var(--surface-raised);
+  border-color: var(--border-default);
+}
+
+/* The card ring below replaces the control's own: two rings would stack. */
+.rowButton:focus-visible {
+  outline: none;
+}
+
+/* The ring follows the unit the reader acts on. A row is only the summary of an
+ * expanded card, so a ring on the button would cut the card in half; on the row
+ * box it wraps summary and detail as one. */
+.row:has(.rowButton:focus-visible) {
+  outline: 3px solid var(--border-emphasis);
+  outline-offset: 1px;
+}
+
+/* An expanded row is the top half of one card: the same edge as `.detail`, and
+ * no seam border. Two classes, so it also beats the hover/focus rule above. */
+.rowButton.rowFocused {
+  background: var(--surface-raised);
+  border-color: var(--border-default);
+  border-bottom-color: transparent;
+}
+
+/* One mark slot per row, sized to the table's scale. Every row draws something:
+ * a lab's official vector, or its initial tile (`FigureMark`). */
+/* Sits on the name's line, not centred in the two-line cell: the mark belongs
+ * to the model, not to the setup printed under it. */
+.mark {
+  --icon-md: 1.1rem;
+
+  display: inline-flex;
+  align-self: start;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+/* The stand-in mark a lab without an official vector gets: its initial in a
+ * bordered tile. WHY a tile and not a bare letter: the letter must read as a
+ * mark slot, not as the model name's first character. Achromatic, so it never
+ * competes with a real lab mark beside it. */
+.markInitial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-page);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.nameCell {
+  display: grid;
+  min-width: 0;
+}
+
+.rowName {
+  overflow: hidden;
+  color: var(--text-heading);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowValue {
+  display: grid;
+  /* The memory ruler anchors in its cell. A rule under the whole row names no
+   * column: it reads as the row's own divider. */
+  position: relative;
+  justify-items: end;
+  color: var(--text-body);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lh-tight);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* A quiet fact: a word rather than a number, clipped rather than wrapped. Both
+ * tables draw their country with it, and both fold that column on a narrow card
+ * -- the row states the country at the tail of its path instead. */
+.rowQuiet {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A streamed row's second figure: the checkpoint's size on storage, quieter
+ * and smaller than the held number so the column's comparison stays the
+ * primary line and the pair fits the memory column at every width. */
+.rowValueSecondary {
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+/* The memory ruler: a model row draws its number at its own share of the budget
+ * the page priced it against, so a row is comparable with its neighbours and
+ * with the track above. The cell's foot is close to its own number and stays
+ * clear of the divider between rows; being out of flow, the drawing cannot make
+ * a row taller. Both tables share it: FigureMemoryBar owns the two variables
+ * and the hook names.
+ *
+ * WHY the cell and not the row: the share is short in a 5.75rem column, but the
+ * groove states its own scale, so a short fill reads as a short share. A
+ * row-wide rule is unreadable as a share of anything. */
+.memoryBar {
+  position: absolute;
+  inset-inline: 0;
+  /* One step below the number's line box: the groove reads as the figure's own
+   * scale, not as an underline on the digits. It costs no layout height. */
+  inset-block-end: calc(var(--space-0h) * -1);
+  display: block;
+  /* 4px is the dense-table size (Carbon "small", Material's track height), and
+   * it is tall enough for the overfull hatch to read as more than a colour. */
+  block-size: 4px;
+  /* The groove is the budget. It carries no data, so it stays quiet. */
+  background: var(--surface-muted);
+}
+
+/* The footprint, anchored left on the cell's zero. One ink: the parts that build
+ * it are stated once elsewhere, never as segments here. The fill is the data ink,
+ * so it must clear 3:1 against the groove (WCAG 1.4.11). */
+.memoryBarFill {
+  display: block;
+  block-size: 100%;
+  background: var(--text-muted);
+  transform: scaleX(var(--memory-bar-need, 0));
+  transform-origin: left center;
+  transition: transform var(--duration-moderate) var(--ease-standard);
+}
+
+/* The ruler is full and the need runs past it: the strip's "cannot hold" hatch,
+ * in a shape at the ruler's end rather than in a second hue. */
+.memoryBarOver {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: 6px;
+  background: var(--hatch-over);
+}
+
+/* The ruler's key. A share has no scale without it, and the reader cannot read
+ * one off the drawing. WHY a line under the table and not the column head: the
+ * head never wraps, and a per-machine budget would overrun it at 390px. */
+.memoryLegend {
+  margin: 0;
+  padding-inline: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-tight);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memoryBarFill {
+    transition: none;
+  }
+}
+
+/* The setup gives way first; the number never clips. */
+.rowPath {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--lh-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Input → output, as the book's token shapes. Baseline-aligned with the name,
+ * so the flow shares the row's first line instead of the two-line cell. */
+.rowModality {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* A fact the wide grid gives its own column: where the grid folds that column,
+ * the row states it at the tail of the path instead, so the fact survives the
+ * fold. Kept in the DOM, so assistive tech reads it at every width. */
+.rowInline {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- detail */
+/* The frame is the panel's animation box, not a layout wrapper: the detail keeps
+ * its edge-to-edge join with the row on both sides of the flight. It clips for
+ * the whole flight, so the panel's own closing edge appears only when it lands.
+ *
+ * Motion spec — process: a row unfolds its own evidence; meaning: the growing
+ * height says "this row produced this panel"; benefit: the list below moves
+ * with the panel instead of jumping, and the eye can follow the evidence back
+ * to the row that owns it; fallback: with motion disabled the panel is simply
+ * present, complete. */
+.detailFrame {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .detailFrame {
+    /* A fresh mount starts closed: the row writes the exact pixel height before
+     * the first paint, and the box and the clip then travel together. */
+    height: 0;
+    transition: height var(--duration-fast) var(--ease-enter);
+  }
+
+  .detailFrame.detailClosing {
+    /* The exit is shorter and accelerates away (perception asymmetry); the row
+     * drops the node when it lands. */
+    transition-duration: var(--duration-fast-exit);
+    transition-timing-function: var(--ease-exit);
+  }
+}
+
+/* One unit with the row above it: no top border, no gap, the same surface. The
+ * detail is the row's own evidence, not a sibling block. */
+.detail {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  /* The card closes on the same 8px the row above it opens with. */
+  padding: var(--space-2) var(--space-2) var(--space-1);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-top: 0;
+}
+
+.detailHead {
+  display: grid;
+  gap: 0;
+}
+
+.detailLab,
+.detailNote,
+.detailArithmetic,
+.detailMeasured {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--lh-sm);
+}
+
+.detailLab {
+  color: var(--text-muted);
+}
+
+/* The formula is the panel's first claim, so it is the only text set in the
+ * mono face at body strength: the number's own derivation, not a remark. */
+.detailArithmetic {
+  color: var(--text-body);
+  font-family: var(--font-mono);
+}
+
+.detailNote {
+  color: var(--text-muted);
+}
+
+.detailList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--space-3);
+  margin: 0;
+}
+
+.detailRow {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  line-height: var(--lh-tight);
+}
+
+/* One fact can outgrow its half of the pair grid; it takes both columns instead
+ * of wrapping into a hole. */
+.detailRowWide {
+  grid-column: 1 / -1;
+}
+
+.detailRow dt {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.detailRow dd {
+  margin: 0;
+  color: var(--text-body);
+}
+
+.detailMeasured {
+  color: var(--text-body);
+  font-family: var(--font-mono);
+}
+
+.detailSource {
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- narrow */
+/* Desktop: the rail sets the target beside the levers, where its chips cost the
+ * answer no vertical space, and the answer band below spans both columns. WHY
+ * 840 and not the rail's own width: the master must keep the 35 rem the two
+ * levers need, so the side column starts where 840 − 15.5 rem − gap still
+ * clears it. */
+@container (min-width: 840px) {
+  .explorer {
+    /* WHY a reserved first row: chips wrap by family, so the rail runs 328-496px
+     * while the controls beside it run 429-505px. The answer starts under this
+     * row, so a rail taller than the controls would carry the table down on a
+     * chip click — and the other figure's rail grows with the same click.
+     * Reserving the tallest rail the catalog produces turns that movement into
+     * whitespace under the shorter column. 32rem = 512px, 16px above the
+     * measured 496; the figure-seam contract fails if a rail outgrows it. */
+    --rail-max: 32rem;
+
+    grid-template-columns: minmax(0, 1fr) 15.5rem;
+    grid-template-rows: minmax(var(--rail-max), auto) auto;
+    column-gap: var(--space-3);
+  }
+
+  /* Explicit placement: the rail is first in the DOM so the stacked order
+   * reads controls-then-answer, but it sits on the right when there is room. */
+  .master {
+    grid-area: 1 / 1;
+  }
+
+  .rail {
+    grid-area: 1 / 2;
+    padding-block: var(--space-1) 0;
+    padding-left: var(--space-3);
+    border-block: none;
+    border-left: 1px solid var(--border-subtle);
+  }
+
+  /* The answer starts under both columns, so the rail can never stand beside
+   * the table. */
+  .answer {
+    grid-row: 2;
+  }
+}
+
+/* A narrow card folds a column instead of squeezing every one: numbers stay in
+ * one line of sight, the setup ellipses sooner. The table measures its own band,
+ * so this fold follows the answer, not the controls column. */
+@container (max-width: 560px) {
+  /* One column: a label sits on its own value, so rows take the gap and the
+   * pair keeps its zero. Equal spacing would pair the wrong lines. */
+  .table {
+    --figure-cols: var(--figure-cols-narrow, var(--figure-cols-wide));
+  }
+
+  /* A figure names the column it folds on narrow cards; the cell under it is
+   * the figure's own to hide. */
+  .head [data-fold] {
+    display: none;
+  }
+
+  .rowInline {
+    display: inline;
+  }
+
+  /* The origin keeps its fact and loses its column: it trails the path. */
+  .rowQuiet {
+    display: none;
+  }
+
+  /* The shapes shrink with the column they share: one row, three facts. */
+  .rowModality svg {
+    height: 0.6875rem;
+  }
+
+  .detailList {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1) 0;
+  }
+
+  .detailRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}

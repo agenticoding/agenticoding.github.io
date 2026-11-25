@@ -1,0 +1,50 @@
+/* The workload readout: one rule, the reader's values, and the answer. */
+
+.wrap {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-1) var(--space-1);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--border-emphasis);
+}
+
+.rule {
+  margin: 0;
+  color: var(--text-heading);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--lh-relaxed);
+  overflow-wrap: anywhere;
+}
+
+.scenario {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-tight);
+}
+
+.arithmetic {
+  margin: 0;
+  color: var(--text-heading);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lh-relaxed);
+}
+
+.verdict,
+.price,
+.answer {
+  margin: 0;
+  color: var(--text-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-relaxed);
+}
+
+.answer {
+  color: var(--text-heading);
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-1);
+}
