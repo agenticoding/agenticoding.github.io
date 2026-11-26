@@ -108,7 +108,7 @@ export const mtpChipSpoken = (label: string, fits: number, total: number) =>
 export const drafterInventory = (sized: number, total: number): string =>
   sized === 0
     ? 'No sized drafter on these runtimes.'
-    : `Changes the memory of ${sized} of ${total} checkpoints.`;
+    : `Changes the memory of ${sized} of ${total} models.`;
 
 /** The only two words the table prints above its columns. */
 export const FIT_TABLE_COPY = {
@@ -184,13 +184,15 @@ export const mtpLine = (row: ResolvedRow): string => {
   } else if (mtp.includedInFit) {
     parts.push(
       mtp.gib === null
-        ? 'part of the checkpoint'
+        ? 'part of the weights'
         : row.mtpDelta < 0
           ? 'off'
           : 'counted in the figure'
     );
   } else {
-    parts.push(mtp.gib === null ? 'unsized' : row.mtpDelta > 0 ? 'on' : 'off');
+    parts.push(
+      mtp.gib === null ? 'not in the estimate' : row.mtpDelta > 0 ? 'on' : 'off'
+    );
   }
   return parts.join(' · ');
 };
@@ -267,19 +269,10 @@ export const runtimeChipSpoken = (
   }`;
 
 /**
- * The two runtime groups read as one trade-off: broad lists, or wide hardware
- * reach. WHY a fixed sentence: it is the legend for the notation, so its height
- * cannot move the rows below it as the workload changes.
+ * The runtime notation's words are the strip's own: they live beside the chips
+ * that print them (`figureCopy.ts`), so a legend and the chip it explains cannot
+ * drift. This module keeps only the fit figure's own sentences.
  */
-export const ENGINE_COPY = {
-  generalNote:
-    'Broad model lists: checkpoints that run here / checkpoints the runtime covers.',
-  specializedNote:
-    'Narrow model lists, wider hardware reach. “only here”: no general-purpose runtime holds it here.',
-  // The empty group states its absence in the note's own slot: the label
-  // already names the group, and the legend explains a suffix no chip shows.
-  emptySpecialized: 'None fits at this workload.',
-} as const;
 
 /**
  * The comparison inside a row: every runtime that publishes evidence for that
@@ -287,7 +280,7 @@ export const ENGINE_COPY = {
  * The words state the difference between cited evidence and a priced fit.
  */
 export const RUNTIME_COPY = {
-  heading: 'Runtimes for this checkpoint',
+  heading: 'Runtimes for this model',
   fits: 'fits',
   doesNotFit: "doesn't fit",
   note: 'Cited configurations do not change the fit arithmetic. Select a runtime to reprice the row.',

@@ -142,6 +142,10 @@ const ENGINE_MATCHERS = [
   [/Ollama/i, "ollama"],
   [/SGLang/i, "sglang"],
   [/vLLM/i, "vllm"],
+  // Encoder-stage runtimes: an embedding or rerank endpoint is not a chat
+  // server, so the guide names them as their own rows.
+  [/\bTEI\b/i, "tei"],
+  [/ONNX/i, "onnx"],
   [/\bMLX\b/i, "mlx"],
   [/\bATOM\b/i, "atom"],
   [/\bDocker\b/i, "docker"],
@@ -241,9 +245,7 @@ const SPECIALIZED_COVERAGE = [
     "dwarfstar",
     ["DeepSeek V4.1 Flash 1017", "DeepSeek V4 Pro", "GLM-5.3", "GLM-5.3 Flash"],
   ],
-  // WARP names a 552B backbone, never the 1017 revision: the join is the closest
-  // checkpoint, not a claim about the exact artifact.
-  ["warp", ["Kimi K3", "DeepSeek V4.1 Flash 1017", "GLM-5.3 Flash"]],
+  ["warp", ["Kimi K3", "GLM-5.3 Flash"], ["DeepSeek V4.1 Flash (0909)"]],
   ["gr8", ["GLM-5.3", "GLM-5.3 Flash", "DeepSeek V4.1 Flash 1017"]],
   ["delta", ["DeepSeek V4.1 Flash 1017"]],
   // The docs enumerate eleven checkpoints; only five have a row here. GLM-5.2,
@@ -261,7 +263,8 @@ const SPECIALIZED_COVERAGE = [
     ],
   ],
   ["colibri", [], ["GLM-5.2"]],
-  ["ljqinfer", ["GLM-5.3", "Qwen3.8-27B", "DeepSeek V4.1 Flash 1017"]],
+  // The V4.1 Flash results do not identify the checkpoint revision.
+  ["ljqinfer", ["GLM-5.3", "Qwen3.8-27B"]],
   ["pulsarmlx", ["GLM-5.3 Flash"]],
 ];
 
@@ -536,7 +539,7 @@ const engineIdFromRecipeHost = (url) => {
 };
 
 // ---------------------------------------------------------------- fit table
-const FIT_HEADING = "## Hardware fit — 64K to native maximum";
+const FIT_HEADING = "## Hardware fit — 64K to reference-path maximum";
 const fitRows = tableRowsUnder(FIT_HEADING);
 if (!fitRows.length) fail("fit table is empty");
 
@@ -613,9 +616,14 @@ for (const row of fitRows) {
     layouts: [],
     configs: [],
     need64k: parseGiB(need64kCell, name),
+    // The calculator caps the priced path through this legacy field; the
+    // country table retains the checkpoint's advertised limit in contextCap.
     needNative: parseGiB(nativeGiBText, name),
     nativeContext: nativeContext.trim(),
-    nativeTokens: parseTokens(nativeContext, name),
+    nativeTokens: parseTokens(
+      nativeContext.trim().replace(/ on this path$/, ""),
+      name,
+    ),
     candidates: parseCandidates(candidatesCell, name),
   });
 }
@@ -862,7 +870,7 @@ const RUNS = [
   [
     "GLM-5.3 Flash",
     "h200-4",
-    "12,026.62 aggregate out · SGLang + DFlash2, 99.9% shared prefix",
+    "12,026.62 aggregate decode-stage out · SGLang + DFlash2, 99.9% shared prefix",
   ],
   ["Inkling 2 Small", "gb200-4", "~630 out/user at c1 · NVFP4 + DSpark"],
   [
@@ -870,7 +878,11 @@ const RUNS = [
     "gb200-8",
     "~1,070 out/GPU at 100 out/user, ~84 sessions",
   ],
-  ["Kimi K3", "gb300-32", "331.18 out/GPU · TokenSpeed NVFP4, c576"],
+  [
+    "Kimi K3",
+    "gb300-32",
+    "331.18 out/GPU · TokenSpeed NVFP4, c576, EAGLE3 forced acceptance 3.0",
+  ],
   [
     "Kimi K3.1 Pro",
     "gb300-16",
@@ -939,6 +951,12 @@ const throughput = RUNS.map(([name, hardwareId, text]) => {
 // ---------------------------------------------------------------- platform notes
 // Layouts the guide documents for accelerators it does not screen.
 const PLATFORM = [
+  [
+    "MiniMax M3.1 Flash",
+    "amd",
+    "vLLM configures 1,048,576 tokens on the separate, text-only MI355X 1P2D setup (12 GPUs); not a full-length request test",
+    refs.get("minimax-amd"),
+  ],
   [
     "Kimi K3.1 Pro",
     "amd",

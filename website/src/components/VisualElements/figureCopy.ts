@@ -55,11 +55,11 @@ export const runtimeChipSpoken = (
 /**
  * The two runtime groups read as one trade-off: broad lists, or wide hardware
  * reach. WHY a fixed sentence: it is the legend for the notation, so its height
- * cannot move the rows below it as the workload changes.
+ * cannot move the rows below it as the workload changes. It names the chip's own
+ * two numbers in the order the chip prints them.
  */
 export const ENGINE_COPY = {
-  generalNote:
-    'Broad model lists: checkpoints that run here / checkpoints the runtime covers.',
+  generalNote: 'Chips: fits here / runtime coverage.',
   specializedNote:
     'Narrow model lists, wider hardware reach. “only here”: no general-purpose runtime holds it here.',
   // The empty group states its absence in the note's own slot: the label

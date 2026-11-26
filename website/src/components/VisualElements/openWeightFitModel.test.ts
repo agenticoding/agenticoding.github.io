@@ -3,8 +3,8 @@ import test from 'node:test';
 
 import { dataset } from './openWeightFitData.ts';
 import { servesEngine } from './figureCatalog.ts';
+import { ENGINE_COPY } from './figureCopy.ts';
 import {
-  ENGINE_COPY,
   drafterInventory,
   engineCount,
   modelAnswerLine,
@@ -1188,81 +1188,34 @@ test('one conversation reproduces the two published anchors exactly', () => {
 });
 
 test('the drafter toggle moves only a sized resident component', () => {
-  const hy3 = models.find((model) => model.name === 'Hunyuan Hy3');
-  const ripple = models.find((model) => model.name === 'Ripple-65B-Preview');
-  const kimi = models.find((model) => model.name === 'Kimi K3');
-  assert.ok(hy3 && hy3.mtp?.gib, 'Hy3 MTP sized');
-  assert.ok(ripple && ripple.mtp?.gib, 'Ripple drafter sized');
-  assert.ok(kimi && kimi.mtp && kimi.mtp.gib === null, 'Kimi drafter unsized');
-
   const base = oneUser({ hardwareId: 'b300-8', contextTokens: 65_536 });
-  const rowOf = (id: string, enabled: boolean) =>
-    resolveRows({ ...base, mtpEnabled: enabled }).find(
-      (row) => row.model.id === id
+  const rows = (mtpEnabled: boolean) => resolveRows({ ...base, mtpEnabled });
+  const on = rows(true);
+  const off = rows(false);
+  const ripple = (rows: typeof on) =>
+    rows.find((row) => row.model.name === 'Ripple-65B-Preview')!;
+  assert.equal(ripple(on).requiredGib, 65.1);
+  assert.equal(ripple(on).requiredGib! - ripple(off).requiredGib!, 7.5);
+  assert.match(needBreakdown(ripple(off), 1) ?? '', /drafter off/);
+  assert.equal(mtpLine(ripple(off)), 'drafter · 7.5 GiB · off');
+});
+
+test('Hy3 counts embedded MTP without inventing memory savings', () => {
+  const base = oneUser({ hardwareId: 'b300-8', contextTokens: 65_536 });
+  for (const mtpEnabled of [true, false]) {
+    const row = resolveRows({ ...base, mtpEnabled }).find(
+      (row) => row.model.name === 'Hunyuan Hy3'
     )!;
+    assert.equal(row.requiredGib, 345.2);
+    assert.match(mtpLine(row), /part of the weights/);
+  }
+});
 
-  // Hy3: the guide sizes MTP apart from the fit figures, so on adds it and
-  // off returns to the published anchor.
-  const hyOn = rowOf(hy3.id, true);
-  const hyOff = rowOf(hy3.id, false);
-  assert.equal(hyOn.mtpDelta, hy3.mtp!.gib, 'Hy3 adds MTP when on');
-  assert.equal(hyOff.mtpDelta, 0, 'Hy3 off keeps the anchor');
-  assert.ok(
-    Math.abs(
-      (hyOn.requiredGib as number) -
-        (hyOff.requiredGib as number) -
-        (hy3.mtp!.gib as number)
-    ) < 1e-9,
-    'Hy3 on/off differ by the MTP size'
-  );
-
-  // Ripple: the fit figures already count the drafter, so on (the default) is
-  // unchanged and off subtracts it.
-  const ripOn = rowOf(ripple.id, true);
-  const ripOff = rowOf(ripple.id, false);
-  assert.equal(ripOn.mtpDelta, 0, 'Ripple default includes the drafter');
-  assert.equal(
-    ripOff.mtpDelta,
-    -(ripple.mtp!.gib as number),
-    'Ripple off subtracts the drafter'
-  );
-  assert.ok(
-    ripOff.requiredGib! < ripOn.requiredGib!,
-    'Ripple off frees memory'
-  );
-
-  // An unsized component never moves a figure, even when the guide keeps it out
-  // of the published anchor.
-  const kOn = rowOf(kimi.id, true);
-  const kOff = rowOf(kimi.id, false);
-  assert.equal(kOn.mtpDelta, 0, 'Kimi on has no arithmetic');
-  assert.equal(kOff.mtpDelta, 0, 'Kimi off has no arithmetic');
-  assert.equal(kOn.requiredGib, kOff.requiredGib, 'Kimi toggle is inert');
-
-  // The copy follows the same state: the breakdown names the MTP term only
-  // when it is added, and marks a figure with the drafter removed.
-  assert.match(
-    needBreakdown(hyOn, 1) ?? '',
-    /MTP/,
-    'Hy3 on breakdown names MTP'
-  );
-  assert.doesNotMatch(
-    needBreakdown(hyOff, 1) ?? '',
-    /MTP/,
-    'Hy3 off breakdown omits MTP'
-  );
-  assert.match(
-    needBreakdown(ripOff, 1) ?? '',
-    /drafter off/,
-    'Ripple off breakdown marks the drafter off'
-  );
-  assert.equal(mtpLine(hyOn), 'MTP · 3.8B · ~3.5 GiB · on');
-  assert.equal(mtpLine(ripOff), 'drafter · 7.5 GiB · off');
-  const qwen = models.find((model) => model.id === 'qwen3-8-27b')!;
-  const qwenRow = resolveRows({ ...base, hardwareId: 'rtx4090' }).find(
-    (row) => row.model.id === qwen.id
-  )!;
-  assert.equal(mtpLine(qwenRow), 'MTP · part of the checkpoint');
+test('the Qwen3.8 4090 GGUF estimate excludes the separate MTP draft', () => {
+  const base = oneUser({ hardwareId: 'rtx4090', contextTokens: 65_536 });
+  const row = resolveRows(base).find((row) => row.model.id === 'qwen3-8-27b')!;
+  assert.equal(row.requiredGib, 20.6);
+  assert.equal(mtpLine(row), 'MTP · not in the estimate');
 });
 
 test('the drafter toggle survives selection resolution', () => {
@@ -1426,10 +1379,10 @@ test('the lever states its scope in counts, never in sizes', () => {
     contextTokens: 1_048_576,
     conversations: 1,
   });
-  assert.equal(all.sized, 4, 'four sized components in view');
+  assert.equal(all.sized, 3, 'three sized components in view');
   assert.equal(
     drafterInventory(all.sized, modelCount),
-    `Changes the memory of 4 of ${modelCount} checkpoints.`
+    `Changes the memory of 3 of ${modelCount} models.`
   );
   // Both states read the same scope; only the counts move.
   const off = mtpOptions({
