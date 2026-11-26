@@ -561,8 +561,7 @@ async function waitForHydrated(page) {
   // requests were in flight.
   try {
     await page.waitForFunction(
-      (attr) =>
-        document.documentElement.getAttribute(attr) === "true",
+      (attr) => document.documentElement.getAttribute(attr) === "true",
       // Interval polling is immune to renderer rAF throttling on loaded runners.
       { timeout: 15000, polling: 100 },
       HYDRATED_ATTR,
@@ -1210,7 +1209,9 @@ async function readBandTransportLine(page) {
     const band = document.querySelector(bandSelector);
     if (!band) return null;
     const play = band.querySelector("[aria-label*='chapter audio']");
-    const strip = band.querySelector("[data-audio-scrubber] input[type='range']");
+    const strip = band.querySelector(
+      "[data-audio-scrubber] input[type='range']",
+    );
     if (!play || !strip) return null;
     const p = play.getBoundingClientRect();
     const s = strip.getBoundingClientRect();
@@ -1276,13 +1277,13 @@ async function readTocSignature(page) {
       // A row advertises itself as active by drawing the rail marker, not by a class
       // name a hashed stylesheet is free to rename.
       const active = rows.find(
-        (row) => getComputedStyle(row, "::before").content !== "none"
+        (row) => getComputedStyle(row, "::before").content !== "none",
       );
       // Playback state inside the list is exactly what would make it vary with narration.
       const hooks = Array.from(nav.querySelectorAll("*")).filter((element) =>
         Array.from(element.attributes).some((attribute) =>
-          attribute.name.startsWith("data-audio")
-        )
+          attribute.name.startsWith("data-audio"),
+        ),
       ).length;
       return {
         nav: read(nav, navProps),
@@ -1294,7 +1295,7 @@ async function readTocSignature(page) {
     TOC_INLINE,
     TOC_SIGNATURE.nav,
     TOC_SIGNATURE.row,
-    TOC_SIGNATURE.marker
+    TOC_SIGNATURE.marker,
   );
 }
 
@@ -1545,7 +1546,9 @@ async function assertOpensAtTheBeginning(page, route) {
       `audio chapter ${route} opens offering "${state.label}"; a stored offset must not be offered after navigation or reload`,
     );
   if (state.value !== 0)
-    fail(`audio chapter ${route} opens its scrubber at ${state.value}ms, not 0`);
+    fail(
+      `audio chapter ${route} opens its scrubber at ${state.value}ms, not 0`,
+    );
 }
 
 function assertBandGeometryIdentical(measured) {
@@ -1636,7 +1639,9 @@ async function scrubberFillScaleX(page, selector) {
 async function verifyAudioHooksStayInPlayerSurfaces(page) {
   const strays = await page.evaluate(
     (surfaces, articleSelector) => {
-      const roots = surfaces.map((selector) => document.querySelector(selector));
+      const roots = surfaces.map((selector) =>
+        document.querySelector(selector),
+      );
       const outside = (element) =>
         !roots.some((root) => root !== null && root.contains(element));
       const marks = [];
@@ -3546,6 +3551,57 @@ async function assertFitTableGrid(page, name) {
       fail(`${name} rows sit ${Math.round(gap)}px apart, not ${FIT_ROW_PITCH}`);
 }
 
+/** The retrieval tables carry the same Modality column as the chat and decision
+ * tables: a head that sits over its cell, a flow that stays inside its column,
+ * and the machine form of the claim. The family's sink is part of the contract,
+ * so an embedder must end in `vector` and a reranker in `score`. */
+async function assertRetrievalTableGrid(page, name, kind) {
+  const grid = await page.evaluate((tableKind) => {
+    const table = document.querySelector(`[data-${tableKind}-table]`);
+    const left = (node) => node.getBoundingClientRect().left;
+    const head = table.querySelector(':scope > [class*="head"]');
+    // The row's cells live on its control, not the li that wraps it.
+    const row = table.querySelector(`[data-${tableKind}-row] > button`);
+    const headLabels = [...table.querySelectorAll('[class*="headLabel"]')];
+    const headModality = headLabels.find(
+      (node) => node.textContent.trim() === "Modality",
+    );
+    const modality = row?.querySelector(`[data-${tableKind}-modality]`);
+    const flow = modality?.querySelector("svg") ?? null;
+    const rowValue = row?.querySelector('[class*="rowValue"]');
+    return {
+      headCells: head ? head.children.length : 0,
+      rowCells: row ? row.children.length : 0,
+      headModalityX: headModality ? left(headModality) : null,
+      modalityX: modality ? left(modality) : null,
+      modalityRight: flow ? flow.getBoundingClientRect().right : null,
+      valueLeft: rowValue ? left(rowValue) : null,
+      modalityCode: modality?.dataset[`${tableKind}Modality`] ?? null,
+    };
+  }, kind);
+  if (grid.headCells !== grid.rowCells)
+    fail(
+      `${name} head draws ${grid.headCells} columns over rows of ${grid.rowCells}`,
+    );
+  if (typeof grid.headModalityX !== "number")
+    fail(`${name} draws no modality head`);
+  if (Math.abs(grid.headModalityX - grid.modalityX) > 1)
+    fail(`${name} modality head sits off its cell`);
+  if (grid.modalityRight > grid.valueLeft + 1)
+    fail(`${name} modality flow overhangs the memory column`);
+  // `in:text;out:vector` — the shape cell's machine form, sinks included, so a
+  // contract reads either family's claim without reading a drawing.
+  if (
+    !/^in:(text|image|audio|video)(\+(text|image|audio|video))*;out:(label|vector|score)$/.test(
+      grid.modalityCode ?? "",
+    )
+  )
+    fail(`${name} modality cell states "${grid.modalityCode}"`);
+  const expected = kind === "embedding" ? /;out:vector$/ : /;out:score$/;
+  if (!expected.test(grid.modalityCode ?? ""))
+    fail(`${name} modality cell ends in "${grid.modalityCode}"`);
+}
+
 /** WCAG relative luminance of an `rgb()` colour. */
 function luminance(value) {
   const [r, g, b] = value.match(/\d+/g).slice(0, 3).map(Number);
@@ -3589,12 +3645,23 @@ async function assertMemoryRuler(page, name) {
       return "rgb(255, 255, 255)";
     };
     return [
-      ...document.querySelectorAll("[data-fit-table], [data-decision-table]"),
+      ...document.querySelectorAll(
+        "[data-fit-table], [data-decision-table], [data-embedding-table], [data-reranking-table]",
+      ),
     ].map((table) => {
       const legend = table.nextElementSibling;
       const row = table.querySelector("[data-figure-row]");
+      // One table name per figure, so a failure names the table it measured.
+      const kind =
+        [
+          ["data-fit-table", "fit"],
+          ["data-decision-table", "decision"],
+          ["data-embedding-table", "embedding"],
+          ["data-reranking-table", "reranking"],
+        ].find(([attribute]) => table.hasAttribute(attribute))?.[1] ??
+        "unknown";
       return {
-        table: table.hasAttribute("data-fit-table") ? "fit" : "decision",
+        table: kind,
         // The key follows its own table: two figures on one page keep two
         // budgets, so a page-wide lookup would read the wrong one.
         legend: legend?.matches("[data-memory-legend]")
@@ -3680,8 +3747,11 @@ async function assertMemoryRuler(page, name) {
       )}px wide, not one ruler`,
     );
   // The two tables answer from one geometry: a bar that grew a row would make
-  // the pages that draw both read as two designs.
+  // the pages that draw both read as two designs. The retrieval tables price a
+  // different workload, so they are held to the ruler and the inks above, not to
+  // this row height.
   const heights = ruler
+    .filter((table) => table.table === "fit" || table.table === "decision")
     .map((table) => table.rowHeight)
     .filter((height) => Number.isFinite(height));
   if (heights.length === 2 && Math.abs(heights[0] - heights[1]) > 1)
@@ -4187,16 +4257,12 @@ async function inspectFitPin() {
       page.evaluate(() => {
         const row = document.querySelector("[data-fit-row]");
         return {
-          name: row
-            ?.querySelector('[class*="rowName"]')
-            ?.textContent.trim(),
+          name: row?.querySelector('[class*="rowName"]')?.textContent.trim(),
           open: document.querySelectorAll(
             '[data-fit-row] button[aria-expanded="true"]',
           ).length,
           rows: [...document.querySelectorAll("[data-fit-row]")].map((node) =>
-            node
-              .querySelector('[class*="rowName"]')
-              ?.textContent.trim(),
+            node.querySelector('[class*="rowName"]')?.textContent.trim(),
           ),
         };
       });
@@ -4217,20 +4283,19 @@ async function inspectFitPin() {
     // keeps the open row and re-scopes the table: exactly the case the pin must
     // close, not keep.
     const pressed = await page.evaluate(() => {
-      const chip = [...document.querySelectorAll("[data-fit-strip] button")].find(
-        (node) => node.textContent.trim().startsWith("llama.cpp"),
-      );
+      const chip = [
+        ...document.querySelectorAll("[data-fit-strip] button"),
+      ].find((node) => node.textContent.trim().startsWith("llama.cpp"));
       chip?.click();
       return Boolean(chip);
     });
     if (!pressed) fail("fit pin: the default machine offers no llama.cpp chip");
-    await page.waitForFunction(
-      () =>
-        [...document.querySelectorAll("[data-fit-strip] button")].some(
-          (node) =>
-            node.textContent.trim().startsWith("llama.cpp") &&
-            node.getAttribute("aria-pressed") === "true",
-        ),
+    await page.waitForFunction(() =>
+      [...document.querySelectorAll("[data-fit-strip] button")].some(
+        (node) =>
+          node.textContent.trim().startsWith("llama.cpp") &&
+          node.getAttribute("aria-pressed") === "true",
+      ),
     );
     const reScoped = await rowName();
     if (!reScoped.rows.includes(first.name))
@@ -4254,10 +4319,10 @@ async function inspectFitPin() {
     await setFitStop(page, FIT_CONTEXT_LABEL, "1M");
     await page.waitForFunction(
       (name) =>
-        ![...document.querySelectorAll("[data-fit-row]")].some((node) =>
-          node
-            .querySelector('[class*="rowName"]')
-            ?.textContent.trim() === name,
+        ![...document.querySelectorAll("[data-fit-row]")].some(
+          (node) =>
+            node.querySelector('[class*="rowName"]')?.textContent.trim() ===
+            name,
         ),
       {},
       target.name,
@@ -4267,9 +4332,8 @@ async function inspectFitPin() {
       (name) =>
         [...document.querySelectorAll("[data-fit-row]")].some(
           (node) =>
-            node
-              .querySelector('[class*="rowName"]')
-              ?.textContent.trim() === name,
+            node.querySelector('[class*="rowName"]')?.textContent.trim() ===
+            name,
         ),
       {},
       target.name,
@@ -5086,8 +5150,9 @@ async function decisionRuntimeChips(page) {
       ...document.querySelectorAll(
         '[data-decision-strip] [role="group"][aria-label="Runtime"] button',
       ),
-    ].map((chip) =>
-      chip.textContent.replace(/\s+/g, " ").trim().split(" \u00b7 ")[0],
+    ].map(
+      (chip) =>
+        chip.textContent.replace(/\s+/g, " ").trim().split(" \u00b7 ")[0],
     ),
   );
 }
@@ -5100,7 +5165,10 @@ async function pressDecisionRuntime(page, label) {
         '[data-decision-strip] [role="group"][aria-label="Runtime"] button',
       ),
     ].find((node) =>
-      node.textContent.replace(/\s+/g, " ").trim().startsWith(`${target} \u00b7 `),
+      node.textContent
+        .replace(/\s+/g, " ")
+        .trim()
+        .startsWith(`${target} \u00b7 `),
     );
     chip?.click();
     return Boolean(chip);
@@ -5184,11 +5252,17 @@ async function inspectDecisionRuntimesViewport(viewport) {
             );
         // The printed fraction is the list: the numerator counts its rows, the
         // denominator counts the cards that name this runtime.
-        if (state.chipCount !== state.rows.length || state.count !== state.rows.length)
+        if (
+          state.chipCount !== state.rows.length ||
+          state.count !== state.rows.length
+        )
           fail(
             `${name} prints "${state.chip}" over ${state.rows.length} rows and a count of ${state.count}`,
           );
-        if (state.chipCoverage !== served.length || state.total !== served.length)
+        if (
+          state.chipCoverage !== served.length ||
+          state.total !== served.length
+        )
           fail(
             `${name} prints "${state.chip}" against ${served.length} cards that name ${label}`,
           );
@@ -5235,6 +5309,11 @@ async function inspectDecisionModelViewport(viewport) {
     await assertFigureBase(page, name, "data-decision");
     await assertFigureBase(page, name, "data-fit");
     await assertMemoryRuler(page, name);
+    // The page also hosts the two retrieval figures; their Modality columns are
+    // part of the same contract as the chat and decision tables'.
+    await page.waitForSelector("[data-embedding-table] [data-embedding-row]");
+    await assertRetrievalTableGrid(page, `${name} embedding`, "embedding");
+    await assertRetrievalTableGrid(page, `${name} reranking`, "reranking");
     assertDecisionSetup(name, await decisionSetup(page));
 
     const shape = await decisionShape(page);
@@ -5265,15 +5344,14 @@ async function inspectDecisionModelViewport(viewport) {
       const { axis } = shape;
       if (!(axis.budget > 0 && axis.budget <= axis.machine))
         fail(`${name} gives ${axis.budget} GiB of ${axis.machine} GiB printed`);
-      if (!(axis.need > 0))
-        fail(`${name} states no floor for this workload`);
+      if (!(axis.need > 0)) fail(`${name} states no floor for this workload`);
       // The panel's three areas are its own need: the strip and its keys cannot
       // describe two different models.
       if (Math.abs(axis.weights + axis.cache - axis.need) > 0.05)
         fail(
-          `${name} splits ${axis.need} GiB into ${axis.weights} + ${axis.cache}`, 
+          `${name} splits ${axis.need} GiB into ${axis.weights} + ${axis.cache}`,
         );
-      if (axis.overfull !== (axis.need > axis.budget + 1e-9))
+      if (axis.overfull !== axis.need > axis.budget + 1e-9)
         fail(
           `${name} calls a ${axis.need} GiB floor over ${axis.budget} GiB "${axis.overfull}"`,
         );
@@ -5323,8 +5401,7 @@ async function inspectDecisionModelViewport(viewport) {
         `${name} lists ${shape.rows.length} rows under a count of ${shape.counts.fitting}`,
       );
     for (const row of shape.rows) {
-      if (row.verdict !== "fits")
-        fail(`${name} lists a "${row.verdict}" row`);
+      if (row.verdict !== "fits") fail(`${name} lists a "${row.verdict}" row`);
       if (row.weights === null)
         fail(`${name} lists a row with no published weight size`);
       if (row.need === null || row.memory === null)
@@ -5340,11 +5417,10 @@ async function inspectDecisionModelViewport(viewport) {
           `${name} lists ${row.need} GiB over a ${shape.axis.budget} GiB budget`,
         );
       // The number and the bar state one footprint: the row prints the need.
-      if (Math.abs(row.memory - row.need) > 0.05)
+      if (Math.abs(row.memory - row.need) > 0.05 + 1e-9)
         fail(`${name} prints ${row.memory} for a ${row.need} GiB need`);
       // No listed row can carry the "needs more" hatch.
-      if (row.need > shape.axis.budget)
-        fail(`${name} hatches a row it lists`);
+      if (row.need > shape.axis.budget) fail(`${name} hatches a row it lists`);
     }
 
     // The panel's cache is the rows' own term: every listed row's need minus its
@@ -5361,7 +5437,7 @@ async function inspectDecisionModelViewport(viewport) {
     // The floor is the lightest listed row, so the panel and the table quote one
     // model's need: this is the quantity the old cache-only strip never carried.
     const lightest = Math.min(...shape.rows.map((row) => row.need));
-    if (!(Math.abs(shape.axis.need - lightest) <= 0.05))
+    if (Math.abs(shape.axis.need - lightest) > 0.05 + 1e-9)
       fail(
         `${name} states a ${shape.axis.need} GiB floor while its lightest row needs ${lightest} GiB`,
       );
@@ -5382,7 +5458,7 @@ async function inspectDecisionModelViewport(viewport) {
       fail(`${name} kept a ${long.axis.cache} GiB cache at a longer state`);
     if (!(long.axis.need > shape.axis.need))
       fail(`${name} kept a ${long.axis.need} GiB floor at a longer state`);
-    if (long.axis.overfull !== (long.axis.need > long.axis.budget + 1e-9))
+    if (long.axis.overfull !== long.axis.need > long.axis.budget + 1e-9)
       fail(`${name} misreads its own floor after the state lever`);
     if (!(long.rows.length < shape.rows.length))
       fail(

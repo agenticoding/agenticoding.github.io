@@ -1,0 +1,41 @@
+/* RetrievalModelExplorer.module.css
+ * What the two retrieval figures alone draw: the workload levers beside the
+ * shared memory strip. The strip, the machine, the chips, the lever field, and
+ * the row chrome are the shared base (Figure.module.css).
+ */
+
+/* -------------------------------------------------------------- workload */
+/* Two levers on one band, stacked: the length one pass reads and the items in
+ * flight it multiplies by. */
+.levers {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+}
+
+.leversHead {
+  display: flex;
+  gap: var(--space-1);
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.leversTitle {
+  color: var(--text-heading);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+/* The cap sentence: a fact about the list, not a lever, so it sits under the
+ * levers at the field's own quiet weight. */
+.capNote {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--lh-snug);
+}

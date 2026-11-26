@@ -4,6 +4,7 @@ import test from 'node:test';
 
 import { dataset } from './openWeightFitData.ts';
 import { classifiers } from './classifierData.ts';
+import { retrieval } from './retrievalData.ts';
 import { MODEL_MODALITIES } from './modalityProfile.ts';
 import { LAB_MARKS } from './figureMarks.ts';
 import { formatNumber } from './figureCatalog.ts';
@@ -429,23 +430,27 @@ test("the guide's fit figures count drafts where the tables say so", () => {
   const ripple = byName('Ripple-65B-Preview');
   assert.equal(ripple.mtp?.kind, 'drafter');
   assert.equal(ripple.mtp?.includedInFit, true);
-  const hy3 = byName('Hunyuan Hy3');
-  assert.equal(hy3.mtp?.kind, 'mtp');
-  assert.equal(hy3.mtp?.includedInFit, false);
-  assert.equal(hy3.mtp?.estimate, true);
+  for (const name of ['Hunyuan Hy3', 'Hunyuan Hy4 preview']) {
+    const { mtp } = byName(name);
+    assert.equal(mtp?.kind, 'mtp', name);
+    assert.equal(mtp?.includedInFit, true, name);
+    assert.equal(mtp?.gib, null, name);
+  }
   const qwen = byName('Qwen3.8-27B');
-  assert.equal(qwen.mtp?.includedInFit, true);
+  assert.equal(qwen.mtp?.includedInFit, false);
   assert.equal(qwen.mtp?.gib, null);
 });
 
 // The table reserves a column for each lab's mark. A mark that points at a file
 // nobody shipped is a broken image on a production page, so the pairing between
 // the datasets' lab names and the files on disk is a contract, not a convention.
-// Both figures' tables render marks, so both datasets name the labs a mark may
-// carry; one registry serves them, so the guard reads them together.
+// Every table that renders marks names its labs, so every dataset that feeds one
+// belongs here; one registry serves them, so the guard reads them together.
 const staticDir = new URL('../../../static/', import.meta.url);
 const labNames = new Set(
-  [...dataset.models, ...classifiers.models].map((model) => model.lab)
+  [...dataset.models, ...classifiers.models, ...retrieval.models].map(
+    (model) => model.lab
+  )
 );
 
 test('every lab mark names a shipped file and a lab a dataset publishes', () => {

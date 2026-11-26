@@ -119,6 +119,10 @@ export const MEMORY_PANEL = {
   /** The multiplier travels as a phrase: conversations, decisions in flight. */
   cache: (context: string, count: string, gib: number) =>
     `cache at ${context} × ${count} · ${formatGib(gib)} GiB`,
+  /** The same term for a model that keeps nothing between requests: an embedder
+   * or a reranker holds only the tokens one batch is reading. */
+  workingSet: (context: string, count: string, gib: number) =>
+    `working set at ${context} × ${count} · ${formatGib(gib)} GiB`,
   // The overfull scale is the need, so the machine's share is an area on it and
   // the key names the number the colour change sits at.
   machine: (gib: number) => `this machine · ${formatGib(gib)} GiB usable`,
@@ -127,6 +131,9 @@ export const MEMORY_PANEL = {
   // travels as numbers rather than as two more areas.
   breakdown: (weights: number, cache: number) =>
     `${formatGib(weights)} GiB model + ${formatGib(cache)} GiB cache`,
+  /** The same recipe where the second term is a working set, not a cache. */
+  breakdownWorkingSet: (weights: number, held: number) =>
+    `${formatGib(weights)} GiB model + ${formatGib(held)} GiB working set`,
   // The panel's headline when the need is the scale: the number the strip
   // fills to, and the work the reader set it for.
   needed: (workload: string) => `Memory needed at ${workload}`,

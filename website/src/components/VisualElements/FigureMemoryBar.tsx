@@ -75,8 +75,7 @@ export function FigureMemoryLegend({ budgetGib }: { budgetGib: number }) {
         'data-memory-budget': budgetGib,
       }}
     >
-      Bar: share of the {formatGib(budgetGib)} GiB this machine can spend · a
-      hatched end means the model needs more.
+      Bar: share of {formatGib(budgetGib)} GiB · a hatched end overruns it.
     </p>
   );
 }

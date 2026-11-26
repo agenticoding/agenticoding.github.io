@@ -11,13 +11,16 @@
 import { VISUALLY_HIDDEN } from './visuallyHidden';
 import styles from './ModalityFlow.module.css';
 import {
+  isSink,
   modalitySentence,
   modalitySignal,
   type FlowProfile,
   type ModelModality,
   type ModalityOutput,
+  type ModalitySink,
 } from './modalityProfile';
 import { TokenUnit } from './TokenUnit';
+import { VectorGlyph } from './VectorGlyph';
 
 const SHAPE = 12;
 const SHAPE_GAP = 3;
@@ -49,44 +52,60 @@ const TokenShape = ({ modality }: { modality: ModelModality }) => (
 );
 
 /** The sink: a decision, drawn as the check a label returns. Same box as one
- * channel chip, so the flow's pitch never changes with the last group. */
-const Sink = ({ x }: { x: number }) => (
-  <>
-    <rect
-      className={styles.sink}
-      x={x}
-      y={1}
-      width={SHAPE}
-      height={SHAPE}
-      rx={2.5}
-    />
-    {/* Centred on the chip: the tick's own bounds (3.7–8.3 × 4.35–7.65) and
-        the 1.2px stroke around them share the 12px box's centre, so the mark
-        never leans up-left as it did at the old offset. */}
-    <path
-      className={styles.sinkMark}
-      transform={`translate(${x} 1)`}
-      d="M 3.7 5.95 L 5.4 7.65 L 8.3 4.35"
-    />
-  </>
-);
+ * channel chip, so the flow's pitch never changes with the last group. The
+ * vector sink reuses the book's VectorGlyph — the same bracketed column the
+ * retrieval chapter's diagrams draw as the embedder's output — so the icon that
+ * means "vector" never splits into two drawings. The other sinks stay paths. */
+const SINK_MARKS: Record<Exclude<ModalitySink, 'vector'>, string> = {
+  // A decision: the tick a label returns.
+  label: 'M 3.7 5.95 L 5.4 7.65 L 8.3 4.35',
+  // A score: three ranked bars, the shortest first.
+  score: 'M 3.7 8.2 V 6.6 M 6 8.2 V 5.4 M 8.3 8.2 V 4.1',
+};
+
+const Sink = ({ x, sink }: { x: number; sink: ModalitySink }) =>
+  sink === 'vector' ? (
+    // The vector sink is the glyph itself, drawn exactly as the retrieval
+    // chapter draws an emitted vector — bracketed column, filled components —
+    // so the calculator and the chapter share one icon.
+    <VectorGlyph x={x} y={1} size={SHAPE} color="var(--visual-violet)" />
+  ) : (
+    <>
+      <rect
+        className={styles.sink}
+        x={x}
+        y={1}
+        width={SHAPE}
+        height={SHAPE}
+        rx={2.5}
+      />
+      {/* Centred on the chip: the tick's own bounds (3.7–8.3 × 4.35–7.65) and
+          the 1.2px stroke around them share the 12px box's centre, so the mark
+          never leans up-left as it did at the old offset. */}
+      <path
+        className={styles.sinkMark}
+        transform={`translate(${x} 1)`}
+        d={SINK_MARKS[sink]}
+      />
+    </>
+  );
 
 /** The sink at the panel's own scale, with room for its stroke on each side. */
-const SinkShape = () => (
+const SinkShape = ({ sink }: { sink: ModalitySink }) => (
   <svg
     viewBox={`0 0 ${BOX} ${BOX}`}
     className={styles.shape}
     aria-hidden="true"
     focusable="false"
   >
-    <Sink x={1} />
+    <Sink x={1} sink={sink} />
   </svg>
 );
 
 /** One item of a group, at its own step on the group's pitch. */
 const FlowItem = ({ item, x }: { item: ModalityOutput; x: number }) =>
-  item === 'label' ? (
-    <Sink x={x} />
+  isSink(item) ? (
+    <Sink x={x} sink={item} />
   ) : (
     <TokenUnit
       x={x}
@@ -132,7 +151,11 @@ export function ModalityFlow({ profile }: { profile: FlowProfile }) {
 
 const Unit = ({ modality }: { modality: ModalityOutput }) => (
   <span className={styles.unit}>
-    {modality === 'label' ? <SinkShape /> : <TokenShape modality={modality} />}
+    {isSink(modality) ? (
+      <SinkShape sink={modality} />
+    ) : (
+      <TokenShape modality={modality} />
+    )}
     <span>{modality}</span>
   </span>
 );

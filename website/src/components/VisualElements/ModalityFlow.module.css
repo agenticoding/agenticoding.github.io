@@ -53,7 +53,9 @@
 .sink {
   fill: none;
   stroke: var(--visual-violet);
-  stroke-width: 1;
+  /* Container outline: one step above the mark (DIAGRAM_STROKE.default), so the
+   * chip reads as the shell and the mark stays the detail. */
+  stroke-width: 1.5;
 }
 
 .sinkMark {

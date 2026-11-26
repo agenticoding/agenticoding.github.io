@@ -5,11 +5,16 @@ title: Self-Hosted Inference Calculator
 import DiagramFrame from '@site/src/components/VisualElements/DiagramFrame';
 import OpenWeightFitExplorer from '@site/src/components/VisualElements/OpenWeightFitExplorer';
 import DecisionModelExplorer from '@site/src/components/VisualElements/DecisionModelExplorer';
+import {
+  EmbeddingModelExplorer,
+  RerankerModelExplorer,
+} from '@site/src/components/VisualElements/RetrievalModelExplorer';
 import { ASSUME_CACHE_KIB_PER_TOKEN } from '@site/src/components/VisualElements/classifierRequirement';
+import { ASSUME_WORKING_SET_KIB_PER_TOKEN } from '@site/src/components/VisualElements/retrievalRequirement';
 
-Self-hosting inference is an economic decision: you commit hardware, storage, and engineering time; in return you control the model, the runtime, and the marginal cost per request. This page is a calculator for that trade — it shows what a setup must include, which models fit it at your context and concurrency, and the evidence behind each figure. Results are screening estimates, not performance guarantees; the notes below define what each figure does and does not promise.
+Self-hosting inference is an economic decision: you commit hardware, storage, and engineering time; in return you control the model, the runtime, and the marginal cost per request. This page is a calculator for that trade — it shows what a setup must include, which models fit it at the workload you define, and the evidence behind each figure. Four model families appear because they answer different questions: a chat model, a classifier, an embedder, and a reranker each price their workload in their own terms, and each section states those terms before it prices them. Results are screening estimates, not performance guarantees; the notes below define what each figure does and does not promise.
 
-Set your hardware and workload below to see what fits, then open any model for its runtimes, files, and arithmetic.
+Set your hardware and workload below to see what fits, then open any model for its runtimes, files, and arithmetic. The first figure prices a chat model against the conversations you expect; the sections under it price one model family each.
 
 <DiagramFrame
   kicker="Self-hosted inference"
@@ -18,11 +23,8 @@ Set your hardware and workload below to see what fits, then open any model for i
   narration="Choose a hardware tier, usable memory, context length, and number of conversations. The calculator ranks the models that fit by their estimated memory. Open a model to inspect its files, license, arithmetic, and runtime configurations. Selecting a runtime configuration changes the estimates."
   caption={
     <>
-      Only models that fit the selected budget are shown. The modality cell
-      draws each checkpoint's documented input → output channels with the book's
-      token shapes. <code>≈</code> is an interpolation; <code>+</code> is a
-      floor; <code>⇢</code> is a streamed layout. For streamed layouts, the held
-      memory and the checkpoint on storage are separate requirements.
+      <code>≈</code> interpolated · <code>+</code> a floor · <code>⇢</code>{' '}
+      streamed from storage.
     </>
   }
 >
@@ -33,35 +35,79 @@ Set your hardware and workload below to see what fits, then open any model for i
 
 A fit is a screening estimate, not a launch or performance guarantee. It answers one question: can this model run on your hardware at your workload? The answer comes from the specifics you set — the hardware tier and how its memory behaves, the runtime and what it can exploit on that silicon, and the workload you push through it.
 
-**Memory.** The number on the box is not usable capacity. GB and GiB differ, and the OS, runtime, workspaces, and reserved cache pools consume memory. Consumer GPUs have dedicated VRAM; Apple Silicon and DGX Spark share system memory; server accelerators offer larger pools and multi-device interconnects. You can also pool several units into one tier — the calculator's multi-device layouts do exactly this — but every device still has to hold its assigned weights, cache, and buffers, so aggregate capacity alone is not enough. Some checkpoints ship a speculative component — MTP layers or a separate drafter — that sits resident beside the weights; the calculator's drafter toggle loads it (on, the default) or frees it (off), which can turn a borderline fit into a fit. Each row draws that component as the last part of its own memory bar, so its share of the footprint sits beside the total. In workload terms: one 64K conversation costs a 65B checkpoint about 4 GiB of cache, so a 7.5 GiB drafter is about two conversations' worth of room at 64K, and a tenth of one at 1M. Capacity and bandwidth both matter: a machine can hold a model yet serve it slowly.
+**Memory.** The number on the box is not usable capacity. GB and GiB differ, and the OS, runtime, workspaces, and reserved cache pools consume memory. Consumer GPUs have dedicated VRAM; Apple Silicon and DGX Spark share system memory; server accelerators offer larger pools and multi-device interconnects. You can also pool several units into one tier — the calculator's multi-device layouts do exactly this — but every device still has to hold its assigned weights, cache, and buffers, so aggregate capacity alone is not enough. Some models use MTP layers or a separate drafter. The drafter toggle adjusts the memory estimate for the catalog's priced path when the resident size is known. It does not reprice alternate runtime layouts or assume that a file's size equals the memory the runtime can free. In workload terms: one 64K conversation costs a 65B model about 4 GiB of cache, so a 7.5 GiB drafter is about two conversations' worth of room at 64K, and a tenth of one at 1M. Capacity and bandwidth both matter: a machine can hold a model yet serve it slowly.
 
 **Context and concurrency.** These are the workload inputs you set in the calculator: context length and the number of conversations in flight. Weights load once, but each conversation adds request state — the key-value cache — that grows with retained context, so the calculator scales the cache to the two values you choose. How much that cache actually costs depends on the model and runtime — cache dtype, sliding windows, reserved pools — which is why the estimate is a screening figure, not an exact allocation. For how models use their context and how to shape it, see [Context and Memory](../agent-context-state.mdx). A fit does not predict speed: batching raises aggregate throughput while cutting per-user speed, so measure time-to-first-token and output tokens per second at your actual prompt lengths and peak concurrency, cold and warm.
 
-**Runtime and storage.** A runtime is not neutral: specialized runtimes exploit a given chip's capabilities — tensor-core paths, low-precision math, fused attention, or expert streaming — and can change both what fits and how fast it runs. Support in source does not guarantee support in the installed build, so pin versions and test the exact deployment. Some mixture-of-experts runtimes stream routed experts from SSD instead of holding the full checkpoint in memory: that cuts resident memory but demands fast storage and can trade decode speed. Verify the license and serving terms before you commit.
+**Runtime and storage.** A runtime is not neutral: specialized runtimes exploit a given chip's capabilities — tensor-core paths, low-precision math, fused attention, or expert streaming — and can change both what fits and how fast it runs. Support in source does not guarantee support in the installed build, so pin versions and test the exact deployment. Some mixture-of-experts runtimes stream routed experts from SSD instead of holding every weight in memory: that cuts resident memory but demands fast storage and can trade decode speed. Verify the license and serving terms before you commit.
 
 ## Decision models
 
-A classifier never writes an answer. It scores the options you allow, so its footprint is simple: the weights, plus the cache each decision in flight keeps.
+These classifiers score options without generating an answer. The figure adds a fixed workload allowance to the weight size, based on state length and concurrent decisions. This is not a measured KV cache size: the [Clef reference classifier](https://huggingface.co/Cloudflare/clef/blob/main/joint_schema_model.py#L472-L482) disables KV caching.
 
-Think of the weights as the program and the cache as the heap each request allocates. The program loads once and is shared; every decision in flight gets its own cache, sized by the state it holds. So memory is the weights plus state length times decisions at once — a longer state makes each copy bigger, more decisions make more copies. The model sets the bytes per token; the runtime decides how much memory it holds back, usually a pool reserved at boot. Exceed that pool and requests wait, get preempted, or fail.
-
-Two axes set that fully: how long each state is and how many decisions run at once. Choose the runtime early — it decides what loads and what it can serve. The figure below prices it.
+A memory fit does not mean the request fits the input window. Check the full encoded request, including questions and media, against the limit for your runtime and artifact.
 
 <DiagramFrame
   kicker="Decision models"
   title="What the workload costs to hold"
   size="full"
-  narration="Choose the state length and how many decisions the machine runs at once. The table lists the classifiers that fit the machine and runtime you chose. Open a row for its verdict, its two terms, and its files."
+  narration="Choose the state length and how many decisions the machine runs at once. Open a classifier row for its memory estimate, input limit, and files."
   caption={
     <>
-      Each row is a classifier that fits the budget and runtime you set, and its
-      number is the weights plus the cache at your workload. <code>—</code> is a
-      fact the card does not publish. Cache rests on one assumption:{' '}
-      {ASSUME_CACHE_KIB_PER_TOKEN}&nbsp;KiB per state token — a 27B dense BF16
-      shape, so smaller models hold less. A runtime may reserve more than the
-      column states.
+      <code>—</code> not published · weights plus a planning allowance of{' '}
+      {ASSUME_CACHE_KIB_PER_TOKEN}&nbsp;KiB per state token.
     </>
   }
 >
   <DecisionModelExplorer />
+</DiagramFrame>
+
+## Embedding models
+
+An embedder does not answer; it places text in a space. That makes its footprint the simplest on this page: the weights load once, and the only other term is the batch of texts the model is reading at that moment. Nothing survives the request — no cache, no conversation, no state that grows — so the second lever is a batch, not a history.
+
+Two numbers decide whether a workload fits. The length of one text is what a single pass reads; the texts in flight multiply it. Indexing a corpus turns both up: long chunks, wide batches. Serving queries turns both down: one short question, one at a time. The same model does both jobs in a [retrieval-augmented generation](../retrieval-augmented-generation.md) pipeline: it embeds the corpus once, then every question. Because one model covers both ends, below 8B the levers move the answer more than the model does.
+
+The calculator drops rows when the text exceeds their listed input limit, regardless of memory. A listed limit can be a runtime default rather than a checkpoint hard cap. Check the tokenizer and runtime you deploy: a model that fits in memory can still truncate your documents.
+
+Vector width is a bill you pay per chunk, not a quality score. Open a row for the width it publishes and whether it truncates (Matryoshka) or not: 4,096 dimensions cost four times the index of 1,024 for the same corpus, before quantization.
+
+<DiagramFrame
+  kicker="Embedding models"
+  title="Which embedder fits the batch you index with"
+  size="full"
+  narration="Choose a machine, the length of one text, and how many texts are in flight. The table lists embedders that fit and do not exceed a listed input limit. Open a row for its vector width, published score, license, files, and arithmetic."
+  caption={
+    <>
+      <code>—</code> not published · memory is weights plus working set, at an
+      assumed {ASSUME_WORKING_SET_KIB_PER_TOKEN}&nbsp;KiB per token in flight.
+    </>
+  }
+>
+  <EmbeddingModelExplorer />
+</DiagramFrame>
+
+## Reranker models
+
+In a [RAG pipeline](../retrieval-augmented-generation.md#deep-research-the-same-delegation-iterated), a reranker orders the candidates returned by retrieval. This figure covers **pairwise rerankers**: each score uses one query and one candidate. It does not price listwise models such as [Jina Reranker v3.5](https://huggingface.co/jinaai/jina-reranker-v3.5/blob/main/README.md#L28-L33), which score candidates jointly.
+
+The pool is a recall budget: if the right passage never entered it, no score brings it back. A larger pool adds scoring work. Peak memory depends on how many pairs are in flight, not how many the query scores in total.
+
+The limit applies to the whole encoded pair, not just the passage. Set the pair length above a model's listed limit and it leaves the list, however much memory the machine has.
+
+A row can fit your machine and not fit your product. Open it for the license before you plan around it: open weights are not always free to host.
+
+<DiagramFrame
+  kicker="Reranker models"
+  title="Which reranker fits the pool you score"
+  size="full"
+  narration="Choose a machine, the length of one query-passage pair, and how many candidates in flight. The table lists rerankers that fit and do not exceed a listed input limit. Open a row for its published score, license, files, and arithmetic."
+  caption={
+    <>
+      <code>—</code> not published · memory is weights plus working set, at an
+      assumed {ASSUME_WORKING_SET_KIB_PER_TOKEN}&nbsp;KiB per token in flight.
+    </>
+  }
+>
+  <RerankerModelExplorer />
 </DiagramFrame>

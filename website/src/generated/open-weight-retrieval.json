@@ -1,0 +1,508 @@
+{
+  "meta": {
+    "guide": "open-weight-retrieval-nov-2026.md",
+    "sourceUrl": "https://github.com/agenticoding/agenticoding.github.io/blob/main/open-weight-retrieval-nov-2026.md",
+    "checkedThrough": "2026-11-26",
+    "kinds": ["embedding", "reranking"]
+  },
+  "models": [
+    {
+      "id": "qwen3-embedding-8b",
+      "name": "Qwen3-Embedding 8B",
+      "lab": "Alibaba",
+      "kind": "embedding",
+      "base": "Qwen3-8B-Base",
+      "params": "7.57B dense",
+      "weights": {
+        "gib": 14.09,
+        "stated": "15.13 GB BF16",
+        "precision": "BF16"
+      },
+      "maxInput": {
+        "tokens": 32768,
+        "basis": "card"
+      },
+      "dims": {
+        "width": 4096,
+        "note": "MRL 32–4,096"
+      },
+      "score": {
+        "value": 70.58,
+        "benchmark": "MMTEB v2 (mean task)"
+      },
+      "country": "China",
+      "files": "sharded safetensors; Q4_K_M GGUF",
+      "filesUrl": "https://huggingface.co/Qwen/Qwen3-Embedding-8B/tree/main",
+      "license": "Apache-2.0",
+      "engineIds": [
+        "transformers",
+        "tei",
+        "vllm",
+        "sglang",
+        "ollama",
+        "llamacpp"
+      ],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "vector"
+      },
+      "sourceUrl": "https://huggingface.co/Qwen/Qwen3-Embedding-8B"
+    },
+    {
+      "id": "qwen3-embedding-4b",
+      "name": "Qwen3-Embedding 4B",
+      "lab": "Alibaba",
+      "kind": "embedding",
+      "base": "Qwen3-4B-Base",
+      "params": "4.02B dense",
+      "weights": {
+        "gib": 7.49,
+        "stated": "8.04 GB BF16",
+        "precision": "BF16"
+      },
+      "maxInput": {
+        "tokens": 32768,
+        "basis": "card"
+      },
+      "dims": {
+        "width": 2560,
+        "note": "MRL 32–2,560"
+      },
+      "score": {
+        "value": 69.45,
+        "benchmark": "MMTEB v2 (mean task)"
+      },
+      "country": "China",
+      "files": "sharded safetensors; Q4_K_M GGUF",
+      "filesUrl": "https://huggingface.co/Qwen/Qwen3-Embedding-4B/tree/main",
+      "license": "Apache-2.0",
+      "engineIds": [
+        "transformers",
+        "tei",
+        "vllm",
+        "sglang",
+        "ollama",
+        "llamacpp"
+      ],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "vector"
+      },
+      "sourceUrl": "https://huggingface.co/Qwen/Qwen3-Embedding-4B"
+    },
+    {
+      "id": "qwen3-embedding-0-6b",
+      "name": "Qwen3-Embedding 0.6B",
+      "lab": "Alibaba",
+      "kind": "embedding",
+      "base": "Qwen3-0.6B-Base",
+      "params": "596M dense",
+      "weights": {
+        "gib": 1.11,
+        "stated": "1.19 GB BF16",
+        "precision": "BF16"
+      },
+      "maxInput": {
+        "tokens": 32768,
+        "basis": "card"
+      },
+      "dims": {
+        "width": 1024,
+        "note": "MRL 32–1,024"
+      },
+      "score": {
+        "value": 64.33,
+        "benchmark": "MMTEB v2 (mean task)"
+      },
+      "country": "China",
+      "files": "safetensors; Q8_0 GGUF",
+      "filesUrl": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B/blob/main/model.safetensors",
+      "license": "Apache-2.0",
+      "engineIds": [
+        "transformers",
+        "tei",
+        "vllm",
+        "sglang",
+        "ollama",
+        "llamacpp"
+      ],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "vector"
+      },
+      "sourceUrl": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B"
+    },
+    {
+      "id": "bge-m3",
+      "name": "BGE-M3",
+      "lab": "BAAI",
+      "kind": "embedding",
+      "base": "BGE-M3-unsupervised (XLM-RoBERTa-large)",
+      "params": "568M dense",
+      "weights": {
+        "gib": 2.11,
+        "stated": "2.27 GB FP32",
+        "precision": "FP32"
+      },
+      "maxInput": {
+        "tokens": 8192,
+        "basis": "card"
+      },
+      "dims": {
+        "width": 1024,
+        "note": null
+      },
+      "score": {
+        "value": 59.56,
+        "benchmark": "MMTEB v2 (mean task; leaderboard snapshot)"
+      },
+      "country": "China",
+      "files": "PyTorch backbone and separate sparse/ColBERT heads; dense ONNX",
+      "filesUrl": "https://huggingface.co/BAAI/bge-m3/tree/main",
+      "license": "MIT",
+      "engineIds": ["transformers", "tei", "onnx", "vllm"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "vector"
+      },
+      "sourceUrl": "https://huggingface.co/BAAI/bge-m3"
+    },
+    {
+      "id": "harrier-oss-v1-27b",
+      "name": "Harrier OSS v1 27B",
+      "lab": "Microsoft",
+      "kind": "embedding",
+      "base": "Gemma 3 architecture",
+      "params": "27B dense",
+      "weights": {
+        "gib": 50.31,
+        "stated": "54.02 GB BF16",
+        "precision": "BF16"
+      },
+      "maxInput": {
+        "tokens": 32768,
+        "basis": "card"
+      },
+      "dims": {
+        "width": 5376,
+        "note": "fixed"
+      },
+      "score": {
+        "value": 74.3,
+        "benchmark": "MMTEB v2 (mean task)"
+      },
+      "country": "United States",
+      "files": "sharded safetensors",
+      "filesUrl": "https://huggingface.co/microsoft/Harrier-OSS-v1-27B/tree/main",
+      "license": "MIT",
+      "engineIds": ["transformers", "vllm", "sglang"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "vector"
+      },
+      "sourceUrl": "https://huggingface.co/microsoft/Harrier-OSS-v1-27B"
+    },
+    {
+      "id": "harrier-oss-v1-0-6b",
+      "name": "Harrier OSS v1 0.6B",
+      "lab": "Microsoft",
+      "kind": "embedding",
+      "base": "Qwen3 architecture",
+      "params": "0.6B dense",
+      "weights": {
+        "gib": 1.11,
+        "stated": "1.19 GB BF16",
+        "precision": "BF16"
+      },
+      "maxInput": {
+        "tokens": 32768,
+        "basis": "card"
+      },
+      "dims": {
+        "width": 1024,
+        "note": "fixed"
+      },
+      "score": {
+        "value": 69,
+        "benchmark": "MMTEB v2 (mean task)"
+      },
+      "country": "United States",
+      "files": "safetensors",
+      "filesUrl": "https://huggingface.co/microsoft/Harrier-OSS-v1-0.6B/blob/main/model.safetensors",
+      "license": "MIT",
+      "engineIds": ["transformers", "tei", "vllm", "sglang"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "vector"
+      },
+      "sourceUrl": "https://huggingface.co/microsoft/Harrier-OSS-v1-0.6B"
+    },
+    {
+      "id": "embeddinggemma-300m",
+      "name": "EmbeddingGemma 300M",
+      "lab": "Google",
+      "kind": "embedding",
+      "base": "Gemma 3 (T5Gemma initialization)",
+      "params": "308M dense",
+      "weights": {
+        "gib": 1.15,
+        "stated": "1.23 GB FP32",
+        "precision": "FP32"
+      },
+      "maxInput": {
+        "tokens": 2048,
+        "basis": "card"
+      },
+      "dims": {
+        "width": 768,
+        "note": "MRL 128, 256, 512, 768"
+      },
+      "score": {
+        "value": 61.15,
+        "benchmark": "MMTEB v2 (mean task; FP32, 768d)"
+      },
+      "country": "United States",
+      "files": "backbone and two dense safetensors modules",
+      "filesUrl": "https://huggingface.co/google/embeddinggemma-300m/tree/main",
+      "license": "Gemma Terms",
+      "engineIds": [
+        "transformers",
+        "tei",
+        "vllm",
+        "sglang",
+        "ollama",
+        "mlx",
+        "llamacpp"
+      ],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "vector"
+      },
+      "sourceUrl": "https://huggingface.co/google/embeddinggemma-300m"
+    },
+    {
+      "id": "all-minilm-l6-v2",
+      "name": "all-MiniLM-L6-v2",
+      "lab": "sentence-transformers",
+      "kind": "embedding",
+      "base": "MiniLM-L6-H384-uncased",
+      "params": "22.7M dense",
+      "weights": {
+        "gib": 0.08,
+        "stated": "90.9 MB FP32",
+        "precision": "FP32"
+      },
+      "maxInput": {
+        "tokens": 256,
+        "basis": "default"
+      },
+      "dims": {
+        "width": 384,
+        "note": null
+      },
+      "score": null,
+      "country": null,
+      "files": "model.safetensors; ONNX",
+      "filesUrl": "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/blob/main/model.safetensors",
+      "license": "Apache-2.0",
+      "engineIds": ["transformers", "onnx", "tei"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "vector"
+      },
+      "sourceUrl": "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2"
+    },
+    {
+      "id": "qwen3-reranker-8b",
+      "name": "Qwen3-Reranker 8B",
+      "lab": "Alibaba",
+      "kind": "reranking",
+      "base": "Qwen3-8B-Base",
+      "params": "8.19B dense",
+      "weights": {
+        "gib": 15.26,
+        "stated": "16.38 GB BF16",
+        "precision": "BF16"
+      },
+      "maxInput": {
+        "tokens": 32768,
+        "basis": "card"
+      },
+      "dims": null,
+      "score": {
+        "value": 69.02,
+        "benchmark": "MTEB-R (English v2; Qwen top 100)"
+      },
+      "country": "China",
+      "files": "sharded safetensors",
+      "filesUrl": "https://huggingface.co/Qwen/Qwen3-Reranker-8B/tree/main",
+      "license": "Apache-2.0",
+      "engineIds": ["transformers", "vllm", "sglang"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "score"
+      },
+      "sourceUrl": "https://huggingface.co/Qwen/Qwen3-Reranker-8B"
+    },
+    {
+      "id": "qwen3-reranker-4b",
+      "name": "Qwen3-Reranker 4B",
+      "lab": "Alibaba",
+      "kind": "reranking",
+      "base": "Qwen3-4B-Base",
+      "params": "4.02B dense",
+      "weights": {
+        "gib": 7.49,
+        "stated": "8.04 GB BF16",
+        "precision": "BF16"
+      },
+      "maxInput": {
+        "tokens": 32768,
+        "basis": "card"
+      },
+      "dims": null,
+      "score": {
+        "value": 69.76,
+        "benchmark": "MTEB-R (English v2; Qwen top 100)"
+      },
+      "country": "China",
+      "files": "sharded safetensors",
+      "filesUrl": "https://huggingface.co/Qwen/Qwen3-Reranker-4B/tree/main",
+      "license": "Apache-2.0",
+      "engineIds": ["transformers", "vllm", "sglang"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "score"
+      },
+      "sourceUrl": "https://huggingface.co/Qwen/Qwen3-Reranker-4B"
+    },
+    {
+      "id": "qwen3-reranker-0-6b",
+      "name": "Qwen3-Reranker 0.6B",
+      "lab": "Alibaba",
+      "kind": "reranking",
+      "base": "Qwen3-0.6B-Base",
+      "params": "596M dense",
+      "weights": {
+        "gib": 1.11,
+        "stated": "1.19 GB BF16",
+        "precision": "BF16"
+      },
+      "maxInput": {
+        "tokens": 32768,
+        "basis": "card"
+      },
+      "dims": null,
+      "score": {
+        "value": 65.8,
+        "benchmark": "MTEB-R (English v2; Qwen top 100)"
+      },
+      "country": "China",
+      "files": "safetensors",
+      "filesUrl": "https://huggingface.co/Qwen/Qwen3-Reranker-0.6B/blob/main/model.safetensors",
+      "license": "Apache-2.0",
+      "engineIds": ["transformers", "vllm", "sglang"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "score"
+      },
+      "sourceUrl": "https://huggingface.co/Qwen/Qwen3-Reranker-0.6B"
+    },
+    {
+      "id": "bge-reranker-v2-m3",
+      "name": "BGE-reranker-v2-m3",
+      "lab": "BAAI",
+      "kind": "reranking",
+      "base": "BGE-M3",
+      "params": "568M dense",
+      "weights": {
+        "gib": 2.11,
+        "stated": "2.27 GB FP32",
+        "precision": "FP32"
+      },
+      "maxInput": {
+        "tokens": 8192,
+        "basis": "config"
+      },
+      "dims": null,
+      "score": {
+        "value": 57.03,
+        "benchmark": "MTEB-R (English v2; Qwen top 100)"
+      },
+      "country": "China",
+      "files": "model.safetensors",
+      "filesUrl": "https://huggingface.co/BAAI/bge-reranker-v2-m3/blob/main/model.safetensors",
+      "license": "Apache-2.0",
+      "engineIds": ["transformers", "tei", "vllm", "sglang"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "score"
+      },
+      "sourceUrl": "https://huggingface.co/BAAI/bge-reranker-v2-m3"
+    },
+    {
+      "id": "mxbai-rerank-large-v2",
+      "name": "mxbai-rerank-large-v2",
+      "lab": "mixedbread",
+      "kind": "reranking",
+      "base": "Qwen2.5 1.5B",
+      "params": "1.5B dense",
+      "weights": {
+        "gib": 2.88,
+        "stated": "3.09 GB FP16",
+        "precision": "FP16"
+      },
+      "maxInput": {
+        "tokens": 8192,
+        "basis": "blog"
+      },
+      "dims": null,
+      "score": {
+        "value": 57.49,
+        "benchmark": "BEIR nDCG@10 (Mixedbread run)"
+      },
+      "country": null,
+      "files": "model.safetensors",
+      "filesUrl": "https://huggingface.co/mixedbread-ai/mxbai-rerank-large-v2/blob/main/model.safetensors",
+      "license": "Apache-2.0",
+      "engineIds": ["transformers"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "score"
+      },
+      "sourceUrl": "https://huggingface.co/mixedbread-ai/mxbai-rerank-large-v2"
+    },
+    {
+      "id": "ms-marco-minilm-l6-v2",
+      "name": "ms-marco-MiniLM-L6-v2",
+      "lab": "cross-encoder",
+      "kind": "reranking",
+      "base": "ms-marco-MiniLM-L12-v2",
+      "params": "22.7M dense",
+      "weights": {
+        "gib": 0.08,
+        "stated": "90.9 MB FP32",
+        "precision": "FP32"
+      },
+      "maxInput": {
+        "tokens": 512,
+        "basis": "config"
+      },
+      "dims": null,
+      "score": {
+        "value": 74.3,
+        "benchmark": "TREC DL 19 nDCG@10"
+      },
+      "country": null,
+      "files": "model.safetensors; ONNX",
+      "filesUrl": "https://huggingface.co/cross-encoder/ms-marco-MiniLM-L6-v2/blob/main/model.safetensors",
+      "license": "Apache-2.0",
+      "engineIds": ["transformers", "onnx", "tei"],
+      "modalities": {
+        "inputs": ["text"],
+        "output": "score"
+      },
+      "sourceUrl": "https://huggingface.co/cross-encoder/ms-marco-MiniLM-L6-v2"
+    }
+  ]
+}

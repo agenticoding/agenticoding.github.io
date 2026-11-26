@@ -9,6 +9,7 @@
     "stars:refresh": "node ../scripts/fetch-github-stars.js",
     "data:open-weight-fit": "node ../scripts/extract-open-weight-fit.mjs",
     "data:open-weight-classifiers": "node ../scripts/extract-open-weight-classifiers.mjs",
+    "data:open-weight-retrieval": "node ../scripts/extract-open-weight-retrieval.mjs",
     "audio:build": "node ../scripts/audiobook/cli.mjs --build",
     "audio:verify": "node ../scripts/audiobook/cli.mjs --verify",
     "audio:list": "node ../scripts/audiobook/cli.mjs --list",

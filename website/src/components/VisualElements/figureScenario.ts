@@ -79,6 +79,14 @@ export const machineScenario =
 export const decisionMachineScenario =
   createStore<MachineScenarioState>(DEFAULT_MACHINE);
 
+/** The embedder figure's own machine: same default, its own clicks. */
+export const embeddingMachineScenario =
+  createStore<MachineScenarioState>(DEFAULT_MACHINE);
+
+/** The reranker figure's own machine: same default, its own clicks. */
+export const rerankerMachineScenario =
+  createStore<MachineScenarioState>(DEFAULT_MACHINE);
+
 /** Drops the keys a patch omits, so an absent value never erases a set one. */
 const compact = <T extends object>(patch: Partial<T>): Partial<T> =>
   Object.fromEntries(

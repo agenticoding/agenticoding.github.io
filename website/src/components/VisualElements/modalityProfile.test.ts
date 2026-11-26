@@ -48,4 +48,14 @@ test('a flow has one machine form for the table contract', () => {
     modalityFlowCode({ input: ['text', 'image'], output: ['text'] }),
     'in:text+image;out:text'
   );
+  // Sinks travel in the same code: an embedder ends in a vector, a reranker in
+  // a score, so a contract can read either family's claim without a drawing.
+  assert.equal(
+    modalityFlowCode({ input: ['text'], output: ['vector'] }),
+    'in:text;out:vector'
+  );
+  assert.equal(
+    modalityFlowCode({ input: ['text'], output: ['score'] }),
+    'in:text;out:score'
+  );
 });
