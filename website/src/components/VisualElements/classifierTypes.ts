@@ -19,10 +19,11 @@ export type ClassifierWeights = {
   precision: string;
 };
 
-/** The input limit and who states it: the serving docs, or the checkpoint. */
+/** The input limit and who states it: the serving docs, the checkpoint, or the
+ * publisher's local reference default. */
 export type ClassifierMaxInput = {
   tokens: number;
-  basis: 'served' | 'config';
+  basis: 'served' | 'config' | 'reference';
 };
 
 export type ClassifierModel = {

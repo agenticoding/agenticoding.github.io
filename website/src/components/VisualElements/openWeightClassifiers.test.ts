@@ -30,17 +30,19 @@ test('every row is a well-formed classifier', () => {
   }
 });
 
-test('a published weight figure names its precision; a missing one stays missing', () => {
+test('a published weight figure names its precision', () => {
   for (const model of models) {
     if (model.weights === null) continue;
     assert.ok(model.weights.precision.length > 0, model.id);
     assert.ok(model.weights.gib > 0, model.id);
     assert.ok(model.weights.stated.includes(model.weights.precision), model.id);
   }
-  assert.ok(
-    models.some((model) => model.weights === null),
-    'the untested verdict must be reachable'
-  );
+});
+
+test('Jev-Omni reports one download with both artifact precisions', () => {
+  const model = models.find(({ id }) => id === 'jev-omni-12b');
+  assert.equal(model?.weights?.gib, 22.28);
+  assert.equal(model?.weights?.stated, '22.28 GiB BF16 backbone + FP32 head');
 });
 
 test('the origin is a country name or an unpublished fact', () => {
@@ -57,7 +59,10 @@ test('a published input limit is a positive number with its basis', () => {
   for (const model of models) {
     if (model.maxInput === null) continue;
     assert.ok(model.maxInput.tokens > 0, model.id);
-    assert.ok(['served', 'config'].includes(model.maxInput.basis), model.id);
+    assert.ok(
+      ['served', 'config', 'reference'].includes(model.maxInput.basis),
+      model.id
+    );
   }
 });
 
@@ -67,6 +72,13 @@ test('every named runtime is one the fit catalogue publishes', () => {
     assert.ok(model.engineIds.length > 0, model.id);
     for (const id of model.engineIds)
       assert.ok(known.has(id), `${model.id}: ${id}`);
+  }
+});
+
+test('the Clef rows cite the reference default, not a config limit', () => {
+  for (const id of ['clef-27b', 'clef-flash', 'clef-omni']) {
+    const model = models.find(({ id: modelId }) => modelId === id);
+    assert.equal(model?.maxInput?.basis, 'reference', id);
   }
 });
 

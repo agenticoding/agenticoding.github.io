@@ -2,7 +2,7 @@
   "meta": {
     "guide": "open-weight-classifiers-nov-2026.md",
     "sourceUrl": "https://github.com/agenticoding/agenticoding.github.io/blob/main/open-weight-classifiers-nov-2026.md",
-    "checkedThrough": "2026-11-23",
+    "checkedThrough": "2026-11-26",
     "protocols": ["joint", "per-question"]
   },
   "models": [
@@ -14,17 +14,17 @@
       "protocol": "joint",
       "params": "27B dense",
       "weights": {
-        "gib": 50.35,
-        "stated": "50.35 GiB BF16",
+        "gib": 51.19,
+        "stated": "51.19 GiB BF16",
         "precision": "BF16"
       },
       "maxInput": {
-        "tokens": 65536,
-        "basis": "served"
+        "tokens": 16384,
+        "basis": "reference"
       },
       "country": "United States",
-      "files": "sharded safetensors + `joint_head.safetensors`; BF16 GGUF",
-      "filesUrl": "https://huggingface.co/ggml-org/Clef-GGUF/tree/main",
+      "files": "sharded safetensors + joint_head.safetensors",
+      "filesUrl": "https://huggingface.co/Cloudflare/clef/tree/main",
       "license": "Apache-2.0",
       "engineIds": ["sglang", "llamacpp", "transformers"],
       "modalities": {
@@ -41,19 +41,19 @@
       "protocol": "joint",
       "params": "9B dense",
       "weights": {
-        "gib": 16.92,
-        "stated": "16.92 GiB BF16",
+        "gib": 17.75,
+        "stated": "17.75 GiB BF16",
         "precision": "BF16"
       },
       "maxInput": {
-        "tokens": 24576,
-        "basis": "served"
+        "tokens": 16384,
+        "basis": "reference"
       },
       "country": "United States",
-      "files": "sharded safetensors + `joint_head.safetensors`; BF16 GGUF",
-      "filesUrl": "https://huggingface.co/ggml-org/Clef-Flash-GGUF/tree/main",
+      "files": "sharded safetensors + joint_head.safetensors",
+      "filesUrl": "https://huggingface.co/Cloudflare/clef-flash/tree/main",
       "license": "Apache-2.0",
-      "engineIds": ["sglang", "llamacpp", "transformers"],
+      "engineIds": ["vllm", "sglang", "llamacpp", "transformers"],
       "modalities": {
         "inputs": ["text", "image", "video"],
         "output": "label"
@@ -64,19 +64,23 @@
       "id": "clef-omni",
       "name": "Clef Omni",
       "lab": "Cloudflare",
-      "base": "Qwen3-Omni-30B-A3B",
+      "base": "Qwen3-Omni-30B-A3B-Instruct",
       "protocol": "joint",
       "params": "30B/3B",
-      "weights": null,
+      "weights": {
+        "gib": 65.88,
+        "stated": "65.88 GiB BF16",
+        "precision": "BF16"
+      },
       "maxInput": {
         "tokens": 64000,
-        "basis": "served"
+        "basis": "reference"
       },
       "country": "United States",
-      "files": "sharded safetensors + `joint_head.safetensors`",
-      "filesUrl": null,
+      "files": "sharded safetensors + joint_head.safetensors",
+      "filesUrl": "https://huggingface.co/Cloudflare/clef-omni/tree/main",
       "license": "Apache-2.0",
-      "engineIds": ["transformers", "mlx"],
+      "engineIds": ["vllm", "transformers", "mlx"],
       "modalities": {
         "inputs": ["text", "image", "audio", "video"],
         "output": "label"
@@ -86,56 +90,29 @@
     {
       "id": "jev-omni-12b",
       "name": "Jev-Omni 12B",
-      "lab": "Jev",
+      "lab": "akhilaaa3",
       "base": "Gemma-4-12B-it",
       "protocol": "per-question",
       "params": "12B dense",
       "weights": {
-        "gib": 46.57,
-        "stated": "50 GB FP32",
-        "precision": "FP32"
+        "gib": 22.28,
+        "stated": "22.28 GiB BF16 backbone + FP32 head",
+        "precision": "BF16 backbone + FP32 head"
       },
       "maxInput": {
         "tokens": 262144,
         "basis": "config"
       },
       "country": null,
-      "files": "`model.safetensors` + `head.pt`",
-      "filesUrl": null,
+      "files": "model.safetensors + head.pt",
+      "filesUrl": "https://huggingface.co/akhilaaa3/Jev-Omni/tree/main",
       "license": "Apache-2.0",
-      "engineIds": ["transformers", "llamacpp", "mlx"],
+      "engineIds": ["transformers"],
       "modalities": {
         "inputs": ["text", "image", "audio", "video"],
         "output": "label"
       },
       "sourceUrl": "https://huggingface.co/akhilaaa3/Jev-Omni"
-    },
-    {
-      "id": "jev-style-1-5b",
-      "name": "Jev-style 1.5B",
-      "lab": "JackKozmo29",
-      "base": "Qwen2.5-1.5B-Instruct",
-      "protocol": "per-question",
-      "params": "1.5B dense",
-      "weights": {
-        "gib": 5.75,
-        "stated": "5.75 GiB FP32",
-        "precision": "FP32"
-      },
-      "maxInput": {
-        "tokens": 32768,
-        "basis": "config"
-      },
-      "country": null,
-      "files": "single FP32 `model.safetensors`",
-      "filesUrl": null,
-      "license": "Apache-2.0",
-      "engineIds": ["transformers"],
-      "modalities": {
-        "inputs": ["text"],
-        "output": "label"
-      },
-      "sourceUrl": "https://huggingface.co/JackKozmo29/depguard-jev-style-1.5b"
     },
     {
       "id": "minicpm-ocr-jev",
@@ -154,8 +131,8 @@
         "basis": "config"
       },
       "country": "China",
-      "files": "safetensors; GGUF",
-      "filesUrl": "https://huggingface.co/openbmb/MiniCPM-OCR-Jev-gguf",
+      "files": "model.safetensors",
+      "filesUrl": "https://huggingface.co/openbmb/MiniCPM-OCR-Jev/blob/main/model.safetensors",
       "license": "Apache-2.0",
       "engineIds": ["vllm", "sglang", "llamacpp", "ollama"],
       "modalities": {

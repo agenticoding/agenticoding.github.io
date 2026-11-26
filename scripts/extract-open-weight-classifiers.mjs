@@ -86,7 +86,9 @@ const COLUMNS = [
  * published wording travels with it: the table prints what the source says. */
 const parseWeights = (cell, context) => {
   if (plain(cell) === "?") return null;
-  const match = /^([\d.]+)\s*(GiB|GB)\s+(\S+)$/.exec(plain(cell));
+  const match = /^([\d.]+)\s*(GiB|GB)\s+(\S+(?: backbone \+ \S+ head)?)$/.exec(
+    plain(cell),
+  );
   if (!match) fail(`${context}: weights must name a size and a precision`);
   const [, size, unit, precision] = match;
   const gib = unit === "GiB" ? Number(size) : Number(size) / 1.073741824;
@@ -100,7 +102,7 @@ const parseWeights = (cell, context) => {
 /** `65,536 served` → the number and who states it as a limit. */
 const parseMaxInput = (cell, context) => {
   if (plain(cell) === "?") return null;
-  const match = /^([\d,]+)\s+(served|config)$/.exec(plain(cell));
+  const match = /^([\d,]+)\s+(served|config|reference)$/.exec(plain(cell));
   if (!match) fail(`${context}: max input must be a number and its basis`);
   const tokens = Number(match[1].replaceAll(",", ""));
   if (!Number.isFinite(tokens) || tokens <= 0)
