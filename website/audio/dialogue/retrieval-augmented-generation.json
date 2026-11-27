@@ -1,6 +1,6 @@
 {
   "chapterId": "retrieval-augmented-generation",
-  "sourceHash": "b42b2170743c92620d1eb703c938e4b23233bf97f7a524a798ed722cec6bbb87",
+  "sourceHash": "b2a66912634fd2b156c5b82932c68403b34dd7219b6b2d10476ad7a0f71e02e9",
   "declaredCriticalTerms": [
     {
       "term": "cat",
@@ -33,8 +33,8 @@
   ],
   "describedLiterals": [
     {
-      "term": "200MB",
-      "reason": "the ear hears 'two hundred megabytes'; the glued SI unit is the spelling the ASR gate cannot reproduce, so the literal is described while the number itself stays spoken"
+      "term": "MB",
+      "reason": "the ear hears 'megabytes'; the bare SI unit is not spoken verbatim, so the value 200 stays audible"
     }
   ],
   "turns": [
